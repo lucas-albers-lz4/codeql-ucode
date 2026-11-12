@@ -8,6 +8,8 @@ import codeql.ucode.AST
 // Wrapper AST is imported so CFG/SSA construction can see AstNode/Stmts/Expr.
 // CFG is importable as codeql.ucode.CFG and SSA/dataflow as codeql.ucode.DataFlow.
 // Neither is re-exported here. Production LocalTaint / RequestArgsExec stay on
-// Models. SsaReachesSystem.ql imports DataFlow additively and uses statement-level
-// localFlowStep; that is not setInitAction path_found. viableSourceCallable stays
-// none(), so imported luci.sys callees remain unresolved / inconclusive.
+// Models. SsaReachesSystem.ql imports DataFlow additively and uses SSA-identity
+// localFlowStep (def node to that definition's reads, plus identifier copies).
+// Statement CFG nodes are not value identities. That is not setInitAction
+// path_found. viableSourceCallable stays none(), so imported luci.sys callees
+// remain unresolved / inconclusive.

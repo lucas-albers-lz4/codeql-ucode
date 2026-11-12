@@ -1,7 +1,10 @@
 private import codeql.util.Boolean
 private import codeql.util.Unit
 private import codeql.ucode.ast.Expr
+private import codeql.ucode.AST
 private import codeql.ucode.CFG
+private import codeql.ucode.ast.internal.AstNodes
+private import codeql.ucode.ast.internal.TreeSitter
 private import codeql.ucode.dataflow.Ssa
 private import DataFlowPublic
 private import DataFlowDispatch
@@ -40,27 +43,124 @@ private class ExprNodeImpl extends ExprNode, NodeImpl {
   override string toStringImpl() { result = this.getExprNode().toString() }
 }
 
-private class StmtNodeImpl extends StmtNode, NodeImpl {
+private class SsaDefNodeImpl extends SsaDefinitionNode, NodeImpl {
   override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
 
-  override Location getLocationImpl() { result = this.getCfgNode().getLocation() }
+  override Location getLocationImpl() { result = this.getDefinition().getLocation() }
 
-  override string toStringImpl() { result = this.getCfgNode().toString() }
+  override string toStringImpl() {
+    result = "ssa def " + this.getDefinition().getSourceVariable().getName()
+  }
+}
+
+private class SsaReadNodeImpl extends SsaReadNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getRead().getScope() }
+
+  override Location getLocationImpl() { result = this.getRead().getLocation() }
+
+  override string toStringImpl() {
+    result = "ssa read " + this.getDefinition().getSourceVariable().getName()
+  }
 }
 
 /**
- * Statement-level SSA value flow. Wrapper CFG leaves are statements, so a
- * write's enclosing CFG node flows to each of its reads. Not call resolution
- * (`viableSourceCallable` stays `none()`) and not imported luci.sys
- * `path_found`.
+ * SSA value flow with per-definition identities.
+ *
+ * Wrapper CFG leaves are statements, so this does not treat a statement as
+ * one value. A write flows to its own reads; identifier copies flow when the
+ * assigned RHS (parens / comma-last / assignment-expression unwrapped) is
+ * that identifier. Not call resolution (`viableSourceCallable` stays
+ * `none()`) and not imported luci.sys `path_found`.
  */
 module SsaFlow {
-  predicate localFlowStep(Node nodeFrom, Node nodeTo) {
-    exists(Ssa::WriteDefinition def |
-      nodeFrom.asCfgNode() = def.getControlFlowNode() and
-      nodeTo.asCfgNode() = def.getARead() and
-      nodeFrom != nodeTo
+  /**
+   * Innermost CFG node containing `inner`. Same rule as SSA: statement-level
+   * leaves, so a nested function's CFG node wins over the enclosing statement.
+   */
+  private predicate astInCfg(CfgNode n, AstNode inner) {
+    inner.getParent*() = n.getAstNode() and
+    not exists(CfgNode closer |
+      closer != n and
+      inner.getParent*() = closer.getAstNode() and
+      closer.getAstNode().getParent+() = n.getAstNode()
     )
+  }
+
+  /**
+   * Value of `e` after stripping parentheses, taking the last comma operand,
+   * and taking the RHS of a nested assignment expression (`a = b = x`).
+   */
+  private UCODE::AstNode copyValue(UCODE::AstNode e) {
+    result = copyValue(e.(UCODE::ParenthesizedExpression).getChild())
+    or
+    exists(UCODE::SequenceExpression seq, int last |
+      e = seq and
+      last = max(int i | exists(seq.getChild(i))) and
+      result = copyValue(seq.getChild(last))
+    )
+    or
+    exists(UCODE::AssignmentExpression a |
+      e = a and
+      result = copyValue(a.getRight())
+    )
+    or
+    not e instanceof UCODE::ParenthesizedExpression and
+    not e instanceof UCODE::SequenceExpression and
+    not e instanceof UCODE::AssignmentExpression and
+    result = e
+  }
+
+  /** RHS expression stored by `dstDef` (declarator initializer or `=` RHS). */
+  private UCODE::AstNode assignedRhs(Ssa::WriteDefinition dstDef) {
+    exists(Variable v, UCODE::VariableDeclarator d |
+      v = dstDef.getSourceVariable() and
+      v.getAstNode() = TVariableDeclarator(d) and
+      astInCfg(dstDef.getControlFlowNode(), v.getAstNode()) and
+      result = d.getValue()
+    )
+    or
+    exists(VariableWriteAccess wa, UCODE::Identifier ident, UCODE::AssignmentExpression a |
+      wa.getVariable() = dstDef.getSourceVariable() and
+      astInCfg(dstDef.getControlFlowNode(), wa.getAstNode()) and
+      wa.getAstNode() = TIdentifier(ident) and
+      a.getLeft() = ident and
+      result = a.getRight()
+    )
+  }
+
+  /** Write of `def` to a statement-level read of that same definition. */
+  predicate ssaDefToRead(Node nodeFrom, Node nodeTo) {
+    exists(Ssa::WriteDefinition def, CfgNode read |
+      nodeFrom = TSsaDefNode(def) and
+      read = def.getARead() and
+      nodeTo = TSsaReadNode(def, read)
+    )
+  }
+
+  /**
+   * Identifier copy: the assigned value of `dstDef` is a read of `srcDef`.
+   * Does not step through calls, field reads, or independent declarators.
+   */
+  predicate identifierCopy(Node nodeFrom, Node nodeTo) {
+    exists(
+      Ssa::WriteDefinition srcDef, Ssa::WriteDefinition dstDef, CfgNode read,
+      VariableReadAccess ra, UCODE::Identifier ident
+    |
+      nodeFrom = TSsaReadNode(srcDef, read) and
+      nodeTo = TSsaDefNode(dstDef) and
+      read = dstDef.getControlFlowNode() and
+      srcDef.getSourceVariable() != dstDef.getSourceVariable() and
+      ra.getVariable() = srcDef.getSourceVariable() and
+      astInCfg(read, ra.getAstNode()) and
+      toTreeSitter(ra.getAstNode()) = ident and
+      copyValue(assignedRhs(dstDef)) = ident
+    )
+  }
+
+  predicate localFlowStep(Node nodeFrom, Node nodeTo) {
+    ssaDefToRead(nodeFrom, nodeTo)
+    or
+    identifierCopy(nodeFrom, nodeTo)
   }
 }
 
@@ -98,8 +198,10 @@ private module Cached {
   cached
   newtype TNode =
     TExprNode(CfgNodes::ExprCfgNode n) or
-    // Statement CFG leaves; ExprCfgNode is empty until CFG is expression-level.
-    TStmtNode(CfgNodes::AstCfgNode n) or
+    // Per-definition SSA identities. Do not use statement CFG nodes: those
+    // collapse unrelated values in one statement into one DataFlow node.
+    TSsaDefNode(Ssa::WriteDefinition def) or
+    TSsaReadNode(Ssa::WriteDefinition def, CfgNode read) { read = def.getARead() } or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
       none() // TODO
     }

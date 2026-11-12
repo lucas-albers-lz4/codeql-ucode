@@ -1,9 +1,9 @@
 /**
  * @name SSA identifier reaches builtin system
- * @description Additive production-pack query: DataFlow localFlowStep from a
- *              lexical SSA write's statement node to a statement-level read
- *              that contains an access in builtin system's command argument.
- *              Restricted to ssa_pos/ssa_neg so luci is not scored.
+ * @description Additive production-pack query: DataFlow localFlowStep from an
+ *              SSA write node to a read of that same definition whose
+ *              statement contains an access in builtin system's command
+ *              argument. Restricted to ssa_pos/ssa_neg so luci is not scored.
  *              Not request.args taint, not imported-callee flow, and not
  *              setInitAction path_found. LocalTaint stays on Models.
  *              viableSourceCallable remains none(); imported luci.sys stays
@@ -23,13 +23,15 @@ private import codeql.ucode.ast.internal.AstNodes
 
 predicate ssaFixtureFile(File f) { f.getBaseName() = "ssa_pos" or f.getBaseName() = "ssa_neg" }
 
-from Ssa::WriteDefinition def, BuiltinSystemCall sink, CfgNode read, VariableReadAccess access,
-  DataFlow::Node src, DataFlow::Node snk
+from Ssa::WriteDefinition def, BuiltinSystemCall sink, CfgNode read, VariableReadAccess access
 where
   read = def.getARead() and
-  src.asCfgNode() = def.getControlFlowNode() and
-  snk.asCfgNode() = read and
-  DataFlow::localFlowStep+(src, snk) and
+  exists(DataFlow::SsaDefinitionNode src, DataFlow::SsaReadNode snk |
+    src.getDefinition() = def and
+    snk.getDefinition() = def and
+    snk.getRead() = read and
+    DataFlow::localFlowStep+(src, snk)
+  ) and
   ssaFixtureFile(read.getFile()) and
   access.getVariable() = def.getSourceVariable() and
   toTreeSitter(access.getAstNode()).getParent*() = sink.getArgument(0) and

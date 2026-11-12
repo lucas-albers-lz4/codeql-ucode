@@ -3,22 +3,32 @@ private import DataFlowDispatch
 private import DataFlowPrivate
 private import codeql.ucode.controlflow.ControlFlowGraph
 private import codeql.ucode.controlflow.CfgNodes as CfgNodes
+private import codeql.ucode.dataflow.Ssa
 
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
- * (`ExprNode`), a statement CFG node (`StmtNode`), or a Expr (`ParameterNode`).
+ * (`ExprNode`), an SSA definition or read (`SsaDefinitionNode` /
+ * `SsaReadNode`), or a Expr (`ParameterNode`).
+ *
+ * Statement CFG nodes are not value identities: wrapper CFG leaves are
+ * statements, so a statement node would make unrelated values in that
+ * statement composable.
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
   CfgNodes::ExprCfgNode asExpr() { result = this.(ExprNode).getExprNode() }
 
   /**
-   * Gets the statement-level CFG node corresponding to this node, if any.
+   * Gets the statement-level CFG node for this SSA def or read, if any.
    *
-   * Wrapper CFG leaves are statements, so this is the local-flow node kind
-   * used by SSA `localFlowStep`.
+   * This is a location, not a value identity. Public `localFlowStep` uses
+   * `SsaDefinitionNode` / `SsaReadNode`.
    */
-  CfgNodes::AstCfgNode asCfgNode() { result = this.(StmtNode).getCfgNode() }
+  CfgNode asCfgNode() {
+    result = this.(SsaDefinitionNode).getCfgNode()
+    or
+    result = this.(SsaReadNode).getRead()
+  }
 
   /** Gets the Expr corresponding to this node, if any. */
   Expr asParameter() { result = this.(ParameterNode).getParameter() }
@@ -57,18 +67,41 @@ class ExprNode extends Node, TExprNode {
 }
 
 /**
- * A statement-level CFG node, viewed as a node in a data flow graph.
+ * An SSA write, viewed as a data-flow node.
  *
- * Needed because expression-level `ExprCfgNode`s are empty while CFG leaves
- * are statements.
+ * Distinct from other writes in the same statement. Public `localFlowStep`
+ * from this node reaches this definition's reads, not every value in the
+ * enclosing CFG statement.
  */
-class StmtNode extends Node, TStmtNode {
-  private CfgNodes::AstCfgNode n;
+class SsaDefinitionNode extends Node, TSsaDefNode {
+  private Ssa::WriteDefinition def;
 
-  StmtNode() { this = TStmtNode(n) }
+  SsaDefinitionNode() { this = TSsaDefNode(def) }
 
-  /** Gets the statement CFG node corresponding to this node. */
-  CfgNodes::AstCfgNode getCfgNode() { result = n }
+  /** Gets the SSA write. */
+  Ssa::WriteDefinition getDefinition() { result = def }
+
+  /** Gets the statement-level CFG node of this write (location only). */
+  CfgNode getCfgNode() { result = def.getControlFlowNode() }
+}
+
+/**
+ * A read of an SSA write, viewed as a data-flow node.
+ *
+ * Keyed by definition and read CFG node so a read of `x` is not a write of
+ * `y` even when both occur in the same statement.
+ */
+class SsaReadNode extends Node, TSsaReadNode {
+  private Ssa::WriteDefinition def;
+  private CfgNode read;
+
+  SsaReadNode() { this = TSsaReadNode(def, read) }
+
+  /** Gets the SSA write being read. */
+  Ssa::WriteDefinition getDefinition() { result = def }
+
+  /** Gets the statement-level CFG node of this read (location only). */
+  CfgNode getRead() { result = read }
 }
 
 /**

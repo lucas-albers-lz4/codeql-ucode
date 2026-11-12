@@ -41,11 +41,13 @@ writes within one statement cannot be ordered.
 `ql/src/m4/SsaReachesSystem.ql` is an additive pack query that imports
 `codeql.ucode.DataFlow` and reports lexical SSA writes whose statement-level
 read contains an access in builtin `system()`'s command argument, on
-`ssa_pos`/`ssa_neg` only, requiring `DataFlow::localFlowStep+`. Production
-LocalTaint / RequestArgsExec / ImportedCalleeTaint stay on Models. DataFlow
-`localFlowStep` is statement-level SSA write-to-read; `viableSourceCallable`
-remains `none()`, so imported `luci.sys` callees stay unresolved /
-inconclusive — not `setInitAction` `path_found`.
+`ssa_pos`/`ssa_neg` only, requiring `DataFlow::localFlowStep+` from that
+write's SSA node to a read of the same definition. Production LocalTaint /
+RequestArgsExec / ImportedCalleeTaint stay on Models. Public
+`localFlowStep` uses SSA def/read nodes (not statement CFG identity) plus
+identifier-copy assignment; `viableSourceCallable` remains `none()`, so
+imported `luci.sys` callees stay unresolved / inconclusive — not
+`setInitAction` `path_found`.
 
 ## M1 spike status
 
