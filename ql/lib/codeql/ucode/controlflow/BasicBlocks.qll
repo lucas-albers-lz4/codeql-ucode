@@ -89,7 +89,6 @@ private class BasicBlockImpl extends TBasicBlockStart {
   Location getLocation() { result = this.getFirstNode().getLocation() }
 }
 
-
 cached
 private module Cached {
   /** Internal representation of basic blocks. */
@@ -98,7 +97,15 @@ private module Cached {
 
   /** Holds if `cfn` starts a new basic block. */
   private predicate startsBB(CfgNode cfn) {
-    not exists(cfn.getAPredecessor()) and exists(cfn.getASuccessor())
+    not exists(cfn.getAPredecessor())
+    or
+    exists(CfgNode pred1, CfgNode pred2 |
+      pred1 = cfn.getAPredecessor() and pred2 = cfn.getAPredecessor() and pred1 != pred2
+    )
+    or
+    exists(CfgNode pred, CfgNode other |
+      pred = cfn.getAPredecessor() and other = pred.getASuccessor() and other != cfn
+    )
   }
 
   /**

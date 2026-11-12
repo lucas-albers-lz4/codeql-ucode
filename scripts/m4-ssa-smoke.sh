@@ -56,7 +56,7 @@ for msg in msgs:
 
 def line(fixture, marker):
     lines = Path(f"ql/test/extractor-smoke/{fixture}").read_text().splitlines()
-    matches = [i for i, text in enumerate(lines, 1) if marker in text]
+    matches = [i for i, text in enumerate(lines, 1) if text.rstrip().endswith("// " + marker)]
     if len(matches) != 1:
         sys.exit(f"expected one {marker} in {fixture}, found {matches}")
     return matches[0]
@@ -75,6 +75,36 @@ if has_pair("ssa_neg_x", "ssa_neg", "ssa_neg_x_write", "ssa_neg_y_read"):
     sys.exit("ssa_neg_x reached ssa_neg_y_read")
 if not has_pair("ssa_neg_y", "ssa_neg", "ssa_neg_y_write", "ssa_neg_y_read"):
     sys.exit("missing SSA read ssa_neg_y write -> read")
+# Check identity, writes/kills, read-before-write updates, and both paths into a phi.
+fixture = "ssa_pos"
+for name, write, read in [
+    ("seq", "seq_decl", "seq_before"),
+    ("seq", "seq_write", "seq_after"),
+    ("seq", "seq_write", "seq_update"),
+    ("seq", "seq_update", "seq_updated_read"),
+    ("shadow", "shadow_decl", "shadow_outer_read"),
+    ("shadow", "shadow_inner_decl", "shadow_inner_read"),
+    ("branch", "branch_write", "branch_inner_read"),
+    ("branch", "branch_decl", "branch_join_read"),
+    ("branch", "branch_write", "branch_join_read"),
+    ("both", "both_true", "both_join"),
+    ("both", "both_false", "both_join"),
+    ("param", "param_decl", "param_outer_read"),
+    ("independent", "independent_decl", "independent_read"),
+]:
+    if not has_pair(name, fixture, write, read):
+        sys.exit(f"missing SSA pair {name}: {write} -> {read}")
+for name, write, read in [
+    ("seq", "seq_decl", "seq_after"),
+    ("seq", "seq_decl", "seq_write"),
+    ("seq", "seq_write", "seq_updated_read"),
+    ("shadow", "shadow_decl", "shadow_inner_read"),
+    ("shadow", "shadow_inner_decl", "shadow_outer_read"),
+    ("both", "both_decl", "both_join"),
+    ("param", "param_decl", "param_inner_read"),
+]:
+    if has_pair(name, fixture, write, read):
+        sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
 print("SSA pos/neg statement-level checks passed")
 PY
 

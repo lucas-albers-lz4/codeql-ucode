@@ -8,10 +8,19 @@ private import codeql.ssa.Ssa as SsaImplCommon
  * Holds if CFG node `n` is a statement (or other leaf) that contains AST node `inner`.
  *
  * Wrapper CFG still treats statements as leaves, so SSA is statement-level:
- * a write/read is attributed to the enclosing CFG node, not the identifier token.
+ * a write/read is attributed to the innermost enclosing CFG node, not the identifier
+ * token. If/else branches are modeled, but loop, switch, and exception control
+ * flow remain statement leaves. Multiple writes to the same variable within one
+ * statement cannot be ordered. Parameters shadow lexical declarations but are
+ * not yet SSA source variables.
  */
 private predicate cfgNodeContains(CfgNode n, AstNode inner) {
-  inner.getParent*() = n.getAstNode()
+  inner.getParent*() = n.getAstNode() and
+  not exists(CfgNode closer |
+    closer != n and
+    inner.getParent*() = closer.getAstNode() and
+    closer.getAstNode().getParent+() = n.getAstNode()
+  )
 }
 
 module SsaInput implements SsaImplCommon::InputSig<Location> {
@@ -33,7 +42,14 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
   }
 
   predicate variableWrite(BasicBlock bb, int i, SourceVariable v, boolean certain) {
-    cfgNodeContains(bb.getNode(i), v.getAstNode()) and
+    (
+      cfgNodeContains(bb.getNode(i), v.getAstNode())
+      or
+      exists(VariableWriteAccess va |
+        va.getVariable() = v and
+        cfgNodeContains(bb.getNode(i), va.getAstNode())
+      )
+    ) and
     certain = true
   }
 
