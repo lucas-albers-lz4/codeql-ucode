@@ -48,6 +48,8 @@ pub fn run(options: Options) -> std::io::Result<()> {
                     "luci".into(),
                     "taint_pos".into(),
                     "taint_neg".into(),
+                    "quote_ok".into(),
+                    "quote_exe".into(),
                 ],
             },
         ],
@@ -97,5 +99,7 @@ mod tests {
         // Documented: file_globs is literal basenames, not "*.uc".
         assert_ne!("luci.uc", "luci");
         assert_ne!("taint_pos.uc", "taint_pos");
+        assert_ne!("quote_ok.uc", "quote_ok");
+        assert_ne!("quote_exe.uc", "quote_exe");
     }
 }
