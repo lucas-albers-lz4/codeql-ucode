@@ -78,10 +78,14 @@ if has_pair("ssa_neg_x", "ssa_neg", "ssa_neg_x_write", "ssa_neg_y_read"):
     sys.exit("ssa_neg_x reached ssa_neg_y_read")
 if not has_pair("ssa_neg_y", "ssa_neg", "ssa_neg_y_write", "ssa_neg_y_read"):
     sys.exit("missing SSA read ssa_neg_y write -> read")
+for name in ["ssa_same_line", "ssa_sibling"]:
+    if not has_pair(name, "ssa_neg", name + "_write", name + "_read"):
+        sys.exit(f"missing SSA read for negative system case {name}")
 # Check identity, writes/kills, read-before-write updates, and both paths into a phi.
 fixture = "ssa_pos"
 for name, write, read in [
     ("seq", "seq_decl", "seq_before"),
+    ("ssa_multiline", "ssa_multiline_write", "ssa_multiline_read"),
     ("seq", "seq_write", "seq_after"),
     ("seq", "seq_write", "seq_update"),
     ("seq", "seq_update", "seq_updated_read"),
@@ -120,14 +124,15 @@ import csv, sys
 rows = list(csv.reader(open(".codeql-database/m4-ssa/ssaSys.csv")))
 msgs = [r[1] for r in rows[1:] if len(r) > 1]
 blob = "\n".join(msgs)
-if "ssa_pos_src reaches system in ssa_pos" not in blob:
-    sys.exit("missing ssa_pos_src reaches system: " + blob)
-if "ssa_neg_y reaches system in ssa_neg" not in blob:
-    sys.exit("missing ssa_neg_y reaches system: " + blob)
-if "ssa_neg_x reaches system" in blob:
-    sys.exit("ssa_neg_x false positive: " + blob)
+for name, fixture in [("ssa_pos_src", "ssa_pos"), ("ssa_multiline", "ssa_pos"),
+                      ("ssa_neg_y", "ssa_neg")]:
+    if f"{name} reaches system in {fixture}" not in msgs:
+        sys.exit(f"missing {name} reaches system: " + blob)
+for name in ["ssa_neg_x", "ssa_same_line", "ssa_sibling"]:
+    if any(m.startswith(name + " reaches system") for m in msgs):
+        sys.exit(f"{name} false positive: " + blob)
 if any("setInitAction" in m or "init_action" in m or "luci" in m for m in msgs):
-    sys.exit("SsaReachesSystem staffed luci/setInitAction: " + blob)
+    sys.exit("SsaReachesSystem scored luci/setInitAction: " + blob)
 print("SsaReachesSystem pos/neg ok")
 PY
 
