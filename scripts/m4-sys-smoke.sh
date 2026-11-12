@@ -25,7 +25,7 @@ mkdir -p .codeql-database
 echo "== index luci sys.uc =="
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode \
-	--include='**/luci' --include='**/sys.uc' \
+	--include='**/rpcd/ucode/luci' --include='**/sys.uc' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 
