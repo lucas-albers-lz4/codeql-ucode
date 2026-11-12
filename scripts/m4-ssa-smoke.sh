@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# M4 gate: wrapper SSA/dataflow compiles and a tiny positive/negative fixture runs.
-# Does not import dataflow into production M3/M4 queries.
+# M4 gate: wrapper SSA/dataflow compiles; production SsaReachesSystem.ql
+# imports DataFlow additively. Isolated SsaReads.ql remains extractor-smoke.
+# Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
 # as sanitizers.
 set -euo pipefail
@@ -13,6 +14,7 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-ssa"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 Q="$ROOT/ql/src/extractor-smoke/SsaReads.ql"
+PROD="$ROOT/ql/src/m4/SsaReachesSystem.ql"
 
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	echo "== create-extractor-pack =="
@@ -24,6 +26,7 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 
 echo "== compile import codeql.ucode.DataFlow =="
 codeql query compile "$Q" --search-path="$QLPATH"
+codeql query compile "$PROD" --search-path="$QLPATH"
 
 rm -rf "$DB"
 mkdir -p .codeql-database
@@ -106,6 +109,26 @@ for name, write, read in [
     if has_pair(name, fixture, write, read):
         sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
 print("SSA pos/neg statement-level checks passed")
+PY
+
+echo "== SsaReachesSystem =="
+codeql query run "$PROD" --database="$DB" --search-path="$QLPATH" --output="$DB/ssaSys.bqrs"
+codeql bqrs decode --format=csv "$DB/ssaSys.bqrs" | tee "$DB/ssaSys.csv"
+
+python3 - <<'PY'
+import csv, sys
+rows = list(csv.reader(open(".codeql-database/m4-ssa/ssaSys.csv")))
+msgs = [r[1] for r in rows[1:] if len(r) > 1]
+blob = "\n".join(msgs)
+if "ssa_pos_src reaches system in ssa_pos" not in blob:
+    sys.exit("missing ssa_pos_src reaches system: " + blob)
+if "ssa_neg_y reaches system in ssa_neg" not in blob:
+    sys.exit("missing ssa_neg_y reaches system: " + blob)
+if "ssa_neg_x reaches system" in blob:
+    sys.exit("ssa_neg_x false positive: " + blob)
+if any("setInitAction" in m or "init_action" in m or "luci" in m for m in msgs):
+    sys.exit("SsaReachesSystem staffed luci/setInitAction: " + blob)
+print("SsaReachesSystem pos/neg ok")
 PY
 
 echo "M4 SSA smoke passed"
