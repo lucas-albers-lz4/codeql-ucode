@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# M4 gate: extract luci.sys (sys.uc) and assert init_action reaches builtin system.
+# M4 gate: extract luci + luci.sys (sys.uc); init_action system, action tokens, caller/sink pair.
 # Does not change the M1/M3 extract sets.
 set -euo pipefail
 
@@ -93,6 +93,20 @@ if tokens != want:
 if any("not a sanitizer of name" not in m for m in msgs):
 	sys.exit("missing sanitizer disclaimer")
 print("setInitAction action tokens", sorted(tokens))
+PY
+
+echo "== InitActionCallerSinkPair == 2 (name, action) =="
+runq "$ROOT/ql/src/m4/InitActionCallerSinkPair.ql" "$DB/pair.bqrs"
+codeql bqrs decode --format=csv "$DB/pair.bqrs" | tee "$DB/pair.csv"
+python3 - <<'PY'
+import csv, sys
+rows = list(csv.reader(open(".codeql-database/m4-sys/pair.csv")))
+msgs = [r[1] for r in rows[1:]]
+if len(msgs) != 2:
+	sys.exit(f"expected 2 pair rows, got {len(msgs)}: {msgs}")
+if any("not interprocedural dataflow" not in m for m in msgs):
+	sys.exit("missing dataflow disclaimer")
+print("caller/sink pair rows", len(msgs))
 PY
 
 echo "M4 luci.sys init_action smoke passed"

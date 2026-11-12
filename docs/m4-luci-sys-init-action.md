@@ -6,4 +6,6 @@ Installed path: `/usr/share/ucode/luci/sys.uc` (luci `openwrt-25.12` `@b2e0be4`)
 
 `setInitAction.call` switches on `request.args.action` tokens `enable|disable|start|stop|restart|reload` (plus default). That is caller-side inventory, not a sanitizer of `name`.
 
-See `InitActionSystem.ql`, `SetInitActionActionSwitch.ql`, and `scripts/m4-sys-smoke.sh`.
+`InitActionCallerSinkPair.ql` pairs the tainted `init_action(...)` call with the extracted `system` sink. That is a **syntactic pair**, not interprocedural dataflow, and not `path_found`.
+
+See `InitActionSystem.ql`, `SetInitActionActionSwitch.ql`, `InitActionCallerSinkPair.ql`, and `scripts/m4-sys-smoke.sh`.
