@@ -196,3 +196,72 @@ predicate taintReachesSink(UCODE::AstNode source, NamedCall sink) {
     )
   )
 }
+
+/** `shellquote(...)` wrapping `n`. */
+predicate wrappedByShellquote(UCODE::AstNode n) {
+  exists(NamedCall sq |
+    sq.getName() = "shellquote" and
+    n.getParent*() = sq.getArgument(0)
+  )
+}
+
+/** Direct child index of `child` in template `tmpl`. */
+int templateChildIndex(UCODE::TemplateString tmpl, UCODE::AstNode child) { child = tmpl.getChild(result) }
+
+/**
+ * Documented unsupported template contexts: leading substitution (executable
+ * selection), `sh -c` program text, or double-quote embedding.
+ */
+predicate unsupportedShellquoteTemplate(UCODE::TemplateString tmpl, int subIdx) {
+  subIdx = 0
+  or
+  exists(int j, UCODE::StringFragment prefix |
+    prefix = tmpl.getChild(j) and j < subIdx and
+    prefix.getValue().regexpMatch("(?i).*\\bsh\\s+-c\\s*$")
+  )
+  or
+  exists(UCODE::StringFragment frag |
+    frag = tmpl.getChild(_) and frag.getValue().regexpMatch(".*[\"\\\\].*")
+  )
+}
+
+/**
+ * Tainted `shellquote` is a non-leading template substitution with literal text
+ * before and after — a complete shell word beside a fixed command, not
+ * executable selection or interpreter/dquote embedding.
+ */
+predicate completeQuotedTemplateArg(RequestArgsAccess src, NamedCall sink) {
+  taintReachesSink(src, sink) and
+  exists(
+    NamedCall sq, UCODE::TemplateSubstitution sub, UCODE::TemplateString tmpl, int subIdx
+  |
+    sq.getName() = "shellquote" and
+    src.getParent*() = sq.getArgument(0) and
+    sq.getParent*() = sub and
+    sub = tmpl.getChild(subIdx) and
+    tmpl = sink.getArgument(_) and
+    exists(int j, UCODE::StringFragment prefix |
+      prefix = tmpl.getChild(j) and j < subIdx and prefix.getValue().regexpMatch(".*\\S.*")
+    ) and
+    exists(int k, UCODE::StringFragment suffix |
+      suffix = tmpl.getChild(k) and k > subIdx and suffix.getValue().regexpMatch(".*\\S.*")
+    ) and
+    not unsupportedShellquoteTemplate(tmpl, subIdx)
+  )
+}
+
+/** The whole sink argument is `shellquote(tainted)` — executable/command selection. */
+predicate quotedEntireCommand(RequestArgsAccess src, NamedCall sink) {
+  taintReachesSink(src, sink) and
+  exists(NamedCall sq |
+    sq.getName() = "shellquote" and
+    src.getParent*() = sq.getArgument(0) and
+    sq = sink.getArgument(_)
+  )
+}
+
+/** Shell-injection candidate: taint reaches the sink and is not a complete quoted argument. */
+predicate shellInjectionCandidate(RequestArgsAccess src, NamedCall sink) {
+  taintReachesSink(src, sink) and
+  not completeQuotedTemplateArg(src, sink)
+}

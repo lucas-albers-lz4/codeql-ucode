@@ -1,0 +1,13 @@
+'use strict';
+
+import { popen } from 'fs';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			popen(`swconfig dev ${shellquote(request.args.switch)} help 2>/dev/null`);
+		}
+	}
+};
+
+return methods;

@@ -19,6 +19,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 9. `./scripts/m3-smoke.sh` indexes `luci`, `taint_pos`, and `taint_neg` (`SuccessfullyExtractedFiles == 3`) and asserts the M3 queries.
 10. `./scripts/m4-smoke.sh` reuses that database and asserts `RequestArgsExec.ql` methods (`getSwconfigFeatures`, `getSwconfigPortState`, `getRealtimeStats`, `setPassword`, `setLocaltime`).
 11. `./scripts/m4-fixed-helpers-smoke.sh` asserts `GetFeaturesDirectExec.ql` (hostapd/wpa_supplicant `system`, dnsmasq/odhcpd/ipset `popen`).
+12. `./scripts/m4-quote-smoke.sh` indexes those plus `quote_ok`/`quote_exe` and asserts the complete-argument `shellquote` barrier.
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 
