@@ -21,4 +21,4 @@ Nine named `fs` `popen` calls and six builtin `system()` calls exist in the plug
 
 ## Coverage
 
-See `docs/m3-coverage.json`. M2 `policy/grants.json` records unauthenticated `luci.getFeatures` as `intended_access`. This pack does not claim a live daemon run or a plugin-side session check.
+See `docs/m3-coverage.json`. M2 `policy/grants.json` records unauthenticated `luci.getFeatures` as `intended_access`. Step-3 records use the same `corpus_revision` (`sha256:e806b5f8…` of `corpus/lock.json` on main) so they can join those grants. This pack does not claim a live daemon run or a plugin-side session check.
