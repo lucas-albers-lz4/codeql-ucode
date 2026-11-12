@@ -14,7 +14,11 @@ echo "== M3 smoke =="
 bash scripts/m3-smoke.sh
 
 shopt -s nullglob
-m4_scripts=(scripts/m4-*-smoke.sh)
+m4_scripts=()
+for s in scripts/m4-smoke.sh scripts/m4-*-smoke.sh; do
+	[[ -f "$s" ]] || continue
+	m4_scripts+=("$s")
+done
 if [[ ${#m4_scripts[@]} -eq 0 ]]; then
 	echo "no M4 smoke scripts on this ref (expected until M4 PRs merge)"
 	exit 0
