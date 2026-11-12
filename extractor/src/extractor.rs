@@ -44,7 +44,11 @@ pub fn run(options: Options) -> std::io::Result<()> {
                 node_types: tree_sitter_ucode::UCODE_NODE_TYPES,
                 // Stock simple::Extractor matches basename only. Literal "luci"
                 // extracts the extensionless rpcd plugin and rejects luci.uc.
-                file_globs: vec!["luci".into()],
+                file_globs: vec![
+                    "luci".into(),
+                    "taint_pos".into(),
+                    "taint_neg".into(),
+                ],
             },
         ],
         trap_dir: options.output_dir,
@@ -90,7 +94,8 @@ mod tests {
 
     #[test]
     fn luci_uc_basename_is_not_the_spike_glob() {
-        // Documented: file_globs is the literal basename "luci", not "*.uc".
+        // Documented: file_globs is literal basenames, not "*.uc".
         assert_ne!("luci.uc", "luci");
+        assert_ne!("taint_pos.uc", "taint_pos");
     }
 }

@@ -2,6 +2,7 @@ import codeql.Locations
 import codeql.files.FileSystem
 import codeql.ucode.Diagnostics
 import codeql.ucode.ast.internal.TreeSitter
+import codeql.ucode.m3.Models
 
 /**
  * M1 surface. Generated AST wrappers, CFG, and dataflow remain in-tree but are

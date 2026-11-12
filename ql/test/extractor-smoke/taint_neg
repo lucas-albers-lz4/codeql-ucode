@@ -1,0 +1,14 @@
+'use strict';
+
+import { popen } from 'fs';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			const unused = request.args.cmd;
+			popen('opkg list-installed netifd');
+		}
+	}
+};
+
+return methods;
