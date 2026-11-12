@@ -17,6 +17,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 7. Apply `patches/` (`./patches/apply.sh`), lock `Cargo.lock`, `cargo test`, then run `scripts/create-extractor-pack.sh` by hand. Spike glob is literal basename `luci`.
 8. `./scripts/m1-smoke.sh` runs parser-load, pack, extract of `ql/test/extractor-smoke/usr/share/rpcd/ucode/luci` only (`SuccessfullyExtractedFiles == 1`), and PrintLuciAst.
 9. `./scripts/m3-smoke.sh` indexes `luci`, `taint_pos`, and `taint_neg` (`SuccessfullyExtractedFiles == 3`) and asserts the M3 queries.
+10. `./scripts/m4-smoke.sh` reuses that database and asserts `RequestArgsExec.ql` methods (`getSwconfigFeatures`, `getSwconfigPortState`, `getRealtimeStats`, `setPassword`, `setLocaltime`).
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 
