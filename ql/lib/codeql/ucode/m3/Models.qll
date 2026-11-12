@@ -197,14 +197,6 @@ predicate taintReachesSink(UCODE::AstNode source, NamedCall sink) {
   )
 }
 
-/** `shellquote(...)` wrapping `n`. */
-predicate wrappedByShellquote(UCODE::AstNode n) {
-  exists(NamedCall sq |
-    sq.getName() = "shellquote" and
-    n.getParent*() = sq.getArgument(0)
-  )
-}
-
 /** Direct child index of `child` in template `tmpl`. */
 int templateChildIndex(UCODE::TemplateString tmpl, UCODE::AstNode child) { child = tmpl.getChild(result) }
 
@@ -213,15 +205,18 @@ int templateChildIndex(UCODE::TemplateString tmpl, UCODE::AstNode child) { child
  * selection), `sh -c` program text, or double-quote embedding.
  */
 predicate unsupportedShellquoteTemplate(UCODE::TemplateString tmpl, int subIdx) {
-  subIdx = 0
-  or
-  exists(int j, UCODE::StringFragment prefix |
-    prefix = tmpl.getChild(j) and j < subIdx and
-    prefix.getValue().regexpMatch("(?i).*\\bsh\\s+-c\\s*$")
-  )
-  or
-  exists(UCODE::StringFragment frag |
-    frag = tmpl.getChild(_) and frag.getValue().regexpMatch(".*[\"\\\\].*")
+  tmpl.getChild(subIdx) instanceof UCODE::TemplateSubstitution and
+  (
+    subIdx = 0
+    or
+    exists(int j, UCODE::StringFragment prefix |
+      prefix = tmpl.getChild(j) and j < subIdx and
+      prefix.getValue().regexpMatch("(?i).*\\bsh\\s+-c\\s*$")
+    )
+    or
+    exists(UCODE::StringFragment frag |
+      frag = tmpl.getChild(_) and frag.getValue().regexpMatch(".*[\"\\\\].*")
+    )
   )
 }
 
