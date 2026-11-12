@@ -18,18 +18,22 @@ final class CfgScope = CfgScopeImpl;
 /**
  * A Program statement sequence
  */
-final class ProgramScope extends CfgScopeImpl, Program {
-  override predicate scopeFirst(AstNode first) { first(this.getStmt(0), first) }
+final class ProgramScope extends CfgScopeImpl instanceof Program {
+  override predicate scopeFirst(AstNode first) { first(Program.super.getStmt(0), first) }
 
   override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
+
+  Stmts getStmt(int index) { result = Program.super.getStmt(index) }
 }
 /**
  * A StatementBlock statement sequence
  */
-final class StatementBlockScope extends CfgScopeImpl, StatementBlock {
-  override predicate scopeFirst(AstNode first) { first(this.getStmt(0), first) }
+final class StatementBlockScope extends CfgScopeImpl instanceof StatementBlock {
+  override predicate scopeFirst(AstNode first) { first(StatementBlock.super.getStmt(0), first) }
 
   override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
+
+  Stmts getStmt(int index) { result = StatementBlock.super.getStmt(index) }
 }
 
 /**

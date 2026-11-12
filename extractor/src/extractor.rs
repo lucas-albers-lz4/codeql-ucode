@@ -57,6 +57,8 @@ pub fn run(options: Options) -> std::io::Result<()> {
                     "quote_bad_sh_c".into(),
                     "quote_bad_echo".into(),
                     "sys.uc".into(),
+                    "cfg_pos".into(),
+                    "cfg_neg".into(),
                 ],
             },
         ],
@@ -87,6 +89,12 @@ mod tests {
     #[test]
     fn language_ucode_parses_sys_uc_fixture() {
         parse_fixture_no_error("ql/test/extractor-smoke/usr/share/ucode/luci/sys.uc");
+    }
+
+    #[test]
+    fn language_ucode_parses_cfg_fixtures() {
+        parse_fixture_no_error("ql/test/extractor-smoke/cfg_pos");
+        parse_fixture_no_error("ql/test/extractor-smoke/cfg_neg");
     }
 
     fn parse_fixture_no_error(rel: &str) {
@@ -124,5 +132,7 @@ mod tests {
         assert_ne!("quote_bad_sh_c.uc", "quote_bad_sh_c");
         assert_ne!("quote_bad_echo.uc", "quote_bad_echo");
         assert_ne!("sys.uc", "sys");
+        assert_ne!("cfg_pos.uc", "cfg_pos");
+        assert_ne!("cfg_neg.uc", "cfg_neg");
     }
 }

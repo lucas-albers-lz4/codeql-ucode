@@ -5,12 +5,12 @@
  */
 private import AstNodes
 private import TreeSitter
-private import LiteralAbstracts
+private import Literals
 
 /**
  *  A Null AST Node.
  */
-class NullImpl extends TNull, LiteralAbstractsImpl {
+class NullImpl extends TNull, LiteralsImpl {
   private UCODE::Null ast;
 
   override string getAPrimaryQlClass() { result = "Null" }
@@ -18,4 +18,6 @@ class NullImpl extends TNull, LiteralAbstractsImpl {
   NullImpl() { this = TNull(ast) }
 
   override string toString() { result = ast.toString() }
+
+  override string getValue() { result = ast.getValue() }
 }

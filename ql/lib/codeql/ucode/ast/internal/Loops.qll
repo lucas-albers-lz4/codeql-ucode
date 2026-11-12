@@ -1,4 +1,3 @@
-
 /**
  * Loop statements for AST nodes.
  */
@@ -10,13 +9,16 @@ private import Idents
 
 /**
  * Loop statements.
+ *
+ * Mapping overlap puts some loop nodes in StmtsImpl rather than this class.
+ * Methods default to none() so those nodes still typecheck.
  */
-abstract class LoopsImpl extends AstNode, TLoops {
+class LoopsImpl extends AstNode, TLoops {
   override string getAPrimaryQlClass() { result = "Loops" }
 
-  abstract ExprImpl getCondition();
+  ExprImpl getCondition() { none() }
 
-  abstract ExprImpl getBody();
+  ExprImpl getBody() { none() }
 
-  abstract IdentsImpl getInitializer();
+  IdentsImpl getInitializer() { none() }
 }

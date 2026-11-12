@@ -38,10 +38,6 @@ final class AugmentedAssignmentExpression extends Expr instanceof AugmentedAssig
  */
 final class BinaryExpression extends Expr instanceof BinaryExpressionImpl { }
 /**
- * A CallExpression expression in the AST.
- */
-final class CallExpression extends Expr instanceof CallExpressionImpl { }
-/**
  * A DeleteExpression expression in the AST.
  */
 final class DeleteExpression extends Expr instanceof DeleteExpressionImpl { }
@@ -49,10 +45,6 @@ final class DeleteExpression extends Expr instanceof DeleteExpressionImpl { }
  * A Expression expression in the AST.
  */
 final class Expression extends Expr instanceof ExpressionImpl { }
-/**
- * A ExpressionStatement expression in the AST.
- */
-final class ExpressionStatement extends Expr instanceof ExpressionStatementImpl { }
 /**
  * A FunctionExpression expression in the AST.
  */

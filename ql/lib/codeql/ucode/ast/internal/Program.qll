@@ -20,11 +20,11 @@ class ProgramImpl extends TProgram, StmtSequenceImpl {
 
   override string toString() { result = ast.toString() }
 
-  override StmtsImpl getStmts() {
-    toTreeSitter(result) = ast.getChild(_)
-  }
+  override StmtsImpl getStmts() { result = this.getStmt(_) }
 
   override StmtsImpl getStmt(int index) {
-    toTreeSitter(result) = ast.getChild(index)
+    toTreeSitter(result) = ast.getChild(index) and
+    not result instanceof TStatement and
+    not result instanceof TDeclaration
   }
 }

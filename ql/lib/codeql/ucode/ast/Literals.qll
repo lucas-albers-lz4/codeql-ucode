@@ -6,6 +6,11 @@ private import AstNodes
 private import internal.AstNodes
 private import internal.TreeSitter
 private import internal.Literals
+private import internal.False
+private import internal.Null
+private import internal.String
+private import internal.StringFragment
+private import internal.True
 
 /**
  * A literal in the AST.

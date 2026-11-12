@@ -13,7 +13,6 @@ private import codeql.ucode.controlflow.ControlFlowGraph as Cfg
 private module Implementation implements InputSig<Location> {
   private import ucode as ucode
   private import Completion as C
-  private import Splitting as S
 
   class AstNode = ucode::AstNode;
 
@@ -28,10 +27,6 @@ private module Implementation implements InputSig<Location> {
   /** An AST node with an associated control-flow graph. */
   class CfgScope = Scope::CfgScope;
 
-  class SplitKindBase = S::TSplitKind;
-
-  class Split = S::Split;
-
   class SuccessorType = Cfg::SuccessorType;
 
   CfgScope getCfgScope(AstNode e) {
@@ -42,12 +37,10 @@ private module Implementation implements InputSig<Location> {
     )
   }
 
-  int maxSplits() { result = 0 }
-
   /** Holds if `first` is first executed when entering `scope`. */
   predicate scopeFirst(CfgScope scope, AstNode first) { scope.scopeFirst(first) }
 
- /** Holds if `scope` is exited when `last` finishes with completion `c`. */
+  /** Holds if `scope` is exited when `last` finishes with completion `c`. */
   predicate scopeLast(CfgScope scope, AstNode last, Completion c) { scope.scopeLast(last, c) }
 
   predicate successorTypeIsSimple(SuccessorType t) { t instanceof Cfg::NormalSuccessor }
@@ -67,35 +60,37 @@ import CfgImpl
 /**
  * A Program statement sequence
  */
-class ProgramScopeTree extends StandardTree, PreOrderTree, PostOrderTree, Scope::ProgramScope {
+class ProgramScopeTree extends StandardPreOrderTree, Scope::ProgramScope {
   override AstNode getChildNode(int i) { result = super.getStmt(i) }
 }
+
 /**
  * A StatementBlock statement sequence
  */
-class StatementBlockScopeTree extends StandardTree, PreOrderTree, PostOrderTree, Scope::StatementBlockScope {
+class StatementBlockScopeTree extends StandardPreOrderTree, Scope::StatementBlockScope {
   override AstNode getChildNode(int i) { result = super.getStmt(i) }
 }
 
-class CallDefinitionTree extends StandardTree, PreOrderTree, PostOrderTree, Scope::CallDefinitionScope {
-  override AstNode getChildNode(int i) {
-    i = 0 and result = this.getStmt(i)
-  }
+class CallDefinitionTree extends StandardPreOrderTree, Scope::CallDefinitionScope {
+  override AstNode getChildNode(int i) { i = 0 and result = this.getStmt(i) }
 }
 
 /**
- *  A sequence of statements in a ucode program.
+ * Statements are leaves in this slice. Sequential edges come from
+ * Program/StatementBlock `getStmt` children, not expression walking.
  */
-class StmtsTree extends StandardPostOrderTree instanceof Stmts {
-  override AstNode getChildNode(int i) { i = 0 and result = super.getAChild() }
+class StmtsTree extends LeafTree instanceof Stmts {
+  StmtsTree() { not this instanceof StmtSequence }
 }
 
 /**
- *  An expression tree in a ucode program.
+ * Expressions that are not already statements, sequences, or literals.
  */
-class ExprTree extends StandardPostOrderTree instanceof Expr {
-  override AstNode getChildNode(int i) {
-    i = 0 and result = super.getAChild()
+class ExprTree extends LeafTree instanceof Expr {
+  ExprTree() {
+    not this instanceof Stmts and
+    not this instanceof StmtSequence and
+    not this instanceof Literals
   }
 }
 
@@ -125,23 +120,3 @@ abstract class LoopingExprTree extends PostOrderTree {
  * A literal value in a ucode program.
  */
 class LiteralTree extends LeafTree instanceof Literals { }
-/**
- * A False literal value in a ucode program.
- */
-class FalseLiteralTree extends LeafTree instanceof False { }
-/**
- * A Null literal value in a ucode program.
- */
-class NullLiteralTree extends LeafTree instanceof Null { }
-/**
- * A String literal value in a ucode program.
- */
-class StringLiteralTree extends LeafTree instanceof String { }
-/**
- * A StringFragment literal value in a ucode program.
- */
-class StringFragmentLiteralTree extends LeafTree instanceof StringFragment { }
-/**
- * A True literal value in a ucode program.
- */
-class TrueLiteralTree extends LeafTree instanceof True { }

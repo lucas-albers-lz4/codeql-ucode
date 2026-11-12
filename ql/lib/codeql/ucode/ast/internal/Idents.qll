@@ -9,5 +9,5 @@ private import Expr
 class IdentsImpl extends ExprImpl {
   override string getAPrimaryQlClass() { result = "Identifier" }
 
-  abstract string getName();
+  string getName() { none() }
 }

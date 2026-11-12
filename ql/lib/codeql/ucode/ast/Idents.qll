@@ -15,9 +15,7 @@ private import internal.ShorthandPropertyIdentifier
 /**
  * An expression in the AST.
  */
-final class Idents extends IdentsImpl {
-    override string getName() { result = "" }
-}
+final class Idents extends IdentsImpl { }
 /**
  * A Identifier expression in the AST.
  */

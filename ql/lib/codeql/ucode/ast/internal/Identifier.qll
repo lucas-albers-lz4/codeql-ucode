@@ -21,7 +21,5 @@ class IdentifierImpl extends TIdentifier, IdentsImpl {
   /**
    * Get the condition
    */
-  override string getName() {
-    result = ""
-  }
+  override string getName() { result = ast.getValue() }
 }
