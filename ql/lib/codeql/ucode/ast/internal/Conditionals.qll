@@ -13,5 +13,5 @@ private import Expr
 class ConditionalsImpl extends ExprImpl, TConditionals {
   override string getAPrimaryQlClass() { result = "Conditional" }
 
-  abstract ExprImpl getCondition();
+  ExprImpl getCondition() { none() }
 }

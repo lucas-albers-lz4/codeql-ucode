@@ -20,7 +20,7 @@ private import internal.WhileStatement
 /**
  * Loop statements implementation.
  */
-class Loops extends Stmts instanceof LoopsImpl {
+abstract class Loops extends Stmts instanceof LoopsImpl {
   /**
    *  Get the condition of the loop.
    */
@@ -52,44 +52,44 @@ final class DocComment extends Loops instanceof DocCommentImpl {
  *  A ForAltStatement statement.
  */
 final class ForAltStatement extends Loops instanceof ForAltStatementImpl { 
-  override Expr getCondition() { result = ForAltStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = ForAltStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = ForAltStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 
 /**
  *  A ForInAltStatement statement.
  */
 final class ForInAltStatement extends Loops instanceof ForInAltStatementImpl { 
-  override Expr getCondition() { result = ForInAltStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = ForInAltStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = ForInAltStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 
 /**
  *  A ForInStatement statement.
  */
 final class ForInStatement extends Loops instanceof ForInStatementImpl { 
-  override Expr getCondition() { result = ForInStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = ForInStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = ForInStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 
 /**
  *  A ForStatement statement.
  */
 final class ForStatement extends Loops instanceof ForStatementImpl { 
-  override Expr getCondition() { result = ForStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = ForStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = ForStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 
 /**
@@ -107,21 +107,21 @@ final class FormalParameters extends Loops instanceof FormalParametersImpl {
  *  A WhileAltStatement statement.
  */
 final class WhileAltStatement extends Loops instanceof WhileAltStatementImpl { 
-  override Expr getCondition() { result = WhileAltStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = WhileAltStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = WhileAltStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 
 /**
  *  A WhileStatement statement.
  */
 final class WhileStatement extends Loops instanceof WhileStatementImpl { 
-  override Expr getCondition() { result = WhileStatementImpl.super.getCondition() }
+  override Expr getCondition() { none() }
 
-  override Stmts getBody() { result = WhileStatementImpl.super.getBody() }
+  override Stmts getBody() { none() }
 
-  override Idents getInitializer() { result = WhileStatementImpl.super.getInitializer() }
+  override Idents getInitializer() { none() }
 }
 

@@ -1,0 +1,12 @@
+'use strict';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			system("cfg_pos_one");
+			system("cfg_pos_two");
+		}
+	}
+};
+
+return methods;

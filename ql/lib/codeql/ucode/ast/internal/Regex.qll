@@ -3,6 +3,7 @@
  *
  *  WARNING: this file is generated, do not edit manually
  */
+private import codeql.ucode.ast.AstNodes
 private import AstNodes
 private import TreeSitter
 

@@ -3,7 +3,7 @@ private import AstNodes
 private import TreeSitter
 
 /**
- * A Bicep expression.
+ * A ucode expression.
  */
 class ExprImpl extends AstNode, TExpr {
   override string getAPrimaryQlClass() { result = "Expr" }

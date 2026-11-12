@@ -21,7 +21,5 @@ class ShorthandPropertyIdentifierImpl extends TShorthandPropertyIdentifier, Iden
   /**
    * Get the condition
    */
-  override string getName() {
-    result = ""
-  }
+  override string getName() { result = ast.getValue() }
 }

@@ -21,7 +21,5 @@ class PropertyIdentifierImpl extends TPropertyIdentifier, IdentsImpl {
   /**
    * Get the condition
    */
-  override string getName() {
-    result = ""
-  }
+  override string getName() { result = ast.getValue() }
 }

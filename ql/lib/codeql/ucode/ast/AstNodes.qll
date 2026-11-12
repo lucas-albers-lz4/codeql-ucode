@@ -46,7 +46,15 @@ class AstNode extends TAstNode {
    * named `pred`.
    */
   cached
-  AstNode getAChild(string pred) { none() }
+  AstNode getAChild(string pred) {
+    exists(UCODE::AstNode child |
+      child = toTreeSitter(this).getAFieldOrChild() and
+      toTreeSitter(result) = child and
+      pred = child.getAPrimaryQlClass() and
+      not result instanceof TStatement and
+      not result instanceof TDeclaration
+    )
+  }
 
   /** Gets any child of this node. */
   AstNode getAChild() { result = this.getAChild(_) }
@@ -58,8 +66,8 @@ class AstNode extends TAstNode {
 }
 
 /** A ucode file */
-class ucodeFile extends File {
-  ucodeFile() { exists(Location loc | ucode_ast_node_location(_, loc) and this = loc.getFile()) }
+class UcodeFile extends File {
+  UcodeFile() { exists(Location loc | ucode_ast_node_location(_, loc) and this = loc.getFile()) }
 
   /** Gets a token in this file. */
   private UCODE::Token getAToken() { result.getLocation().getFile() = this }

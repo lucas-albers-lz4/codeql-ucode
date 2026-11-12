@@ -6,6 +6,7 @@ private import AstNodes
 private import Expr
 private import Idents
 private import Misc
+private import Stmts
 // Internal imports
 private import internal.Calls
 private import internal.CallExpression
@@ -29,8 +30,8 @@ abstract class Callable extends CallsImpl {
 }
 
 /**
- * An abstract class representing callable definitions in PHP, such as functions,
- * methods, closures, and arrow functions.
+ * An abstract class representing callable definitions, such as functions
+ * and arrow functions.
  */
 abstract class CallDefinition instanceof Stmts {
   /**
@@ -62,9 +63,7 @@ abstract class CallDefinition instanceof Stmts {
  *  Call functions
  */
 class Call instanceof Callable {
-  Call() {
-    this instanceof FunctionCallExpression
-  }
+  Call() { this instanceof CallExpression }
 
   Idents getIdentifier() {
     result = Callable.super.getIdentifier()

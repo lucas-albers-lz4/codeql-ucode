@@ -5,12 +5,12 @@
  */
 private import AstNodes
 private import TreeSitter
-private import LiteralAbstracts
+private import Literals
 
 /**
  *  A StringFragment AST Node.
  */
-class StringFragmentImpl extends TStringFragment, LiteralAbstractsImpl {
+class StringFragmentImpl extends TStringFragment, LiteralsImpl {
   private UCODE::StringFragment ast;
 
   override string getAPrimaryQlClass() { result = "StringFragment" }
@@ -18,4 +18,6 @@ class StringFragmentImpl extends TStringFragment, LiteralAbstractsImpl {
   StringFragmentImpl() { this = TStringFragment(ast) }
 
   override string toString() { result = ast.toString() }
+
+  override string getValue() { result = ast.getValue() }
 }
