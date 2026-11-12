@@ -1,0 +1,36 @@
+name: QL smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  m3-m4-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - name: Clone pinned grammar
+        run: bash scripts/clone-grammar.sh
+      - name: Install CodeQL CLI 2.27.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$HOME/codeql-cli"
+          gh release download v2.27.4 \
+            --repo github/codeql-cli-binaries \
+            --pattern 'codeql-linux64.zip' \
+            --dir /tmp
+          unzip -q /tmp/codeql-linux64.zip -d "$HOME/codeql-cli"
+          echo "$HOME/codeql-cli/codeql" >> "$GITHUB_PATH"
+      - name: CodeQL version
+        run: codeql version
+      - name: M3 smoke (M4 when scripts exist)
+        run: bash scripts/ci-ql-smoke.sh
