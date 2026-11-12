@@ -1,7 +1,7 @@
 /**
- * Bounded M3 models over generated TreeSitter nodes.
+ * Bounded M3/M4 models over generated TreeSitter nodes.
  * Same-file calls, named `popen` from `'fs'`, builtin `system()`,
- * and syntactic local taint for the synthetic fixtures.
+ * syntactic local taint, and enclosing rpcd method names.
  */
 
 import codeql.files.FileSystem
@@ -91,10 +91,10 @@ string propertyName(UCODE::AstNode n) {
   result = n.(UCODE::Identifier).getValue()
 }
 
-/** `getFeatures: { call: function(...) { ... } }`. */
-UCODE::FunctionExpression getFeaturesCallFn() {
+/** `name: { call: function(...) { ... } }` method body. */
+UCODE::FunctionExpression rpcCallFn(string name) {
   exists(UCODE::Pair method, UCODE::Pair callPair, UCODE::Object body |
-    propertyName(method.getKey()) = "getFeatures" and
+    name = propertyName(method.getKey()) and
     body = method.getValue() and
     callPair = body.getChild(_) and
     propertyName(callPair.getKey()) = "call" and
@@ -102,8 +102,22 @@ UCODE::FunctionExpression getFeaturesCallFn() {
   )
 }
 
+/** `getFeatures: { call: function(...) { ... } }`. */
+UCODE::FunctionExpression getFeaturesCallFn() { result = rpcCallFn("getFeatures") }
+
 /** Holds if `n` is inside the `getFeatures.call` function. */
 predicate inGetFeaturesCall(UCODE::AstNode n) { n.getParent*() = getFeaturesCallFn() }
+
+/** Enclosing rpcd method name for a node inside `methods.<name>.call`. */
+string rpcMethodName(UCODE::AstNode n) { n.getParent*() = rpcCallFn(result) }
+
+/** `shellquote(...)` wrapping `n` (complete-argument quoting, not a global sanitizer). */
+predicate wrappedByShellquote(UCODE::AstNode n) {
+  exists(NamedCall sq |
+    sq.getName() = "shellquote" and
+    n.getParent*() = sq.getArgument(0)
+  )
+}
 
 /** `request.args` or `request.args.<k>`. */
 class RequestArgsAccess extends UCODE::MemberExpression {
@@ -126,9 +140,53 @@ predicate locallyTainted(UCODE::AstNode n) {
   locallyTainted(n.getAFieldOrChild())
 }
 
-/** Positive control: a sink argument is locally tainted. */
+/** Two nodes sit in the same rpcd `methods.<name>.call` body. */
+predicate sameRpcMethod(UCODE::AstNode a, UCODE::AstNode b) {
+  exists(string name | a.getParent*() = rpcCallFn(name) and b.getParent*() = rpcCallFn(name))
+}
+
+/**
+ * Same-function name binding from a tainted initializer or assignment.
+ * Not CFG/SSA: later reassignment in the same method is not distinguished.
+ */
+predicate taintedBinding(RequestArgsAccess source, string name) {
+  exists(UCODE::VariableDeclarator d |
+    source.getParent*() = d.getValue() and
+    name = d.getName().getValue() and
+    sameRpcMethod(source, d)
+  )
+  or
+  exists(UCODE::AssignmentExpression a |
+    source.getParent*() = a.getRight() and
+    name = a.getLeft().(UCODE::Identifier).getValue() and
+    sameRpcMethod(source, a)
+  )
+  or
+  exists(UCODE::VariableDeclarator d, UCODE::Identifier inner |
+    inner.getParent*() = d.getValue() and
+    taintedBinding(source, inner.getValue()) and
+    name = d.getName().getValue() and
+    sameRpcMethod(source, d)
+  )
+  or
+  exists(UCODE::AssignmentExpression a, UCODE::Identifier inner |
+    inner.getParent*() = a.getRight() and
+    taintedBinding(source, inner.getValue()) and
+    name = a.getLeft().(UCODE::Identifier).getValue() and
+    sameRpcMethod(source, a)
+  )
+}
+
+/** Positive control: a sink argument is locally tainted, including same-function bindings. */
 predicate taintReachesSink(UCODE::AstNode source, NamedCall sink) {
   source instanceof RequestArgsAccess and
-  locallyTainted(sink.getArgument(_)) and
-  source.getParent*() = sink.getArgument(_)
+  exists(UCODE::AstNode arg | arg = sink.getArgument(_) |
+    source.getParent*() = arg
+    or
+    exists(UCODE::Identifier use |
+      use.getParent*() = arg and
+      sameRpcMethod(source, use) and
+      taintedBinding(source, use.getValue())
+    )
+  )
 }
