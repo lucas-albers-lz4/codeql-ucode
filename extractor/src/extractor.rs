@@ -44,12 +44,14 @@ pub fn run(options: Options) -> std::io::Result<()> {
                 node_types: tree_sitter_ucode::UCODE_NODE_TYPES,
                 // Stock simple::Extractor matches basename only. Literal "luci"
                 // extracts the extensionless rpcd plugin and rejects luci.uc.
+                // M4 adds sys.uc (installed luci.sys) without opening "*" routing.
                 file_globs: vec![
                     "luci".into(),
                     "taint_pos".into(),
                     "taint_neg".into(),
                     "quote_ok".into(),
                     "quote_exe".into(),
+                    "sys.uc".into(),
                 ],
             },
         ],
@@ -69,14 +71,34 @@ mod tests {
 
     #[test]
     fn language_ucode_parses_plain_luci_fixture() {
+        parse_fixture_no_error("ql/test/extractor-smoke/usr/share/rpcd/ucode/luci");
+        eprintln!(
+            "tree-sitter LANGUAGE_VERSION={} MIN_COMPATIBLE_LANGUAGE_VERSION={} grammar_abi=15",
+            tree_sitter::LANGUAGE_VERSION,
+            tree_sitter::MIN_COMPATIBLE_LANGUAGE_VERSION
+        );
+    }
+
+    #[test]
+    fn language_ucode_parses_sys_uc_fixture() {
+        parse_fixture_no_error("ql/test/extractor-smoke/usr/share/ucode/luci/sys.uc");
+    }
+
+    #[test]
+    fn luci_uc_basename_is_not_the_spike_glob() {
+        // Documented: file_globs is literal basenames, not "*.uc".
+        assert_ne!("luci.uc", "luci");
+        assert_ne!("taint_pos.uc", "taint_pos");
+        assert_ne!("sys", "sys.uc");
+    }
+
+    fn parse_fixture_no_error(rel: &str) {
         let abi = tree_sitter_ucode::LANGUAGE_UCODE;
         let mut parser = Parser::new();
         parser
             .set_language(&abi.into())
             .expect("LANGUAGE_UCODE loads into tree-sitter 0.26.8");
-
-        let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../ql/test/extractor-smoke/usr/share/rpcd/ucode/luci");
+        let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("..").join(rel);
         let src = std::fs::read_to_string(&fixture).unwrap_or_else(|e| {
             panic!("read {}: {e}", fixture.display())
         });
@@ -101,5 +123,6 @@ mod tests {
         assert_ne!("taint_pos.uc", "taint_pos");
         assert_ne!("quote_ok.uc", "quote_ok");
         assert_ne!("quote_exe.uc", "quote_exe");
+        assert_ne!("sys.uc", "sys");
     }
 }

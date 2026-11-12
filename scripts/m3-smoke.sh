@@ -25,7 +25,7 @@ mkdir -p .codeql-database
 echo "== index luci taint_pos taint_neg =="
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode \
-	--include='**/luci' --include='**/taint_pos' --include='**/taint_neg' \
+	--include='**/rpcd/ucode/luci' --include='**/taint_pos' --include='**/taint_neg' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 

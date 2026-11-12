@@ -61,6 +61,7 @@ fi
 echo "== codeql database init + index luci + finalize =="
 # codeql-extractor.yml cannot declare an empty extension (CLI parse error).
 # Index the extensionless plugin by path glob; extractor glob still requires basename luci.
+# Use rpcd/ucode/luci so usr/share/ucode/luci/sys.uc is not pulled in.
 rm -rf "$DB/db"
 if ! codeql database init "$DB/db" \
 	--language=ucode \
@@ -71,7 +72,7 @@ if ! codeql database init "$DB/db" \
 fi
 if ! codeql database index-files \
 	--language=ucode \
-	--include='**/luci' \
+	--include='**/rpcd/ucode/luci' \
 	--working-dir="$SRC" \
 	"$DB/db"; then
 	echo "codeql database index-files failed" >&2
