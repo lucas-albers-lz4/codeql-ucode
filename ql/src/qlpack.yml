@@ -1,0 +1,9 @@
+name: lucas-albers-lz4/ucode-queries
+version: 0.1.0
+groups: 
+  - ucode
+  - queries
+dependencies:
+  lucas-albers-lz4/ucode-all: ${workspace}
+extractor: ucode
+defaultSuiteFile: codeql-suites/code-scanning.qls

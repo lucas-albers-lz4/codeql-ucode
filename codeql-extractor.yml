@@ -1,0 +1,19 @@
+name: ucode
+display_name: ucode
+version: 0.1.0
+column_kind: utf8
+legacy_qltest_extraction: true
+build_modes:
+- none
+github_api_languages:
+- ucode
+scc_languages:
+- ucode
+file_types:
+- name: ucode
+  display_name: ucode
+  extensions:
+  # CLI requires a leading period; empty extension is rejected. M1 still
+  # extracts the extensionless `luci` plugin via index-files --include='**/luci'
+  # (qltest.sh uses --include-extension=). The extractor glob is basename luci.
+  - .uc

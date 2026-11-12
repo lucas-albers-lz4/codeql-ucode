@@ -1,0 +1,21 @@
+/**
+ *  Internal implementation for StringFragment
+ *
+ *  WARNING: this file is generated, do not edit manually
+ */
+private import AstNodes
+private import TreeSitter
+private import LiteralAbstracts
+
+/**
+ *  A StringFragment AST Node.
+ */
+class StringFragmentImpl extends TStringFragment, LiteralAbstractsImpl {
+  private UCODE::StringFragment ast;
+
+  override string getAPrimaryQlClass() { result = "StringFragment" }
+
+  StringFragmentImpl() { this = TStringFragment(ast) }
+
+  override string toString() { result = ast.toString() }
+}

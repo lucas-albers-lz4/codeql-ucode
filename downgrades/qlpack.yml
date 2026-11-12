@@ -1,0 +1,5 @@
+name: codeql/ucode-downgrades
+groups: ucode
+downgrades: .
+library: true
+warnOnImplicitThis: true
