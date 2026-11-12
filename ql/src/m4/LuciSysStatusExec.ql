@@ -11,8 +11,14 @@ import codeql.ucode.m3.Models
 
 /** The indexed luci wrapper calls the named helper imported from luci.sys. */
 predicate dispatch(string rpc, string helper) {
-  exists(UCODE::FunctionExpression fn, NamedCall call, UCODE::ImportStatement imp |
-    fn = rpcCallFn(rpc) and
+  exists(UCODE::FunctionExpression fn, NamedCall call, UCODE::ImportStatement imp,
+    UCODE::VariableDeclarator methods, UCODE::Object methodObject, UCODE::Object body,
+    UCODE::Pair method, UCODE::Pair callPair |
+    methods.getName().getValue() = "methods" and methodObject = methods.getValue() and
+    method = methodObject.getChild(_) and propertyName(method.getKey()) = rpc and
+    body = method.getValue() and callPair = body.getChild(_) and
+    propertyName(callPair.getKey()) = "call" and fn = callPair.getValue() and
+    fn.getLocation().getFile() = methods.getLocation().getFile() and
     fn.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/luci" and
     call.getParent*() = fn and call.getName() = helper and
     imp.getLocation().getFile() = fn.getLocation().getFile() and
