@@ -118,7 +118,7 @@ for name, write, read in [
 ]:
     if has_pair(name, fixture, write, read):
         sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
-print("SSA pos/neg statement-level checks passed")
+print("SSA pos/neg access-level checks passed")
 PY
 
 echo "== LocalFlowStep =="

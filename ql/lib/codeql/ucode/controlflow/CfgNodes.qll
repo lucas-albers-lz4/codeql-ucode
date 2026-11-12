@@ -1,9 +1,8 @@
 /**
  * CFG nodes wrapping AST nodes.
  *
- * Minimal surface so `import codeql.ucode.CFG` typechecks. Stmt/expr wrappers
- * needed by SSA and dataflow are stubs; do not treat CallCfgNode as a modeled
- * interprocedural call graph.
+ * Expression wrappers support local value flow. Call CFG nodes do not imply
+ * an interprocedural call graph.
  */
 
 private import codeql.ucode.AST

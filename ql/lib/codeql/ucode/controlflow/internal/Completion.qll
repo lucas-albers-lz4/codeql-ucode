@@ -6,7 +6,9 @@ private import SuccessorType
 newtype TCompletion =
   TSimpleCompletion() or
   TBooleanCompletion(QLBoolean::Boolean b) or
-  TReturnCompletion()
+  TReturnCompletion() or
+  TBreakCompletion() or
+  TContinueCompletion()
 
 abstract class Completion extends TCompletion {
   abstract string toString();
@@ -56,18 +58,18 @@ class BooleanCompletion extends ConditionalCompletion, TBooleanCompletion {
 
   /**
    * Implements valid completions for expressions.
-   * 
+   *
    * TODO: This is a placeholder implementation.
    */
   override predicate isValidForSpecific(AstNode e) {
-      e = any(DocComment c).getCondition() or 
-      e = any(ForAltStatement c).getCondition() or 
-      e = any(ForInAltStatement c).getCondition() or 
-      e = any(ForInStatement c).getCondition() or 
-      e = any(ForStatement c).getCondition() or 
-      e = any(FormalParameters c).getCondition() or 
-      e = any(WhileAltStatement c).getCondition() or 
-      e = any(WhileStatement c).getCondition()
+    e = any(DocComment c).getCondition() or
+    e = any(ForAltStatement c).getCondition() or
+    e = any(ForInAltStatement c).getCondition() or
+    e = any(ForInStatement c).getCondition() or
+    e = any(ForStatement c).getCondition() or
+    e = any(FormalParameters c).getCondition() or
+    e = any(WhileAltStatement c).getCondition() or
+    e = any(WhileStatement c).getCondition()
   }
 
   /** Gets the dual Boolean completion. */
@@ -84,6 +86,22 @@ class ReturnCompletion extends Completion, TReturnCompletion {
   override predicate isValidForSpecific(AstNode e) { e instanceof ReturnStatement }
 
   override ReturnSuccessor getAMatchingSuccessorType() { any() }
+}
+
+class BreakCompletion extends Completion, TBreakCompletion {
+  override string toString() { result = "break" }
+
+  override predicate isValidForSpecific(AstNode e) { e instanceof BreakStatement }
+
+  override BreakSuccessor getAMatchingSuccessorType() { any() }
+}
+
+class ContinueCompletion extends Completion, TContinueCompletion {
+  override string toString() { result = "continue" }
+
+  override predicate isValidForSpecific(AstNode e) { e instanceof ContinueStatement }
+
+  override ContinueSuccessor getAMatchingSuccessorType() { any() }
 }
 
 /** Hold if `c` represents normal evaluation of a statement or an expression. */

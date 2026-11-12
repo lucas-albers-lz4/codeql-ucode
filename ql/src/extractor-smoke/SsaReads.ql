@@ -1,6 +1,6 @@
 /**
  * @name SSA definition reads
- * @description Statement-level SSA write-to-read pairs, including one phi join. Testing only; not a
+ * @description SSA write-to-read pairs, including one phi join. Testing only; not a
  *              production taint query and not setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation

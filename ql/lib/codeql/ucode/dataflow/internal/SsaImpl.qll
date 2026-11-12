@@ -3,25 +3,8 @@ private import codeql.ucode.controlflow.BasicBlocks as BasicBlocks
 private import BasicBlocks
 private import codeql.ucode.controlflow.ControlFlowGraph
 private import codeql.ssa.Ssa as SsaImplCommon
-
-/**
- * Holds if CFG node `n` is a statement (or other leaf) that contains AST node `inner`.
- *
- * Wrapper CFG still treats statements as leaves, so SSA is statement-level:
- * a write/read is attributed to the innermost enclosing CFG node, not the identifier
- * token. If/else branches are modeled, but loop, switch, and exception control
- * flow remain statement leaves. Multiple writes to the same variable within one
- * statement cannot be ordered. Parameters shadow lexical declarations but are
- * not yet SSA source variables.
- */
-private predicate cfgNodeContains(CfgNode n, AstNode inner) {
-  inner.getParent*() = n.getAstNode() and
-  not exists(CfgNode closer |
-    closer != n and
-    inner.getParent*() = closer.getAstNode() and
-    closer.getAstNode().getParent+() = n.getAstNode()
-  )
-}
+private import codeql.ucode.ast.internal.AstNodes
+private import codeql.ucode.ast.internal.TreeSitter
 
 module SsaInput implements SsaImplCommon::InputSig<Location> {
   class BasicBlock = BasicBlocks::BasicBlock;
@@ -43,11 +26,61 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
 
   predicate variableWrite(BasicBlock bb, int i, SourceVariable v, boolean certain) {
     (
-      cfgNodeContains(bb.getNode(i), v.getAstNode())
+      bb.getNode(i).getAstNode() = v.getAstNode()
       or
-      exists(VariableWriteAccess va |
+      exists(VariableWriteAccess va, UCODE::Identifier ident, UCODE::AstNode operation |
         va.getVariable() = v and
-        cfgNodeContains(bb.getNode(i), va.getAstNode())
+        va.getAstNode() = TIdentifier(ident) and
+        (
+          operation.(UCODE::AssignmentExpression).getLeft() = ident or
+          operation.(UCODE::AugmentedAssignmentExpression).getLeft() = ident or
+          operation.(UCODE::UpdateExpression).getArgument() = ident
+        ) and
+        toTreeSitter(bb.getNode(i).getAstNode()) = operation and
+        (
+          not operation instanceof UCODE::AugmentedAssignmentExpression
+          or
+          exists(UCODE::AugmentedAssignmentExpression a |
+            operation = a and
+            (
+              a.getOperator() in ["&&=", "||=", "??="] and
+              bb.getNode(i).getAstNode() = TExpression(a)
+              or
+              not a.getOperator() in ["&&=", "||=", "??="] and
+              bb.getNode(i).getAstNode() = TAugmentedAssignmentExpression(a)
+            )
+          )
+        )
+      )
+      or
+      exists(UCODE::ForInStatement f, UCODE::Identifier ident |
+        bb.getNode(i).getAstNode() = TStatement(f) and
+        (ident = f.getVariable() or ident = f.getKey() or ident = f.getValue()) and
+        (
+          v.getAstNode() = TIdentifier(ident)
+          or
+          exists(VariableWriteAccess wa |
+            wa.getVariable() = v and wa.getAstNode() = TIdentifier(ident)
+          )
+        )
+      )
+      or
+      exists(UCODE::ForInAltStatement f, UCODE::Identifier ident |
+        bb.getNode(i).getAstNode() = TStatement(f) and
+        (ident = f.getVariable() or ident = f.getKey() or ident = f.getValue()) and
+        (
+          v.getAstNode() = TIdentifier(ident)
+          or
+          exists(VariableWriteAccess wa |
+            wa.getVariable() = v and wa.getAstNode() = TIdentifier(ident)
+          )
+        )
+      )
+      or
+      exists(UCODE::CatchClause c, UCODE::Identifier ident |
+        bb.getNode(i).getAstNode() = TCatchClause(c) and
+        ident = c.getParameter() and
+        v.getAstNode() = TIdentifier(ident)
       )
     ) and
     certain = true
@@ -56,7 +89,7 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
   predicate variableRead(BasicBlock bb, int i, SourceVariable v, boolean certain) {
     exists(VariableReadAccess va |
       va.getVariable() = v and
-      cfgNodeContains(bb.getNode(i), va.getAstNode())
+      bb.getNode(i).getAstNode() = va.getAstNode()
     ) and
     certain = true
   }
@@ -112,3 +145,14 @@ private module Cached {
 }
 
 import Cached
+
+/** A source definition can reach a read through zero or more phi joins. */
+predicate writeReachesRead(WriteDefinition def, CfgNode read) {
+  read = getARead(def)
+  or
+  exists(PhiDefinition phi | phiInput+(def, phi) and read = getARead(phi))
+}
+
+private predicate phiInput(Definition input, Definition phi) {
+  Impl::phiHasInputFromBlock(phi.(PhiDefinition), input, _)
+}

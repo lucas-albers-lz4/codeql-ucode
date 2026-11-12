@@ -8,18 +8,17 @@ private import codeql.ucode.dataflow.Ssa
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
  * (`ExprNode`), an SSA definition or read (`SsaDefinitionNode` /
- * `SsaReadNode`), or a Expr (`ParameterNode`).
+ * `SsaReadNode`), a returned value (`ReturnValueNode`), or an entry parameter
+ * (`ParameterNode`).
  *
- * Statement CFG nodes are not value identities: wrapper CFG leaves are
- * statements, so a statement node would make unrelated values in that
- * statement composable.
+ * SSA nodes retain the identity of individual definitions and reads.
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
   CfgNodes::ExprCfgNode asExpr() { result = this.(ExprNode).getExprNode() }
 
   /**
-   * Gets the statement-level CFG node for this SSA def or read, if any.
+   * Gets the CFG node for this SSA def or read, if any.
    *
    * This is a location, not a value identity. Public `localFlowStep` uses
    * `SsaDefinitionNode` / `SsaReadNode`.
@@ -81,7 +80,7 @@ class SsaDefinitionNode extends Node, TSsaDefNode {
   /** Gets the SSA write. */
   Ssa::WriteDefinition getDefinition() { result = def }
 
-  /** Gets the statement-level CFG node of this write (location only). */
+  /** Gets the CFG node of this write. */
   CfgNode getCfgNode() { result = def.getControlFlowNode() }
 }
 
@@ -100,8 +99,18 @@ class SsaReadNode extends Node, TSsaReadNode {
   /** Gets the SSA write being read. */
   Ssa::WriteDefinition getDefinition() { result = def }
 
-  /** Gets the statement-level CFG node of this read (location only). */
+  /** Gets the CFG node of this read. */
   CfgNode getRead() { result = read }
+}
+
+/** The value returned by a return statement in a callable. */
+class ReturnValueNode extends Node, TReturnNode {
+  private CfgNodes::AstCfgNode n;
+
+  ReturnValueNode() { this = TReturnNode(n) }
+
+  /** Gets the return statement's CFG node. */
+  CfgNodes::AstCfgNode getCfgNode() { result = n }
 }
 
 /**
@@ -166,21 +175,23 @@ ExprNode exprNode(CfgNodes::ExprCfgNode e) { result.getExprNode() = e }
 ParameterNode parameterNode(Expr p) { result.getParameter() = p }
 
 /**
- * Holds if data flows from `nodeFrom` to `nodeTo` in exactly one local
- * (intra-procedural) step.
+ * Holds if a value flows from `nodeFrom` to `nodeTo` in exactly one local
+ * (intra-procedural) value-preserving step. Value-transforming operations,
+ * such as arithmetic and `+=`, have no local flow edge; taint propagation
+ * through those operations is not modeled here.
  */
 predicate localFlowStep = localFlowStepImpl/2;
 
 /**
- * Holds if data flows from `source` to `sink` in zero or more local
- * (intra-procedural) steps.
+ * Holds if a value flows from `source` to `sink` in zero or more local
+ * (intra-procedural) value-preserving steps.
  */
 pragma[inline]
 predicate localFlow(Node source, Node sink) { localFlowStep*(source, sink) }
 
 /**
- * Holds if data can flow from `e1` to `e2` in zero or more
- * local (intra-procedural) steps.
+ * Holds if a value can flow from `e1` to `e2` in zero or more
+ * local (intra-procedural) value-preserving steps.
  */
 pragma[inline]
 predicate localExprFlow(CfgNodes::ExprCfgNode e1, CfgNodes::ExprCfgNode e2) {
