@@ -103,3 +103,21 @@ mappings:
     pattern: StartsOrEndsWith
     aliases:
       - "Call"
+
+  - name: Calls
+    pattern: StartsOrEndsWith
+    aliases:
+      - "Call"
+
+  - name: StmtSequence
+    pattern: Match
+    aliases:
+      - "StatementBlock"
+      - "Program"
+
+  - name: Idents
+    pattern: Match
+    aliases:
+      - "Identifier"
+      - "PropertyIdentifier"
+      - "ShorthandPropertyIdentifier"
