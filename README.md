@@ -22,6 +22,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 12. `./scripts/m4-quote-smoke.sh` indexes those plus `quote_ok`/`quote_exe` and asserts the complete-argument `shellquote` barrier.
 13. `./scripts/m4-imported-callee-smoke.sh` asserts `ImportedCalleeTaint.ql` sees `init_action` from `luci.sys`.
 14. `./scripts/m4-sys-smoke.sh` indexes `luci` plus installed luci.sys (`sys.uc`) and asserts `InitActionSystem.ql` plus the `setInitAction` action-token switch (not a sanitizer of `name`).
+15. `./scripts/m4-luci-sys-status-exec-smoke.sh` asserts `LuciSysStatusExec.ql` (`getConntrackList` / `getProcessList` helpers: fixed `conntrack` and `busybox top` popen in `sys.uc`; not interprocedural `path_found`).
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 
