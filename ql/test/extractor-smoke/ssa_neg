@@ -1,0 +1,13 @@
+'use strict';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			let ssa_neg_x = "ssa_neg_x_val"; // ssa_neg_x_write
+			let ssa_neg_y = "ssa_neg_y_val"; // ssa_neg_y_write
+			system(ssa_neg_y); // ssa_neg_y_read
+		}
+	}
+};
+
+return methods;

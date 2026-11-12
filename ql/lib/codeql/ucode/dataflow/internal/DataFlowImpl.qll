@@ -1,4 +1,4 @@
-private import DataFlowImplCommon
-private import DataFlowImplSpecific::Private
-import DataFlowImplSpecific::Public
-import DataFlowImplCommonPublic
+private import codeql.Locations
+private import DataFlowImplSpecific
+private import codeql.dataflow.internal.DataFlowImpl
+import MakeImpl<Location, UcodeDataFlow>

@@ -1,0 +1,12 @@
+'use strict';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			let ssa_pos_src = "ssa_pos_val"; // ssa_pos_write
+			system(ssa_pos_src); // ssa_pos_read
+		}
+	}
+};
+
+return methods;

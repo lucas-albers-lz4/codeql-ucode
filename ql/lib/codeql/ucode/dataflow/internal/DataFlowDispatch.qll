@@ -188,7 +188,12 @@ class ParameterPosition extends TParameterPosition {
   predicate isPositional(int pos) { this = TPositionalParameterPosition(pos) }
 
   /** Gets a textual representation of this position. */
-  string toString() { exists(int pos | this.isPositional(pos) and result = "position " + pos) }
+  bindingset[this]
+  string toString() {
+    if this.isPositional(_)
+    then exists(int pos | this.isPositional(pos) and result = "position " + pos)
+    else result = "parameter"
+  }
 }
 
 /** An argument position. */
@@ -197,7 +202,12 @@ class ArgumentPosition extends TArgumentPosition {
   predicate isPositional(int pos) { this = TPositionalArgumentPosition(pos) }
 
   /** Gets a textual representation of this position. */
-  string toString() { exists(int pos | this.isPositional(pos) and result = "position " + pos) }
+  bindingset[this]
+  string toString() {
+    if this.isPositional(_)
+    then exists(int pos | this.isPositional(pos) and result = "position " + pos)
+    else result = "argument"
+  }
 }
 
 /** Holds if arguments at position `apos` match parameters at position `ppos`. */

@@ -3,7 +3,8 @@
  *
  * Generator leftover `codeql.bicep` imports, ParameterDeclaration/OutputDeclaration,
  * and `getEnclosingCfgScope` are intentionally absent. Name binding is same-file
- * only; SSA should replace this once dataflow compiles.
+ * only. SSA uses these accesses at statement-level CFG nodes; it is not
+ * interprocedural taint and not a sanitizer model.
  */
 
 private import codeql.Locations

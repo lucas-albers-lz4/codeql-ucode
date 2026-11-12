@@ -3,11 +3,11 @@
  * global (inter-procedural) data flow analyses.
  */
 
-import ucode
+private import ucode
 
 module DataFlow {
   private import internal.DataFlowImplSpecific
   private import codeql.dataflow.DataFlow
-  import DataFlowMake<Location, ucodeDataFlow>
-  import internal.DataFlowImpl
+  import DataFlowMake<Location, UcodeDataFlow>
+  import Public
 }
