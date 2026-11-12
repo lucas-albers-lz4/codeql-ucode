@@ -109,7 +109,13 @@ UCODE::FunctionExpression getFeaturesCallFn() { result = rpcCallFn("getFeatures"
 predicate inGetFeaturesCall(UCODE::AstNode n) { n.getParent*() = getFeaturesCallFn() }
 
 /** Enclosing rpcd method name for a node inside `methods.<name>.call`. */
-string rpcMethodName(UCODE::AstNode n) { n.getParent*() = rpcCallFn(result) }
+string rpcMethodName(UCODE::AstNode n) {
+  exists(string name, UCODE::FunctionExpression fn |
+    fn = rpcCallFn(name) and
+    n.getParent*() = fn and
+    result = name
+  )
+}
 
 /** `shellquote(...)` wrapping `n` (complete-argument quoting, not a global sanitizer). */
 predicate wrappedByShellquote(UCODE::AstNode n) {
@@ -140,9 +146,9 @@ predicate locallyTainted(UCODE::AstNode n) {
   locallyTainted(n.getAFieldOrChild())
 }
 
-/** Two nodes sit in the same rpcd `methods.<name>.call` body. */
+/** Two nodes sit in the same rpcd `methods.<name>.call` body (one function node). */
 predicate sameRpcMethod(UCODE::AstNode a, UCODE::AstNode b) {
-  exists(string name | a.getParent*() = rpcCallFn(name) and b.getParent*() = rpcCallFn(name))
+  exists(UCODE::FunctionExpression fn | fn = rpcCallFn(_) and a.getParent*() = fn and b.getParent*() = fn)
 }
 
 /**

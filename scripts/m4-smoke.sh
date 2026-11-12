@@ -54,4 +54,28 @@ if "getFeatures " in blob:
 print("m4 methods", sorted(methods), "rows", len(rows))
 PY
 
+echo "== RequestArgsExec same-name cross-file negative =="
+XDB="$ROOT/.codeql-database/m4-xfile"
+SRC="$ROOT/ql/test/extractor-smoke"
+rm -rf "$XDB"
+mkdir -p .codeql-database
+if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
+	bash scripts/create-extractor-pack.sh
+fi
+codeql database init "$XDB" --language=ucode --search-path="$PACK" --source-root="$SRC"
+codeql database index-files --language=ucode \
+	--include='**/taint_xfile_a' --include='**/taint_xfile_b' \
+	--working-dir="$SRC" "$XDB"
+codeql database finalize "$XDB"
+codeql query run "$ROOT/ql/src/m4/RequestArgsExec.ql" \
+	--database="$XDB" --search-path="$QLPATH" --output="$XDB/m4exec.bqrs"
+codeql bqrs decode --format=csv "$XDB/m4exec.bqrs" | tee "$XDB/m4exec.csv"
+python3 - <<'PY'
+import csv, sys
+rows = list(csv.DictReader(open(".codeql-database/m4-xfile/m4exec.csv")))
+if rows:
+	sys.exit(f"cross-file probe false positive: {rows}")
+print("cross-file same-name negative ok")
+PY
+
 echo "M4 smoke passed"
