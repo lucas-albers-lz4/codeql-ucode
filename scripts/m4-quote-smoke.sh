@@ -25,6 +25,7 @@ codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root=
 codeql database index-files --language=ucode \
 	--include='**/luci' --include='**/taint_pos' --include='**/taint_neg' \
 	--include='**/quote_ok' --include='**/quote_exe' \
+	--include='**/quote_bad_suffix' --include='**/quote_bad_sh_c' --include='**/quote_bad_echo' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 
@@ -54,6 +55,9 @@ if "quote_ok" not in quoted:
 	sys.exit("CompleteQuotedArg missing quote_ok")
 if "taint_pos" in quoted or "quote_exe" in quoted or "taint_neg" in quoted:
 	sys.exit("CompleteQuotedArg should only be complete template quote")
+for bad in ("quote_bad_suffix", "quote_bad_sh_c", "quote_bad_echo"):
+	if bad in quoted:
+		sys.exit(f"CompleteQuotedArg unexpectedly includes unsupported {bad}")
 if "getSwconfigFeatures" not in quoted and "luci" not in quoted:
 	# luci getSwconfig* uses the same template pattern
 	pass
@@ -65,6 +69,9 @@ if "quote_exe" not in inject or "quoted executable selection" not in inject:
 	sys.exit("ShellInjection missing quote_exe executable-selection candidate")
 if "taint_neg" in inject:
 	sys.exit("ShellInjection unexpectedly includes taint_neg")
+for bad in ("quote_bad_suffix", "quote_bad_sh_c", "quote_bad_echo"):
+	if bad not in inject:
+		sys.exit(f"ShellInjection must retain unsupported context {bad}")
 print("quote barrier controls ok")
 print("quoted:\n", quoted)
 print("inject:\n", inject)

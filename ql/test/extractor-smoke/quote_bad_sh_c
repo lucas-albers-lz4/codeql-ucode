@@ -1,0 +1,13 @@
+'use strict';
+
+import { popen } from 'fs';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			popen(`sh -c ${shellquote(request.args.program)}`);
+		}
+	}
+};
+
+return methods;
