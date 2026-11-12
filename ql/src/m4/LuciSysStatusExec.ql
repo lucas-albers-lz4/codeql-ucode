@@ -1,6 +1,6 @@
 /**
  * @name luci.sys conntrack_list and process_list fixed popen
- * @description M4: named fs popen inside luci.sys conntrack_list and process_list. getConntrackList/getProcessList.call are thin wrappers with no request.args. Not interprocedural path_found from luci.
+ * @description M4: fixed named fs popen in luci.sys, paired with indexed RPC wrappers. This is a syntactic inventory, not interprocedural path_found from luci.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/m4/luci-sys-status-exec
@@ -9,25 +9,45 @@
 
 import codeql.ucode.m3.Models
 
-predicate conntrackFallbackLiteral(NamedFsPopenCall c) {
-  exists(UCODE::String s |
-    s = c.getArgument(0) and
-    stringLiteralValue(s).regexpMatch(".*/usr/sbin/conntrack.*")
+/** The indexed luci wrapper calls the named helper imported from luci.sys. */
+predicate dispatch(string rpc, string helper) {
+  exists(UCODE::FunctionExpression fn, NamedCall call, UCODE::ImportStatement imp |
+    fn = rpcCallFn(rpc) and
+    fn.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/luci" and
+    call.getParent*() = fn and call.getName() = helper and
+    imp.getLocation().getFile() = fn.getLocation().getFile() and
+    namedImport(imp, "luci.sys", helper)
   )
 }
 
-predicate busyboxTopLiteral(NamedFsPopenCall c) {
-  exists(UCODE::String s |
-    s = c.getArgument(0) and
-    stringLiteralValue(s).regexpMatch(".*/bin/busybox top.*")
+/** The exact fixture idiom: open procfs, then assign popen only under if (!nfct). */
+predicate conntrackFallback(NamedFsPopenCall c) {
+  exists(UCODE::VariableDeclarator decl, NamedCall openCall, UCODE::ImportStatement imp, UCODE::IfStatement branch,
+    UCODE::UnaryExpression condition, UCODE::AssignmentExpression assign, string name |
+    decl.getParent*() = conntrackListFn() and
+    name = decl.getName().getValue() and openCall = decl.getValue() and
+    openCall.getName() = "open" and
+    imp.getLocation().getFile() = openCall.getLocation().getFile() and
+    namedImport(imp, "fs", "open") and
+    stringLiteralValue(openCall.getArgument(0).(UCODE::String)) = "/proc/net/nf_conntrack" and
+    branch.getParent*() = conntrackListFn() and
+    condition = branch.getCondition().getAFieldOrChild() and
+    condition.getOperator() = "!" and condition.getArgument().(UCODE::Identifier).getValue() = name and
+    assign.getParent*() = branch.getConsequence() and
+    assign.getLeft().(UCODE::Identifier).getValue() = name and assign.getRight() = c and
+    decl.getLocation().getStartLine() < branch.getLocation().getStartLine()
   )
 }
 
-from NamedFsPopenCall c, string helper, string rpc
+from NamedFsPopenCall c, string helper, string rpc, string command
 where
-  inProcessList(c) and busyboxTopLiteral(c) and helper = "process_list" and rpc = "getProcessList"
-  or
-  inConntrackList(c) and conntrackFallbackLiteral(c) and helper = "conntrack_list" and
-  rpc = "getConntrackList"
+  (
+    inProcessList(c) and helper = "process_list" and rpc = "getProcessList" and
+    command = "/bin/busybox top -bn1"
+    or
+    inConntrackList(c) and conntrackFallback(c) and helper = "conntrack_list" and
+    rpc = "getConntrackList" and command = "/usr/sbin/conntrack -L -o extended"
+  ) and
+  stringLiteralValue(c.getArgument(0).(UCODE::String)) = command and dispatch(rpc, helper)
 select c,
-  rpc + " via " + helper + " popen at line " + c.getLocation().getStartLine().toString(), c, "popen"
+  rpc + " via " + helper + " popen " + command + " at line " + c.getLocation().getStartLine().toString(), c, "popen"

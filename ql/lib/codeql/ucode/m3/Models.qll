@@ -273,7 +273,8 @@ predicate inInitAction(UCODE::AstNode n) { n.getParent*() = initActionFn() }
 /** `export function process_list` in installed luci.sys (`sys.uc`). */
 UCODE::FunctionDeclaration processListFn() {
   result = functionDecl("process_list") and
-  result.getLocation().getFile().getBaseName() = "sys.uc"
+  result.getLocation().getFile().getRelativePath() = "usr/share/ucode/luci/sys.uc" and
+  result = any(UCODE::ExportStatement e).getDeclaration()
 }
 
 /** Holds if `n` is inside `process_list` in `sys.uc`. */
@@ -282,7 +283,8 @@ predicate inProcessList(UCODE::AstNode n) { n.getParent*() = processListFn() }
 /** `export function conntrack_list` in installed luci.sys (`sys.uc`). */
 UCODE::FunctionDeclaration conntrackListFn() {
   result = functionDecl("conntrack_list") and
-  result.getLocation().getFile().getBaseName() = "sys.uc"
+  result.getLocation().getFile().getRelativePath() = "usr/share/ucode/luci/sys.uc" and
+  result = any(UCODE::ExportStatement e).getDeclaration()
 }
 
 /** Holds if `n` is inside `conntrack_list` in `sys.uc`. */
