@@ -2,7 +2,7 @@
 
 CodeQL language pack for OpenWrt ucode. Pack names: `lucas-albers-lz4/ucode-all`, `lucas-albers-lz4/ucode-queries`.
 
-Corpus, policy, and reports live in sibling `codeql-openwrt`. Grammar pin and generator SHA are in `codeql-openwrt/corpus/lock.json`.
+Corpus, policy, and reports live in [codeql-openwrt](https://github.com/lucas-albers-lz4/codeql-openwrt). Grammar pin and generator SHA are in that repo's `corpus/lock.json`.
 
 ## M1 bootstrap (do not skip steps)
 
