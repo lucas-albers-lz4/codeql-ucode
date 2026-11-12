@@ -102,4 +102,15 @@ if "taint_neg" in msgs:
 print("local taint files ok")
 PY
 
+echo "== compile production SsaReachesSystem (import DataFlow) =="
+codeql query compile "$ROOT/ql/src/m4/SsaReachesSystem.ql" --search-path="$QLPATH"
+
+echo "== SsaReachesSystem empty on M3 luci/taint (ssa fixtures not indexed) =="
+runq "$ROOT/ql/src/m4/SsaReachesSystem.ql" "$DB/ssaSys.bqrs"
+if [[ "$(csv_rows "$DB/ssaSys.bqrs")" -ne 0 ]]; then
+	echo "SsaReachesSystem should be empty on luci/taint; not setInitAction path_found" >&2
+	codeql bqrs decode --format=csv "$DB/ssaSys.bqrs"
+	exit 1
+fi
+
 echo "M3 smoke passed"

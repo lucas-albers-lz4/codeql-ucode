@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# M4 gate: wrapper SSA/dataflow compiles and a tiny positive/negative fixture runs.
-# Does not import dataflow into production M3/M4 queries.
+# M4 gate: wrapper SSA/dataflow compiles; production SsaReachesSystem.ql
+# imports DataFlow additively. Isolated SsaReads.ql remains extractor-smoke.
+# Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
 # as sanitizers.
 set -euo pipefail
@@ -13,6 +14,7 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-ssa"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 Q="$ROOT/ql/src/extractor-smoke/SsaReads.ql"
+PROD="$ROOT/ql/src/m4/SsaReachesSystem.ql"
 
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	echo "== create-extractor-pack =="
@@ -24,6 +26,7 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 
 echo "== compile import codeql.ucode.DataFlow =="
 codeql query compile "$Q" --search-path="$QLPATH"
+codeql query compile "$PROD" --search-path="$QLPATH"
 
 rm -rf "$DB"
 mkdir -p .codeql-database
@@ -75,10 +78,14 @@ if has_pair("ssa_neg_x", "ssa_neg", "ssa_neg_x_write", "ssa_neg_y_read"):
     sys.exit("ssa_neg_x reached ssa_neg_y_read")
 if not has_pair("ssa_neg_y", "ssa_neg", "ssa_neg_y_write", "ssa_neg_y_read"):
     sys.exit("missing SSA read ssa_neg_y write -> read")
+for name in ["ssa_same_line", "ssa_sibling"]:
+    if not has_pair(name, "ssa_neg", name + "_write", name + "_read"):
+        sys.exit(f"missing SSA read for negative system case {name}")
 # Check identity, writes/kills, read-before-write updates, and both paths into a phi.
 fixture = "ssa_pos"
 for name, write, read in [
     ("seq", "seq_decl", "seq_before"),
+    ("ssa_multiline", "ssa_multiline_write", "ssa_multiline_read"),
     ("seq", "seq_write", "seq_after"),
     ("seq", "seq_write", "seq_update"),
     ("seq", "seq_update", "seq_updated_read"),
@@ -106,6 +113,27 @@ for name, write, read in [
     if has_pair(name, fixture, write, read):
         sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
 print("SSA pos/neg statement-level checks passed")
+PY
+
+echo "== SsaReachesSystem =="
+codeql query run "$PROD" --database="$DB" --search-path="$QLPATH" --output="$DB/ssaSys.bqrs"
+codeql bqrs decode --format=csv "$DB/ssaSys.bqrs" | tee "$DB/ssaSys.csv"
+
+python3 - <<'PY'
+import csv, sys
+rows = list(csv.reader(open(".codeql-database/m4-ssa/ssaSys.csv")))
+msgs = [r[1] for r in rows[1:] if len(r) > 1]
+blob = "\n".join(msgs)
+for name, fixture in [("ssa_pos_src", "ssa_pos"), ("ssa_multiline", "ssa_pos"),
+                      ("ssa_neg_y", "ssa_neg")]:
+    if f"{name} reaches system in {fixture}" not in msgs:
+        sys.exit(f"missing {name} reaches system: " + blob)
+for name in ["ssa_neg_x", "ssa_same_line", "ssa_sibling"]:
+    if any(m.startswith(name + " reaches system") for m in msgs):
+        sys.exit(f"{name} false positive: " + blob)
+if any("setInitAction" in m or "init_action" in m or "luci" in m for m in msgs):
+    sys.exit("SsaReachesSystem scored luci/setInitAction: " + blob)
+print("SsaReachesSystem pos/neg ok")
 PY
 
 echo "M4 SSA smoke passed"

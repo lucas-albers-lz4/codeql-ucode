@@ -6,6 +6,10 @@ const methods = {
 			let ssa_neg_x = "ssa_neg_x_val"; // ssa_neg_x_write
 			let ssa_neg_y = "ssa_neg_y_val"; // ssa_neg_y_write
 			system(ssa_neg_y); // ssa_neg_y_read
+			let ssa_same_line = "unrelated"; // ssa_same_line_write
+			print(ssa_same_line); system("literal"); // ssa_same_line_read
+			let ssa_sibling = "unrelated"; // ssa_sibling_write
+			print(ssa_sibling, system("literal")); // ssa_sibling_read
 		}
 	}
 };
