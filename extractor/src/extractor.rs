@@ -49,6 +49,8 @@ pub fn run(options: Options) -> std::io::Result<()> {
                     "luci".into(),
                     "taint_pos".into(),
                     "taint_neg".into(),
+                    "taint_xfile_a".into(),
+                    "taint_xfile_b".into(),
                     "quote_ok".into(),
                     "quote_exe".into(),
                     "sys.uc".into(),
