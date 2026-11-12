@@ -4,11 +4,13 @@ const methods = {
 	a: {
 		call: function(request) {
 			system("cfg_neg_a");
+			system("cfg_neg_a_two");
 		}
 	},
 	b: {
 		call: function(request) {
 			system("cfg_neg_b");
+			system("cfg_neg_b_two");
 		}
 	}
 };

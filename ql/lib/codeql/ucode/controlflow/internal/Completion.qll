@@ -81,7 +81,7 @@ class BooleanCompletion extends ConditionalCompletion, TBooleanCompletion {
 class ReturnCompletion extends Completion, TReturnCompletion {
   override string toString() { result = "ReturnCompletion" }
 
-  override predicate isValidForSpecific(AstNode e) { none() }
+  override predicate isValidForSpecific(AstNode e) { e instanceof ReturnStatement }
 
   override ReturnSuccessor getAMatchingSuccessorType() { any() }
 }

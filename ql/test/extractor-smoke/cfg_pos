@@ -5,6 +5,8 @@ const methods = {
 		call: function(request) {
 			system("cfg_pos_one");
 			system("cfg_pos_two");
+			return; // cfg_pos_return
+			system("cfg_pos_unreachable");
 		}
 	}
 };
