@@ -84,14 +84,6 @@ mod tests {
         parse_fixture_no_error("ql/test/extractor-smoke/usr/share/ucode/luci/sys.uc");
     }
 
-    #[test]
-    fn luci_uc_basename_is_not_the_spike_glob() {
-        // Documented: file_globs is literal basenames, not "*.uc".
-        assert_ne!("luci.uc", "luci");
-        assert_ne!("taint_pos.uc", "taint_pos");
-        assert_ne!("sys", "sys.uc");
-    }
-
     fn parse_fixture_no_error(rel: &str) {
         let abi = tree_sitter_ucode::LANGUAGE_UCODE;
         let mut parser = Parser::new();
