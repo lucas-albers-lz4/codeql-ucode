@@ -11,31 +11,28 @@ import codeql.ucode.m3.Models
 
 predicate inRpcCall(UCODE::AstNode n, string name) { n.getParent*() = rpcCallFn(name) }
 
-predicate sysfixtimeLiteral(BuiltinSystemCall c) {
-  exists(UCODE::String s |
-    s = c.getArgument(0) and
-    stringLiteralValue(s).regexpMatch(".*sysfixtime.*")
-  )
-}
-
-from NamedCall c, string method, string kind
+from NamedCall c, string method, string kind, string command
 where
   c.getLocation().getFile().getBaseName() = "luci" and
+  command = stringLiteralValue(c.getArgument(0).(UCODE::String)) and
   (
     inRpcCall(c, "getBlockDevices") and
     c instanceof NamedFsPopenCall and
     method = "getBlockDevices" and
-    kind = "popen"
+    kind = "popen" and
+    command = "/sbin/block info 2>/dev/null"
     or
     inRpcCall(c, "setBlockDetect") and
     c instanceof BuiltinSystemCall and
     method = "setBlockDetect" and
-    kind = "system"
+    kind = "system" and
+    command = "/sbin/block detect > /etc/config/fstab"
     or
     inRpcCall(c, "setLocaltime") and
     c instanceof BuiltinSystemCall and
-    sysfixtimeLiteral(c) and
     method = "setLocaltime" and
-    kind = "system"
+    kind = "system" and
+    command = "/etc/init.d/sysfixtime restart >/dev/null"
   )
-select c, method + " " + kind + " at line " + c.getLocation().getStartLine().toString(), c, kind
+select c, method + " " + kind + " at line " + c.getLocation().getStartLine().toString(), c, method,
+  kind, command

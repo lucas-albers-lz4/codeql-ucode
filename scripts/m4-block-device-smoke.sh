@@ -10,10 +10,22 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m3-luci"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 
-if [[ ! -d "$DB/db-ucode" ]]; then
-	echo "== no M3 database; running m3-smoke.sh =="
-	bash scripts/m3-smoke.sh
-fi
+# Reject changed fixtures before extraction; line numbers refer to this snapshot.
+python3 - <<'PY'
+import hashlib
+import re
+from pathlib import Path
+
+root = Path("ql/test/extractor-smoke")
+pin = re.search(r"^sha256: ([0-9a-f]{64})$", (root / "SOURCE.txt").read_text(), re.M)
+source = root / "usr/share/rpcd/ucode/luci"
+if pin is None or hashlib.sha256(source.read_bytes()).hexdigest() != pin[1]:
+    raise SystemExit("luci fixture does not match SOURCE.txt sha256")
+PY
+
+# Always reindex current sources instead of trusting a previously finalized DB.
+echo "== fresh M3 database =="
+bash scripts/m3-smoke.sh
 
 codeql pack install "$ROOT/ql/lib" >/dev/null
 codeql pack install "$ROOT/ql/src" >/dev/null
@@ -24,35 +36,22 @@ codeql query run "$ROOT/ql/src/m4/BlockDeviceExec.ql" \
 codeql bqrs decode --format=csv "$DB/m4block.bqrs" | tee "$DB/m4block.csv"
 
 python3 - <<'PY'
-import csv, sys
+import csv
+from collections import Counter
 
-rows = list(csv.reader(open(".codeql-database/m3-luci/m4block.csv")))
-header, data = rows[0], rows[1:]
-msgs = [r[1] for r in data]
-kinds = [r[3] for r in data]
-lines = []
-methods = []
-for m in msgs:
-	parts = m.split()
-	methods.append(parts[0])
-	try:
-		lines.append(int(parts[-1]))
-	except (ValueError, IndexError):
-		sys.exit("bad message: " + m)
-want_lines = {112, 481, 532}
-if set(lines) != want_lines:
-	sys.exit(f"lines {sorted(lines)} != {sorted(want_lines)}")
-if 111 in lines:
-	sys.exit("date system at line 111 is not the sysfixtime sink")
-if methods.count("getBlockDevices") != 1 or kinds.count("popen") != 1:
-	sys.exit(f"expected one getBlockDevices popen, got methods={methods} kinds={kinds}")
-if methods.count("setBlockDetect") != 1:
-	sys.exit(f"expected one setBlockDetect, got {methods}")
-if methods.count("setLocaltime") != 1:
-	sys.exit(f"expected one setLocaltime sysfixtime, got {methods}")
-if "path_found" in " ".join(msgs):
-	sys.exit("must not claim path_found")
-print("block-device exec", sorted(lines), methods)
+with open(".codeql-database/m3-luci/m4block.csv") as f:
+    rows = list(csv.reader(f))[1:]
+actual = Counter((r[3], r[4], r[5], int(r[1].rsplit(" ", 1)[1])) for r in rows)
+expected = Counter({
+    ("getBlockDevices", "popen", "/sbin/block info 2>/dev/null", 481): 1,
+    ("setBlockDetect", "system", "/sbin/block detect > /etc/config/fstab", 532): 1,
+    ("setLocaltime", "system", "/etc/init.d/sysfixtime restart >/dev/null", 112): 1,
+})
+if actual != expected:
+    raise SystemExit(f"block-device tuples {actual} != {expected}")
+if any("path_found" in r[1] for r in rows):
+    raise SystemExit("must not claim path_found")
+print("block-device exec", sorted(actual.elements()))
 PY
 
 echo "M4 block-device smoke passed"

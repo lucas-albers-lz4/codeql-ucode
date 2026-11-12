@@ -17,3 +17,7 @@ OpenWrt reports for these rows live in
 [codeql-openwrt](https://github.com/lucas-albers-lz4/codeql-openwrt)
 `reports/m4-block-device-exec.md` (#15). This pack query is the extractor
 gate those rows were transcribed against.
+
+The query matches each complete command literal, including redirections. The
+smoke verifies the fixture hash in `SOURCE.txt`, rebuilds its database from
+current sources, and checks exact method/sink/command/line tuples.
