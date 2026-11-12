@@ -1,0 +1,920 @@
+// CodeQL database schema for UCODE
+// Automatically generated from the tree-sitter grammar; do not edit
+
+/*- Files and folders -*/
+
+/**
+ * The location of an element.
+ * The location spans column `startcolumn` of line `startline` to
+ * column `endcolumn` of line `endline` in file `file`.
+ * For more information, see
+ * [Locations](https://codeql.github.com/docs/writing-codeql-queries/providing-locations-in-codeql-queries/).
+ */
+locations_default(
+  unique int id: @location_default,
+  int file: @file ref,
+  int beginLine: int ref,
+  int beginColumn: int ref,
+  int endLine: int ref,
+  int endColumn: int ref
+);
+
+files(
+  unique int id: @file,
+  string name: string ref
+);
+
+folders(
+  unique int id: @folder,
+  string name: string ref
+);
+
+@container = @file | @folder
+
+containerparent(
+  int parent: @container ref,
+  unique int child: @container ref
+);
+
+/*- Empty location -*/
+
+empty_location(
+  int location: @location_default ref
+);
+
+/*- Source location prefix -*/
+
+/**
+ * The source location of the snapshot.
+ */
+sourceLocationPrefix(string prefix : string ref);
+
+/*- Diagnostic messages -*/
+
+diagnostics(
+  unique int id: @diagnostic,
+  int severity: int ref,
+  string error_tag: string ref,
+  string error_message: string ref,
+  string full_error_message: string ref,
+  int location: @location_default ref
+);
+
+/*- Diagnostic messages: severity -*/
+
+case @diagnostic.severity of
+  10 = @diagnostic_debug
+| 20 = @diagnostic_info
+| 30 = @diagnostic_warning
+| 40 = @diagnostic_error
+;
+
+/*- YAML -*/
+
+#keyset[parent, idx]
+yaml (unique int id: @yaml_node,
+      int kind: int ref,
+      int parent: @yaml_node_parent ref,
+      int idx: int ref,
+      string tag: string ref,
+      string tostring: string ref);
+
+case @yaml_node.kind of
+  0 = @yaml_scalar_node
+| 1 = @yaml_mapping_node
+| 2 = @yaml_sequence_node
+| 3 = @yaml_alias_node
+;
+
+@yaml_collection_node = @yaml_mapping_node | @yaml_sequence_node;
+
+@yaml_node_parent = @yaml_collection_node | @file;
+
+yaml_anchors (unique int node: @yaml_node ref,
+              string anchor: string ref);
+
+yaml_aliases (unique int alias: @yaml_alias_node ref,
+              string target: string ref);
+
+yaml_scalars (unique int scalar: @yaml_scalar_node ref,
+              int style: int ref,
+              string value: string ref);
+
+yaml_errors (unique int id: @yaml_error,
+             string message: string ref);
+
+yaml_locations(unique int locatable: @yaml_locatable ref,
+             int location: @location_default ref);
+
+@yaml_locatable = @yaml_node | @yaml_error;
+
+/*- UCODE dbscheme -*/
+@ucode_arguments_child_type = @ucode_expression | @ucode_spread_element
+
+#keyset[ucode_arguments, index]
+ucode_arguments_child(
+  int ucode_arguments: @ucode_arguments ref,
+  int index: int ref,
+  unique int child: @ucode_arguments_child_type ref
+);
+
+ucode_arguments_def(
+  unique int id: @ucode_arguments
+);
+
+@ucode_array_child_type = @ucode_expression | @ucode_spread_element
+
+#keyset[ucode_array, index]
+ucode_array_child(
+  int ucode_array: @ucode_array ref,
+  int index: int ref,
+  unique int child: @ucode_array_child_type ref
+);
+
+ucode_array_def(
+  unique int id: @ucode_array
+);
+
+@ucode_arrow_function_body_type = @ucode_expression | @ucode_statement_block
+
+ucode_arrow_function_parameter(
+  unique int ucode_arrow_function: @ucode_arrow_function ref,
+  unique int parameter: @ucode_token_identifier ref
+);
+
+ucode_arrow_function_parameters(
+  unique int ucode_arrow_function: @ucode_arrow_function ref,
+  unique int parameters: @ucode_formal_parameters ref
+);
+
+ucode_arrow_function_def(
+  unique int id: @ucode_arrow_function,
+  int body: @ucode_arrow_function_body_type ref
+);
+
+@ucode_assignment_expression_left_type = @ucode_member_expression | @ucode_subscript_expression | @ucode_token_identifier
+
+ucode_assignment_expression_def(
+  unique int id: @ucode_assignment_expression,
+  int left: @ucode_assignment_expression_left_type ref,
+  int right: @ucode_expression ref
+);
+
+@ucode_augmented_assignment_expression_left_type = @ucode_member_expression | @ucode_subscript_expression | @ucode_token_identifier
+
+case @ucode_augmented_assignment_expression.operator of
+  0 = @ucode_augmented_assignment_expression_percentequal
+| 1 = @ucode_augmented_assignment_expression_ampersandampersandequal
+| 2 = @ucode_augmented_assignment_expression_ampersandequal
+| 3 = @ucode_augmented_assignment_expression_starstarequal
+| 4 = @ucode_augmented_assignment_expression_starequal
+| 5 = @ucode_augmented_assignment_expression_plusequal
+| 6 = @ucode_augmented_assignment_expression_minusequal
+| 7 = @ucode_augmented_assignment_expression_slashequal
+| 8 = @ucode_augmented_assignment_expression_langlelangleequal
+| 9 = @ucode_augmented_assignment_expression_ranglerangleequal
+| 10 = @ucode_augmented_assignment_expression_questionquestionequal
+| 11 = @ucode_augmented_assignment_expression_caretequal
+| 12 = @ucode_augmented_assignment_expression_pipeequal
+| 13 = @ucode_augmented_assignment_expression_pipepipeequal
+;
+
+
+ucode_augmented_assignment_expression_def(
+  unique int id: @ucode_augmented_assignment_expression,
+  int left: @ucode_augmented_assignment_expression_left_type ref,
+  int operator: int ref,
+  int right: @ucode_expression ref
+);
+
+case @ucode_binary_expression.operator of
+  0 = @ucode_binary_expression_bangequal
+| 1 = @ucode_binary_expression_bangequalequal
+| 2 = @ucode_binary_expression_percent
+| 3 = @ucode_binary_expression_ampersand
+| 4 = @ucode_binary_expression_ampersandampersand
+| 5 = @ucode_binary_expression_star
+| 6 = @ucode_binary_expression_starstar
+| 7 = @ucode_binary_expression_plus
+| 8 = @ucode_binary_expression_minus
+| 9 = @ucode_binary_expression_slash
+| 10 = @ucode_binary_expression_langle
+| 11 = @ucode_binary_expression_langlelangle
+| 12 = @ucode_binary_expression_langleequal
+| 13 = @ucode_binary_expression_equalequal
+| 14 = @ucode_binary_expression_equalequalequal
+| 15 = @ucode_binary_expression_rangle
+| 16 = @ucode_binary_expression_rangleequal
+| 17 = @ucode_binary_expression_ranglerangle
+| 18 = @ucode_binary_expression_questionquestion
+| 19 = @ucode_binary_expression_caret
+| 20 = @ucode_binary_expression_in
+| 21 = @ucode_binary_expression_pipe
+| 22 = @ucode_binary_expression_pipepipe
+;
+
+
+ucode_binary_expression_def(
+  unique int id: @ucode_binary_expression,
+  int left: @ucode_expression ref,
+  int operator: int ref,
+  int right: @ucode_expression ref
+);
+
+ucode_call_expression_optional_chain(
+  unique int ucode_call_expression: @ucode_call_expression ref,
+  unique int optional_chain: @ucode_token_optional_chain ref
+);
+
+ucode_call_expression_def(
+  unique int id: @ucode_call_expression,
+  int arguments: @ucode_arguments ref,
+  int function: @ucode_expression ref
+);
+
+ucode_catch_clause_parameter(
+  unique int ucode_catch_clause: @ucode_catch_clause ref,
+  unique int parameter: @ucode_token_identifier ref
+);
+
+ucode_catch_clause_def(
+  unique int id: @ucode_catch_clause,
+  int body: @ucode_statement_block ref
+);
+
+ucode_computed_property_name_def(
+  unique int id: @ucode_computed_property_name,
+  int child: @ucode_expression ref
+);
+
+@ucode_declaration = @ucode_function_declaration | @ucode_lexical_declaration
+
+@ucode_delete_expression_argument_type = @ucode_member_expression | @ucode_parenthesized_expression | @ucode_subscript_expression
+
+case @ucode_delete_expression.operator of
+  0 = @ucode_delete_expression_delete
+;
+
+
+ucode_delete_expression_def(
+  unique int id: @ucode_delete_expression,
+  int argument: @ucode_delete_expression_argument_type ref,
+  int operator: int ref
+);
+
+ucode_elif_clause_consequence(
+  unique int ucode_elif_clause: @ucode_elif_clause ref,
+  unique int consequence: @ucode_statement_list ref
+);
+
+ucode_elif_clause_def(
+  unique int id: @ucode_elif_clause,
+  int condition: @ucode_parenthesized_expression ref
+);
+
+ucode_else_alt_clause_child(
+  unique int ucode_else_alt_clause: @ucode_else_alt_clause ref,
+  unique int child: @ucode_statement_list ref
+);
+
+ucode_else_alt_clause_def(
+  unique int id: @ucode_else_alt_clause
+);
+
+@ucode_else_clause_child_type = @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_function_declaration | @ucode_if_alt_statement | @ucode_if_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+ucode_else_clause_def(
+  unique int id: @ucode_else_clause,
+  int child: @ucode_else_clause_child_type ref
+);
+
+#keyset[ucode_export_clause, index]
+ucode_export_clause_child(
+  int ucode_export_clause: @ucode_export_clause ref,
+  int index: int ref,
+  unique int child: @ucode_export_specifier ref
+);
+
+ucode_export_clause_def(
+  unique int id: @ucode_export_clause
+);
+
+@ucode_export_specifier_alias_type = @ucode_string__ | @ucode_token_default | @ucode_token_identifier
+
+ucode_export_specifier_alias(
+  unique int ucode_export_specifier: @ucode_export_specifier ref,
+  unique int alias: @ucode_export_specifier_alias_type ref
+);
+
+@ucode_export_specifier_name_type = @ucode_string__ | @ucode_token_default | @ucode_token_identifier
+
+ucode_export_specifier_def(
+  unique int id: @ucode_export_specifier,
+  int name: @ucode_export_specifier_name_type ref
+);
+
+ucode_export_statement_clause(
+  unique int ucode_export_statement: @ucode_export_statement ref,
+  unique int clause: @ucode_export_clause ref
+);
+
+@ucode_export_statement_declaration_type = @ucode_function_declaration | @ucode_lexical_declaration
+
+ucode_export_statement_declaration(
+  unique int ucode_export_statement: @ucode_export_statement ref,
+  unique int declaration: @ucode_export_statement_declaration_type ref
+);
+
+ucode_export_statement_value(
+  unique int ucode_export_statement: @ucode_export_statement ref,
+  unique int value: @ucode_expression ref
+);
+
+ucode_export_statement_def(
+  unique int id: @ucode_export_statement
+);
+
+@ucode_expression = @ucode_assignment_expression | @ucode_augmented_assignment_expression | @ucode_binary_expression | @ucode_delete_expression | @ucode_primary_expression | @ucode_ternary_expression | @ucode_unary_expression | @ucode_update_expression
+
+@ucode_expression_statement_child_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_expression_statement_def(
+  unique int id: @ucode_expression_statement,
+  int child: @ucode_expression_statement_child_type ref
+);
+
+ucode_for_alt_statement_body(
+  unique int ucode_for_alt_statement: @ucode_for_alt_statement ref,
+  unique int body: @ucode_statement_list ref
+);
+
+@ucode_for_alt_statement_condition_type = @ucode_expression | @ucode_sequence_expression | @ucode_token_empty_statement
+
+@ucode_for_alt_statement_increment_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_for_alt_statement_increment(
+  unique int ucode_for_alt_statement: @ucode_for_alt_statement ref,
+  unique int increment: @ucode_for_alt_statement_increment_type ref
+);
+
+@ucode_for_alt_statement_initializer_type = @ucode_expression | @ucode_lexical_declaration | @ucode_sequence_expression | @ucode_token_empty_statement
+
+ucode_for_alt_statement_def(
+  unique int id: @ucode_for_alt_statement,
+  int condition: @ucode_for_alt_statement_condition_type ref,
+  int initializer: @ucode_for_alt_statement_initializer_type ref
+);
+
+ucode_for_in_alt_statement_body(
+  unique int ucode_for_in_alt_statement: @ucode_for_in_alt_statement ref,
+  unique int body: @ucode_statement_list ref
+);
+
+ucode_for_in_alt_statement_key(
+  unique int ucode_for_in_alt_statement: @ucode_for_in_alt_statement ref,
+  unique int key__: @ucode_token_identifier ref
+);
+
+ucode_for_in_alt_statement_kind(
+  unique int ucode_for_in_alt_statement: @ucode_for_in_alt_statement ref,
+  unique int kind: @ucode_reserved_word ref
+);
+
+@ucode_for_in_alt_statement_object_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_for_in_alt_statement_value(
+  unique int ucode_for_in_alt_statement: @ucode_for_in_alt_statement ref,
+  unique int value: @ucode_token_identifier ref
+);
+
+ucode_for_in_alt_statement_variable(
+  unique int ucode_for_in_alt_statement: @ucode_for_in_alt_statement ref,
+  unique int variable: @ucode_token_identifier ref
+);
+
+ucode_for_in_alt_statement_def(
+  unique int id: @ucode_for_in_alt_statement,
+  int object: @ucode_for_in_alt_statement_object_type ref
+);
+
+@ucode_for_in_statement_body_type = @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_function_declaration | @ucode_if_alt_statement | @ucode_if_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+ucode_for_in_statement_key(
+  unique int ucode_for_in_statement: @ucode_for_in_statement ref,
+  unique int key__: @ucode_token_identifier ref
+);
+
+ucode_for_in_statement_kind(
+  unique int ucode_for_in_statement: @ucode_for_in_statement ref,
+  unique int kind: @ucode_reserved_word ref
+);
+
+@ucode_for_in_statement_object_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_for_in_statement_value(
+  unique int ucode_for_in_statement: @ucode_for_in_statement ref,
+  unique int value: @ucode_token_identifier ref
+);
+
+ucode_for_in_statement_variable(
+  unique int ucode_for_in_statement: @ucode_for_in_statement ref,
+  unique int variable: @ucode_token_identifier ref
+);
+
+ucode_for_in_statement_def(
+  unique int id: @ucode_for_in_statement,
+  int body: @ucode_for_in_statement_body_type ref,
+  int object: @ucode_for_in_statement_object_type ref
+);
+
+@ucode_for_statement_body_type = @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_function_declaration | @ucode_if_alt_statement | @ucode_if_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+@ucode_for_statement_condition_type = @ucode_expression | @ucode_sequence_expression | @ucode_token_empty_statement
+
+@ucode_for_statement_increment_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_for_statement_increment(
+  unique int ucode_for_statement: @ucode_for_statement ref,
+  unique int increment: @ucode_for_statement_increment_type ref
+);
+
+@ucode_for_statement_initializer_type = @ucode_expression | @ucode_lexical_declaration | @ucode_sequence_expression | @ucode_token_empty_statement
+
+ucode_for_statement_def(
+  unique int id: @ucode_for_statement,
+  int body: @ucode_for_statement_body_type ref,
+  int condition: @ucode_for_statement_condition_type ref,
+  int initializer: @ucode_for_statement_initializer_type ref
+);
+
+@ucode_formal_parameters_child_type = @ucode_rest_element | @ucode_token_identifier
+
+#keyset[ucode_formal_parameters, index]
+ucode_formal_parameters_child(
+  int ucode_formal_parameters: @ucode_formal_parameters ref,
+  int index: int ref,
+  unique int child: @ucode_formal_parameters_child_type ref
+);
+
+ucode_formal_parameters_def(
+  unique int id: @ucode_formal_parameters
+);
+
+@ucode_function_declaration_body_type = @ucode_statement_block | @ucode_statement_list
+
+ucode_function_declaration_body(
+  unique int ucode_function_declaration: @ucode_function_declaration ref,
+  unique int body: @ucode_function_declaration_body_type ref
+);
+
+ucode_function_declaration_def(
+  unique int id: @ucode_function_declaration,
+  int name: @ucode_token_identifier ref,
+  int parameters: @ucode_formal_parameters ref
+);
+
+ucode_function_expression_name(
+  unique int ucode_function_expression: @ucode_function_expression ref,
+  unique int name: @ucode_token_identifier ref
+);
+
+ucode_function_expression_def(
+  unique int id: @ucode_function_expression,
+  int body: @ucode_statement_block ref,
+  int parameters: @ucode_formal_parameters ref
+);
+
+ucode_if_alt_statement_alternative(
+  unique int ucode_if_alt_statement: @ucode_if_alt_statement ref,
+  unique int alternative: @ucode_else_alt_clause ref
+);
+
+ucode_if_alt_statement_consequence(
+  unique int ucode_if_alt_statement: @ucode_if_alt_statement ref,
+  unique int consequence: @ucode_statement_list ref
+);
+
+#keyset[ucode_if_alt_statement, index]
+ucode_if_alt_statement_elif_clause(
+  int ucode_if_alt_statement: @ucode_if_alt_statement ref,
+  int index: int ref,
+  unique int elif_clause: @ucode_elif_clause ref
+);
+
+ucode_if_alt_statement_def(
+  unique int id: @ucode_if_alt_statement,
+  int condition: @ucode_parenthesized_expression ref
+);
+
+ucode_if_statement_alternative(
+  unique int ucode_if_statement: @ucode_if_statement ref,
+  unique int alternative: @ucode_else_clause ref
+);
+
+@ucode_if_statement_consequence_type = @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_function_declaration | @ucode_if_alt_statement | @ucode_if_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+ucode_if_statement_def(
+  unique int id: @ucode_if_statement,
+  int condition: @ucode_parenthesized_expression ref,
+  int consequence: @ucode_if_statement_consequence_type ref
+);
+
+ucode_import_clause_default(
+  unique int ucode_import_clause: @ucode_import_clause ref,
+  unique int default: @ucode_token_identifier ref
+);
+
+ucode_import_clause_named(
+  unique int ucode_import_clause: @ucode_import_clause ref,
+  unique int named: @ucode_named_imports ref
+);
+
+ucode_import_clause_namespace(
+  unique int ucode_import_clause: @ucode_import_clause ref,
+  unique int namespace: @ucode_namespace_import ref
+);
+
+ucode_import_clause_def(
+  unique int id: @ucode_import_clause
+);
+
+ucode_import_specifier_alias(
+  unique int ucode_import_specifier: @ucode_import_specifier ref,
+  unique int alias: @ucode_token_identifier ref
+);
+
+@ucode_import_specifier_name_type = @ucode_string__ | @ucode_token_default | @ucode_token_identifier
+
+ucode_import_specifier_def(
+  unique int id: @ucode_import_specifier,
+  int name: @ucode_import_specifier_name_type ref
+);
+
+ucode_import_statement_clause(
+  unique int ucode_import_statement: @ucode_import_statement ref,
+  unique int clause: @ucode_import_clause ref
+);
+
+ucode_import_statement_def(
+  unique int id: @ucode_import_statement,
+  int source: @ucode_string__ ref
+);
+
+@ucode_lexical_declaration_kind_type = @ucode_reserved_word
+
+ucode_lexical_declaration_kind(
+  unique int ucode_lexical_declaration: @ucode_lexical_declaration ref,
+  unique int kind: @ucode_lexical_declaration_kind_type ref
+);
+
+#keyset[ucode_lexical_declaration, index]
+ucode_lexical_declaration_child(
+  int ucode_lexical_declaration: @ucode_lexical_declaration ref,
+  int index: int ref,
+  unique int child: @ucode_variable_declarator ref
+);
+
+ucode_lexical_declaration_def(
+  unique int id: @ucode_lexical_declaration
+);
+
+ucode_member_expression_optional_chain(
+  unique int ucode_member_expression: @ucode_member_expression ref,
+  unique int optional_chain: @ucode_token_optional_chain ref
+);
+
+ucode_member_expression_def(
+  unique int id: @ucode_member_expression,
+  int object: @ucode_expression ref,
+  int property: @ucode_token_property_identifier ref
+);
+
+#keyset[ucode_named_imports, index]
+ucode_named_imports_child(
+  int ucode_named_imports: @ucode_named_imports ref,
+  int index: int ref,
+  unique int child: @ucode_import_specifier ref
+);
+
+ucode_named_imports_def(
+  unique int id: @ucode_named_imports
+);
+
+ucode_namespace_import_def(
+  unique int id: @ucode_namespace_import,
+  int child: @ucode_token_identifier ref
+);
+
+@ucode_object_child_type = @ucode_pair | @ucode_spread_element | @ucode_token_shorthand_property_identifier
+
+#keyset[ucode_object, index]
+ucode_object_child(
+  int ucode_object: @ucode_object ref,
+  int index: int ref,
+  unique int child: @ucode_object_child_type ref
+);
+
+ucode_object_def(
+  unique int id: @ucode_object
+);
+
+@ucode_pair_key_type = @ucode_computed_property_name | @ucode_string__ | @ucode_token_property_identifier
+
+ucode_pair_def(
+  unique int id: @ucode_pair,
+  int key__: @ucode_pair_key_type ref,
+  int value: @ucode_expression ref
+);
+
+@ucode_parenthesized_expression_child_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_parenthesized_expression_def(
+  unique int id: @ucode_parenthesized_expression,
+  int child: @ucode_parenthesized_expression_child_type ref
+);
+
+@ucode_primary_expression = @ucode_array | @ucode_arrow_function | @ucode_call_expression | @ucode_function_expression | @ucode_member_expression | @ucode_object | @ucode_parenthesized_expression | @ucode_regex | @ucode_string__ | @ucode_subscript_expression | @ucode_template_string | @ucode_token_false | @ucode_token_identifier | @ucode_token_null | @ucode_token_number | @ucode_token_this | @ucode_token_true
+
+@ucode_program_child_type = @ucode_statement | @ucode_token_hash_bang_line
+
+#keyset[ucode_program, index]
+ucode_program_child(
+  int ucode_program: @ucode_program ref,
+  int index: int ref,
+  unique int child: @ucode_program_child_type ref
+);
+
+ucode_program_def(
+  unique int id: @ucode_program
+);
+
+ucode_regex_flags(
+  unique int ucode_regex: @ucode_regex ref,
+  unique int flags: @ucode_token_regex_flags ref
+);
+
+ucode_regex_def(
+  unique int id: @ucode_regex,
+  int pattern: @ucode_token_regex_pattern ref
+);
+
+ucode_rest_element_def(
+  unique int id: @ucode_rest_element,
+  int child: @ucode_token_identifier ref
+);
+
+@ucode_return_statement_child_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_return_statement_child(
+  unique int ucode_return_statement: @ucode_return_statement ref,
+  unique int child: @ucode_return_statement_child_type ref
+);
+
+ucode_return_statement_def(
+  unique int id: @ucode_return_statement
+);
+
+#keyset[ucode_sequence_expression, index]
+ucode_sequence_expression_child(
+  int ucode_sequence_expression: @ucode_sequence_expression ref,
+  int index: int ref,
+  unique int child: @ucode_expression ref
+);
+
+ucode_sequence_expression_def(
+  unique int id: @ucode_sequence_expression
+);
+
+ucode_spread_element_def(
+  unique int id: @ucode_spread_element,
+  int child: @ucode_expression ref
+);
+
+@ucode_statement = @ucode_declaration | @ucode_export_statement | @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_if_alt_statement | @ucode_if_statement | @ucode_import_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+#keyset[ucode_statement_block, index]
+ucode_statement_block_child(
+  int ucode_statement_block: @ucode_statement_block ref,
+  int index: int ref,
+  unique int child: @ucode_statement ref
+);
+
+ucode_statement_block_def(
+  unique int id: @ucode_statement_block
+);
+
+#keyset[ucode_statement_list, index]
+ucode_statement_list_child(
+  int ucode_statement_list: @ucode_statement_list ref,
+  int index: int ref,
+  unique int child: @ucode_statement ref
+);
+
+ucode_statement_list_def(
+  unique int id: @ucode_statement_list
+);
+
+@ucode_string_child_type = @ucode_token_escape_sequence | @ucode_token_string_fragment
+
+#keyset[ucode_string__, index]
+ucode_string_child(
+  int ucode_string__: @ucode_string__ ref,
+  int index: int ref,
+  unique int child: @ucode_string_child_type ref
+);
+
+ucode_string_def(
+  unique int id: @ucode_string__
+);
+
+@ucode_subscript_expression_index_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_subscript_expression_optional_chain(
+  unique int ucode_subscript_expression: @ucode_subscript_expression ref,
+  unique int optional_chain: @ucode_token_optional_chain ref
+);
+
+ucode_subscript_expression_def(
+  unique int id: @ucode_subscript_expression,
+  int index: @ucode_subscript_expression_index_type ref,
+  int object: @ucode_expression ref
+);
+
+@ucode_switch_body_child_type = @ucode_switch_case | @ucode_switch_default
+
+#keyset[ucode_switch_body, index]
+ucode_switch_body_child(
+  int ucode_switch_body: @ucode_switch_body ref,
+  int index: int ref,
+  unique int child: @ucode_switch_body_child_type ref
+);
+
+ucode_switch_body_def(
+  unique int id: @ucode_switch_body
+);
+
+#keyset[ucode_switch_case, index]
+ucode_switch_case_body(
+  int ucode_switch_case: @ucode_switch_case ref,
+  int index: int ref,
+  unique int body: @ucode_statement ref
+);
+
+@ucode_switch_case_value_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_switch_case_def(
+  unique int id: @ucode_switch_case,
+  int value: @ucode_switch_case_value_type ref
+);
+
+#keyset[ucode_switch_default, index]
+ucode_switch_default_body(
+  int ucode_switch_default: @ucode_switch_default ref,
+  int index: int ref,
+  unique int body: @ucode_statement ref
+);
+
+ucode_switch_default_def(
+  unique int id: @ucode_switch_default
+);
+
+ucode_switch_statement_def(
+  unique int id: @ucode_switch_statement,
+  int body: @ucode_switch_body ref,
+  int value: @ucode_parenthesized_expression ref
+);
+
+@ucode_template_string_child_type = @ucode_template_substitution | @ucode_token_escape_sequence | @ucode_token_string_fragment
+
+#keyset[ucode_template_string, index]
+ucode_template_string_child(
+  int ucode_template_string: @ucode_template_string ref,
+  int index: int ref,
+  unique int child: @ucode_template_string_child_type ref
+);
+
+ucode_template_string_def(
+  unique int id: @ucode_template_string
+);
+
+@ucode_template_substitution_child_type = @ucode_expression | @ucode_sequence_expression
+
+ucode_template_substitution_def(
+  unique int id: @ucode_template_substitution,
+  int child: @ucode_template_substitution_child_type ref
+);
+
+ucode_ternary_expression_def(
+  unique int id: @ucode_ternary_expression,
+  int alternative: @ucode_expression ref,
+  int condition: @ucode_expression ref,
+  int consequence: @ucode_expression ref
+);
+
+ucode_try_statement_def(
+  unique int id: @ucode_try_statement,
+  int body: @ucode_statement_block ref,
+  int handler: @ucode_catch_clause ref
+);
+
+case @ucode_unary_expression.operator of
+  0 = @ucode_unary_expression_bang
+| 1 = @ucode_unary_expression_plus
+| 2 = @ucode_unary_expression_minus
+| 3 = @ucode_unary_expression_tilde
+;
+
+
+ucode_unary_expression_def(
+  unique int id: @ucode_unary_expression,
+  int argument: @ucode_expression ref,
+  int operator: int ref
+);
+
+@ucode_update_expression_argument_type = @ucode_member_expression | @ucode_subscript_expression | @ucode_token_identifier
+
+case @ucode_update_expression.operator of
+  0 = @ucode_update_expression_plusplus
+| 1 = @ucode_update_expression_minusminus
+;
+
+
+ucode_update_expression_def(
+  unique int id: @ucode_update_expression,
+  int argument: @ucode_update_expression_argument_type ref,
+  int operator: int ref
+);
+
+ucode_variable_declarator_value(
+  unique int ucode_variable_declarator: @ucode_variable_declarator ref,
+  unique int value: @ucode_expression ref
+);
+
+ucode_variable_declarator_def(
+  unique int id: @ucode_variable_declarator,
+  int name: @ucode_token_identifier ref
+);
+
+ucode_while_alt_statement_body(
+  unique int ucode_while_alt_statement: @ucode_while_alt_statement ref,
+  unique int body: @ucode_statement_list ref
+);
+
+ucode_while_alt_statement_def(
+  unique int id: @ucode_while_alt_statement,
+  int condition: @ucode_parenthesized_expression ref
+);
+
+@ucode_while_statement_body_type = @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_function_declaration | @ucode_if_alt_statement | @ucode_if_statement | @ucode_return_statement | @ucode_statement_block | @ucode_switch_statement | @ucode_token_break_statement | @ucode_token_continue_statement | @ucode_token_empty_statement | @ucode_try_statement | @ucode_while_alt_statement | @ucode_while_statement
+
+ucode_while_statement_def(
+  unique int id: @ucode_while_statement,
+  int body: @ucode_while_statement_body_type ref,
+  int condition: @ucode_parenthesized_expression ref
+);
+
+ucode_tokeninfo(
+  unique int id: @ucode_token,
+  int kind: int ref,
+  string value: string ref
+);
+
+case @ucode_token.kind of
+  0 = @ucode_reserved_word
+| 1 = @ucode_token_break_statement
+| 2 = @ucode_token_comment
+| 3 = @ucode_token_continue_statement
+| 4 = @ucode_token_default
+| 5 = @ucode_token_doc_comment
+| 6 = @ucode_token_empty_statement
+| 7 = @ucode_token_escape_sequence
+| 8 = @ucode_token_false
+| 9 = @ucode_token_hash_bang_line
+| 10 = @ucode_token_identifier
+| 11 = @ucode_token_null
+| 12 = @ucode_token_number
+| 13 = @ucode_token_optional_chain
+| 14 = @ucode_token_property_identifier
+| 15 = @ucode_token_regex_flags
+| 16 = @ucode_token_regex_pattern
+| 17 = @ucode_token_shorthand_property_identifier
+| 18 = @ucode_token_string_fragment
+| 19 = @ucode_token_this
+| 20 = @ucode_token_true
+;
+
+
+@ucode_ast_node = @ucode_arguments | @ucode_array | @ucode_arrow_function | @ucode_assignment_expression | @ucode_augmented_assignment_expression | @ucode_binary_expression | @ucode_call_expression | @ucode_catch_clause | @ucode_computed_property_name | @ucode_delete_expression | @ucode_elif_clause | @ucode_else_alt_clause | @ucode_else_clause | @ucode_export_clause | @ucode_export_specifier | @ucode_export_statement | @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_formal_parameters | @ucode_function_declaration | @ucode_function_expression | @ucode_if_alt_statement | @ucode_if_statement | @ucode_import_clause | @ucode_import_specifier | @ucode_import_statement | @ucode_lexical_declaration | @ucode_member_expression | @ucode_named_imports | @ucode_namespace_import | @ucode_object | @ucode_pair | @ucode_parenthesized_expression | @ucode_program | @ucode_regex | @ucode_rest_element | @ucode_return_statement | @ucode_sequence_expression | @ucode_spread_element | @ucode_statement_block | @ucode_statement_list | @ucode_string__ | @ucode_subscript_expression | @ucode_switch_body | @ucode_switch_case | @ucode_switch_default | @ucode_switch_statement | @ucode_template_string | @ucode_template_substitution | @ucode_ternary_expression | @ucode_token | @ucode_try_statement | @ucode_unary_expression | @ucode_update_expression | @ucode_variable_declarator | @ucode_while_alt_statement | @ucode_while_statement
+
+ucode_ast_node_location(
+  unique int node: @ucode_ast_node ref,
+  int loc: @location_default ref
+);
+
+#keyset[parent, parent_index]
+ucode_ast_node_parent(
+  unique int node: @ucode_ast_node ref,
+  int parent: @ucode_ast_node ref,
+  int parent_index: int ref
+);
+

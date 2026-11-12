@@ -1,0 +1,40 @@
+--- a/ql/lib/qlpack.yml
++++ b/ql/lib/qlpack.yml
+@@ -1,7 +1,7 @@
+ ---
+ library: true
+ warnOnImplicitThis: false
+-name: advanced-security/ucode-all
++name: lucas-albers-lz4/ucode-all
+ version: 0.1.0
+ dependencies:
+   codeql/util: "^1.0.0"
+--- a/ql/src/qlpack.yml
++++ b/ql/src/qlpack.yml
+@@ -1,9 +1,9 @@
+-name: advanced-security/ucode-queries
++name: lucas-albers-lz4/ucode-queries
+ version: 0.1.0
+ groups: 
+   - ucode
+   - queries
+ dependencies:
+-  advanced-security/ucode-all: ${workspace}
++  lucas-albers-lz4/ucode-all: ${workspace}
+ extractor: ucode
+ defaultSuiteFile: codeql-suites/code-scanning.qls
+--- a/ql/test/qlpack.yml
++++ b/ql/test/qlpack.yml
+@@ -1,9 +1,8 @@
+-name: advanced-security/ucode-tests
++name: lucas-albers-lz4/ucode-tests
+ groups: [ucode, test]
+ dependencies:
+-dependencies:
+-  advanced-security/ucode-all: ${workspace}
+-  advanced-security/ucode-queries: ${workspace}
++  lucas-albers-lz4/ucode-all: ${workspace}
++  lucas-albers-lz4/ucode-queries: ${workspace}
+ extractor: ucode
+ tests: .
+ warnOnImplicitThis: true

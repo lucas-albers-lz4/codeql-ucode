@@ -1,0 +1,8 @@
+name: lucas-albers-lz4/ucode-tests
+groups: [ucode, test]
+dependencies:
+  lucas-albers-lz4/ucode-all: ${workspace}
+  lucas-albers-lz4/ucode-queries: ${workspace}
+extractor: ucode
+tests: .
+warnOnImplicitThis: true

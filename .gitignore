@@ -6,5 +6,7 @@
 .codeql-database/
 /extractor/tree-sitter/
 ql/lib/.codeql/
+ql/src/.codeql/
+ql/test/.codeql/
 __pycache__/
 .DS_Store

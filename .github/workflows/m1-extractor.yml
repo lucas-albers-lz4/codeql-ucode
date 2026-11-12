@@ -1,0 +1,20 @@
+name: M1 extractor
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  cargo-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+      - name: Clone pinned grammar
+        run: bash scripts/clone-grammar.sh
+      - name: Parser-load test
+        run: cargo test -p codeql-extractor-ucode -- --nocapture
