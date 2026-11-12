@@ -21,7 +21,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 11. `./scripts/m4-fixed-helpers-smoke.sh` asserts `GetFeaturesDirectExec.ql` (hostapd/wpa_supplicant `system`, dnsmasq/odhcpd/ipset `popen`).
 12. `./scripts/m4-quote-smoke.sh` indexes those plus `quote_ok`/`quote_exe` and asserts the complete-argument `shellquote` barrier.
 13. `./scripts/m4-imported-callee-smoke.sh` asserts `ImportedCalleeTaint.ql` sees `init_action` from `luci.sys`.
-14. `./scripts/m4-sys-smoke.sh` indexes installed luci.sys (`sys.uc` only) and asserts `InitActionSystem.ql` (builtin `system` template; `basename` is not a sanitizer).
+14. `./scripts/m4-sys-smoke.sh` indexes `luci` plus installed luci.sys (`sys.uc`) and asserts `InitActionSystem.ql` plus the `setInitAction` action-token switch (not a sanitizer of `name`).
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 

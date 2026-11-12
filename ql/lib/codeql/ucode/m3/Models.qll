@@ -274,3 +274,17 @@ UCODE::FunctionDeclaration initActionFn() {
 
 /** Holds if `n` is inside `init_action` in `sys.uc`. */
 predicate inInitAction(UCODE::AstNode n) { n.getParent*() = initActionFn() }
+
+/** `setInitAction: { call: function(...) { ... } }`. */
+UCODE::FunctionExpression setInitActionCallFn() {
+  exists(UCODE::Pair method, UCODE::Pair callPair, UCODE::Object body |
+    propertyName(method.getKey()) = "setInitAction" and
+    body = method.getValue() and
+    callPair = body.getChild(_) and
+    propertyName(callPair.getKey()) = "call" and
+    result = callPair.getValue()
+  )
+}
+
+/** Holds if `n` is inside the `setInitAction.call` function. */
+predicate inSetInitActionCall(UCODE::AstNode n) { n.getParent*() = setInitActionCallFn() }
