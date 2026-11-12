@@ -15,7 +15,8 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 5. First `init` is render-only (`features.extractor: false`). Do not let `create-extractor-pack.sh` run on the unpatched tree. `init` still runs `codeql pack create ql/lib` at the end; that is expected to succeed or fail independently of the extractor binary.
 6. After `init`, restore `.codeql/generator.yml` from git: `init` `save()`s absolute `template_dir`/`path` and clears `tree-sitter-repo.url`.
 7. Apply `patches/` (`./patches/apply.sh`), lock `Cargo.lock`, `cargo test`, then run `scripts/create-extractor-pack.sh` by hand. Spike glob is literal basename `luci`.
-8. `./scripts/m1-smoke.sh` runs parser-load, pack, extract of `ql/test/extractor-smoke/usr/share/rpcd/ucode/luci`, SuccessfullyExtractedFiles, and PrintLuciAst.
+8. `./scripts/m1-smoke.sh` runs parser-load, pack, extract of `ql/test/extractor-smoke/usr/share/rpcd/ucode/luci` only (`SuccessfullyExtractedFiles == 1`), and PrintLuciAst.
+9. `./scripts/m3-smoke.sh` indexes `luci`, `taint_pos`, and `taint_neg` (`SuccessfullyExtractedFiles == 3`) and asserts the M3 queries.
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 

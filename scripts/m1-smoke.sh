@@ -72,8 +72,6 @@ fi
 if ! codeql database index-files \
 	--language=ucode \
 	--include='**/luci' \
-	--include='**/taint_pos' \
-	--include='**/taint_neg' \
 	--working-dir="$SRC" \
 	"$DB/db"; then
 	echo "codeql database index-files failed" >&2
