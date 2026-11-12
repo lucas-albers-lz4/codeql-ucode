@@ -2,6 +2,7 @@ private import codeql.util.Boolean
 private import codeql.util.Unit
 private import codeql.ucode.ast.Expr
 private import codeql.ucode.CFG
+private import codeql.ucode.dataflow.Ssa
 private import DataFlowPublic
 private import DataFlowDispatch
 
@@ -39,16 +40,35 @@ private class ExprNodeImpl extends ExprNode, NodeImpl {
   override string toStringImpl() { result = this.getExprNode().toString() }
 }
 
-/** Provides logic related to SSA. */
+private class StmtNodeImpl extends StmtNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
+
+  override Location getLocationImpl() { result = this.getCfgNode().getLocation() }
+
+  override string toStringImpl() { result = this.getCfgNode().toString() }
+}
+
+/**
+ * Statement-level SSA value flow. Wrapper CFG leaves are statements, so a
+ * write's enclosing CFG node flows to each of its reads. Not call resolution
+ * (`viableSourceCallable` stays `none()`) and not imported luci.sys
+ * `path_found`.
+ */
 module SsaFlow {
-  // TODO
+  predicate localFlowStep(Node nodeFrom, Node nodeTo) {
+    exists(Ssa::WriteDefinition def |
+      nodeFrom.asCfgNode() = def.getControlFlowNode() and
+      nodeTo.asCfgNode() = def.getARead() and
+      nodeFrom != nodeTo
+    )
+  }
 }
 
 /** Provides predicates related to local data flow. */
 module LocalFlow {
   pragma[nomagic]
   predicate localFlowStepCommon(Node nodeFrom, Node nodeTo) {
-    none() // TODO
+    none()
   }
 
   predicate localMustFlowStep(Node node1, Node node2) { none() }
@@ -78,6 +98,8 @@ private module Cached {
   cached
   newtype TNode =
     TExprNode(CfgNodes::ExprCfgNode n) or
+    // Statement CFG leaves; ExprCfgNode is empty until CFG is expression-level.
+    TStmtNode(CfgNodes::AstCfgNode n) or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
       none() // TODO
     }
@@ -93,11 +115,18 @@ private module Cached {
    * data flow.
    */
   cached
-  predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo, string model) { none() }
+  predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo, string model) {
+    SsaFlow::localFlowStep(nodeFrom, nodeTo) and
+    model = ""
+  }
 
   /** This is the local flow predicate that is exposed. */
   cached
-  predicate localFlowStepImpl(Node nodeFrom, Node nodeTo) { none() }
+  predicate localFlowStepImpl(Node nodeFrom, Node nodeTo) {
+    LocalFlow::localFlowStepCommon(nodeFrom, nodeTo)
+    or
+    SsaFlow::localFlowStep(nodeFrom, nodeTo)
+  }
 
   cached
   newtype TContentSet = TSingletonContent(Content c)

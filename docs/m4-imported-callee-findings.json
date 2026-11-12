@@ -20,6 +20,7 @@
     "evidence_refs": ["ql/src/m4/ImportedCalleeTaint.ql"],
     "unknowns": [
       "unresolved_call: luci.sys init_action body not extracted",
+      "DataFlow localFlowStep is statement-level SSA write-to-read; viableSourceCallable remains none()",
       "live uhttpd/rpcd not executed"
     ]
   }

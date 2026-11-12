@@ -6,11 +6,19 @@ private import codeql.ucode.controlflow.CfgNodes as CfgNodes
 
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
- * (`ExprNode`) or a Expr (`ParameterNode`).
+ * (`ExprNode`), a statement CFG node (`StmtNode`), or a Expr (`ParameterNode`).
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
   CfgNodes::ExprCfgNode asExpr() { result = this.(ExprNode).getExprNode() }
+
+  /**
+   * Gets the statement-level CFG node corresponding to this node, if any.
+   *
+   * Wrapper CFG leaves are statements, so this is the local-flow node kind
+   * used by SSA `localFlowStep`.
+   */
+  CfgNodes::AstCfgNode asCfgNode() { result = this.(StmtNode).getCfgNode() }
 
   /** Gets the Expr corresponding to this node, if any. */
   Expr asParameter() { result = this.(ParameterNode).getParameter() }
@@ -46,6 +54,21 @@ class ExprNode extends Node, TExprNode {
 
   /** Gets the expression corresponding to this node. */
   CfgNodes::ExprCfgNode getExprNode() { result = n }
+}
+
+/**
+ * A statement-level CFG node, viewed as a node in a data flow graph.
+ *
+ * Needed because expression-level `ExprCfgNode`s are empty while CFG leaves
+ * are statements.
+ */
+class StmtNode extends Node, TStmtNode {
+  private CfgNodes::AstCfgNode n;
+
+  StmtNode() { this = TStmtNode(n) }
+
+  /** Gets the statement CFG node corresponding to this node. */
+  CfgNodes::AstCfgNode getCfgNode() { result = n }
 }
 
 /**

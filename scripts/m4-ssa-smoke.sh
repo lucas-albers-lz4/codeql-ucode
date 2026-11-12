@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # M4 gate: wrapper SSA/dataflow compiles; production SsaReachesSystem.ql
-# imports DataFlow additively. Isolated SsaReads.ql remains extractor-smoke.
+# requires DataFlow localFlowStep+ from SSA write to system read.
+# Isolated SsaReads.ql remains extractor-smoke.
 # Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
-# as sanitizers.
+# as sanitizers. viableSourceCallable stays none().
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
