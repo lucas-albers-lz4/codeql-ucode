@@ -1,0 +1,9 @@
+/target/
+/extractor-pack/
+*.trap.gz
+*.qlx
+.qltest/
+.codeql-database/
+/extractor/tree-sitter/
+__pycache__/
+.DS_Store

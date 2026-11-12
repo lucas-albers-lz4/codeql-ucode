@@ -1,0 +1,105 @@
+extractor: ucode
+language_name: ucode
+language_extensions: []
+features:
+  extractor: false
+  ast: true
+  ast_internal: true
+  cfg: false
+  cfg_internal: false
+  data_flow: false
+  data_flow_internal: false
+tree-sitter-repo:
+  url: https://github.com/m00qek/tree-sitter-ucode
+  rev: 4a243af329fae2f4ff01e0fc80133cbab8314600
+mappings:
+  - name: Comment
+    pattern: Match
+    aliases:
+      - "Comment"
+      - "CommentBlock"
+
+  - name: Block
+    pattern: Match
+    halt: true
+    aliases:
+      - "Block"
+
+  - name: LiteralAbstracts
+    pattern: StartsWith
+    aliases:
+      - Integer
+      - Number
+      - String
+      - Boolean
+      - "Null"
+
+  - name: Literals
+    pattern: EndsWith
+    aliases:
+      - "Literal"
+      - "Literals"
+    halt: true
+    excludes:
+      - Array
+      - Number
+
+  - name: Conditionals
+    pattern: StartsWith
+    aliases:
+      - "If"
+      - "ElseIf"
+      - "Else"
+      - "Switch"
+      - "Case"
+      - "Default"
+
+  - name: Stmts
+    pattern: StartsOrEndsWith
+    aliases:
+      - "Statement"
+      - "Statements"
+      - "Declaration"
+      - "UserDefinedFunction"
+
+  - name: Expr
+    pattern: StartsOrEndsWith
+    aliases:
+      - "Expr"
+      - "Expression"
+      - "Expressions"
+
+  - name: Loops
+    pattern: StartsWith
+    aliases:
+      - "For"
+      - "While"
+      - "Do"
+
+  - name: Literals
+    pattern: StartsWith
+    aliases:
+      - "String"
+      - "Char"
+      - "Nchar"
+      - "Integer"
+      - "Int"
+      - "Float"
+      - "Double"
+      - "True"
+      - "False"
+      - "Null"
+      - "Nil"
+    excludes:
+      - NullStatement
+
+  - name: Queries
+    pattern: Match
+    aliases:
+      - "Query"
+      - "Queries"
+
+  - name: Call
+    pattern: StartsOrEndsWith
+    aliases:
+      - "Call"
