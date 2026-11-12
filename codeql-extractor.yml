@@ -15,5 +15,6 @@ file_types:
   extensions:
   # CLI requires a leading period; empty extension is rejected. M1 still
   # extracts the extensionless `luci` plugin via index-files --include='**/luci'
-  # (qltest.sh uses --include-extension=). The extractor glob is basename luci.
+  # (qltest.sh uses --include-extension=). Extractor globs are literal basenames
+  # (`luci`, fixtures, M4 `sys.uc`).
   - .uc

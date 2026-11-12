@@ -265,3 +265,12 @@ predicate shellInjectionCandidate(RequestArgsAccess src, NamedCall sink) {
   taintReachesSink(src, sink) and
   not completeQuotedTemplateArg(src, sink)
 }
+
+/** `export function init_action` in installed luci.sys (`sys.uc`). */
+UCODE::FunctionDeclaration initActionFn() {
+  result = functionDecl("init_action") and
+  result.getLocation().getFile().getBaseName() = "sys.uc"
+}
+
+/** Holds if `n` is inside `init_action` in `sys.uc`. */
+predicate inInitAction(UCODE::AstNode n) { n.getParent*() = initActionFn() }
