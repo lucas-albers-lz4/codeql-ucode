@@ -6,6 +6,6 @@ private import codeql.Locations
 private import codeql.dataflow.TaintTracking
 private import DataFlowImplSpecific
 
-module ucodeTaintTracking implements InputSig<Location, ucodeDataFlow> {
+module UcodeTaintTracking implements InputSig<Location, UcodeDataFlow> {
   import TaintTrackingPrivate
 }

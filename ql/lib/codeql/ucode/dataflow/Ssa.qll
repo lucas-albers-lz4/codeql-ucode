@@ -9,7 +9,6 @@ module Ssa {
   private import ucode
   private import codeql.ucode.controlflow.BasicBlocks
   private import codeql.ucode.controlflow.ControlFlowGraph
-  private import codeql.ucode.controlflow.internal.ControlFlowGraphImpl as CfgImpl
   private import internal.SsaImpl as SsaImpl
 
   class Variable = SsaImpl::SsaInput::SourceVariable;

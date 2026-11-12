@@ -8,6 +8,8 @@ import codeql.controlflow.Cfg
 import Completion
 private import Scope as Scope
 private import codeql.ucode.controlflow.ControlFlowGraph as Cfg
+private import codeql.ucode.ast.internal.AstNodes
+private import codeql.ucode.ast.internal.TreeSitter
 
 // private import codeql.Locations
 private module Implementation implements InputSig<Location> {
@@ -56,7 +58,6 @@ private module CfgImpl = Make<Location, Implementation>;
 
 import CfgImpl
 
-
 /**
  * A Program statement sequence
  */
@@ -71,16 +72,58 @@ class StatementBlockScopeTree extends StandardPreOrderTree, Scope::StatementBloc
   override AstNode getChildNode(int i) { result = super.getStmt(i) }
 }
 
+/** Nested blocks participate in their enclosing callable's CFG. */
+class NestedStatementBlockTree extends StandardPreOrderTree, StatementBlock {
+  NestedStatementBlockTree() { not this instanceof Scope::StatementBlockScope }
+
+  override AstNode getChildNode(int i) { result = super.getStmt(i) }
+}
+
+/** An if executes its condition and then one of its branches. */
+class IfStatementTree extends PreOrderTree, IfStatement {
+  private UCODE::IfStatement raw() { this = TIfStatement(result) }
+
+  private AstNode consequence() {
+    toTreeSitter(result) = this.raw().getConsequence() and
+    not result instanceof TStatement and
+    not result instanceof TDeclaration
+  }
+
+  private AstNode alternative() {
+    toTreeSitter(result) = this.raw().getAlternative().getChild() and
+    not result instanceof TStatement and
+    not result instanceof TDeclaration
+  }
+
+  override predicate propagatesAbnormal(AstNode child) {
+    child = this.consequence() or child = this.alternative()
+  }
+
+  override predicate last(AstNode last, Completion c) {
+    last(this.consequence(), last, c)
+    or
+    last(this.alternative(), last, c)
+    or
+    not exists(this.alternative()) and last = this and completionIsSimple(c)
+  }
+
+  override predicate succ(AstNode pred, AstNode succ, Completion c) {
+    pred = this and
+    completionIsSimple(c) and
+    (first(this.consequence(), succ) or first(this.alternative(), succ))
+  }
+}
+
 class CallDefinitionTree extends StandardPreOrderTree, Scope::CallDefinitionScope {
   override AstNode getChildNode(int i) { i = 0 and result = this.getStmt(i) }
 }
 
 /**
- * Statements are leaves in this slice. Sequential edges come from
- * Program/StatementBlock `getStmt` children, not expression walking.
+ * Most statements are leaves in this slice; if statements and nested blocks
+ * have explicit control flow. Expressions are not evaluated independently.
  */
 class StmtsTree extends LeafTree instanceof Stmts {
-  StmtsTree() { not this instanceof StmtSequence }
+  StmtsTree() { not this instanceof StmtSequence and not this instanceof IfStatement }
 }
 
 /**

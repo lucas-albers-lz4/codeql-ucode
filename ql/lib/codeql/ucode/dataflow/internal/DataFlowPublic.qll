@@ -2,6 +2,7 @@ private import ucode
 private import DataFlowDispatch
 private import DataFlowPrivate
 private import codeql.ucode.controlflow.ControlFlowGraph
+private import codeql.ucode.controlflow.CfgNodes as CfgNodes
 
 /**
  * An element, viewed as a node in a data flow graph. Either an expression

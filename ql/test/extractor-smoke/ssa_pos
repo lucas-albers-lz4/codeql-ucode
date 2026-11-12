@@ -1,0 +1,44 @@
+'use strict';
+
+const methods = {
+	probe: {
+		call: function(request) {
+			let ssa_pos_src = "ssa_pos_val"; // ssa_pos_write
+			system(ssa_pos_src); // ssa_pos_read
+			let seq = "a"; // seq_decl
+			system(seq); // seq_before
+			seq = "b"; // seq_write
+			system(seq); // seq_after
+			seq += "c"; // seq_update
+			system(seq); // seq_updated_read
+			let shadow = "outer"; // shadow_decl
+			if (request) {
+				let shadow = "inner"; // shadow_inner_decl
+				system(shadow); // shadow_inner_read
+			}
+			system(shadow); // shadow_outer_read
+			let branch = "a"; // branch_decl
+			if (request) {
+				branch = "b"; // branch_write
+				system(branch); // branch_inner_read
+			}
+			system(branch); // branch_join_read
+			let both = "a"; // both_decl
+			if (request) {
+				both = "b"; // both_true
+			} else {
+				both = "c"; // both_false
+			}
+			system(both); // both_join
+			let param = "outer"; // param_decl
+			let fn = function(param) {
+				system(param); // param_inner_read
+				let independent = "inner"; // independent_decl
+				system(independent); // independent_read
+			};
+			system(param); // param_outer_read
+		}
+	}
+};
+
+return methods;

@@ -32,7 +32,7 @@ abstract class NodeImpl extends Node {
 }
 
 private class ExprNodeImpl extends ExprNode, NodeImpl {
-  override CfgScope getCfgScope() { none() /* TODO */ }
+  override CfgScope getCfgScope() { result = this.getExprNode().getScope() }
 
   override Location getLocationImpl() { result = this.getExprNode().getLocation() }
 
@@ -225,7 +225,8 @@ predicate localMustFlowStep(Node node1, Node node2) { none() }
 
 /** Gets the type of `n` used for type pruning. */
 DataFlowType getNodeType(Node n) {
-  result = TUnknownDataFlowType() // TODO
+  exists(n) and
+  result = TUnknownDataFlowType()
 }
 
 pragma[inline]

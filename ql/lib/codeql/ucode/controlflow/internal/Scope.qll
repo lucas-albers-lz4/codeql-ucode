@@ -2,6 +2,8 @@ private import ucode
 private import codeql.ucode.AST
 private import Completion
 private import ControlFlowGraphImpl
+private import codeql.ucode.ast.internal.AstNodes
+private import codeql.ucode.ast.internal.TreeSitter
 
 /**
  * A scope in the control flow graph.
@@ -15,6 +17,7 @@ abstract private class CfgScopeImpl extends AstNode {
 }
 
 final class CfgScope = CfgScopeImpl;
+
 /**
  * A Program statement sequence
  */
@@ -25,10 +28,17 @@ final class ProgramScope extends CfgScopeImpl instanceof Program {
 
   Stmts getStmt(int index) { result = Program.super.getStmt(index) }
 }
+
 /**
  * A StatementBlock statement sequence
  */
 final class StatementBlockScope extends CfgScopeImpl instanceof StatementBlock {
+  StatementBlockScope() {
+    exists(UCODE::FunctionExpression f | toTreeSitter(this) = f.getBody()) or
+    exists(UCODE::FunctionDeclaration f | toTreeSitter(this) = f.getBody()) or
+    exists(UCODE::ArrowFunction f | toTreeSitter(this) = f.getBody())
+  }
+
   override predicate scopeFirst(AstNode first) { first(StatementBlock.super.getStmt(0), first) }
 
   override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
@@ -44,7 +54,5 @@ final class CallDefinitionScope extends CfgScopeImpl instanceof CallDefinition {
 
   override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
 
-  AstNode getStmt(int index) {
-    result = CallDefinition.super.getStmt(index)
-  }
+  AstNode getStmt(int index) { result = CallDefinition.super.getStmt(index) }
 }

@@ -14,5 +14,5 @@ module TaintTracking {
   private import codeql.ucode.dataflow.internal.TaintTrackingImplSpecific
   private import codeql.dataflow.TaintTracking
   private import ucode
-  import TaintFlowMake<Location, ucodeDataFlow, ucodeTaintTracking>
+  import TaintFlowMake<Location, UcodeDataFlow, UcodeTaintTracking>
 }

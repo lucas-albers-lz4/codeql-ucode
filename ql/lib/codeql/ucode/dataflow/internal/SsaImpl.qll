@@ -2,14 +2,24 @@ private import ucode
 private import codeql.ucode.controlflow.BasicBlocks as BasicBlocks
 private import BasicBlocks
 private import codeql.ucode.controlflow.ControlFlowGraph
-private import codeql.ucode.controlflow.internal.ControlFlowGraphImpl as ControlFlowGraphImpl
 private import codeql.ssa.Ssa as SsaImplCommon
 
-/** Holds if `write` writes to variable `v`. */
-predicate variableWrite(AstNode write, Variable v) {
-  exists(VariableWriteAccess access |
-    access.getAstNode() = write and
-    access.getVariable() = v
+/**
+ * Holds if CFG node `n` is a statement (or other leaf) that contains AST node `inner`.
+ *
+ * Wrapper CFG still treats statements as leaves, so SSA is statement-level:
+ * a write/read is attributed to the innermost enclosing CFG node, not the identifier
+ * token. If/else branches are modeled, but loop, switch, and exception control
+ * flow remain statement leaves. Multiple writes to the same variable within one
+ * statement cannot be ordered. Parameters shadow lexical declarations but are
+ * not yet SSA source variables.
+ */
+private predicate cfgNodeContains(CfgNode n, AstNode inner) {
+  inner.getParent*() = n.getAstNode() and
+  not exists(CfgNode closer |
+    closer != n and
+    inner.getParent*() = closer.getAstNode() and
+    closer.getAstNode().getParent+() = n.getAstNode()
   )
 }
 
@@ -28,21 +38,25 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
    * A variable amenable to SSA construction.
    */
   class SourceVariable extends Variable {
-    SourceVariable() {
-      // Only variables that have accesses
-      exists(VariableAccess access | this.getAnAccess() = access)
-    }
+    SourceVariable() { exists(this.getAnAccess()) }
   }
 
   predicate variableWrite(BasicBlock bb, int i, SourceVariable v, boolean certain) {
-    variableWriteActual(bb, i, v, bb.getNode(i)) and
+    (
+      cfgNodeContains(bb.getNode(i), v.getAstNode())
+      or
+      exists(VariableWriteAccess va |
+        va.getVariable() = v and
+        cfgNodeContains(bb.getNode(i), va.getAstNode())
+      )
+    ) and
     certain = true
   }
 
   predicate variableRead(BasicBlock bb, int i, SourceVariable v, boolean certain) {
-    exists(VariableAccess va |
-      bb.getNode(i).getAstNode() = va.getAstNode() and
-      va = v.getAnAccess()
+    exists(VariableReadAccess va |
+      va.getVariable() = v and
+      cfgNodeContains(bb.getNode(i), va.getAstNode())
     ) and
     certain = true
   }
@@ -62,11 +76,7 @@ module Consistency = Impl::Consistency;
 
 /** Holds if `v` is read at index `i` in basic block `bb`. */
 private predicate variableReadActual(BasicBlock bb, int i, Variable v) {
-  exists(VariableAccess read |
-    read instanceof VariableReadAccess and
-    read.getVariable() = v and
-    read.getAstNode() = bb.getNode(i).getAstNode()
-  )
+  SsaInput::variableRead(bb, i, v, true)
 }
 
 cached
@@ -82,20 +92,23 @@ private module Cached {
 
   cached
   predicate firstRead(Definition def, CfgNode read) {
-    // TODO: Get first node
-    exists(BasicBlock bb, int i | read = bb.getNode(i))
+    exists(BasicBlock bb1, int i1, BasicBlock bb2, int i2 |
+      def.definesAt(_, bb1, i1) and
+      Impl::adjacentDefRead(def, bb1, i1, bb2, i2) and
+      variableReadActual(bb2, i2, _) and
+      read = bb2.getNode(i2)
+    )
   }
 
-    /**
+  /**
    * Holds if `v` is written at index `i` in basic block `bb`, and the corresponding
    * write access node in the CFG is `write`.
    */
   cached
   predicate variableWriteActual(BasicBlock bb, int i, Variable v, CfgNode write) {
-    bb.getNode(i) = write and
-    variableWrite(write.getAstNode(), v)
+    write = bb.getNode(i) and
+    SsaInput::variableWrite(bb, i, v, true)
   }
 }
 
 import Cached
-private import codeql.ucode.dataflow.Ssa

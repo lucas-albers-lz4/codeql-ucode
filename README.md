@@ -29,6 +29,15 @@ Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Ident
 
 Fresh checkouts: `./scripts/clone-grammar.sh` before `cargo test`. The grammar clone is gitignored.
 
+## Statement-level SSA status
+
+The experimental SSA smoke covers lexical declarations, ordinary and compound
+assignments, block and function-parameter shadowing, and `if`/`else` joins.
+Parameters shadow outer variables but are not themselves SSA source variables.
+Loop, switch, and exception control flow remain statement leaves, and multiple
+writes within one statement cannot be ordered. The SSA smoke does not establish
+production or interprocedural data flow; M3/M4 production queries use Models.
+
 ## M1 spike status
 
 Local gate passed on this branch:

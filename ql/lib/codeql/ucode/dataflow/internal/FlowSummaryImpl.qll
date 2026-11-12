@@ -8,7 +8,7 @@ private import codeql.dataflow.internal.AccessPathSyntax as AccessPath
 private import codeql.ucode.dataflow.internal.DataFlowImpl
 private import codeql.ucode.dataflow.FlowSummary
 
-module Input implements InputSig<Location, ucodeDataFlow> {
+module Input implements InputSig<Location, UcodeDataFlow> {
   private import codeql.ucode.ast.Calls
   private import codeql.ucode.frameworks.Stdlib
 
@@ -57,13 +57,13 @@ module Input implements InputSig<Location, ucodeDataFlow> {
     override MethodCallExpr getCall() { result = call }
   }
 
-  ucodeDataFlow::ArgumentPosition callbackSelfParameterPosition() { result.isClosureSelf() }
+  UcodeDataFlow::ArgumentPosition callbackSelfParameterPosition() { result.isClosureSelf() }
 
   ReturnKind getStandardReturnValueKind() { result = TNormalReturnKind() }
 
   string encodeParameterPosition(ParameterPosition pos) { result = pos.toString() }
 
-  string encodeArgumentPosition(ucodeDataFlow::ArgumentPosition pos) {
+  string encodeArgumentPosition(UcodeDataFlow::ArgumentPosition pos) {
     result = encodeParameterPosition(pos)
   }
 
@@ -125,7 +125,7 @@ module Input implements InputSig<Location, ucodeDataFlow> {
   }
 
   bindingset[token]
-  ucodeDataFlow::ArgumentPosition decodeUnknownArgumentPosition(AccessPath::AccessPathTokenBase token) {
+  UcodeDataFlow::ArgumentPosition decodeUnknownArgumentPosition(AccessPath::AccessPathTokenBase token) {
     // needed to support `Parameter[x..y]` ranges
     token.getName() = "Parameter" and
     result.getPosition() = AccessPath::parseInt(token.getAnArgument())
@@ -138,26 +138,26 @@ module Input implements InputSig<Location, ucodeDataFlow> {
   ContentSet decodeUnknownWithContent(AccessPath::AccessPathTokenBase token) { none() }
 }
 
-private import Make<Location, ucodeDataFlow, Input> as Impl
+private import Make<Location, UcodeDataFlow, Input> as Impl
 
 private module StepsInput implements Impl::Private::StepsInputSig {
   DataFlowCall getACall(Public::SummarizedCallable sc) {
     result.asCallCfgNode().getCall().getStaticTarget() = sc
   }
 
-  ucodeDataFlow::Node getSourceNode(Input::SourceBase source, Impl::Private::SummaryComponent sc) {
+  UcodeDataFlow::Node getSourceNode(Input::SourceBase source, Impl::Private::SummaryComponent sc) {
     sc = Impl::Private::SummaryComponent::return(_) and
     result.asExpr().getExpr() = source.getCall()
     or
     exists(CallExprBase call, Expr arg, ArgumentPosition pos |
-      result.(ucodeDataFlow::PostUpdateNode).getPreUpdateNode().asExpr().getExpr() = arg and
+      result.(UcodeDataFlow::PostUpdateNode).getPreUpdateNode().asExpr().getExpr() = arg and
       sc = Impl::Private::SummaryComponent::argument(pos) and
       call = source.getCall() and
       arg = pos.getArgument(call)
     )
   }
 
-  ucodeDataFlow::Node getSinkNode(Input::SinkBase sink, Impl::Private::SummaryComponent sc) {
+  UcodeDataFlow::Node getSinkNode(Input::SinkBase sink, Impl::Private::SummaryComponent sc) {
     exists(CallExprBase call, Expr arg, ArgumentPosition pos |
       result.asExpr().getExpr() = arg and
       sc = Impl::Private::SummaryComponent::argument(pos) and
