@@ -24,7 +24,8 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 
 - Unused formals (`formal_order`'s `a`, luci `_` / `m`) have
   ParameterNodes but no `SourceVariable` write; they do not get this
-  step. Identity `x => x` stays an access hole.
+  step. Identity `x => x` is an access of the formal (see
+  `docs/m4-identity-arrow.md`).
 - Function expressions and arrows are still not `simpleIdentifierCall`
   targets. This step is intra-procedural, not call resolution.
 - Return-to-out / `OutNode`. Do not inhabit `viableSourceCallable`.
