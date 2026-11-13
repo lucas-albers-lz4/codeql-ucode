@@ -1,7 +1,8 @@
 # M4: FlowSummary / Concepts compile slice
 
 Typecheck only. Not production taint and not `path_found`.
-`viableSourceCallable` stays `none()`. Production `LocalTaint` /
+Unique same-file identifier FunctionDeclarations may resolve;
+imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
 ## What compiles

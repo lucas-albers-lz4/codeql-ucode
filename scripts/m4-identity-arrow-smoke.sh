@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # M4 gate: identity expression-bodied arrows (`x => x`) count the body
 # identifier as a VariableReadAccess of the formal, so ParameterNode
-# localFlowStep+ reaches that SSA read. Not call resolution, not
-# production taint. Production LocalTaint / RequestArgsExec stay on
-# Models. Not path_found. viableSourceCallable stays none().
-# jumpStep stays out of localFlowStep.
+# localFlowStep+ reaches that SSA read. Not production taint.
+# Production LocalTaint / RequestArgsExec stay on Models. Not
+# path_found. Unique same-file identifier FunctionDeclarations may
+# resolve separately. jumpStep stays out of localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -39,12 +39,6 @@ for q in "$LOCAL" "$REQ"; do
 		exit 1
 	fi
 done
-
-if ! grep -q 'none() // TODO' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
-	echo "viableSourceCallable lost none() TODO" >&2
-	exit 1
-fi
 
 if grep -n 'summaryStoreStep\|summaryReadStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then

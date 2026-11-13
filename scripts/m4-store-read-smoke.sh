@@ -2,8 +2,8 @@
 # M4 gate: storeStep / readStep from extracted member, subscript, object,
 # array, and assignment-post-update AST. Not production taint, not
 # localFlowStep, not Future, not call resolution. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. viableSourceCallable
-# stays none().
+# RequestArgsExec stay on Models. Not path_found. Unique same-file
+# FunctionDeclarations may resolve; imported luci.sys stays unresolved.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

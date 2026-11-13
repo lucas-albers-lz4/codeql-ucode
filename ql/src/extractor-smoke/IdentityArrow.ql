@@ -3,8 +3,9 @@
  * @description Reports expression-bodied identity arrows (`x => x`)
  *              whose body identifier is a VariableReadAccess of the
  *              named formal, and ParameterNode localFlowStep+ to that
- *              SSA read. Testing only. Not call resolution, not
- *              production taint, and not setInitAction path_found.
+ *              SSA read. Testing only. Not production taint and not
+ *              setInitAction path_found. Unique same-file identifier
+ *              FunctionDeclarations may resolve separately.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/identity-arrow

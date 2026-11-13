@@ -10,5 +10,6 @@ import codeql.ucode.AST
 // Neither is re-exported here. Production LocalTaint / RequestArgsExec stay on
 // Models. SsaReachesSystem.ql imports DataFlow additively and uses ordered
 // expression and SSA definition/read nodes. That is not setInitAction
-// path_found. viableSourceCallable stays none(), so imported luci.sys callees
-// remain unresolved / inconclusive.
+// path_found. viableSourceCallable resolves unique same-file identifier
+// FunctionDeclarations only; imported luci.sys callees remain unresolved /
+// inconclusive.

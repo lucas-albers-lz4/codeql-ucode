@@ -6,7 +6,8 @@
  *              argument. Restricted to ssa_pos/ssa_neg so luci is not scored.
  *              Not request.args taint, not imported-callee flow, and not
  *              setInitAction path_found. LocalTaint stays on Models.
- *              viableSourceCallable remains none(); imported luci.sys stays
+ *              viableSourceCallable resolves unique same-file identifier
+ *              FunctionDeclarations only; imported luci.sys stays
  *              unresolved / inconclusive.
  * @kind problem
  * @problem.severity recommendation

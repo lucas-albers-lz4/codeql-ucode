@@ -2,7 +2,9 @@
 # M4 gate: ParameterPosition is inhabited from extracted FormalParameters
 # children and bare arrow parameters. Not ParameterNode, not argument/parameter
 # taint, not call resolution. Production LocalTaint / RequestArgsExec stay on
-# Models. Not path_found. viableSourceCallable stays none().
+# Models. Not path_found.
+# Unique same-file identifier FunctionDeclarations may resolve;
+# imported luci.sys stays unresolved.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

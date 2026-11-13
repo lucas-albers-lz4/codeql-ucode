@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # M4 gate: same-file identifier Call ReturnValueNode jumpStep to the
-# call expression OutNode. Not call resolution, not production taint.
-# Production LocalTaint / RequestArgsExec stay on Models. Not
-# path_found. viableSourceCallable stays none().
+# call expression OutNode. Not production taint. Production LocalTaint /
+# RequestArgsExec stay on Models. Not path_found. Unique same-file
+# identifier FunctionDeclarations may resolve separately.
 # jumpStep stays out of localFlowStep.
 set -euo pipefail
 
@@ -38,12 +38,6 @@ for q in "$LOCAL" "$REQ"; do
 		exit 1
 	fi
 done
-
-if ! grep -q 'none() // TODO' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
-	echo "viableSourceCallable lost none() TODO" >&2
-	exit 1
-fi
 
 if grep -n 'summaryStoreStep\|summaryReadStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
@@ -91,14 +85,16 @@ def has(msg):
 for msg in [
 	"out shellquote in luci",
 	"out callPackageVersionCheck in luci",
+	"out formal_order in ssa_pos",
 	"jump-out shellquote in luci",
 	"jump-out callPackageVersionCheck in luci",
+	"jump-out formal_order in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing return-out {msg}: {blob}")
 
-if any(m.endswith(" in ssa_pos") for m in msgs):
-	sys.exit("return-out fired without a same-file identifier declaration: " + blob)
+if any(m.endswith(" in ssa_pos") and "formal_order" not in m for m in msgs):
+	sys.exit("unexpected ssa_pos return-out: " + blob)
 
 if any("system" in m or "path_found" in m or "setInitAction" in m for m in msgs):
 	sys.exit("return-out scored builtin/taint/path_found: " + blob)

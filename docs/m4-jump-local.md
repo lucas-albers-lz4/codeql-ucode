@@ -1,7 +1,8 @@
 # M4: `jumpStep` ParameterNode continues into SSA `localFlowStep`
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-`viableSourceCallable` stays `none()`. Production `LocalTaint` /
+Unique same-file identifier FunctionDeclarations may resolve;
+imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
 ## What compiles
@@ -15,10 +16,12 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 - `jumpStep` itself stays out of `localFlowStep`. `Call.getArguments()`
   stays `none()`. Summary steps stay out of `localFlowStep`.
 - Smoke reports `jump-local 0:s` from `shellquote` and `0:pkg` from
-  `callPackageVersionCheck` on `luci`, plus `param-local` for `ssa_pos`
+  `callPackageVersionCheck` on `luci`, `jump-local 1:b` from
+  `formal_order` on `ssa_pos`, plus `param-local` for `ssa_pos`
   formals that have an SSA read (`request`, inner `param`) without a
-  jump. `ssa_pos` still has no `jump-local` rows (`system(...)` does
-  not enter `formal_order`).
+  jump. Unused `formal_order` `a` has no SSA read, so it has no
+  jump-local row. Builtin `system(...)` still does not enter
+  `formal_order`.
 
 ## Gaps (later PR)
 
@@ -27,9 +30,10 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   WriteDefinition. Do not invent a pseudo-read. Identity `x => x` is
   an access of the formal (see `docs/m4-identity-arrow.md`).
 - Function expressions and arrows are still not `simpleIdentifierCall`
-  targets. This step is intra-procedural, not call resolution.
+  targets. This step is intra-procedural; unique same-file identifier
+  FunctionDeclarations inhabit `viableSourceCallable` separately.
 - Return-to-out is `jumpStep` to `OutNode` (see
-  `docs/m4-return-out.md`). Do not inhabit `viableSourceCallable`.
+  `docs/m4-return-out.md`).
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
 - Do not wire summary steps into `localFlowStep`. Do not wire
   ParameterNode into production taint or `path_found`.
