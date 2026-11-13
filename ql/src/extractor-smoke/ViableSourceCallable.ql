@@ -3,10 +3,10 @@
  * @description Reports viableCallable targets for unique same-file
  *              identifier and member-property FunctionDeclarations,
  *              builtin identifier system, and imported fs popen /
- *              basename / access as library callables. Testing only.
- *              Imported luci.sys / open / fd.read stay unresolved. Not
- *              argument-to-parameter taint, not production taint, and
- *              not setInitAction path_found.
+ *              basename / access / open as library callables. Testing
+ *              only. Imported luci.sys / readfile / fd.read stay
+ *              unresolved. Not argument-to-parameter taint, not
+ *              production taint, and not setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/viable-source-callable

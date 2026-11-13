@@ -147,9 +147,9 @@ class AdditionalCallTarget extends Unit {
  * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
  * not widen member callees. Imported specifiers and same-file
  * FunctionDeclarations are not builtins. Imported `'fs'` `popen`,
- * `basename`, and `access` are separate library callables. luci.sys
- * stays unresolved. `propagatesFlow` stays `none()`. Does not jump.
- * Not production taint and not `path_found`.
+ * `basename`, `access`, and `open` are separate library callables.
+ * luci.sys stays unresolved. `propagatesFlow` stays `none()`. Does
+ * not jump. Not production taint and not `path_found`.
  */
 private class BuiltinSystemLibraryCallable extends LibraryCallable {
   BuiltinSystemLibraryCallable() { this = "system" }
@@ -172,8 +172,9 @@ private class BuiltinSystemLibraryCallable extends LibraryCallable {
  * Same `Call.getIdentifier` join as builtin `system`, but the name
  * must be an unaliased `'fs'` specifier (Models `NamedFsPopenCall`),
  * not a global builtin. Same-file FunctionDeclarations are not
- * library `popen`. Imported `'fs'` `basename` and `access` are
- * separate library callables. luci.sys and `fd.read` stay unresolved.
+ * library `popen`. Imported `'fs'` `basename`, `access`, and `open`
+ * are separate library callables. luci.sys and `fd.read` stay
+ * unresolved.
  * `propagatesFlow` stays `none()`. Does not jump. Not production taint
  * and not `path_found`.
  */
@@ -197,8 +198,8 @@ private class ImportedFsPopenLibraryCallable extends LibraryCallable {
  * Identifier `basename(...)` imported from `'fs'` as a library callable.
  * Same `namedFsImport` join as imported `'fs'` `popen`. Not a global
  * builtin and not a modeled sanitizer. Same-file FunctionDeclarations
- * are not library `basename`. Imported `'fs'` `access` is a separate
- * library callable. luci.sys and `fd.read` stay unresolved.
+ * are not library `basename`. Imported `'fs'` `access` and `open` are
+ * separate library callables. luci.sys and `fd.read` stay unresolved.
  * `propagatesFlow` stays `none()`. Does not jump. Not production taint
  * and not `path_found`.
  */
@@ -222,12 +223,37 @@ private class ImportedFsBasenameLibraryCallable extends LibraryCallable {
  * Identifier `access(...)` imported from `'fs'` as a library callable.
  * Same `namedFsImport` join as imported `'fs'` `popen` / `basename`.
  * Not a global builtin and not a modeled sanitizer. Same-file
- * FunctionDeclarations are not library `access`. `open` / `readfile`,
- * luci.sys, and `fd.read` stay unresolved. `propagatesFlow` stays
- * `none()`. Does not jump. Not production taint and not `path_found`.
+ * FunctionDeclarations are not library `access`. Imported `'fs'`
+ * `open` is a separate library callable. `readfile`, luci.sys, and
+ * `fd.read` stay unresolved. `propagatesFlow` stays `none()`. Does
+ * not jump. Not production taint and not `path_found`.
  */
 private class ImportedFsAccessLibraryCallable extends LibraryCallable {
   ImportedFsAccessLibraryCallable() { this = "access" }
+
+  override ucode::Call getACall() {
+    result.getIdentifier().getName() = this and
+    exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = result.getIdentifier().getFile() and
+      namedFsImport(imp, this)
+    ) and
+    not exists(UCODE::FunctionDeclaration f |
+      f.getName().getValue() = this and
+      f.getLocation().getFile() = result.getIdentifier().getFile()
+    )
+  }
+}
+
+/**
+ * Identifier `open(...)` imported from `'fs'` as a library callable.
+ * Same `namedFsImport` join as imported `'fs'` `popen` / `basename` /
+ * `access`. Not a global builtin. Same-file FunctionDeclarations are
+ * not library `open`. `readfile`, luci.sys, and `fd.read` stay
+ * unresolved. `propagatesFlow` stays `none()`. Does not jump. Not
+ * production taint and not `path_found`.
+ */
+private class ImportedFsOpenLibraryCallable extends LibraryCallable {
+  ImportedFsOpenLibraryCallable() { this = "open" }
 
   override ucode::Call getACall() {
     result.getIdentifier().getName() = this and
