@@ -20,7 +20,16 @@ class CallExpressionImpl extends TCallExpression, CallsImpl {
   CallExpressionImpl() { this = TCallExpression(ast) }
 
   override string toString() { result = ast.toString() }
-  override IdentsImpl getIdentifier() { none() }
+
+  /**
+   * Gets the callee identifier when the extracted `function` field is
+   * already an identifier. Member, subscript, parenthesized, and nested
+   * call callees have no result. `getArguments()` stays `none()` because
+   * the `arguments` node is not an expression.
+   */
+  override IdentsImpl getIdentifier() {
+    toTreeSitter(result) = ast.getFunction()
+  }
 
   override ExprImpl getArguments() { none() }
 
