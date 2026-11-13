@@ -10,7 +10,7 @@
  *              and member-property FunctionDeclarations; imported
  *              luci.sys stays unresolved / inconclusive.
  *              viableLibraryCallable may resolve builtin system and
- *              imported fs popen; that is not this query's
+ *              imported fs popen / basename; that is not this query's
  *              localFlowStep+ evidence.
  * @kind problem
  * @problem.severity recommendation

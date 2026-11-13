@@ -22,10 +22,11 @@ enter `popen`. `getARuntimeTarget` stays `none()`.
 - Builtin identifier `system` stays a library callable
   (`docs/m4-viable-library-callable.md`). Unique same-file
   FunctionDeclarations stay source `CfgScope`s.
-- Imported `basename` from `'fs'`, imported `luci.sys` (`init_action`),
-  and library members (`fd.read` / `fd.close`) do not resolve.
-  Identifier `getACall` for Frameworks keys is unchanged and is not
-  through-flow.
+- Imported `basename` from `'fs'` is a separate library callable
+  (`docs/m4-imported-fs-basename.md`). Imported `luci.sys`
+  (`init_action`) and library members (`fd.read` / `fd.close`) do
+  not resolve. Identifier `getACall` for Frameworks keys is unchanged
+  and is not through-flow.
 - In-file `localFlowStep+` from `ssa_pos_src` to builtin `system`
   still holds. That is not interprocedural taint.
 
@@ -34,7 +35,9 @@ enter `popen`. `getARuntimeTarget` stays `none()`.
 - Function expressions and arrows assigned to locals (`let fn = function`).
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- `basename` stays imported and unresolved. Do not treat it as a builtin.
+- Imported `'fs'` `basename` is a library callable
+  (`docs/m4-imported-fs-basename.md`). `access` stays imported and
+  unresolved. Do not treat it as a builtin.
 - Member `getACall` stays `none()`. Do not walk `getAFieldOrChild`.
 - `getARuntimeTarget` stays `none()`.
 - Do not wire summary steps into `localFlowStep` / production taint.

@@ -2,9 +2,9 @@
  * @name Same-file FunctionDeclaration and library call targets
  * @description Reports viableCallable targets for unique same-file
  *              identifier and member-property FunctionDeclarations,
- *              builtin identifier system, and imported fs popen as
- *              library callables. Testing only. Imported luci.sys /
- *              basename / fd.read stay unresolved. Not
+ *              builtin identifier system, and imported fs popen /
+ *              basename as library callables. Testing only. Imported
+ *              luci.sys / access / fd.read stay unresolved. Not
  *              argument-to-parameter taint, not production taint, and
  *              not setInitAction path_found.
  * @kind problem

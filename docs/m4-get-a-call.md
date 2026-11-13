@@ -1,9 +1,10 @@
 # M4: FlowSummary `getACall` for identifier callees
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Builtin identifier `system` and imported `'fs'` `popen` may resolve
-as library callables separately (`docs/m4-viable-library-callable.md`,
-`docs/m4-imported-fs-popen.md`). Unique same-file
+Builtin identifier `system` and imported `'fs'` `popen` / `basename`
+may resolve as library callables separately
+(`docs/m4-viable-library-callable.md`, `docs/m4-imported-fs-popen.md`,
+`docs/m4-imported-fs-basename.md`). Unique same-file
 identifier and member-property FunctionDeclarations may resolve
 separately. Member `getACall` stays empty. Production
 `LocalTaint` / `RequestArgsExec` stay on Models.
@@ -29,9 +30,11 @@ separately. Member `getACall` stays empty. Production
   `getAFieldOrChild`: that would treat a member object or property as
   the callee name.
 - Identifier `getACall` does not apply summary through-flow.
-  Builtin `system` and imported `'fs'` `popen` may resolve as
-  `viableLibraryCallable` without `propagatesFlow`. Imported
-  `basename` stays unresolved.
+  Builtin `system` and imported `'fs'` `popen` / `basename` may
+  resolve as `viableLibraryCallable` without `propagatesFlow`.
+  Frameworks keys stay `system` / `popen` / `shellquote`, so
+  identifier `getACall` does not grow a `basename` row. `access`
+  stays unresolved.
 - Do not wire summary steps into `localFlowStep` / production taint.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).
