@@ -61,7 +61,9 @@ such as arithmetic and `+=` have no local flow edge, and taint propagation
 through those operations is not modeled here. Field content is
 store/read only, not `localFlowStep`. Same-file identifier calls can
 `jumpStep` from `Call.getArgument` into that declaration's
-`ParameterNode`; `viableSourceCallable` remains `none()`, so
+`ParameterNode`. That node continues into the formal's SSA write
+through `parameterToSsaDef`; `jumpStep` itself stays out of
+`localFlowStep`. `viableSourceCallable` remains `none()`, so
 imported `luci.sys` callees stay unresolved / inconclusive — not
 `setInitAction` `path_found`.
 
