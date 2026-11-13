@@ -6,7 +6,8 @@
  * `getACall` matches identifier callees (`system`, `popen`, `shellquote`) to
  * string-keyed summaries. Member callees have no identifier. `Future` stays
  * `none()`. Builtin identifier `system` and imported `'fs'` `popen`
- * / `basename` may resolve as `viableLibraryCallable` separately.
+ * / `basename` / `access` may resolve as `viableLibraryCallable`
+ * separately.
  * `propagatesFlow` stays `none()`.
  * Does not wire summary steps into `localFlowStep`. Not production taint
  * and not `path_found`.
@@ -78,9 +79,9 @@ private module StepsInput implements Impl::Private::StepsInputSig {
    * Member, subscript, parenthesized, and nested-call callees have no
    * `getIdentifier`, so they have no result. No async/future calls:
    * ucode has no async AST. Builtin identifier `system` and imported
-   * `'fs'` `popen` / `basename` may resolve as `viableLibraryCallable`
-   * separately. Frameworks `getACall` keys stay `system` / `popen` /
-   * `shellquote`.
+   * `'fs'` `popen` / `basename` / `access` may resolve as
+   * `viableLibraryCallable` separately. Frameworks `getACall` keys
+   * stay `system` / `popen` / `shellquote`.
    * Unique same-file identifier
    * and member-property FunctionDeclarations may resolve separately.
    * Member `getACall` stays empty. Does not wire summary steps into
