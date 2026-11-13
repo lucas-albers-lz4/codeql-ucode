@@ -1,9 +1,8 @@
 /** Provides classes and predicates for defining flow summaries. */
 
-private import ucode
 private import internal.FlowSummaryImpl as Impl
 
-// import all instances below
+// Import all instances below. Frameworks is intentionally empty.
 private module Summaries {
   private import codeql.ucode.Frameworks
   private import codeql.ucode.dataflow.internal.ModelsAsData

@@ -1,34 +1,16 @@
 /**
  * Provides classes and predicates for defining flow sources.
  *
- * Flow sources defined here feed into the `ActiveThreatModelSource` class and
- * ultimately reach data flow configurations as follows:
- *
- * ```text
- * data from *.model.yml | QL extensions of FlowSource::Range
- *  v                       v
- * FlowSource (associated with a models-as-data kind string)
- *  v
- * sourceNode predicate | (theoretically other QL defined sources)
- *  v                      v
- * ThreatModelSource (associated with a threat model source type)
- *  v
- * ActiveThreatModelSource (just the enabled sources)
- *  v
- * various Source classes for specific data flow configurations
- * ```
- *
- * New sources should be defined using models-as-data or QL extensions of
- * `FlowSource::Range`. Data flow configurations on the other hand should use
- * `ActiveThreatModelSource` to match sources enabled in the user
- * configuration.
+ * `Range` is a local data-flow node class. It does **not** extend
+ * `FlowSummaryImpl::Public::SourceElement`: that class is not in
+ * `codeql/dataflow` 1.1.6. Models-as-data source rows are declared in
+ * `ModelsAsData` but are not interpreted into nodes. Not production taint
+ * and not `path_found`.
  */
 
-private import ucode
-private import internal.FlowSummaryImpl as Impl
-private import internal.DataFlowImpl as DataFlowImpl
+private import codeql.ucode.DataFlow
 
-// import all instances below
+// Import all instances below. Frameworks is intentionally empty.
 private module Sources {
   private import codeql.ucode.Frameworks
   private import codeql.ucode.dataflow.internal.ModelsAsData
@@ -37,18 +19,12 @@ private module Sources {
 /** Provides the `Range` class used to define the extent of `FlowSource`. */
 module FlowSource {
   /** A flow source. */
-  abstract class Range extends Impl::Public::SourceElement {
+  abstract class Range extends DataFlow::Node {
     bindingset[this]
     Range() { any() }
 
-    override predicate isSource(
-      string output, string kind, Impl::Public::Provenance provenance, string model
-    ) {
-      this.isSource(output, kind) and provenance = "manual" and model = ""
-    }
-
     /**
-     * Holds is this element is a flow source of kind `kind`, where data
+     * Holds if this element is a flow source of kind `kind`, where data
      * flows out as described by `output`.
      */
     predicate isSource(string output, string kind) { none() }
@@ -56,5 +32,3 @@ module FlowSource {
 }
 
 final class FlowSource = FlowSource::Range;
-
-predicate sourceNode = DataFlowImpl::sourceNode/2;
