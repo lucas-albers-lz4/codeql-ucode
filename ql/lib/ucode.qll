@@ -13,7 +13,7 @@ import codeql.ucode.AST
 // path_found. viableSourceCallable resolves unique same-file identifier
 // and member-property FunctionDeclarations; imported luci.sys callees
 // remain unresolved / inconclusive. viableLibraryCallable resolves
-// builtin identifier system and imported fs popen / basename;
-// access stays unresolved.
+// builtin identifier system and imported fs popen / basename /
+// access; open / readfile stay unresolved.
 // jumpStep uses identifier simpleIdentifierCall and unique same-file
 // member FunctionDeclarations.

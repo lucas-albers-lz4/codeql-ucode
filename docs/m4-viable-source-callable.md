@@ -24,15 +24,16 @@ FunctionDeclarations. This slice also inhabits unique same-file
   `function name(...)` body. `member_order` on `ssa_pos` resolves. The
   receiver object is not resolved. `Call.getIdentifier` stays
   identifier-only; this does not walk `getAFieldOrChild`.
-- Imported names (`init_action` from `'luci.sys'`, `access` from
+- Imported names (`init_action` from `'luci.sys'`, `open` from
   `'fs'`) and library member callees (`fd.read` / `fd.close`) do
   not resolve as source `CfgScope`s, including when `sys.uc` is in
   the database. Those members have no matching FunctionDeclaration.
   Builtin identifier `system` and imported `'fs'` `popen` /
-  `basename` are library callables, not source `CfgScope`s
+  `basename` / `access` are library callables, not source `CfgScope`s
   (see `docs/m4-viable-library-callable.md`,
-  `docs/m4-imported-fs-popen.md`, and
-  `docs/m4-imported-fs-basename.md`).
+  `docs/m4-imported-fs-popen.md`,
+  `docs/m4-imported-fs-basename.md`, and
+  `docs/m4-imported-fs-access.md`).
 - Duplicate same-file FunctionDeclaration names have no
   `viableSourceCallable` target. Identifier `jumpStep` still uses
   unfiltered `simpleIdentifierCall`. Unique member FunctionDeclarations
@@ -48,9 +49,10 @@ FunctionDeclarations. This slice also inhabits unique same-file
 - Nested duplicate names and lexical shadowing.
 - `getARuntimeTarget` stays `none()`.
 - Subscript, parenthesized, and nested-call callees stay unresolved.
-- Imported `access` / luci.sys stay unresolved. Member `getACall`
+- Imported `open` / luci.sys stay unresolved. Member `getACall`
   stays `none()`. Builtin identifier `system` and imported `'fs'`
-  `popen` / `basename` are library callables
+  `popen` / `basename` / `access` are library callables
   (see `docs/m4-viable-library-callable.md`,
-  `docs/m4-imported-fs-popen.md`, and
-  `docs/m4-imported-fs-basename.md`).
+  `docs/m4-imported-fs-popen.md`,
+  `docs/m4-imported-fs-basename.md`, and
+  `docs/m4-imported-fs-access.md`).
