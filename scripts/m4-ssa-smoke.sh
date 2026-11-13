@@ -3,6 +3,7 @@
 # requires DataFlow localFlowStep+ from an SSA def node to a read of that
 # definition. Isolated SsaReads.ql remains extractor-smoke.
 # Public localFlowStep uses SSA identities, not statement CFG nodes.
+# VariableWriteAccess is assignment/update identifier writes, not declarators.
 # Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
 # as sanitizers. viableSourceCallable stays none().
@@ -16,6 +17,7 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-ssa"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 Q="$ROOT/ql/src/extractor-smoke/SsaReads.ql"
+WRITES="$ROOT/ql/src/extractor-smoke/VariableWrites.ql"
 FLOW="$ROOT/ql/src/extractor-smoke/LocalFlowStep.ql"
 PROD="$ROOT/ql/src/m4/SsaReachesSystem.ql"
 
@@ -29,6 +31,7 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 
 echo "== compile import codeql.ucode.DataFlow =="
 codeql query compile "$Q" --search-path="$QLPATH"
+codeql query compile "$WRITES" --search-path="$QLPATH"
 codeql query compile "$FLOW" --search-path="$QLPATH"
 codeql query compile "$PROD" --search-path="$QLPATH"
 
@@ -119,6 +122,50 @@ for name, write, read in [
     if has_pair(name, fixture, write, read):
         sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
 print("SSA pos/neg access-level checks passed")
+PY
+
+echo "== VariableWrites =="
+codeql query run "$WRITES" --database="$DB" --search-path="$QLPATH" --output="$DB/writes.bqrs"
+codeql bqrs decode --format=csv "$DB/writes.bqrs" | tee "$DB/writes.csv"
+
+python3 - <<'PY'
+import csv, sys
+from pathlib import Path
+
+rows = list(csv.reader(open(".codeql-database/m4-ssa/writes.csv")))
+msgs = [r[1] for r in rows[1:] if len(r) > 1]
+
+def line(fixture, marker):
+    lines = Path(f"ql/test/extractor-smoke/{fixture}").read_text().splitlines()
+    matches = [i for i, text in enumerate(lines, 1) if text.rstrip().endswith("// " + marker)]
+    if len(matches) != 1:
+        sys.exit(f"expected one {marker} in {fixture}, found {matches}")
+    return matches[0]
+
+def has_write(name, fixture, marker):
+    loc = f"{name}:{line(fixture, marker)} in {fixture}"
+    return loc in msgs
+
+for name, fixture, marker in [
+    ("seq", "ssa_pos", "seq_write"),
+    ("seq", "ssa_pos", "seq_update"),
+    ("branch", "ssa_pos", "branch_write"),
+    ("both", "ssa_pos", "both_true"),
+    ("both", "ssa_pos", "both_false"),
+]:
+    if not has_write(name, fixture, marker):
+        sys.exit(f"missing VariableWriteAccess {name} {marker}: " + "\n".join(msgs))
+for name, fixture, marker in [
+    ("ssa_pos_src", "ssa_pos", "ssa_pos_write"),
+    ("ssa_multiline", "ssa_pos", "ssa_multiline_write"),
+    ("seq", "ssa_pos", "seq_decl"),
+    ("ssa_neg_x", "ssa_neg", "ssa_neg_x_write"),
+    ("ssa_neg_y", "ssa_neg", "ssa_neg_y_write"),
+    ("discarded", "ssa_neg", "discarded_write"),
+]:
+    if has_write(name, fixture, marker):
+        sys.exit(f"declarator reported as VariableWriteAccess {name} {marker}")
+print("VariableWriteAccess assignment/update vs declarator ok")
 PY
 
 echo "== LocalFlowStep =="
