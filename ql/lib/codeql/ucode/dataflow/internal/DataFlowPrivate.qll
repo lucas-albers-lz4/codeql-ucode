@@ -275,6 +275,42 @@ module VariableCapture {
   // TODO
 }
 
+/**
+ * Static field names the extractor already records. Not computed
+ * property names. Not production taint.
+ */
+private string extractedFieldName() {
+  (
+    exists(UCODE::MemberExpression m | result = m.getProperty().getValue())
+    or
+    exists(UCODE::Pair p | result = staticPairKey(p))
+    or
+    exists(UCODE::ShorthandPropertyIdentifier s | result = s.getValue())
+  ) and
+  result != ""
+}
+
+/** Property-identifier or string pair keys. Not computed names. */
+private string staticPairKey(UCODE::Pair p) {
+  result = p.getKey().(UCODE::PropertyIdentifier).getValue()
+  or
+  exists(UCODE::String s | s = p.getKey() |
+    result =
+      strictconcat(int i, UCODE::StringFragment frag |
+        frag = s.getChild(i)
+      |
+        frag.getValue() order by i
+      )
+  )
+}
+
+/** Subscript reads or non-empty array literals. */
+private predicate extractedElementContent() {
+  exists(UCODE::SubscriptExpression s)
+  or
+  exists(UCODE::Array a, int i | exists(a.getChild(i)))
+}
+
 /** A collection of cached types and predicates to be evaluated in the same stage. */
 cached
 private module Cached {
@@ -317,8 +353,19 @@ private module Cached {
   cached
   newtype TContentSet = TSingletonContent(Content c)
 
+  /**
+   * Field and element content from extracted AST.
+   *
+   * `Field` names are member properties, object pair keys, and shorthand
+   * properties. `Element` holds when a subscript or a non-empty array is
+   * present. No `Future`: ucode has no async/future nodes. Does not add
+   * `storeStep` / `readStep`, resolve calls, or production taint. Not
+   * `path_found`.
+   */
   cached
-  newtype TContent = TFieldContent(string name) { none() }
+  newtype TContent =
+    TFieldContent(string name) { name = extractedFieldName() } or
+    TElementContent() { extractedElementContent() }
 
   cached
   newtype TContentApprox = TNonElementContentApprox(Content c) // TODO

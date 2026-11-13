@@ -201,11 +201,24 @@ predicate localExprFlow(CfgNodes::ExprCfgNode e1, CfgNodes::ExprCfgNode e2) {
 /** A reference contained in an object. */
 class Content extends TContent {
   /** Gets a textual representation of this content. */
-  string toString() { none() }
+  string toString() {
+    exists(string name | this = TFieldContent(name) and result = "Field[" + name + "]")
+    or
+    this = TElementContent() and result = "Element"
+  }
 
   /** Gets the location of this content. */
   Location getLocation() { none() }
 }
+
+/** A named object field recorded by the extractor. */
+class FieldContent extends Content, TFieldContent {
+  /** Gets the extracted field name. */
+  string getName() { this = TFieldContent(result) }
+}
+
+/** An array / subscript element recorded by the extractor. */
+class ElementContent extends Content, TElementContent { }
 
 /** Provides different sub classes of `Content`. */
 module Content { }
