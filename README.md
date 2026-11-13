@@ -23,6 +23,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 13. `./scripts/m4-imported-callee-smoke.sh` asserts `ImportedCalleeTaint.ql` sees `init_action` from `luci.sys`.
 14. `./scripts/m4-sys-smoke.sh` indexes `luci` plus installed luci.sys (`sys.uc`) and asserts `InitActionSystem.ql` plus the `setInitAction` action-token switch (not a sanitizer of `name`).
 15. `./scripts/m4-luci-sys-status-exec-smoke.sh` asserts `LuciSysStatusExec.ql` (`getConntrackList` / `getProcessList` helpers: fixed `conntrack` and `busybox top` popen in `sys.uc`; not interprocedural `path_found`).
+16. `./scripts/m4-viable-source-callable-smoke.sh` asserts unique same-file identifier FunctionDeclarations resolve and imported `luci.sys` does not.
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 
@@ -67,9 +68,9 @@ through `parameterToSsaDef`; `jumpStep` itself stays out of
 call expression (`OutNode`) for the same simpleIdentifierCall.
 An identity expression body (`x => x`) is a read of
 that formal, so `parameterToSsaDef` continues into `ssaDefToRead`.
-`viableSourceCallable` remains `none()`, so
-imported `luci.sys` callees stay unresolved / inconclusive — not
-`setInitAction` `path_found`.
+`viableSourceCallable` resolves unique same-file identifier
+FunctionDeclarations; imported `luci.sys` callees stay
+unresolved / inconclusive — not `setInitAction` `path_found`.
 
 ## M1 spike status
 

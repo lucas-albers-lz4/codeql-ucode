@@ -2,8 +2,9 @@
  * @name simpleIdentifierCall ReturnValueNode jumps to OutNode
  * @description Reports OutNode for same-file identifier calls, and
  *              jumpStep from that declaration's ReturnValueNode to the
- *              call expression. Testing only. Not call resolution, not
- *              production taint, and not setInitAction path_found.
+ *              call expression. Testing only. Not production taint and
+ *              not setInitAction path_found. Unique same-file identifier
+ *              FunctionDeclarations may resolve separately.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/return-out

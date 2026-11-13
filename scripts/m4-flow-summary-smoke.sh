@@ -3,8 +3,10 @@
 # typecheck on dataflow 1.1.6. Import smoke only. Identifier getACall is
 # scripts/m4-get-a-call-smoke.sh. ActiveThreatModelSource is uninhabited
 # (no Range models). Production LocalTaint / RequestArgsExec stay on
-# Models. Not path_found. viableSourceCallable stays none(). Do not wire
-# summary steps into localFlowStep.
+# Models. Not path_found.
+# Unique same-file identifier FunctionDeclarations may resolve;
+# imported luci.sys stays unresolved. Do not wire summary steps
+# into localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

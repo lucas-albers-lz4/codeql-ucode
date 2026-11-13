@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # M4 gate: jumpStep ParameterNode continues into SSA localFlowStep.
-# Not call resolution, not production taint. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found.
-# viableSourceCallable stays none(). jumpStep stays out of localFlowStep.
+# Not production taint. Production LocalTaint / RequestArgsExec stay
+# on Models. Not path_found. Unique same-file identifier
+# FunctionDeclarations may resolve separately. jumpStep stays out of
+# localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -37,12 +38,6 @@ for q in "$LOCAL" "$REQ"; do
 		exit 1
 	fi
 done
-
-if ! grep -q 'none() // TODO' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
-	echo "viableSourceCallable lost none() TODO" >&2
-	exit 1
-fi
 
 if grep -n 'summaryStoreStep\|summaryReadStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
@@ -90,14 +85,18 @@ def has(msg):
 for msg in [
 	"jump-local 0:s from shellquote in luci",
 	"jump-local 0:pkg from callPackageVersionCheck in luci",
+	"jump-local 1:b from formal_order in ssa_pos",
 	"param-local 0:request in ssa_pos",
 	"param-local 0:param in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing jump/param localFlow {msg}: {blob}")
 
-if any(m.startswith("jump-local ") and m.endswith(" in ssa_pos") for m in msgs):
-	sys.exit("jump-local fired without a same-file identifier declaration: " + blob)
+if any(
+	m.startswith("jump-local ") and m.endswith(" in ssa_pos") and "from formal_order" not in m
+	for m in msgs
+):
+	sys.exit("unexpected ssa_pos jump-local: " + blob)
 
 if any("from system" in m or "path_found" in m or "setInitAction" in m for m in msgs):
 	sys.exit("jump-local scored builtin/taint/path_found: " + blob)

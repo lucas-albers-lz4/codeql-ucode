@@ -3,8 +3,9 @@
  * @description Reports jumpStep from Call.getArgument into a
  *              ParameterNode when Call.getIdentifier matches a
  *              same-file function declaration. Testing only. Not
- *              call resolution, not production taint, and not
- *              setInitAction path_found.
+ *              production taint and not setInitAction path_found.
+ *              Unique same-file identifier FunctionDeclarations may
+ *              also inhabit viableSourceCallable.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/simple-call-jump

@@ -2,7 +2,8 @@
 # M4 gate: MaD encodeContent maps Field and Element tokens. Future stays
 # none(). Not production taint, not call resolution. Production
 # LocalTaint / RequestArgsExec stay on Models. Not path_found.
-# viableSourceCallable stays none(). storeStep/readStep are a separate
+# Unique same-file identifier FunctionDeclarations may resolve;
+# imported luci.sys stays unresolved. storeStep/readStep are a separate
 # smoke (scripts/m4-store-read-smoke.sh).
 set -euo pipefail
 

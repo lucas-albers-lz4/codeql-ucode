@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # M4 gate: ParameterNode from named formals that have a CFG node, and
 # argument-to-parameter via Call.getArgument + ParameterPosition.
-# Not call resolution, not production taint. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found.
-# viableSourceCallable stays none().
+# Not production taint. Production LocalTaint / RequestArgsExec stay
+# on Models. Not path_found. Call resolution is a separate smoke.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -38,12 +37,6 @@ for q in "$LOCAL" "$REQ"; do
 		exit 1
 	fi
 done
-
-if ! grep -q 'none() // TODO' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
-	echo "viableSourceCallable lost none() TODO" >&2
-	exit 1
-fi
 
 if grep -n 'summaryStoreStep\|summaryReadStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then

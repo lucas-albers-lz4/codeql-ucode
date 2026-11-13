@@ -1,7 +1,8 @@
 # M4: FlowSummary `getACall` for identifier callees
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-`viableSourceCallable` / `viableLibraryCallable` stay `none()`. Production
+`viableLibraryCallable` stays `none()`. Unique same-file identifier
+FunctionDeclarations may resolve separately. Production
 `LocalTaint` / `RequestArgsExec` stay on Models.
 
 ## What compiles

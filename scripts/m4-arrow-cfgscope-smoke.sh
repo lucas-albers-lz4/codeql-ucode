@@ -3,7 +3,8 @@
 # CFG nodes and SSA writes, analogous to block-bodied functions.
 # Not ParameterNode, not argument/parameter taint, not call resolution.
 # Production LocalTaint / RequestArgsExec stay on Models. Not path_found.
-# viableSourceCallable stays none().
+# Unique same-file identifier FunctionDeclarations may resolve;
+# imported luci.sys stays unresolved.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

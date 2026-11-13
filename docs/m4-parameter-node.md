@@ -1,7 +1,8 @@
 # M4: ParameterNode from named formals with CFG nodes
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-`viableSourceCallable` stays `none()`. Production `LocalTaint` /
+Unique same-file identifier FunctionDeclarations may resolve;
+imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
 ## What compiles
@@ -35,7 +36,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 - Identity bodies (`x => x`) count the body identifier as an access
   (see `docs/m4-identity-arrow.md`). The #28 fixture still uses
   `x => x || 0` so that read remains a child.
-- Call resolution (`viableSourceCallable` stays `none()`).
+- Call resolution is a separate smoke (`viableSourceCallable` unique
+  same-file FunctionDeclarations). This smoke still does not test
+  argument-to-parameter through-flow.
 - Do not wire ParameterNode into production taint or `path_found`.
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
 - Do not wire summary steps into `localFlowStep`.

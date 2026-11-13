@@ -3,8 +3,9 @@
  * @description Reports jumpStep into a ParameterNode that then
  *              localFlowStep+ reaches an SSA read of that formal, and
  *              ParameterNodes that locally reach an SSA read without a
- *              jump. Testing only. Not call resolution, not production
- *              taint, and not setInitAction path_found.
+ *              jump. Testing only. Not production taint and not
+ *              setInitAction path_found. Unique same-file identifier
+ *              FunctionDeclarations may resolve separately.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/jump-local

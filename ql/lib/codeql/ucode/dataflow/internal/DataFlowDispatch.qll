@@ -127,7 +127,7 @@ private class RelevantCall extends CfgNodes::StmtNodes::CallCfgNode { }
 
 /** Holds if `call` may resolve to the returned source-code method. */
 private DataFlowCallable viableSourceCallable(DataFlowCall call) {
-  none() // TODO
+  result = uniqueSameFileFunctionDeclaration(call)
   or
   result = any(AdditionalCallTarget t).viableTarget(call.asCall())
 }
@@ -185,8 +185,9 @@ private module Cached {
    * Bare `x => ...` arrows use the `parameter` field, not that list.
    * `sourceParameterCfg` overlays `ParameterNode` on named formals that
    * already have a CFG node, including expression-bodied arrows after
-   * #28. Does not resolve calls (`viableSourceCallable` stays `none()`).
-   * Not production taint and not `path_found`.
+   * #28. Unique same-file identifier FunctionDeclarations may resolve
+   * separately; imported luci.sys stays unresolved. Not production
+   * taint and not `path_found`.
    */
   cached
   newtype TParameterPosition =
@@ -216,9 +217,9 @@ private predicate namedFormalAt(UCODE::Identifier id, int pos) {
  * formals. Expression-bodied arrows are included now that they have an
  * inner CfgScope. Unused `_`/`m` stay SSA-write holes. Identity
  * `x => x` is an access of the formal (see `docs/m4-identity-arrow.md`).
- * Does not resolve calls
- * (`viableSourceCallable` stays `none()`). Not production taint and
- * not `path_found`.
+ * Unique same-file identifier FunctionDeclarations may resolve
+ * separately; imported luci.sys stays unresolved. Not production
+ * taint and not `path_found`.
  */
 predicate sourceParameterCfg(
   CfgNodes::ExprCfgNode n, DataFlowCallable c, ParameterPosition pos
@@ -270,8 +271,9 @@ predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
  * whose body is `callee`. Uses `Call.getIdentifier` plus the extracted
  * declaration name. Member, subscript, parenthesized, and nested-call
  * callees have no identifier. Function expressions and arrows are not
- * declarations. Does not inhabit `viableSourceCallable`. Not production
- * taint and not `path_found`.
+ * declarations. `jumpStep` uses this name match. Unique non-imported
+ * declarations inhabit `viableSourceCallable` separately. Not
+ * production taint and not `path_found`.
  */
 pragma[nomagic]
 predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
@@ -280,5 +282,50 @@ predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
     astCall.getIdentifier().getName() = f.getName().getValue() and
     call.asCall().getLocation().getFile() = f.getLocation().getFile() and
     toTreeSitter(callee.asCfgScope()) = f.getBody()
+  )
+}
+
+/**
+ * Local name of a named or default import in `imp`. Aliased specifiers
+ * use the alias. Not a module resolver and not luci.sys `path_found`.
+ */
+private predicate importedSpecifierName(UCODE::ImportStatement imp, string name) {
+  exists(UCODE::ImportSpecifier spec |
+    spec = imp.getClause().getNamed().getChild(_) and
+    (
+      exists(UCODE::Identifier alias |
+        alias = spec.getAlias() and name = alias.getValue()
+      )
+      or
+      not exists(spec.getAlias()) and
+      exists(UCODE::Identifier id |
+        id = spec.getName() and name = id.getValue()
+      )
+    )
+  )
+  or
+  exists(UCODE::Identifier def |
+    def = imp.getClause().getDefault() and name = def.getValue()
+  )
+}
+
+/**
+ * Unique same-file identifier `function name(...)` body. Member,
+ * imported, builtin, and duplicate-name callees have no result.
+ * Does not resolve luci.sys or score setInitAction `path_found`.
+ */
+private DataFlowCallable uniqueSameFileFunctionDeclaration(DataFlowCall call) {
+  simpleIdentifierCall(call, result) and
+  exists(string name |
+    name = call.asCall().getCall().getIdentifier().getName() and
+    name != "" and
+    not exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = call.getLocation().getFile() and
+      importedSpecifierName(imp, name)
+    ) and
+    strictcount(UCODE::FunctionDeclaration other |
+      other.getName().getValue() = name and
+      other.getLocation().getFile() = call.getLocation().getFile()
+    ) = 1
   )
 }

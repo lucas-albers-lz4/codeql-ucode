@@ -4,8 +4,8 @@
  *              node (block-bodied functions and expression-bodied
  *              arrows), and argument-to-parameter position matches via
  *              Call.getArgument and ParameterPosition. Testing only.
- *              Not call resolution, not production taint, and not
- *              setInitAction path_found.
+ *              Not production taint and not setInitAction path_found.
+ *              Call resolution is a separate smoke.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/parameter-node

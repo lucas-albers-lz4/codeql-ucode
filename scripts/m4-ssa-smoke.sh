@@ -6,7 +6,8 @@
 # VariableWriteAccess is assignment/update identifier writes, not declarators.
 # Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
-# as sanitizers. viableSourceCallable stays none().
+# as sanitizers. Unique same-file identifier FunctionDeclarations may
+# resolve; imported luci.sys stays unresolved.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
