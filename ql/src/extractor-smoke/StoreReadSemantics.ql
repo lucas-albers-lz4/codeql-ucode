@@ -29,6 +29,13 @@ private predicate contentCaseAccess(DataFlow::Node n) {
   )
 }
 
+private predicate contentCaseBase(DataFlow::Node n) {
+  exists(UCODE::Identifier id |
+    toTreeSitter(n.asExpr().getExpr()) = id and
+    id.getValue() = "content_case"
+  )
+}
+
 from DataFlow::Node n1, DataFlow::Node n2, DataFlow::ContentSet c, string message
 where
   n2.getLocation().getFile().getBaseName() = "ssa_neg" and
@@ -40,5 +47,10 @@ where
     storeStep(n1, c, n2) and
     n2 instanceof DataFlow::ContentContainerNode and
     message = "store " + contentLabel(c) + ":" + n1.getLocation().getStartLine().toString()
+    or
+    storeStep(n1, c, n2) and
+    n2 instanceof DataFlow::PostUpdateNode and
+    contentCaseBase(n2.(DataFlow::PostUpdateNode).getPreUpdateNode()) and
+    message = "assign store " + contentLabel(c) + ":" + n2.getLocation().getStartLine().toString()
   )
 select n2, message
