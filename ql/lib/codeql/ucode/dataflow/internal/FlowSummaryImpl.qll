@@ -3,9 +3,10 @@
  *
  * Language adapter for `codeql/dataflow` 1.1.6. Generator leftovers used Rust
  * types (`Function`, `CallExprBase`, `SourceElement`) that ucode does not have.
- * Summaries compile; they do not attach to calls (`getACall` is `none()`, and
- * `viableLibraryCallable` stays `none()`). Not production taint and not
- * `path_found`.
+ * `getACall` matches identifier callees (`system`, `popen`, `shellquote`) to
+ * string-keyed summaries. Member callees have no identifier. `Future` stays
+ * `none()`. `viableLibraryCallable` stays `none()`. Does not wire summary
+ * steps into `localFlowStep`. Not production taint and not `path_found`.
  */
 
 private import ucode
@@ -36,7 +37,7 @@ module Input implements InputSig<Location, DataFlowImplSpecific::UcodeDataFlow> 
   /**
    * MaD `Field[name]` and `Element` tokens from inhabited `TContent`.
    * `Future` stays `none()`: ucode has no async/future AST. Does not
-   * add `storeStep` / `readStep` or attach summaries to calls.
+   * add `storeStep` / `readStep` or summary steps into `localFlowStep`.
    */
   string encodeContent(DataFlowImplSpecific::UcodeDataFlow::ContentSet cs, string arg) {
     exists(DataFlowImplSpecific::UcodeDataFlow::Content c |
@@ -70,10 +71,29 @@ private import Make<Location, DataFlowImplSpecific::UcodeDataFlow, Input> as Imp
 
 private module StepsInput implements Impl::Private::StepsInputSig {
   /**
-   * No library-call resolution. `viableSourceCallable` / `viableLibraryCallable`
-   * stay `none()`. Summaries typecheck but do not apply to source calls.
+   * Identifier callees whose name equals summarized callable `sc`.
+   * Member, subscript, parenthesized, and nested-call callees have no
+   * `getIdentifier`, so they have no result. No async/future calls:
+   * ucode has no async AST. `viableSourceCallable` /
+   * `viableLibraryCallable` stay `none()`. Does not wire summary steps
+   * into `localFlowStep`.
    */
-  DataFlowCall getACall(Impl::Public::SummarizedCallable sc) { none() }
+  DataFlowCall getACall(Impl::Public::SummarizedCallable sc) {
+    exists(CallExpression c |
+      c.getIdentifier().getName() = sc and
+      result.asCall().getCall() = c
+    )
+  }
+}
+
+/**
+ * Identifier-callee `getACall` for extractor-smoke. Same relation as
+ * `StepsInput`. Not production taint.
+ */
+module IdentifierCalls {
+  DataFlowCall getACall(Impl::Public::SummarizedCallable sc) {
+    result = StepsInput::getACall(sc)
+  }
 }
 
 module Private {

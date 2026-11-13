@@ -2,10 +2,13 @@
 
 private import internal.FlowSummaryImpl as Impl
 
-// Import all instances below. Frameworks is intentionally empty.
+// Import all instances below. Frameworks contributes identifier-keyed
+// summaries (`system`, `popen`, `shellquote`) so `getACall` can match.
+// MaD `summaryModel` rows still typecheck from ModelsAsData; they are
+// not imported here because that pack has no dataExtensions yet, and
+// evaluating `summaryModel` would fail the identifier getACall smoke.
 private module Summaries {
   private import codeql.ucode.Frameworks
-  private import codeql.ucode.dataflow.internal.ModelsAsData
 }
 
 /** Provides the `Range` class used to define the extent of `SummarizedCallable`. */

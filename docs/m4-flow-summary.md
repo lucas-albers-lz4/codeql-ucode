@@ -10,10 +10,14 @@ Typecheck only. Not production taint and not `path_found`.
   string-keyed `SummarizedCallableBase` (Python-style). Generator leftovers
   (`Function`, `CallExprBase`, `Resolvable`, `Addressable`, crate paths,
   `Stdlib`) are gone.
-- `SummarizedCallable` and MaD `summaryModel` rows typecheck.
-  `getACall` is `none()`, so summaries do not attach to source calls.
+- `SummarizedCallable` and MaD `summaryModel` rows typecheck (compile
+  smoke still imports ModelsAsData). Identifier `getACall` is a separate
+  slice ([m4-get-a-call.md](m4-get-a-call.md)): identifier callees whose
+  name matches a Frameworks summary key are returned; member callees
+  stay `none()`.
 - `FlowSource` / `FlowSink` `Range` classes extend `DataFlow::Node`.
-- `Frameworks.qll` is a valid empty module.
+- `Frameworks.qll` contributes identifier-keyed summaries (`system`,
+  `popen`, `shellquote`) with `propagatesFlow` still `none()`.
 - `Concepts.qll` typechecks with `codeql/threat-models`. No ucode
   `ThreatModelSource::Range` models yet, so `ActiveThreatModelSource` stays
   uninhabited.
