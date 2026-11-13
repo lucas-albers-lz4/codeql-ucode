@@ -13,7 +13,6 @@
 import codeql.files.FileSystem
 import codeql.ucode.AST
 import codeql.ucode.ast.Idents
-import codeql.ucode.DataFlow
 
 from Call c, Idents ident, string name
 where
@@ -21,6 +20,5 @@ where
   name = ident.getName() and
   name != "" and
   not exists(Call other | exists(other.getArguments())) and
-  (ident.getFile().getBaseName() = "luci" or ident.getFile().getBaseName() = "ssa_pos") and
-  not exists(DataFlow::ParameterNode pn)
+  (ident.getFile().getBaseName() = "luci" or ident.getFile().getBaseName() = "ssa_pos")
 select ident, name + " in " + ident.getFile().getBaseName()
