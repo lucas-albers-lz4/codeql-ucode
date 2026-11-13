@@ -47,6 +47,9 @@ const methods = {
 			function formal_order(a, b) {
 				return b;
 			}
+			let arrow_bare = arrowx => arrowx || 0;
+			let arrow_two = (arrowa, arrowb) => arrowa || arrowb;
+			let arrow_rest = (...arrowxs) => arrowxs || 0;
 		}
 	}
 };

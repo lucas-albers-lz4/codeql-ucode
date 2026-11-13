@@ -46,6 +46,17 @@ private UCODE::Identifier formalIdentAtOrdinal(UCODE::FormalParameters ps, int o
   )
 }
 
+/** Named formals of an arrow, including a bare `parameter` field. */
+private AstNode arrowFormal(UCODE::ArrowFunction f, int i) {
+  exists(UCODE::FormalParameters ps |
+    ps = f.getParameters() and result = TIdentifier(formalIdentAtOrdinal(ps, i))
+  )
+  or
+  not exists(f.getParameters()) and
+  i = 0 and
+  result = TIdentifier(f.getParameter())
+}
+
 /**
  * A StatementBlock statement sequence
  */
@@ -73,16 +84,7 @@ final class StatementBlockScope extends CfgScopeImpl instanceof StatementBlock {
     )
     or
     exists(UCODE::ArrowFunction f |
-      toTreeSitter(this) = f.getBody() and
-      (
-        exists(UCODE::FormalParameters ps |
-          ps = f.getParameters() and result = TIdentifier(formalIdentAtOrdinal(ps, i))
-        )
-        or
-        not exists(f.getParameters()) and
-        i = 0 and
-        result = TIdentifier(f.getParameter())
-      )
+      toTreeSitter(this) = f.getBody() and result = arrowFormal(f, i)
     )
   }
 
@@ -97,6 +99,46 @@ final class StatementBlockScope extends CfgScopeImpl instanceof StatementBlock {
   override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
 
   Stmts getStmt(int index) { result = StatementBlock.super.getStmt(index) }
+}
+
+/**
+ * Expression body of `x => expr` / `(a, b) => expr`. Analogous to
+ * StatementBlockScope: formals are not AST children of the body and
+ * still execute first in this CFG. Canonical wrapper only; skip the
+ * duplicate TExpression / TPrimaryExpression nodes for the same body.
+ */
+final class ArrowExpressionBodyScope extends CfgScopeImpl {
+  ArrowExpressionBodyScope() {
+    exists(UCODE::ArrowFunction f |
+      toTreeSitter(this) = f.getBody() and
+      not f.getBody() instanceof UCODE::StatementBlock
+    ) and
+    not this instanceof TExpression and
+    not this instanceof TPrimaryExpression and
+    not this instanceof TStatement and
+    not this instanceof TDeclaration
+  }
+
+  /**
+   * Named formal of the arrow whose body is this scope, in parameter
+   * order. Formals are not AST children of the expression; they still
+   * execute first in this CFG.
+   */
+  AstNode getFormal(int i) {
+    exists(UCODE::ArrowFunction f |
+      toTreeSitter(this) = f.getBody() and result = arrowFormal(f, i)
+    )
+  }
+
+  int getFormalCount() { result = count(int i | exists(this.getFormal(i))) }
+
+  override predicate scopeFirst(AstNode first) {
+    first(this.getFormal(0), first)
+    or
+    not exists(this.getFormal(_)) and first(this, first)
+  }
+
+  override predicate scopeLast(AstNode last, Completion c) { last(this, last, c) }
 }
 
 /**
