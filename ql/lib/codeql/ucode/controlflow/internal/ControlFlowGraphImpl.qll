@@ -32,6 +32,9 @@ private module Implementation implements InputSig<Location> {
   class SuccessorType = Cfg::SuccessorType;
 
   CfgScope getCfgScope(AstNode e) {
+    exists(Scope::StatementBlockScope scope | e = scope.getFormal(_) | result = scope)
+    or
+    not exists(Scope::StatementBlockScope scope | e = scope.getFormal(_)) and
     exists(AstNode p | p = e.getParent() |
       result = p
       or
@@ -69,7 +72,11 @@ class ProgramScopeTree extends StandardPreOrderTree, Scope::ProgramScope {
  * A StatementBlock statement sequence
  */
 class StatementBlockScopeTree extends StandardPreOrderTree, Scope::StatementBlockScope {
-  override AstNode getChildNode(int i) { result = super.getStmt(i) }
+  override AstNode getChildNode(int i) {
+    result = this.getFormal(i)
+    or
+    result = super.getStmt(i - this.getFormalCount())
+  }
 }
 
 /** Nested blocks participate in their enclosing callable's CFG. */

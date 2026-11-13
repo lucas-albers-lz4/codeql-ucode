@@ -17,8 +17,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 
 ## Gaps (later PR)
 
-- `ParameterNode` / argument-to-parameter flow. Formals are not SSA
-  source variables; `ParameterNodes` is still empty.
+- `ParameterNode` / argument-to-parameter flow. `ParameterNodes` is
+  still empty. Named block-bodied formals are Variables with CFG
+  nodes (separate leftover).
 - Content encoding (`Field` / `Element` / `Future`). `TContent` is
   still `TFieldContent` with `none()`. Do not add `storeStep` /
   `readStep` as production taint.

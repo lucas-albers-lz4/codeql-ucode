@@ -1,5 +1,5 @@
 /**
- * ucode lexical variables, loop bindings and catch parameters.
+ * ucode lexical variables, loop bindings, catch parameters, and named formals.
  *
  * Generator leftover `codeql.bicep` imports, ParameterDeclaration/OutputDeclaration,
  * and `getEnclosingCfgScope` are intentionally absent. Name binding uses the nearest lexical block and respects function parameters.
@@ -39,10 +39,45 @@ private predicate variableDecl(AstNode node, string name) {
   exists(UCODE::CatchClause c, UCODE::Identifier id |
     id = c.getParameter() and node = TIdentifier(id) and name = id.getValue()
   )
+  or
+  exists(UCODE::Identifier id |
+    namedFormalIdentifier(id) and node = TIdentifier(id) and name = id.getValue()
+  )
+}
+
+/** Identifier token of a `FormalParameters` child or a bare arrow parameter. */
+private predicate formalInParameters(UCODE::FormalParameters ps, UCODE::Identifier id) {
+  id = ps.getChild(_)
+  or
+  exists(UCODE::RestElement rest | rest = ps.getChild(_) and id = rest.getChild())
+}
+
+/** Named function or arrow formal. Not a function name. */
+private predicate namedFormalIdentifier(UCODE::Identifier id) {
+  exists(UCODE::FormalParameters ps | formalInParameters(ps, id))
+  or
+  exists(UCODE::ArrowFunction f | id = f.getParameter())
+}
+
+/** Body that binds uses of a named formal. */
+private UCODE::AstNode functionBodyOfFormal(UCODE::Identifier id) {
+  exists(UCODE::FunctionExpression f |
+    formalInParameters(f.getParameters(), id) and result = f.getBody()
+  )
+  or
+  exists(UCODE::FunctionDeclaration f |
+    formalInParameters(f.getParameters(), id) and result = f.getBody()
+  )
+  or
+  exists(UCODE::ArrowFunction f |
+    (id = f.getParameter() or formalInParameters(f.getParameters(), id)) and
+    result = f.getBody()
+  )
 }
 
 /**
- * A variable defined by a lexical declarator.
+ * A variable defined by a lexical declarator, loop binding, catch parameter,
+ * or named function formal.
  */
 class Variable extends MkVariable {
   private AstNode node;
@@ -106,6 +141,12 @@ private UCODE::AstNode bindingScope(Variable v) {
   or
   exists(UCODE::CatchClause c, UCODE::Identifier id |
     v.getAstNode() = TIdentifier(id) and id = c.getParameter() and result = c.getBody()
+  )
+  or
+  exists(UCODE::Identifier id |
+    namedFormalIdentifier(id) and
+    v.getAstNode() = TIdentifier(id) and
+    result = functionBodyOfFormal(id)
   )
 }
 

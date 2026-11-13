@@ -26,6 +26,8 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
 
   predicate variableWrite(BasicBlock bb, int i, SourceVariable v, boolean certain) {
     (
+      // Defining AST node: lexical declarators and named formals that have a
+      // CFG node. Catch and for-in bind at a parent node instead.
       bb.getNode(i).getAstNode() = v.getAstNode()
       or
       exists(VariableWriteAccess va, UCODE::AstNode operation |
