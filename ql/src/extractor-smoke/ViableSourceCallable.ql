@@ -1,12 +1,12 @@
 /**
- * @name Same-file FunctionDeclaration and builtin system call targets
+ * @name Same-file FunctionDeclaration and library call targets
  * @description Reports viableCallable targets for unique same-file
  *              identifier and member-property FunctionDeclarations,
- *              plus builtin identifier system as a library callable.
- *              Testing only. Imported luci.sys / popen / basename /
- *              fd.read stay unresolved. Not argument-to-parameter
- *              taint, not production taint, and not setInitAction
- *              path_found.
+ *              builtin identifier system, and imported fs popen as
+ *              library callables. Testing only. Imported luci.sys /
+ *              basename / fd.read stay unresolved. Not
+ *              argument-to-parameter taint, not production taint, and
+ *              not setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/viable-source-callable

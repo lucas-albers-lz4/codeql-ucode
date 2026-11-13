@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # M4 gate: unique same-file identifier and member-property
 # FunctionDeclarations resolve as source CfgScopes. Builtin identifier
-# system resolves as a library callable. Imported luci.sys / popen /
-# basename / library member callees (read/close) stay unresolved.
+# system and imported fs popen resolve as library callables. Imported
+# luci.sys / basename / library member callees (read/close) stay
+# unresolved.
 # Production LocalTaint / RequestArgsExec stay on Models. Not
 # path_found. jumpStep uses unfiltered simpleIdentifierCall and unique
 # same-file member FunctionDeclarations. In-file SSA localFlowStep+
@@ -89,6 +90,12 @@ if ! grep -q 'BuiltinSystemLibraryCallable' \
 	exit 1
 fi
 
+if ! grep -q 'ImportedFsPopenLibraryCallable' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "viableLibraryCallable lost imported fs popen" >&2
+	exit 1
+fi
+
 if grep -n 'summaryStoreStep\|summaryReadStep\|summaryThroughStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
 	echo "viableSourceCallable wired summary steps" >&2
@@ -126,9 +133,11 @@ for msg in [
 	"library system in ssa_pos",
 	"library system in luci",
 	"library system in sys.uc",
+	"library popen in luci",
+	"library popen in sys.uc",
 ]:
 	if not has(msg):
-		sys.exit(f"missing same-file or builtin library target {msg}: {blob}")
+		sys.exit(f"missing same-file or library target {msg}: {blob}")
 
 for bad in [
 	"init_action in luci",
@@ -141,8 +150,6 @@ for bad in [
 	"close in luci",
 	"library init_action in luci",
 	"library init_action in sys.uc",
-	"library popen in luci",
-	"library popen in sys.uc",
 	"library basename in sys.uc",
 	"library shellquote in luci",
 	"library read in luci",

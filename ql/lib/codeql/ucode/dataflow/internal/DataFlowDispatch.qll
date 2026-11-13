@@ -146,9 +146,10 @@ class AdditionalCallTarget extends Unit {
  * Builtin identifier `system(...)` as a library callable. Uses
  * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
  * not widen member callees. Imported specifiers and same-file
- * FunctionDeclarations are not builtins. `popen` / `basename` /
- * luci.sys stay unresolved. `propagatesFlow` stays `none()`. Does not
- * jump. Not production taint and not `path_found`.
+ * FunctionDeclarations are not builtins. Imported `'fs'` `popen` is a
+ * separate library callable. `basename` / luci.sys stay unresolved.
+ * `propagatesFlow` stays `none()`. Does not jump. Not production taint
+ * and not `path_found`.
  */
 private class BuiltinSystemLibraryCallable extends LibraryCallable {
   BuiltinSystemLibraryCallable() { this = "system" }
@@ -158,6 +159,31 @@ private class BuiltinSystemLibraryCallable extends LibraryCallable {
     not exists(UCODE::ImportStatement imp |
       imp.getLocation().getFile() = result.getIdentifier().getFile() and
       importedSpecifierName(imp, this)
+    ) and
+    not exists(UCODE::FunctionDeclaration f |
+      f.getName().getValue() = this and
+      f.getLocation().getFile() = result.getIdentifier().getFile()
+    )
+  }
+}
+
+/**
+ * Identifier `popen(...)` imported from `'fs'` as a library callable.
+ * Same `Call.getIdentifier` join as builtin `system`, but the name
+ * must be an unaliased `'fs'` specifier (Models `NamedFsPopenCall`),
+ * not a global builtin. Same-file FunctionDeclarations are not
+ * library `popen`. `basename`, luci.sys, and `fd.read` stay
+ * unresolved. `propagatesFlow` stays `none()`. Does not jump. Not
+ * production taint and not `path_found`.
+ */
+private class ImportedFsPopenLibraryCallable extends LibraryCallable {
+  ImportedFsPopenLibraryCallable() { this = "popen" }
+
+  override ucode::Call getACall() {
+    result.getIdentifier().getName() = this and
+    exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = result.getIdentifier().getFile() and
+      namedFsImport(imp, this)
     ) and
     not exists(UCODE::FunctionDeclaration f |
       f.getName().getValue() = this and
@@ -303,6 +329,32 @@ predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
     astCall.getIdentifier().getName() = f.getName().getValue() and
     call.asCall().getLocation().getFile() = f.getLocation().getFile() and
     toTreeSitter(callee.asCfgScope()) = f.getBody()
+  )
+}
+
+/**
+ * Joined string-literal text of an import source. `'fs'` is one
+ * fragment. Not a module resolver.
+ */
+private string importSourceLiteral(UCODE::ImportStatement imp) {
+  result =
+    strictconcat(int i, UCODE::StringFragment frag |
+      frag = imp.getSource().getChild(i)
+    |
+      frag.getValue() order by i
+    )
+}
+
+/**
+ * Unaliased named import of `name` from `'fs'`. Same shape as Models
+ * `namedImport(imp, "fs", name)`. Not luci.sys `path_found`.
+ */
+private predicate namedFsImport(UCODE::ImportStatement imp, string name) {
+  importSourceLiteral(imp) = "fs" and
+  exists(UCODE::ImportSpecifier spec |
+    spec = imp.getClause().getNamed().getChild(_) and
+    not exists(spec.getAlias()) and
+    exists(UCODE::Identifier id | id = spec.getName() and name = id.getValue())
   )
 }
 
