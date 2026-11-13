@@ -22,7 +22,7 @@ not follow that target. This slice does.
   `getAFieldOrChild`. The receiver object is not resolved. Library
   members (`fd.read` / `fd.close`), imported `luci.sys` (`init_action`),
   builtins (`system`), and imported `'fs'` `popen` / `basename` /
-  `access` / `open` still do not jump.
+  `access` / `open` / `readfile` still do not jump.
 - `Call.getArguments()` stays `none()`. Summary steps stay out of
   `localFlowStep`. Public `localFlowStep` does not include `jumpStep`.
 
@@ -33,10 +33,11 @@ not follow that target. This slice does.
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
 -   `getARuntimeTarget` stays `none()`. Builtin identifier `system`
-  and imported `'fs'` `popen` / `basename` / `access` / `open` may
-  resolve as `viableLibraryCallable` (see
+  and imported `'fs'` `popen` / `basename` / `access` / `open` /
+  `readfile` may resolve as `viableLibraryCallable` (see
   `docs/m4-viable-library-callable.md`, `docs/m4-imported-fs-popen.md`,
   `docs/m4-imported-fs-basename.md`, `docs/m4-imported-fs-access.md`,
-  and `docs/m4-imported-fs-open.md`).
+  `docs/m4-imported-fs-open.md`, and
+  `docs/m4-imported-fs-readfile.md`).
 - Member `getACall` stays `none()`.
 - Unused formals still have no SSA read. Do not invent a pseudo-read.

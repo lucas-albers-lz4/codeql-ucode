@@ -14,6 +14,6 @@ import codeql.ucode.AST
 // and member-property FunctionDeclarations; imported luci.sys callees
 // remain unresolved / inconclusive. viableLibraryCallable resolves
 // builtin identifier system and imported fs popen / basename /
-// access / open; readfile stay unresolved.
+// access / open / readfile; luci.sys stays unresolved.
 // jumpStep uses identifier simpleIdentifierCall and unique same-file
 // member FunctionDeclarations.

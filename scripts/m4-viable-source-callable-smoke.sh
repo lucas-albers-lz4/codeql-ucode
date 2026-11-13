@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # M4 gate: unique same-file identifier and member-property
 # FunctionDeclarations resolve as source CfgScopes. Builtin identifier
-# system and imported fs popen / basename / access / open resolve as
-# library callables. Imported luci.sys / readfile / library member
+# system and imported fs popen / basename / access / open / readfile
+# resolve as library callables. Imported luci.sys / library member
 # callees (read/close) stay unresolved.
 # Production LocalTaint / RequestArgsExec stay on Models. Not
 # path_found. jumpStep uses unfiltered simpleIdentifierCall and unique
@@ -114,6 +114,12 @@ if ! grep -q 'ImportedFsOpenLibraryCallable' \
 	exit 1
 fi
 
+if ! grep -q 'ImportedFsReadfileLibraryCallable' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "viableLibraryCallable lost imported fs readfile" >&2
+	exit 1
+fi
+
 if grep -n 'summaryStoreStep\|summaryReadStep\|summaryThroughStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
 	echo "viableSourceCallable wired summary steps" >&2
@@ -158,6 +164,8 @@ for msg in [
 	"library access in luci",
 	"library open in luci",
 	"library open in sys.uc",
+	"library readfile in luci",
+	"library readfile in sys.uc",
 ]:
 	if not has(msg):
 		sys.exit(f"missing same-file or library target {msg}: {blob}")
@@ -173,11 +181,12 @@ for bad in [
 	"access in luci",
 	"open in luci",
 	"open in sys.uc",
+	"readfile in luci",
+	"readfile in sys.uc",
 	"read in luci",
 	"close in luci",
 	"library init_action in luci",
 	"library init_action in sys.uc",
-	"library readfile in luci",
 	"library shellquote in luci",
 	"library read in luci",
 	"library close in luci",
