@@ -23,6 +23,39 @@ const methods = {
 			print(skip_src); // skip_src_read
 			let skip_safe = "safe"; // skip_safe_write
 			system(skip_safe); // skip_safe_read
+			let content_case = {
+				probe_field: "one", // content_field_store
+				'esc\nkey': "two", // content_escaped_store
+				"": "empty" // content_empty_store
+			};
+			content_case.probe_field = "safe"; // content_member_write
+			content_case["probe_field"] = "safe"; // content_subscript_write
+			delete content_case.probe_field; // content_member_delete
+			delete content_case["probe_field"]; // content_subscript_delete
+			content_case.probe_field += "safe"; // content_member_compound
+			content_case["probe_field"] += "safe"; // content_subscript_compound
+			print(content_case.probe_field); // content_member_read
+			print(content_case["probe_field"]); // content_subscript_read
+			print(content_case["different"]); // content_other_read
+			print(content_case[""]); // content_empty_read
+			let content_dynamic = "probe_field";
+			print(content_case[content_dynamic]); // content_dynamic_read
+			let literal_obj = { composed_field: source() }; // composed_object_store
+			print(literal_obj.composed_field); // composed_object_read
+			let literal_arr = [source()]; // composed_array_store
+			print(literal_arr[0]); // composed_array_read
+			print(({ inline_field: source() }).inline_field); // composed_inline
+			let return_container = function() { return { return_field: source() }; }; // composed_return
+			let shorthand_src = source(); // shorthand_source
+			let shorthand_other = source(); // shorthand_unrelated
+			let shorthand_obj = { shorthand_src }; // shorthand_store
+			print(shorthand_obj.shorthand_src); // shorthand_read
+			print(shorthand_obj.unrelated_field); // shorthand_wrong_field
+			{
+				let shorthand_src = "safe"; // shorthand_inner_definition
+				let shorthand_inner = { shorthand_src }; // shorthand_inner_store
+				print(shorthand_inner.shorthand_src); // shorthand_inner_read
+			}
 		}
 	}
 };

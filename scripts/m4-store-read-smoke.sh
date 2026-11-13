@@ -13,6 +13,8 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-store-read"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 Q="$ROOT/ql/src/extractor-smoke/StoreRead.ql"
+SEMANTICS="$ROOT/ql/src/extractor-smoke/StoreReadSemantics.ql"
+COMPOSITION="$ROOT/ql/src/extractor-smoke/StoreReadComposition.ql"
 LOCAL="$ROOT/ql/src/m3/LocalTaint.ql"
 REQ="$ROOT/ql/src/m4/RequestArgsExec.ql"
 
@@ -26,6 +28,8 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 
 echo "== compile StoreRead smoke =="
 codeql query compile "$Q" --search-path="$QLPATH"
+codeql query compile "$SEMANTICS" --search-path="$QLPATH"
+codeql query compile "$COMPOSITION" --search-path="$QLPATH"
 
 echo "== compile production LocalTaint / RequestArgsExec (still Models) =="
 codeql query compile "$LOCAL" --search-path="$QLPATH"
@@ -93,6 +97,88 @@ for m in msgs:
 	if "path_found" in m:
 		sys.exit("StoreRead smoke scored path_found: " + blob)
 print("StoreRead pos/neg ok")
+PY
+
+echo "== StoreReadSemantics =="
+codeql query run "$SEMANTICS" --database="$DB" --search-path="$QLPATH" --output="$DB/store-read-semantics.bqrs"
+codeql bqrs decode --format=csv "$DB/store-read-semantics.bqrs" > "$DB/store-read-semantics.csv"
+python3 - <<'PY'
+import csv
+import sys
+from pathlib import Path
+
+fixture = Path("ql/test/extractor-smoke/ssa_neg").read_text().splitlines()
+def line(marker):
+	matches = [i for i, text in enumerate(fixture, 1) if text.rstrip().endswith("// " + marker)]
+	if len(matches) != 1:
+		sys.exit(f"expected one {marker}, found {matches}")
+	return matches[0]
+
+with open(".codeql-database/m4-store-read/store-read-semantics.csv", newline="") as stream:
+	messages = {row[1] for row in list(csv.reader(stream))[1:]}
+
+required = [
+	("store Field[probe_field]", "content_field_store"),
+	("store Field[]", "content_empty_store"),
+	("read Field[probe_field]", "content_member_compound"),
+	("read Field[probe_field]", "content_subscript_compound"),
+	("read Field[probe_field]", "content_member_read"),
+	("read Field[probe_field]", "content_subscript_read"),
+	("read Field[probe_field]", "content_dynamic_read"),
+	("read Field[]", "content_empty_read"),
+	("read Element", "content_subscript_read"),
+]
+for label, marker in required:
+	message = f"{label}:{line(marker)}"
+	if message not in messages:
+		sys.exit(f"missing {message}: {sorted(messages)}")
+
+for marker in ["content_member_write", "content_subscript_write", "content_member_delete", "content_subscript_delete"]:
+	if any(message.startswith("read ") and message.endswith(f":{line(marker)}") for message in messages):
+		sys.exit(f"write-only reference produced a read at {marker}: {sorted(messages)}")
+for label, marker in [("read Field[probe_field]", "content_other_read"), ("store Field[esckey]", "content_escaped_store")]:
+	if f"{label}:{line(marker)}" in messages:
+		sys.exit(f"incorrect content identity at {marker}: {sorted(messages)}")
+print("StoreRead semantics checks passed")
+PY
+
+echo "== StoreReadComposition =="
+codeql query run "$COMPOSITION" --database="$DB" --search-path="$QLPATH" --output="$DB/store-read-composition.bqrs"
+codeql bqrs decode --format=csv "$DB/store-read-composition.bqrs" > "$DB/store-read-composition.csv"
+python3 - <<'PY'
+import csv
+import sys
+from pathlib import Path
+
+fixture = Path("ql/test/extractor-smoke/ssa_neg").read_text().splitlines()
+def line(marker):
+	matches = [i for i, text in enumerate(fixture, 1) if text.rstrip().endswith("// " + marker)]
+	if len(matches) != 1:
+		sys.exit(f"expected one {marker}, found {matches}")
+	return matches[0]
+
+with open(".codeql-database/m4-store-read/store-read-composition.csv", newline="") as stream:
+	messages = {row[1] for row in list(csv.reader(stream))[1:]}
+required = [
+	("flow", "composed_object_store", "composed_object_read"),
+	("flow", "composed_array_store", "composed_array_read"),
+	("flow", "composed_inline", "composed_inline"),
+	("flow", "shorthand_source", "shorthand_read"),
+	("return", "composed_return", "composed_return"),
+]
+for label, source, sink in required:
+	message = f"{label}:{line(source)}:{line(sink)}"
+	if message not in messages:
+		sys.exit(f"missing {message}: {sorted(messages)}")
+for source, sink in [
+	("shorthand_source", "shorthand_wrong_field"),
+	("shorthand_unrelated", "shorthand_read"),
+	("shorthand_source", "shorthand_inner_read"),
+]:
+	message = f"flow:{line(source)}:{line(sink)}"
+	if message in messages:
+		sys.exit(f"unexpected {message}: {sorted(messages)}")
+print("StoreRead composition checks passed")
 PY
 
 echo "M4 StoreRead smoke passed"
