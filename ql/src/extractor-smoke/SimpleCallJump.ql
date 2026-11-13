@@ -4,8 +4,9 @@
  *              ParameterNode when Call.getIdentifier matches a
  *              same-file function declaration. Testing only. Not
  *              production taint and not setInitAction path_found.
- *              Unique same-file identifier FunctionDeclarations may
- *              also inhabit viableSourceCallable.
+ *              Unique same-file identifier and member-property
+ *              FunctionDeclarations may also inhabit
+ *              viableSourceCallable. jumpStep stays identifier-only.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/simple-call-jump

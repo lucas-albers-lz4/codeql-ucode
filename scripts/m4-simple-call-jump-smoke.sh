@@ -2,7 +2,8 @@
 # M4 gate: jumpStep from same-file identifier Call.getArgument into
 # ParameterNode. Not production taint. Production LocalTaint /
 # RequestArgsExec stay on Models. Not path_found. Unique same-file
-# identifier FunctionDeclarations may also inhabit viableSourceCallable.
+# identifier and member-property FunctionDeclarations may also inhabit
+# viableSourceCallable. jumpStep stays on simpleIdentifierCall.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

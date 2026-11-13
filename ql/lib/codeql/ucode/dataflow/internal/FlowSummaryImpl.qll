@@ -75,8 +75,9 @@ private module StepsInput implements Impl::Private::StepsInputSig {
    * Member, subscript, parenthesized, and nested-call callees have no
    * `getIdentifier`, so they have no result. No async/future calls:
    * ucode has no async AST. `viableLibraryCallable` stays `none()`.
-   * Unique same-file identifier FunctionDeclarations may resolve
-   * separately. Does not wire summary steps into `localFlowStep`.
+   * Unique same-file identifier and member-property FunctionDeclarations
+   * may resolve separately. Member `getACall` stays empty. Does not
+   * wire summary steps into `localFlowStep`.
    */
   DataFlowCall getACall(Impl::Public::SummarizedCallable sc) {
     exists(CallExpression c |

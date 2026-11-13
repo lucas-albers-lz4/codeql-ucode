@@ -1,7 +1,7 @@
 # M4: Identity `x => x` body identifier is an SSA read
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier FunctionDeclarations may resolve;
+Unique same-file identifier and member-property FunctionDeclarations may resolve;
 imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
@@ -28,8 +28,9 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - Function expressions and arrows are still not `simpleIdentifierCall`
   targets. This step is intra-procedural, not call resolution.
 - Return-to-out is `jumpStep` to `OutNode` (see
-  `docs/m4-return-out.md`). Unique same-file identifier
-  FunctionDeclarations inhabit `viableSourceCallable` separately.
+  `docs/m4-return-out.md`). Unique same-file identifier and
+  member-property FunctionDeclarations inhabit `viableSourceCallable`
+  separately. `jumpStep` stays identifier-only.
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
 - Do not wire summary steps into `localFlowStep`. Do not wire
   ParameterNode into production taint or `path_found`.

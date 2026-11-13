@@ -1,7 +1,7 @@
 # M4: `jumpStep` ParameterNode continues into SSA `localFlowStep`
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier FunctionDeclarations may resolve;
+Unique same-file identifier and member-property FunctionDeclarations may resolve;
 imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
@@ -31,7 +31,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   an access of the formal (see `docs/m4-identity-arrow.md`).
 - Function expressions and arrows are still not `simpleIdentifierCall`
   targets. This step is intra-procedural; unique same-file identifier
-  FunctionDeclarations inhabit `viableSourceCallable` separately.
+  and member-property FunctionDeclarations inhabit
+  `viableSourceCallable` separately. `jumpStep` stays identifier-only.
 - Return-to-out is `jumpStep` to `OutNode` (see
   `docs/m4-return-out.md`).
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.

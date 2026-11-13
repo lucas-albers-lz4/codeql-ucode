@@ -1,7 +1,7 @@
 # M4: Named formals are Variables with CFG nodes
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier FunctionDeclarations may resolve;
+Unique same-file identifier and member-property FunctionDeclarations may resolve;
 imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 

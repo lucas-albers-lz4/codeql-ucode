@@ -3,7 +3,7 @@
 # identifier as a VariableReadAccess of the formal, so ParameterNode
 # localFlowStep+ reaches that SSA read. Not production taint.
 # Production LocalTaint / RequestArgsExec stay on Models. Not
-# path_found. Unique same-file identifier FunctionDeclarations may
+# path_found. Unique same-file identifier and member-property FunctionDeclarations may
 # resolve separately. jumpStep stays out of localFlowStep.
 set -euo pipefail
 

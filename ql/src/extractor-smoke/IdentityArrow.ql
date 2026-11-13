@@ -5,7 +5,8 @@
  *              named formal, and ParameterNode localFlowStep+ to that
  *              SSA read. Testing only. Not production taint and not
  *              setInitAction path_found. Unique same-file identifier
- *              FunctionDeclarations may resolve separately.
+ *              and member-property FunctionDeclarations may resolve
+ *              separately.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/identity-arrow

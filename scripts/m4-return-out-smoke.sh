@@ -2,7 +2,8 @@
 # M4 gate: same-file identifier Call ReturnValueNode jumpStep to the
 # call expression OutNode. Not production taint. Production LocalTaint /
 # RequestArgsExec stay on Models. Not path_found. Unique same-file
-# identifier FunctionDeclarations may resolve separately.
+# identifier and member-property FunctionDeclarations may resolve
+# separately. jumpStep stays on simpleIdentifierCall.
 # jumpStep stays out of localFlowStep.
 set -euo pipefail
 
