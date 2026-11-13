@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # M4 gate: FlowSummary / FlowSource / FlowSink / ModelsAsData / Concepts
 # typecheck on dataflow 1.1.6. Import smoke only. Summaries do not attach to
-# calls. ActiveThreatModelSource is uninhabited. Production LocalTaint /
+# calls. ActiveThreatModelSource is uninhabited (no Range models). Production LocalTaint /
 # RequestArgsExec stay on Models. Not path_found. viableSourceCallable stays
 # none().
 set -euo pipefail

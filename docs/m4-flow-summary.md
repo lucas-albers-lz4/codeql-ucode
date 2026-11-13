@@ -14,14 +14,12 @@ Typecheck only. Not production taint and not `path_found`.
   `getACall` is `none()`, so summaries do not attach to source calls.
 - `FlowSource` / `FlowSink` `Range` classes extend `DataFlow::Node`.
 - `Frameworks.qll` is a valid empty module.
-- `Concepts.qll` typechecks without a `codeql/threat-models` pack
-  dependency. `currentThreatModel` is empty, so
-  `ActiveThreatModelSource` is uninhabited.
+- `Concepts.qll` typechecks with `codeql/threat-models`. No ucode
+  `ThreatModelSource::Range` models yet, so `ActiveThreatModelSource` stays
+  uninhabited.
 
 ## Gaps (later PR)
 
 - `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
   MaD `sourceModel` / `sinkModel` rows are not interpreted into nodes.
-- `codeql/threat-models` is not a pack dependency. Do not add it without
-  lockfile discipline.
 - Do not wire summary steps into `localFlowStep` / production taint.
