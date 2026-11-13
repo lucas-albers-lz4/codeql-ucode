@@ -29,8 +29,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 
 - Unused expression-arrow formals (`_` / `m` in luci `(_, n) =>` /
   `(m, n) =>`) still have CFG nodes, so they can be ParameterNodes, but
-  they have no SSA write (`SourceVariable` still requires
-  `getAnAccess()`). Smoke does not require those names.
+  they have no `getAnAccess()`. `codeql/ssa` only constructs
+  WriteDefinitions that reach a `variableRead`. Smoke does not require
+  those names.
 - Identity bodies (`x => x`) count the body identifier as an access
   (see `docs/m4-identity-arrow.md`). The #28 fixture still uses
   `x => x || 0` so that read remains a child.

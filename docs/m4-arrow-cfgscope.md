@@ -26,8 +26,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 ## Gaps (later PR)
 
 - Unused expression-arrow formals (`_` / `m` in luci `(_, n) =>` /
-  `(m, n) =>`) have no SSA write: `SourceVariable` still requires
-  `getAnAccess()`, same as unused block-bodied `a` on `ssa_pos`.
+  `(m, n) =>`) have no `getAnAccess()`, same as unused block-bodied
+  `a` on `ssa_pos`. `codeql/ssa` only constructs WriteDefinitions that
+  reach a `variableRead`. Do not invent a pseudo-read.
 - Identity bodies (`x => x`) count the body identifier as an access
   (`visibleAt` walks `getParent*()`; see `docs/m4-identity-arrow.md`).
   The #28 fixture still uses `x => x || 0` so that read remains a child.

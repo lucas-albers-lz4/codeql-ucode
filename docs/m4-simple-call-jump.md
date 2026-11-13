@@ -31,7 +31,8 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   `getIdentifier`. Imported `luci.sys` names are not same-file
   declarations.
 - Call resolution (`viableSourceCallable` stays `none()`).
-- Return-to-out / `OutNode`. Do not wire ParameterNode into
+- Return-to-out is `jumpStep` to `OutNode` (see
+  `docs/m4-return-out.md`). Do not wire ParameterNode into
   production taint or `path_found`.
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
 - Do not wire summary steps into `localFlowStep`.
