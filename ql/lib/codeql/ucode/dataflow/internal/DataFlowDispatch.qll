@@ -1,6 +1,7 @@
 private import ucode as ucode
 private import codeql.Locations
 private import codeql.ucode.CFG
+private import codeql.ucode.ast.internal.TreeSitter
 private import DataFlowPrivate
 private import codeql.util.Boolean
 private import codeql.util.Unit
@@ -176,8 +177,22 @@ private module Cached {
       exists(ucode::Call c | exists(c.getArgument(pos)))
     }
 
+  /**
+   * Positional formals that the extractor already records.
+   *
+   * `FormalParameters` children are identifiers or rest elements.
+   * Bare `x => ...` arrows use the `parameter` field, not that list.
+   * Inhabits `ParameterPosition` only. Does not create `ParameterNode`,
+   * resolve calls (`viableSourceCallable` stays `none()`), or step
+   * through arguments. Not production taint and not `path_found`.
+   */
   cached
-  newtype TParameterPosition = TPositionalParameterPosition(int pos) { none() /* TODO */ }
+  newtype TParameterPosition =
+    TPositionalParameterPosition(int pos) {
+      exists(UCODE::FormalParameters ps | exists(ps.getChild(pos)))
+      or
+      exists(UCODE::ArrowFunction f | exists(f.getParameter()) and pos = 0)
+    }
 }
 
 import Cached
