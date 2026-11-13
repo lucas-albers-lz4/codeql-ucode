@@ -1,12 +1,14 @@
 /**
  * Shared modeling concepts for ucode.
  *
- * `codeql/threat-models` is not a pack dependency. `currentThreatModel` is
- * empty, so `ActiveThreatModelSource` is uninhabited. Not production taint
- * and not `path_found`.
+ * `codeql/threat-models` is a pack dependency; `currentThreatModel` comes from
+ * that pack. No ucode `ThreatModelSource::Range` models exist yet, so
+ * `ActiveThreatModelSource` is uninhabited. Not production taint and not
+ * `path_found`.
  */
 
 private import codeql.ucode.DataFlow
+private import codeql.threatmodels.ThreatModels
 
 /**
  * A data flow source, for a specific threat-model.
@@ -52,24 +54,11 @@ module ThreatModelSource {
 }
 
 /**
- * Holds if threat-model kind `kind` is enabled.
- *
- * Always empty: `codeql/threat-models` is not a pack dependency. Do not treat
- * this as an enabled default remote-source set.
- */
-private predicate currentThreatModel(string kind) { none() }
-
-/**
  * A data flow source that is enabled in the current threat model configuration.
  *
- * Uninhabited until a threat-models pack dependency is added with lockfile
- * discipline.
+ * Uninhabited until ucode defines `ThreatModelSource::Range` subclasses. Do not
+ * treat this as production taint.
  */
 class ActiveThreatModelSource extends ThreatModelSource {
-  ActiveThreatModelSource() {
-    exists(string kind |
-      currentThreatModel(kind) and
-      this.getThreatModel() = kind
-    )
-  }
+  ActiveThreatModelSource() { currentThreatModel(this.getThreatModel()) }
 }
