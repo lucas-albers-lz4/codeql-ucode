@@ -9,8 +9,9 @@ into the formal's SSA write. `#33` `jumpStep`s that declaration's
 `viableSourceCallable` from unique same-file identifier
 FunctionDeclarations. This slice also inhabits unique same-file
 **member-property** FunctionDeclarations. It does not score
-`setInitAction`. `jumpStep` still uses unfiltered
-`simpleIdentifierCall`.
+`setInitAction`. Identifier `jumpStep` still uses unfiltered
+`simpleIdentifierCall`. Unique member FunctionDeclarations also
+`jumpStep` (see `docs/m4-member-call-jump.md`).
 
 ## What compiles
 
@@ -29,8 +30,9 @@ FunctionDeclarations. This slice also inhabits unique same-file
   when `sys.uc` is in the database. Those members have no matching
   FunctionDeclaration.
 - Duplicate same-file FunctionDeclaration names have no
-  `viableSourceCallable` target. `jumpStep` still uses unfiltered
-  `simpleIdentifierCall` and does not jump member calls.
+  `viableSourceCallable` target. Identifier `jumpStep` still uses
+  unfiltered `simpleIdentifierCall`. Unique member FunctionDeclarations
+  also `jumpStep` (see `docs/m4-member-call-jump.md`).
 - In-file `localFlowStep+` from `ssa_pos_src` to builtin `system`
   still holds. That is not interprocedural taint.
 
@@ -44,6 +46,4 @@ FunctionDeclarations. This slice also inhabits unique same-file
   `getACall` stays `none()`.
 - Nested duplicate names and lexical shadowing.
 - `getARuntimeTarget` stays `none()`.
-- Member `jumpStep` (argument-to-parameter / return-to-out) stays
-  identifier-only. Subscript, parenthesized, and nested-call callees
-  stay unresolved.
+- Subscript, parenthesized, and nested-call callees stay unresolved.

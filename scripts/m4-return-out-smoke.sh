@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# M4 gate: same-file identifier Call ReturnValueNode jumpStep to the
-# call expression OutNode. Not production taint. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. Unique same-file
-# identifier and member-property FunctionDeclarations may resolve
-# separately. jumpStep stays on simpleIdentifierCall.
-# jumpStep stays out of localFlowStep.
+# M4 gate: same-file identifier and unique member Call ReturnValueNode
+# jumpStep to the call expression OutNode. Not production taint.
+# Production LocalTaint / RequestArgsExec stay on Models. Not
+# path_found. Call.getIdentifier stays identifier-only. jumpStep stays
+# out of localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -87,14 +86,21 @@ for msg in [
 	"out shellquote in luci",
 	"out callPackageVersionCheck in luci",
 	"out formal_order in ssa_pos",
+	"out member_order in ssa_pos",
 	"jump-out shellquote in luci",
 	"jump-out callPackageVersionCheck in luci",
 	"jump-out formal_order in ssa_pos",
+	"jump-out member_order in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing return-out {msg}: {blob}")
 
-if any(m.endswith(" in ssa_pos") and "formal_order" not in m for m in msgs):
+if any(
+	m.endswith(" in ssa_pos")
+	and "formal_order" not in m
+	and "member_order" not in m
+	for m in msgs
+):
 	sys.exit("unexpected ssa_pos return-out: " + blob)
 
 if any("system" in m or "path_found" in m or "setInitAction" in m for m in msgs):

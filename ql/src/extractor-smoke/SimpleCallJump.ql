@@ -1,12 +1,12 @@
 /**
- * @name jumpStep from same-file identifier Call.getArgument
+ * @name jumpStep from same-file identifier and unique member Call.getArgument
  * @description Reports jumpStep from Call.getArgument into a
- *              ParameterNode when Call.getIdentifier matches a
- *              same-file function declaration. Testing only. Not
+ *              ParameterNode when the call is a same-file identifier
+ *              function declaration or a unique same-file
+ *              member-property FunctionDeclaration. Testing only. Not
  *              production taint and not setInitAction path_found.
- *              Unique same-file identifier and member-property
- *              FunctionDeclarations may also inhabit
- *              viableSourceCallable. jumpStep stays identifier-only.
+ *              Call.getIdentifier stays identifier-only. Library
+ *              members, imports, and builtins stay unresolved.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/simple-call-jump
@@ -34,11 +34,11 @@ where
     isArgumentNode(arg, call, apos) and
     isParameterNode(pn, _, ppos) and
     parameterMatch(ppos, apos) and
-    simpleIdentifierCall(call, _) and
+    sameFileJumpCall(call, _) and
     id = pn.getParameter() and
     apos.isPositional(i) and
     msg =
       "jump-param " + i.toString() + ":" + id.getName() + " from " +
-        call.asCall().getCall().getIdentifier().getName() + " in " + f.getBaseName()
+        sourceCallName(call) + " in " + f.getBaseName()
   )
 select n, msg
