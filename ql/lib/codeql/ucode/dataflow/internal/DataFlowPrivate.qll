@@ -150,21 +150,19 @@ module SsaFlow {
       result = d.getValue()
     )
     or
-    exists(VariableWriteAccess wa, UCODE::Identifier ident, UCODE::AssignmentExpression a |
+    exists(VariableWriteAccess wa, UCODE::AssignmentExpression a |
       wa.getVariable() = dstDef.getSourceVariable() and
       astInCfg(dstDef.getControlFlowNode(), wa.getAstNode()) and
-      wa.getAstNode() = TIdentifier(ident) and
-      a.getLeft() = ident and
-      result = a.getRight()
+      a = wa.getWriteOperation() and
+      result = wa.getAssignedRhs()
     )
     or
-    exists(VariableWriteAccess wa, UCODE::Identifier ident, UCODE::AugmentedAssignmentExpression a |
+    exists(VariableWriteAccess wa, UCODE::AugmentedAssignmentExpression a |
       wa.getVariable() = dstDef.getSourceVariable() and
-      wa.getAstNode() = TIdentifier(ident) and
-      a.getLeft() = ident and
+      a = wa.getWriteOperation() and
       a.getOperator() in ["&&=", "||=", "??="] and
       toTreeSitter(dstDef.getControlFlowNode().getAstNode()) = a and
-      result = a.getRight()
+      result = wa.getAssignedRhs()
     )
   }
 

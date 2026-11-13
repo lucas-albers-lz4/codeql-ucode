@@ -28,13 +28,13 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
     (
       bb.getNode(i).getAstNode() = v.getAstNode()
       or
-      exists(VariableWriteAccess va, UCODE::Identifier ident, UCODE::AstNode operation |
+      exists(VariableWriteAccess va, UCODE::AstNode operation |
         va.getVariable() = v and
-        va.getAstNode() = TIdentifier(ident) and
+        operation = va.getWriteOperation() and
         (
-          operation.(UCODE::AssignmentExpression).getLeft() = ident or
-          operation.(UCODE::AugmentedAssignmentExpression).getLeft() = ident or
-          operation.(UCODE::UpdateExpression).getArgument() = ident
+          operation instanceof UCODE::AssignmentExpression or
+          operation instanceof UCODE::AugmentedAssignmentExpression or
+          operation instanceof UCODE::UpdateExpression
         ) and
         toTreeSitter(bb.getNode(i).getAstNode()) = operation and
         (
@@ -60,7 +60,7 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
           v.getAstNode() = TIdentifier(ident)
           or
           exists(VariableWriteAccess wa |
-            wa.getVariable() = v and wa.getAstNode() = TIdentifier(ident)
+            wa.getVariable() = v and wa.getIdentifier() = ident
           )
         )
       )
@@ -72,7 +72,7 @@ module SsaInput implements SsaImplCommon::InputSig<Location> {
           v.getAstNode() = TIdentifier(ident)
           or
           exists(VariableWriteAccess wa |
-            wa.getVariable() = v and wa.getAstNode() = TIdentifier(ident)
+            wa.getVariable() = v and wa.getIdentifier() = ident
           )
         )
       )

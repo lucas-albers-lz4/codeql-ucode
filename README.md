@@ -40,6 +40,13 @@ Parameters shadow outer variables but are not themselves SSA source variables.
 The regression smoke covers same-statement ordering, joins, loop-carried flow,
 short-circuit expressions, optional chains and return values.
 
+`VariableWriteAccess` is the identifier LHS of `=`, augmented assignment,
+updates, and assignment-form `for-in`. Lexical `let`/`const` declarators,
+function parameters, and catch bindings are SSA writes but not that class.
+`getAssignedRhs` is the `=` / `&&=` / `||=` / `??=` stored expression;
+arithmetic `+=` and updates have none. That API is not taint and not
+`path_found`.
+
 `ql/src/m4/SsaReachesSystem.ql` is an additive pack query that imports
 `codeql.ucode.DataFlow` and reports lexical SSA writes whose read is an access
 in builtin `system()`'s command argument, on

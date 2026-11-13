@@ -5,6 +5,10 @@
  * and `getEnclosingCfgScope` are intentionally absent. Name binding uses the nearest lexical block and respects function parameters.
  * SSA uses ordered access-level CFG nodes; it is not
  * interprocedural taint and not a sanitizer model.
+ * VariableWriteAccess is the identifier LHS of `=`, augmented
+ * assignment, updates, and assignment-form `for-in`. Lexical
+ * declarators, parameters, and catch bindings are SSA writes but
+ * not VariableWriteAccess.
  */
 
 private import codeql.Locations
@@ -205,6 +209,51 @@ class VariableWriteAccess extends VariableAccess {
     exists(UCODE::Identifier ident |
       this.getAstNode() = TIdentifier(ident) and
       (simpleWrite(ident) or modifyingWrite(ident))
+    )
+  }
+
+  /** Identifier token of this write. */
+  UCODE::Identifier getIdentifier() { this.getAstNode() = TIdentifier(result) }
+
+  /**
+   * Assignment, update, or assignment-form `for-in` that writes this
+   * identifier. Not a `let`/`const` declarator.
+   */
+  UCODE::AstNode getWriteOperation() {
+    exists(UCODE::Identifier ident | ident = this.getIdentifier() |
+      result.(UCODE::AssignmentExpression).getLeft() = ident
+      or
+      result.(UCODE::AugmentedAssignmentExpression).getLeft() = ident
+      or
+      result.(UCODE::UpdateExpression).getArgument() = ident
+      or
+      exists(UCODE::ForInStatement f |
+        not exists(f.getKind()) and
+        result = f and
+        (ident = f.getVariable() or ident = f.getKey() or ident = f.getValue())
+      )
+      or
+      exists(UCODE::ForInAltStatement f |
+        not exists(f.getKind()) and
+        result = f and
+        (ident = f.getVariable() or ident = f.getKey() or ident = f.getValue())
+      )
+    )
+  }
+
+  /**
+   * RHS stored by `=` or by `&&=` / `||=` / `??=`. Arithmetic `+=` and
+   * updates have no assigned RHS; those are not value-preserving copies.
+   */
+  UCODE::AstNode getAssignedRhs() {
+    exists(UCODE::AssignmentExpression a |
+      a = this.getWriteOperation() and result = a.getRight()
+    )
+    or
+    exists(UCODE::AugmentedAssignmentExpression a |
+      a = this.getWriteOperation() and
+      a.getOperator() in ["&&=", "||=", "??="] and
+      result = a.getRight()
     )
   }
 
