@@ -588,16 +588,31 @@ abstract class OutNode extends Node {
 }
 
 private module OutNodes {
-  // TODO
+  /**
+   * Call expression as the output of that call. Identifier calls are
+   * already `ExprCfgNode`s. Does not resolve calls
+   * (`viableSourceCallable` stays `none()`). Not production taint and
+   * not `path_found`.
+   */
+  private class ExprOutNode extends OutNode, ExprNode {
+    private DataFlowCall call;
+
+    ExprOutNode() { this.getExprNode() = call.asCall() }
+
+    override DataFlowCall getCall(ReturnKind kind) {
+      result = call and kind instanceof NormalReturnKind
+    }
+  }
 }
 
 import OutNodes
 
 /**
  * Same-file identifier `Call.getArgument` into that declaration's
- * `ParameterNode`. Position match alone is not enough (`system(...)`
- * must not jump into `formal_order`). Body continuation is
- * `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
+ * `ParameterNode`, and that declaration's `ReturnValueNode` out to the
+ * call expression (`OutNode`). Position match alone is not enough
+ * (`system(...)` must not jump into `formal_order`). Body continuation
+ * is `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
  * itself. Does not inhabit `viableSourceCallable`. Not production
  * taint and not `path_found`.
  */
@@ -612,6 +627,13 @@ predicate jumpStep(Node pred, Node succ) {
     isParameterNode(p, callee, ppos) and
     parameterMatch(ppos, apos) and
     simpleIdentifierCall(call, callee)
+  )
+  or
+  exists(ReturnValueNode ret, DataFlowCall call, DataFlowCallable callee |
+    pred = ret and
+    succ.(OutNode).getCall(_) = call and
+    simpleIdentifierCall(call, callee) and
+    ret.getCfgNode().getScope() = callee.asCfgScope()
   )
 }
 
