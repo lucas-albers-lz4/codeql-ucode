@@ -28,8 +28,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   (numbers, arrows, templates, `this`, regex, spreads) have no value
   node. Do not widen `TExpr` here: that would change CFG membership.
 - `ParameterNode` / argument-to-parameter flow.
-- MaD `encodeContent` lives in `FlowSummaryImpl` (open draft). This
-  slice does not touch that file.
+- MaD `encodeContent` lives in `FlowSummaryImpl` (see
+  [m4-encode-content.md](m4-encode-content.md)). This slice does not
+  touch that file.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).
 - `codeql/threat-models` pack only with lockfile discipline.
