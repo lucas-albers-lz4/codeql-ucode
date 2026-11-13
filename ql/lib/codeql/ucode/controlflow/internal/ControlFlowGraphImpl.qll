@@ -34,7 +34,10 @@ private module Implementation implements InputSig<Location> {
   CfgScope getCfgScope(AstNode e) {
     exists(Scope::StatementBlockScope scope | e = scope.getFormal(_) | result = scope)
     or
+    exists(Scope::ArrowExpressionBodyScope scope | e = scope.getFormal(_) | result = scope)
+    or
     not exists(Scope::StatementBlockScope scope | e = scope.getFormal(_)) and
+    not exists(Scope::ArrowExpressionBodyScope scope | e = scope.getFormal(_)) and
     exists(AstNode p | p = e.getParent() |
       result = p
       or
@@ -76,6 +79,31 @@ class StatementBlockScopeTree extends StandardPreOrderTree, Scope::StatementBloc
     result = this.getFormal(i)
     or
     result = super.getStmt(i - this.getFormalCount())
+  }
+}
+
+/**
+ * Formals of an expression-bodied arrow execute before the body
+ * expression. The expression keeps its existing CFG tree
+ * (evaluation, short-circuit, optional).
+ */
+class ArrowExpressionBodyScopeTree extends ControlFlowTree, Scope::ArrowExpressionBodyScope {
+  override predicate first(AstNode n) { none() }
+
+  override predicate last(AstNode n, Completion c) { none() }
+
+  override predicate propagatesAbnormal(AstNode child) { none() }
+
+  override predicate succ(AstNode pred, AstNode succ, Completion c) {
+    completionIsNormal(c) and
+    exists(int i |
+      last(this.getFormal(i), pred, c) and
+      (
+        first(this.getFormal(i + 1), succ)
+        or
+        not exists(this.getFormal(i + 1)) and first(this, succ)
+      )
+    )
   }
 }
 
@@ -840,7 +868,8 @@ class EvaluationTree extends StandardPostOrderTree {
           root = any(SwitchStatementTree s).selector() or
           root = any(SwitchStatementTree s).caseTest() or
           root = any(ReturnStatementTree r).value() or
-          root = any(ExportStatementTree e).value()
+          root = any(ExportStatementTree e).value() or
+          root instanceof Scope::ArrowExpressionBodyScope
         ) and
         this.getParent*() = root and
         not this instanceof TStatement and
