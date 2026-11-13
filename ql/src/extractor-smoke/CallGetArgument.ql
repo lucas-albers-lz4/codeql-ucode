@@ -13,7 +13,6 @@
 import codeql.files.FileSystem
 import codeql.ucode.AST
 import codeql.ucode.ast.Idents
-import codeql.ucode.DataFlow
 private import codeql.ucode.dataflow.internal.DataFlowDispatch
 
 private string argumentName(Expr arg) {
@@ -28,6 +27,5 @@ where
   name = argumentName(arg) and
   name != "" and
   exists(ArgumentPosition apos | apos.isPositional(i)) and
-  (arg.getFile().getBaseName() = "luci" or arg.getFile().getBaseName() = "ssa_pos") and
-  not exists(DataFlow::ParameterNode pn)
+  (arg.getFile().getBaseName() = "luci" or arg.getFile().getBaseName() = "ssa_pos")
 select arg, i.toString() + ":" + name + " in " + arg.getFile().getBaseName()

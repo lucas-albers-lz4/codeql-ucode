@@ -1,6 +1,7 @@
 private import ucode as ucode
 private import codeql.Locations
 private import codeql.ucode.CFG
+private import codeql.ucode.ast.internal.AstNodes
 private import codeql.ucode.ast.internal.TreeSitter
 private import DataFlowPrivate
 private import codeql.util.Boolean
@@ -88,7 +89,7 @@ abstract class DataFlowCall extends TDataFlowCall {
 
   DataFlowCallable getARuntimeTarget() { none() }
 
-  ArgumentNode getAnArgumentNode() { none() }
+  ArgumentNode getAnArgumentNode() { isArgumentNode(result, this, _) }
 
   /** Gets a best-effort total ordering. */
   int totalorder() { none() }
@@ -182,9 +183,10 @@ private module Cached {
    *
    * `FormalParameters` children are identifiers or rest elements.
    * Bare `x => ...` arrows use the `parameter` field, not that list.
-   * Inhabits `ParameterPosition` only. Does not create `ParameterNode`,
-   * resolve calls (`viableSourceCallable` stays `none()`), or step
-   * through arguments. Not production taint and not `path_found`.
+   * `sourceParameterCfg` overlays `ParameterNode` on named formals that
+   * already have a CFG node, including expression-bodied arrows after
+   * #28. Does not resolve calls (`viableSourceCallable` stays `none()`).
+   * Not production taint and not `path_found`.
    */
   cached
   newtype TParameterPosition =
@@ -196,6 +198,37 @@ private module Cached {
 }
 
 import Cached
+
+/** Identifier token of a FormalParameters child or a bare arrow parameter. */
+private predicate namedFormalAt(UCODE::Identifier id, int pos) {
+  exists(UCODE::FormalParameters ps |
+    id = ps.getChild(pos)
+    or
+    exists(UCODE::RestElement rest | rest = ps.getChild(pos) and id = rest.getChild())
+  )
+  or
+  exists(UCODE::ArrowFunction f | id = f.getParameter() and pos = 0)
+}
+
+/**
+ * Overlay: CFG node of a named formal that already has an expression
+ * CFG node, at the ParameterPosition already inhabited from extracted
+ * formals. Expression-bodied arrows are included now that they have an
+ * inner CfgScope. Unused `_`/`m` and identity `x => x` stay holes as
+ * documented by the arrow-CfgScope leftover. Does not resolve calls
+ * (`viableSourceCallable` stays `none()`). Not production taint and
+ * not `path_found`.
+ */
+predicate sourceParameterCfg(
+  CfgNodes::ExprCfgNode n, DataFlowCallable c, ParameterPosition pos
+) {
+  exists(UCODE::Identifier id, int i |
+    namedFormalAt(id, i) and
+    n.getExpr() = TIdentifier(id) and
+    pos.isPositional(i) and
+    c = TCfgScope(n.getScope())
+  )
+}
 
 /** A parameter position. */
 class ParameterPosition extends TParameterPosition {

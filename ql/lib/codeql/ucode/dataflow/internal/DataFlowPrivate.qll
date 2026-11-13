@@ -317,7 +317,13 @@ private class ArgumentExpr extends CfgNodes::ExprCfgNode {
   private CfgNodes::StmtNodes::CallCfgNode call;
   private ArgumentPosition arg;
 
-  ArgumentExpr() { none() }
+  ArgumentExpr() {
+    exists(int i |
+      this.getExpr() = call.getCall().getArgument(i) and
+      this.getScope() = call.getScope() and
+      arg.isPositional(i)
+    )
+  }
 
   /** Holds if this expression is the `i`th argument of `c`. */
   predicate isArgumentOf(CfgNodes::StmtNodes::CallCfgNode c, ArgumentPosition pos) {
@@ -414,7 +420,10 @@ private module Cached {
     } or
     TContentContainerNode(CfgNodes::AstCfgNode n) {
       n.getAstNode() instanceof Object or n.getAstNode() instanceof Array
-    }
+    } or
+    // Named formals that already have an ExprCfgNode (block-bodied
+    // functions after #24, expression-bodied arrows after #28).
+    TSourceParameterNode(CfgNodes::ExprCfgNode n) { sourceParameterCfg(n, _, _) }
 
   cached
   Location getLocation(NodeImpl n) { result = n.getLocationImpl() }
@@ -483,7 +492,29 @@ private module ParameterNodes {
       )
     }
   }
-  // TODO
+
+  /**
+   * Named formal that already has a CFG node. Uses the DataFlowDispatch
+   * overlay so ParameterPosition and the formal's CFG node agree.
+   * Not call resolution and not production taint.
+   */
+  private class SourceParameterNode extends ParameterNodeImpl, TSourceParameterNode {
+    private CfgNodes::ExprCfgNode n;
+
+    SourceParameterNode() { this = TSourceParameterNode(n) }
+
+    override Expr getParameter() { result = n.getExpr() }
+
+    override predicate isParameterOf(DataFlowCallable c, ParameterPosition pos) {
+      sourceParameterCfg(n, c, pos)
+    }
+
+    override CfgScope getCfgScope() { result = n.getScope() }
+
+    override Location getLocationImpl() { result = n.getLocation() }
+
+    override string toStringImpl() { result = "parameter " + n.toString() }
+  }
 }
 
 import ParameterNodes
@@ -500,7 +531,21 @@ abstract class ArgumentNode extends Node {
 }
 
 module ArgumentNodes {
-  // TODO
+  private class ExprArgumentNode extends ArgumentNode, ExprNode {
+    private ArgumentExpr arg;
+
+    ExprArgumentNode() { this.getExprNode() = arg }
+
+    override predicate sourceArgumentOf(
+      CfgNodes::StmtNodes::CallCfgNode call, ArgumentPosition pos
+    ) {
+      arg.isArgumentOf(call, pos)
+    }
+
+    override predicate argumentOf(DataFlowCall call, ArgumentPosition pos) {
+      this.sourceArgumentOf(call.asCall(), pos)
+    }
+  }
 }
 
 import ArgumentNodes

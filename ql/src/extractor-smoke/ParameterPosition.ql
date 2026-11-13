@@ -11,7 +11,6 @@
  */
 
 import codeql.files.FileSystem
-import codeql.ucode.DataFlow
 private import codeql.ucode.ast.internal.TreeSitter
 private import codeql.ucode.dataflow.internal.DataFlowDispatch
 
@@ -40,6 +39,5 @@ from File f, ParameterPosition ppos, int pos, string name
 where
   ppos.isPositional(pos) and
   extractedName(f, pos, name) and
-  (f.getBaseName() = "luci" or f.getBaseName() = "ssa_pos") and
-  not exists(DataFlow::ParameterNode pn)
+  (f.getBaseName() = "luci" or f.getBaseName() = "ssa_pos")
 select f, pos.toString() + ":" + name + " in " + f.getBaseName()

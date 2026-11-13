@@ -57,7 +57,6 @@ where
   not n.getScope() instanceof StatementBlock and
   exists(Ssa::WriteDefinition def | def.getSourceVariable() = v) and
   not exists(VariableWriteAccess wa | wa.getAstNode() = v.getAstNode()) and
-  not exists(DataFlow::ParameterNode pn) and
   file = v.getLocation().getFile() and
   (file.getBaseName() = "ssa_pos" or file.getBaseName() = "luci") and
   exists(CfgNode body |
