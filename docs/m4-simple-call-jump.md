@@ -20,6 +20,8 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   and `arg-param` rows, but no jumpStep rows.
 - `Call.getArguments()` stays `none()`. Summary steps stay out of
   `localFlowStep`. Public `localFlowStep` does not include `jumpStep`.
+  Body continuation from that `ParameterNode` is `parameterToSsaDef`
+  (see `docs/m4-jump-local.md`).
 
 ## Gaps (later PR)
 

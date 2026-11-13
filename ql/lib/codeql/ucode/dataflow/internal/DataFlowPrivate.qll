@@ -90,8 +90,10 @@ private class ContentContainerNodeImpl extends ContentContainerNode, NodeImpl {
  *
  * Ordered CFG nodes distinguish expression evaluation, reads and writes.
  * Definitions flow to their reads through phi joins; expression values flow
- * through assignments, value-preserving choices and returns. Not call
- * resolution (`viableSourceCallable` stays
+ * through assignments, value-preserving choices and returns. A named
+ * formal `ParameterNode` that already has an SSA write continues into
+ * that write (`parameterToSsaDef`); `jumpStep` itself stays out of
+ * `localFlowStep`. Not call resolution (`viableSourceCallable` stays
  * `none()`) and not imported luci.sys `path_found`.
  */
 module SsaFlow {
@@ -283,6 +285,21 @@ module SsaFlow {
     )
   }
 
+  /**
+   * Named formal `ParameterNode` is the SSA write of that same formal.
+   * `jumpStep` lands on `TSourceParameterNode`; this continues into
+   * existing `ssaDefToRead`. Unused formals with no `getAnAccess()`
+   * have no `SourceVariable` write. Does not put `jumpStep` into
+   * `localFlowStep`. Not call resolution and not `path_found`.
+   */
+  predicate parameterToSsaDef(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::ExprCfgNode n, Ssa::WriteDefinition def |
+      nodeFrom = TSourceParameterNode(n) and
+      nodeTo = TSsaDefNode(def) and
+      def.getControlFlowNode() = n
+    )
+  }
+
   predicate localFlowStep(Node nodeFrom, Node nodeTo) {
     ssaDefToRead(nodeFrom, nodeTo)
     or
@@ -301,6 +318,8 @@ module SsaFlow {
     expressionToReturn(nodeFrom, nodeTo)
     or
     containerToReturn(nodeFrom, nodeTo)
+    or
+    parameterToSsaDef(nodeFrom, nodeTo)
   }
 }
 
@@ -577,8 +596,10 @@ import OutNodes
 /**
  * Same-file identifier `Call.getArgument` into that declaration's
  * `ParameterNode`. Position match alone is not enough (`system(...)`
- * must not jump into `formal_order`). Does not inhabit
- * `viableSourceCallable`. Not production taint and not `path_found`.
+ * must not jump into `formal_order`). Body continuation is
+ * `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
+ * itself. Does not inhabit `viableSourceCallable`. Not production
+ * taint and not `path_found`.
  */
 predicate jumpStep(Node pred, Node succ) {
   exists(

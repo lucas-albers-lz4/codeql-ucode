@@ -21,7 +21,9 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   on `ssa_pos`, `0:s` / `0:i` / `1:n` / `0:port` on `luci`, plus
   `arg-param 0` on both files.
 - `Call.getArguments()` stays `none()`. Summary steps stay out of
-  `localFlowStep`.
+  `localFlowStep`. A formal that also has an SSA write continues from
+  that `ParameterNode` through `parameterToSsaDef` (see
+  `docs/m4-jump-local.md`). Unused formals still have no write.
 
 ## Gaps (later PR)
 
