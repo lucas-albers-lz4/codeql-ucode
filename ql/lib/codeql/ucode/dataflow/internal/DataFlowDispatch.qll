@@ -146,8 +146,8 @@ class AdditionalCallTarget extends Unit {
  * Builtin identifier `system(...)` as a library callable. Uses
  * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
  * not widen member callees. Imported specifiers and same-file
- * FunctionDeclarations are not builtins. Imported `'fs'` `popen` is a
- * separate library callable. `basename` / luci.sys stay unresolved.
+ * FunctionDeclarations are not builtins. Imported `'fs'` `popen` and
+ * `basename` are separate library callables. luci.sys stays unresolved.
  * `propagatesFlow` stays `none()`. Does not jump. Not production taint
  * and not `path_found`.
  */
@@ -172,12 +172,37 @@ private class BuiltinSystemLibraryCallable extends LibraryCallable {
  * Same `Call.getIdentifier` join as builtin `system`, but the name
  * must be an unaliased `'fs'` specifier (Models `NamedFsPopenCall`),
  * not a global builtin. Same-file FunctionDeclarations are not
- * library `popen`. `basename`, luci.sys, and `fd.read` stay
- * unresolved. `propagatesFlow` stays `none()`. Does not jump. Not
- * production taint and not `path_found`.
+ * library `popen`. Imported `'fs'` `basename` is a separate library
+ * callable. luci.sys and `fd.read` stay unresolved.
+ * `propagatesFlow` stays `none()`. Does not jump. Not production taint
+ * and not `path_found`.
  */
 private class ImportedFsPopenLibraryCallable extends LibraryCallable {
   ImportedFsPopenLibraryCallable() { this = "popen" }
+
+  override ucode::Call getACall() {
+    result.getIdentifier().getName() = this and
+    exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = result.getIdentifier().getFile() and
+      namedFsImport(imp, this)
+    ) and
+    not exists(UCODE::FunctionDeclaration f |
+      f.getName().getValue() = this and
+      f.getLocation().getFile() = result.getIdentifier().getFile()
+    )
+  }
+}
+
+/**
+ * Identifier `basename(...)` imported from `'fs'` as a library callable.
+ * Same `namedFsImport` join as imported `'fs'` `popen`. Not a global
+ * builtin and not a modeled sanitizer. Same-file FunctionDeclarations
+ * are not library `basename`. `access`, luci.sys, and `fd.read` stay
+ * unresolved. `propagatesFlow` stays `none()`. Does not jump. Not
+ * production taint and not `path_found`.
+ */
+private class ImportedFsBasenameLibraryCallable extends LibraryCallable {
+  ImportedFsBasenameLibraryCallable() { this = "basename" }
 
   override ucode::Call getACall() {
     result.getIdentifier().getName() = this and
