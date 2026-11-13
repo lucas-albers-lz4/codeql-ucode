@@ -85,7 +85,9 @@ class Call instanceof Callable {
  * A CallExpression expression in the AST.
  */
 class CallExpression extends Callable instanceof CallExpressionImpl {
-  override Idents getIdentifier() { none() }
+  override Idents getIdentifier() {
+    result = CallExpressionImpl.super.getIdentifier()
+  }
 
   override Expr getArguments() { none() }
 
