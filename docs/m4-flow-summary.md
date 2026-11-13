@@ -22,10 +22,6 @@ Typecheck only. Not production taint and not `path_found`.
 
 - `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
   MaD `sourceModel` / `sinkModel` rows are not interpreted into nodes.
-- `ParameterPosition` is still uninhabited in `DataFlowDispatch`
-  (`none() /* TODO */`), so `Argument[x..y]` decode does not hold.
-- No content encoding (`Field` / `Element` / `Future`). `TContent` is
-  still `TFieldContent` with `none()`.
 - `codeql/threat-models` is not a pack dependency. Do not add it without
   lockfile discipline.
 - Do not wire summary steps into `localFlowStep` / production taint.
