@@ -44,9 +44,6 @@ const methods = {
 			let ssa_chain_src = "chained"; // ssa_chain_src_write
 			let ssa_chain_copy = ssa_chain_src; // ssa_chain_copy_write
 			system(ssa_chain_copy); // ssa_chain_copy_read
-			function formal_order(a = 1, b) {
-				return b;
-			}
 		}
 	}
 };

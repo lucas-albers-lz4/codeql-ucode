@@ -36,16 +36,6 @@ private UCODE::Identifier formalIdentAt(UCODE::FormalParameters ps, int i) {
   result = ps.getChild(i).(UCODE::RestElement).getChild()
 }
 
-/** Supported identifier formal at its compact position among supported formals. */
-private UCODE::Identifier formalIdentAtOrdinal(UCODE::FormalParameters ps, int ordinal) {
-  exists(int childIndex |
-    result = formalIdentAt(ps, childIndex) and
-    ordinal = count(int earlierIndex |
-      earlierIndex < childIndex and exists(formalIdentAt(ps, earlierIndex))
-    )
-  )
-}
-
 /**
  * A StatementBlock statement sequence
  */
@@ -64,19 +54,19 @@ final class StatementBlockScope extends CfgScopeImpl instanceof StatementBlock {
   AstNode getFormal(int i) {
     exists(UCODE::FunctionExpression f |
       toTreeSitter(this) = f.getBody() and
-      result = TIdentifier(formalIdentAtOrdinal(f.getParameters(), i))
+      result = TIdentifier(formalIdentAt(f.getParameters(), i))
     )
     or
     exists(UCODE::FunctionDeclaration f |
       toTreeSitter(this) = f.getBody() and
-      result = TIdentifier(formalIdentAtOrdinal(f.getParameters(), i))
+      result = TIdentifier(formalIdentAt(f.getParameters(), i))
     )
     or
     exists(UCODE::ArrowFunction f |
       toTreeSitter(this) = f.getBody() and
       (
         exists(UCODE::FormalParameters ps |
-          ps = f.getParameters() and result = TIdentifier(formalIdentAtOrdinal(ps, i))
+          ps = f.getParameters() and result = TIdentifier(formalIdentAt(ps, i))
         )
         or
         not exists(f.getParameters()) and

@@ -16,9 +16,6 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 - Smoke reports `param` / `request` on `ssa_pos` and `s` on `luci`,
   each with a CFG node and an SSA write. `ParameterNode` stays
   uninhabited.
-- Only direct identifier formals and rest-identifier formals are modeled.
-  Defaulted or destructured bindings are not Variables; supported later
-  identifiers retain parameter order and are placed before body statements.
 
 ## Gaps (later PR)
 

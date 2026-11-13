@@ -36,14 +36,5 @@ where
   exists(CfgNode n | n.getAstNode() = v.getAstNode()) and
   exists(Ssa::WriteDefinition def | def.getSourceVariable() = v) and
   not exists(VariableWriteAccess wa | wa.getAstNode() = v.getAstNode()) and
-  not exists(DataFlow::ParameterNode pn) and
-  (
-    f.getBaseName() != "ssa_pos" or v.getName() != "b"
-    or
-    exists(CfgNode n, CfgNode ret |
-      n.getAstNode() = v.getAstNode() and
-      ret.getAstNode() = TReturnStatement(_) and
-      n.getASuccessor+() = ret
-    )
-  )
+  not exists(DataFlow::ParameterNode pn)
 select v, v.getName() + " in " + f.getBaseName()
