@@ -65,6 +65,7 @@ for msg in [
 	"param in ssa_pos",
 	"request in ssa_pos",
 	"s in luci",
+	"b in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing formal Variable+CFG {msg}: {blob}")
