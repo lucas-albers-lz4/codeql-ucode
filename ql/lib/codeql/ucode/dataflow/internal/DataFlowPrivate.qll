@@ -74,6 +74,18 @@ private class ReturnValueNodeImpl extends ReturnValueNode, ReturnNode, NodeImpl 
 }
 
 /**
+ * Object / array literal CFG node. Those wrappers are not `TExpr`, so they
+ * have no `ExprCfgNode`. Used as `storeStep` targets (and nested stores).
+ */
+private class ContentContainerNodeImpl extends ContentContainerNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
+
+  override Location getLocationImpl() { result = this.getCfgNode().getLocation() }
+
+  override string toStringImpl() { result = this.getCfgNode().toString() }
+}
+
+/**
  * SSA value flow with per-definition identities.
  *
  * Ordered CFG nodes distinguish expression evaluation, reads and writes.
@@ -311,6 +323,15 @@ private predicate extractedElementContent() {
   exists(UCODE::Array a, int i | exists(a.getChild(i)))
 }
 
+/**
+ * Wrapper whose generated class matches the TreeSitter node. Drops the
+ * `TExpression` / `TPrimaryExpression` aliases for the same entity.
+ */
+private predicate canonicalWrapper(AstNode n, UCODE::AstNode raw) {
+  toTreeSitter(n) = raw and
+  n.getAPrimaryQlClass() = raw.getAPrimaryQlClass()
+}
+
 /** A collection of cached types and predicates to be evaluated in the same stage. */
 cached
 private module Cached {
@@ -324,6 +345,9 @@ private module Cached {
     TReturnNode(CfgNodes::AstCfgNode n) { n.getAstNode() instanceof ReturnStatement } or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
       none() // TODO
+    } or
+    TContentContainerNode(CfgNodes::AstCfgNode n) {
+      n.getAstNode() instanceof Object or n.getAstNode() instanceof Array
     }
 
   cached
@@ -358,9 +382,10 @@ private module Cached {
    *
    * `Field` names are member properties, object pair keys, and shorthand
    * properties. `Element` holds when a subscript or a non-empty array is
-   * present. No `Future`: ucode has no async/future nodes. Does not add
-   * `storeStep` / `readStep`, resolve calls, or production taint. Not
-   * `path_found`.
+   * present. No `Future`: ucode has no async/future nodes. `storeStep` /
+   * `readStep` are inhabited from member, subscript, object, and array
+   * AST; they are not wired into `localFlowStep`. Not call resolution
+   * and not `path_found`.
    */
   cached
   newtype TContent =
@@ -443,18 +468,90 @@ predicate jumpStep(Node pred, Node succ) {
 }
 
 /**
+ * CFG expression whose wrapper class matches the TreeSitter node.
+ */
+private CfgNodes::ExprCfgNode exprCfg(UCODE::AstNode raw) {
+  canonicalWrapper(result.getExpr(), raw)
+}
+
+/**
+ * Object / array CFG node whose wrapper class matches the TreeSitter node.
+ */
+private CfgNodes::AstCfgNode containerCfg(UCODE::AstNode raw) {
+  canonicalWrapper(result.getAstNode(), raw) and
+  (
+    result.getAstNode() instanceof Object or
+    result.getAstNode() instanceof Array
+  )
+}
+
+/**
+ * Value of an extracted AST node: expression CFG when the wrapper is
+ * `TExpr`, otherwise the object/array container. Numbers, arrows,
+ * templates, `this`, regex, and spreads have neither.
+ */
+private Node valueNode(UCODE::AstNode raw) {
+  result = TExprNode(exprCfg(raw))
+  or
+  result = TContentContainerNode(containerCfg(raw))
+}
+
+/**
  * Holds if data can flow from `node1` to `node2` via an assignment to
  * content `c`.
+ *
+ * Object pair values and shorthand properties store `Field[name]`.
+ * Array children store `Element`. Assignment to `obj.field` / `arr[i]`
+ * is not modeled (`TExprPostUpdateNode` stays `none()`). Not summary
+ * steps and not `localFlowStep`.
  */
 predicate storeStep(Node node1, ContentSet c, Node node2) {
-  none() // TODO
+  exists(UCODE::Object obj, UCODE::Pair p, string name |
+    p = obj.getChild(_) and
+    name = staticPairKey(p) and
+    name != "" and
+    node1 = valueNode(p.getValue()) and
+    node2 = TContentContainerNode(containerCfg(obj)) and
+    c.isSingleton(TFieldContent(name))
+  )
+  or
+  exists(UCODE::Object obj, UCODE::ShorthandPropertyIdentifier s |
+    s = obj.getChild(_) and
+    s.getValue() != "" and
+    node1 = TExprNode(exprCfg(s)) and
+    node2 = TContentContainerNode(containerCfg(obj)) and
+    c.isSingleton(TFieldContent(s.getValue()))
+  )
+  or
+  exists(UCODE::Array arr, int i |
+    exists(arr.getChild(i)) and
+    not arr.getChild(i) instanceof UCODE::SpreadElement and
+    node1 = valueNode(arr.getChild(i)) and
+    node2 = TContentContainerNode(containerCfg(arr)) and
+    c.isSingleton(TElementContent())
+  )
 }
 
 /**
  * Holds if there is a read step of content `c` from `node1` to `node2`.
+ *
+ * `obj.field` reads `Field[field]`. `obj[i]` reads `Element`. No
+ * `Future` (no async AST). Not summary steps and not `localFlowStep`.
  */
 predicate readStep(Node node1, ContentSet c, Node node2) {
-  none() // TODO
+  exists(UCODE::MemberExpression m, string name |
+    name = m.getProperty().getValue() and
+    name != "" and
+    node1 = valueNode(m.getObject()) and
+    node2 = TExprNode(exprCfg(m)) and
+    c.isSingleton(TFieldContent(name))
+  )
+  or
+  exists(UCODE::SubscriptExpression s |
+    node1 = valueNode(s.getObject()) and
+    node2 = TExprNode(exprCfg(s)) and
+    c.isSingleton(TElementContent())
+  )
 }
 
 /**

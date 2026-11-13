@@ -8,10 +8,12 @@ private import codeql.ucode.dataflow.Ssa
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
  * (`ExprNode`), an SSA definition or read (`SsaDefinitionNode` /
- * `SsaReadNode`), a returned value (`ReturnValueNode`), or an entry parameter
- * (`ParameterNode`).
+ * `SsaReadNode`), a returned value (`ReturnValueNode`), an object or array
+ * literal (`ContentContainerNode`), or an entry parameter (`ParameterNode`).
  *
  * SSA nodes retain the identity of individual definitions and reads.
+ * Object and array literals are not `TExpr`, so they use container nodes
+ * as `storeStep` targets.
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
@@ -27,6 +29,8 @@ class Node extends TNode {
     result = this.(SsaDefinitionNode).getCfgNode()
     or
     result = this.(SsaReadNode).getRead()
+    or
+    result = this.(ContentContainerNode).getCfgNode()
   }
 
   /** Gets the Expr corresponding to this node, if any. */
@@ -110,6 +114,22 @@ class ReturnValueNode extends Node, TReturnNode {
   ReturnValueNode() { this = TReturnNode(n) }
 
   /** Gets the return statement's CFG node. */
+  CfgNodes::AstCfgNode getCfgNode() { result = n }
+}
+
+/**
+ * An object or array literal, viewed as a data-flow node.
+ *
+ * These wrappers are not `TExpr`, so they are not `ExprNode`. Pair
+ * values and array children store into this node; member and subscript
+ * reads of a literal use it as the read source.
+ */
+class ContentContainerNode extends Node, TContentContainerNode {
+  private CfgNodes::AstCfgNode n;
+
+  ContentContainerNode() { this = TContentContainerNode(n) }
+
+  /** Gets the object or array CFG node. */
   CfgNodes::AstCfgNode getCfgNode() { result = n }
 }
 
