@@ -574,8 +574,24 @@ private module OutNodes {
 
 import OutNodes
 
+/**
+ * Same-file identifier `Call.getArgument` into that declaration's
+ * `ParameterNode`. Position match alone is not enough (`system(...)`
+ * must not jump into `formal_order`). Does not inhabit
+ * `viableSourceCallable`. Not production taint and not `path_found`.
+ */
 predicate jumpStep(Node pred, Node succ) {
-  none() // TODO
+  exists(
+    ArgumentNode arg, DataFlowCall call, ArgumentPosition apos, ParameterNodeImpl p,
+    DataFlowCallable callee, ParameterPosition ppos
+  |
+    pred = arg and
+    succ = p and
+    isArgumentNode(arg, call, apos) and
+    isParameterNode(p, callee, ppos) and
+    parameterMatch(ppos, apos) and
+    simpleIdentifierCall(call, callee)
+  )
 }
 
 /**

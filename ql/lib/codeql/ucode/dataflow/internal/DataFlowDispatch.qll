@@ -263,3 +263,21 @@ pragma[nomagic]
 predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
   exists(int pos | ppos.isPositional(pos) and apos.isPositional(pos))
 }
+
+/**
+ * Same-file identifier call whose name matches a function declaration
+ * whose body is `callee`. Uses `Call.getIdentifier` plus the extracted
+ * declaration name. Member, subscript, parenthesized, and nested-call
+ * callees have no identifier. Function expressions and arrows are not
+ * declarations. Does not inhabit `viableSourceCallable`. Not production
+ * taint and not `path_found`.
+ */
+pragma[nomagic]
+predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
+  exists(ucode::Call astCall, UCODE::FunctionDeclaration f |
+    astCall = call.asCall().getCall() and
+    astCall.getIdentifier().getName() = f.getName().getValue() and
+    call.asCall().getLocation().getFile() = f.getLocation().getFile() and
+    toTreeSitter(callee.asCfgScope()) = f.getBody()
+  )
+}
