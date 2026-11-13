@@ -2,9 +2,10 @@
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 Builtin identifier `system` and imported `'fs'` `popen` / `basename`
-/ `access` may resolve as library callables separately
+/ `access` / `open` may resolve as library callables separately
 (`docs/m4-viable-library-callable.md`, `docs/m4-imported-fs-popen.md`,
-`docs/m4-imported-fs-basename.md`, `docs/m4-imported-fs-access.md`).
+`docs/m4-imported-fs-basename.md`, `docs/m4-imported-fs-access.md`,
+`docs/m4-imported-fs-open.md`).
 Unique same-file
 identifier and member-property FunctionDeclarations may resolve
 separately. Member `getACall` stays empty. Production
@@ -32,10 +33,10 @@ separately. Member `getACall` stays empty. Production
   the callee name.
 - Identifier `getACall` does not apply summary through-flow.
   Builtin `system` and imported `'fs'` `popen` / `basename` /
-  `access` may resolve as `viableLibraryCallable` without
+  `access` / `open` may resolve as `viableLibraryCallable` without
   `propagatesFlow`. Frameworks keys stay `system` / `popen` /
-  `shellquote`, so identifier `getACall` does not grow a `basename`
-  or `access` row. `open` stays unresolved.
+  `shellquote`, so identifier `getACall` does not grow a `basename`,
+  `access`, or `open` row. `readfile` stays unresolved.
 - Do not wire summary steps into `localFlowStep` / production taint.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).

@@ -20,13 +20,14 @@ It does not score `setInitAction`. `propagatesFlow` stays `none()`.
 - Unique same-file FunctionDeclarations stay source `CfgScope`s
   (`shellquote` / `callPackageVersionCheck` / `formal_order` /
   `member_order`). They are not library targets.
-- Imported names (`init_action` from `'luci.sys'`, `open` from
+- Imported names (`init_action` from `'luci.sys'`, `readfile` from
   `'fs'`) and library members (`fd.read` / `fd.close`) do not
-  resolve here. Identifier `popen` / `basename` / `access` imported
-  from `'fs'` are separate library callables
+  resolve here. Identifier `popen` / `basename` / `access` / `open`
+  imported from `'fs'` are separate library callables
   (`docs/m4-imported-fs-popen.md`, `docs/m4-imported-fs-basename.md`,
-  `docs/m4-imported-fs-access.md`). Identifier `getACall` for
-  Frameworks keys is unchanged and is not through-flow.
+  `docs/m4-imported-fs-access.md`, `docs/m4-imported-fs-open.md`).
+  Identifier `getACall` for Frameworks keys is unchanged and is not
+  through-flow.
 - In-file `localFlowStep+` from `ssa_pos_src` to builtin `system`
   still holds. That is not interprocedural taint.
 
@@ -35,10 +36,11 @@ It does not score `setInitAction`. `propagatesFlow` stays `none()`.
 - Function expressions and arrows assigned to locals (`let fn = function`).
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- `open` stays imported and unresolved. Do not treat it as a builtin.
-  Imported `'fs'` `popen` / `basename` / `access` are library callables
-  (`docs/m4-imported-fs-popen.md`, `docs/m4-imported-fs-basename.md`,
-  `docs/m4-imported-fs-access.md`), not builtins.
+- `readfile` stays imported and unresolved. Do not treat it as a
+  builtin. Imported `'fs'` `popen` / `basename` / `access` / `open`
+  are library callables (`docs/m4-imported-fs-popen.md`,
+  `docs/m4-imported-fs-basename.md`, `docs/m4-imported-fs-access.md`,
+  `docs/m4-imported-fs-open.md`), not builtins.
 - Member `getACall` stays `none()`. Do not walk `getAFieldOrChild`.
 - `getARuntimeTarget` stays `none()`.
 - Do not wire summary steps into `localFlowStep` / production taint.

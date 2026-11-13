@@ -22,8 +22,9 @@ It does not score `setInitAction`. `propagatesFlow` stays `none()`.
 - Builtin identifier `system` and imported `'fs'` `popen` stay library
   callables. Unique same-file FunctionDeclarations stay source
   `CfgScope`s.
-- Imported `access` from `'fs'` is a separate library callable
-  (`docs/m4-imported-fs-access.md`). Imported `luci.sys`
+- Imported `access` / `open` from `'fs'` are separate library
+  callables (`docs/m4-imported-fs-access.md`,
+  `docs/m4-imported-fs-open.md`). Imported `luci.sys`
   (`init_action`) and library members (`fd.read` / `fd.close`) do
   not resolve.
   Identifier `getACall` for Frameworks keys (`system` / `popen` /
@@ -36,9 +37,10 @@ It does not score `setInitAction`. `propagatesFlow` stays `none()`.
 - Function expressions and arrows assigned to locals (`let fn = function`).
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- Imported `'fs'` `access` is a library callable
-  (`docs/m4-imported-fs-access.md`). `open` / `readfile` stay imported
-  and unresolved. Do not treat them as builtins.
+- Imported `'fs'` `access` / `open` are library callables
+  (`docs/m4-imported-fs-access.md`, `docs/m4-imported-fs-open.md`).
+  `readfile` stays imported and unresolved. Do not treat it as a
+  builtin.
 - Member `getACall` stays `none()`. Do not walk `getAFieldOrChild`.
 - `getARuntimeTarget` stays `none()`.
 - Do not wire summary steps into `localFlowStep` / production taint.
