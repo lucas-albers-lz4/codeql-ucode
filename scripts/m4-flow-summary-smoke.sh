@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # M4 gate: FlowSummary / FlowSource / FlowSink / ModelsAsData / Concepts
-# typecheck on dataflow 1.1.6. Import smoke only. Summaries do not attach to
-# calls. ActiveThreatModelSource is uninhabited (no Range models). Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. viableSourceCallable stays
-# none().
+# typecheck on dataflow 1.1.6. Import smoke only. Identifier getACall is
+# scripts/m4-get-a-call-smoke.sh. ActiveThreatModelSource is uninhabited
+# (no Range models). Production LocalTaint / RequestArgsExec stay on
+# Models. Not path_found. viableSourceCallable stays none(). Do not wire
+# summary steps into localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
