@@ -60,11 +60,7 @@ class DataFlowCallable extends TDataFlowCallable {
   string toString() { result = [this.asCfgScope().toString(), this.asLibraryCallable()] }
 
   /** Gets the location of this callable. */
-  Location getLocation() {
-    result = this.asCfgScope().getLocation()
-    or
-    this instanceof TLibraryCallable
-  }
+  Location getLocation() { result = this.asCfgScope().getLocation() }
 
   /** Gets a best-effort total ordering. */
   int totalorder() { none() }
@@ -146,14 +142,36 @@ class AdditionalCallTarget extends Unit {
   abstract DataFlowCallable viableTarget(CfgNodes::StmtNodes::CallCfgNode call);
 }
 
+/**
+ * Builtin identifier `system(...)` as a library callable. Uses
+ * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
+ * not widen member callees. Imported specifiers and same-file
+ * FunctionDeclarations are not builtins. `popen` / `basename` /
+ * luci.sys stay unresolved. `propagatesFlow` stays `none()`. Does not
+ * jump. Not production taint and not `path_found`.
+ */
+private class BuiltinSystemLibraryCallable extends LibraryCallable {
+  BuiltinSystemLibraryCallable() { this = "system" }
+
+  override ucode::Call getACall() {
+    result.getIdentifier().getName() = this and
+    not exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = result.getIdentifier().getFile() and
+      importedSpecifierName(imp, this)
+    ) and
+    not exists(UCODE::FunctionDeclaration f |
+      f.getName().getValue() = this and
+      f.getLocation().getFile() = result.getIdentifier().getFile()
+    )
+  }
+}
+
 /** Holds if `call` may resolve to the returned summarized library method. */
 DataFlowCallable viableLibraryCallable(DataFlowCall call) {
-  none()
-  // TODO: Implement library call resolution.
-  // exists(LibraryCallable callable |
-  //   result = TLibraryCallable(callable) and
-  //   call.asCall().getStmt() = callable.getACall()
-  // )
+  exists(LibraryCallable callable |
+    result = TLibraryCallable(callable) and
+    call.asCall().getCall().getIdentifier() = callable.getACall().getIdentifier()
+  )
 }
 
 cached

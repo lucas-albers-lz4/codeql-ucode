@@ -12,5 +12,7 @@ import codeql.ucode.AST
 // expression and SSA definition/read nodes. That is not setInitAction
 // path_found. viableSourceCallable resolves unique same-file identifier
 // and member-property FunctionDeclarations; imported luci.sys callees
-// remain unresolved / inconclusive. jumpStep uses identifier
-// simpleIdentifierCall and unique same-file member FunctionDeclarations.
+// remain unresolved / inconclusive. viableLibraryCallable resolves
+// builtin identifier system; popen / basename stay unresolved.
+// jumpStep uses identifier simpleIdentifierCall and unique same-file
+// member FunctionDeclarations.

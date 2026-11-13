@@ -1,9 +1,10 @@
 # M4: FlowSummary `getACall` for identifier callees
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-`viableLibraryCallable` stays `none()`. Unique same-file identifier
-and member-property FunctionDeclarations may resolve separately.
-Member `getACall` stays empty. Production
+Builtin identifier `system` may resolve as a library callable
+separately (`docs/m4-viable-library-callable.md`). Unique same-file
+identifier and member-property FunctionDeclarations may resolve
+separately. Member `getACall` stays empty. Production
 `LocalTaint` / `RequestArgsExec` stay on Models.
 
 ## What compiles
@@ -26,8 +27,9 @@ Member `getACall` stays empty. Production
   `getIdentifier`, so they have no `getACall`. Do not walk
   `getAFieldOrChild`: that would treat a member object or property as
   the callee name.
-- `viableLibraryCallable` stays `none()`. Identifier `getACall` does
-  not resolve library targets or apply summary through-flow.
+- Identifier `getACall` does not apply summary through-flow.
+  Builtin `system` may resolve as `viableLibraryCallable`
+  without `propagatesFlow`. Imported `popen` stays unresolved.
 - Do not wire summary steps into `localFlowStep` / production taint.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).

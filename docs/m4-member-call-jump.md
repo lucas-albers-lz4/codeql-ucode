@@ -31,6 +31,8 @@ not follow that target. This slice does.
 - Subscript, parenthesized, and nested-call callees.
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- `viableLibraryCallable` and `getARuntimeTarget` stay `none()`.
+- `getARuntimeTarget` stays `none()`. Builtin identifier `system`
+  may resolve as `viableLibraryCallable`
+  (see `docs/m4-viable-library-callable.md`).
 - Member `getACall` stays `none()`.
 - Unused formals still have no SSA read. Do not invent a pseudo-read.

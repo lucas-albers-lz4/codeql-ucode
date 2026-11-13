@@ -9,6 +9,8 @@
  *              viableSourceCallable resolves unique same-file identifier
  *              and member-property FunctionDeclarations; imported
  *              luci.sys stays unresolved / inconclusive.
+ *              viableLibraryCallable may resolve builtin system;
+ *              that is not this query's localFlowStep+ evidence.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/m4/ssa-reaches-system
