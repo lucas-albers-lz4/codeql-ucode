@@ -2,7 +2,7 @@
 # M4 gate: named formals are Variables with a CFG node and an SSA write.
 # Not ParameterNode, not argument/parameter taint, not call resolution.
 # Production LocalTaint / RequestArgsExec stay on Models. Not path_found.
-# Unique same-file identifier FunctionDeclarations may resolve;
+# Unique same-file identifier and member-property FunctionDeclarations may resolve;
 # imported luci.sys stays unresolved.
 set -euo pipefail
 

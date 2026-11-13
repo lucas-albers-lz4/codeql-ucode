@@ -4,7 +4,8 @@
  *              jumpStep from that declaration's ReturnValueNode to the
  *              call expression. Testing only. Not production taint and
  *              not setInitAction path_found. Unique same-file identifier
- *              FunctionDeclarations may resolve separately.
+ *              and member-property FunctionDeclarations may resolve
+ *              separately. jumpStep stays identifier-only.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/return-out

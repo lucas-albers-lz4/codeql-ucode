@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # M4 gate: jumpStep ParameterNode continues into SSA localFlowStep.
 # Not production taint. Production LocalTaint / RequestArgsExec stay
-# on Models. Not path_found. Unique same-file identifier
-# FunctionDeclarations may resolve separately. jumpStep stays out of
-# localFlowStep.
+# on Models. Not path_found. Unique same-file identifier and
+# member-property FunctionDeclarations may resolve separately.
+# jumpStep stays on simpleIdentifierCall and out of localFlowStep.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

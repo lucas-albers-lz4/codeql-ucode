@@ -2,7 +2,8 @@
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 `viableLibraryCallable` stays `none()`. Unique same-file identifier
-FunctionDeclarations may resolve separately. Production
+and member-property FunctionDeclarations may resolve separately.
+Member `getACall` stays empty. Production
 `LocalTaint` / `RequestArgsExec` stay on Models.
 
 ## What compiles

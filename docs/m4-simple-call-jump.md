@@ -1,7 +1,7 @@
 # M4: `jumpStep` from same-file identifier `Call.getArgument` into `ParameterNode`
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier FunctionDeclarations may resolve;
+Unique same-file identifier and member-property FunctionDeclarations may resolve;
 imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
@@ -18,8 +18,9 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   enter `formal_order`).
 - Smoke reports `0:s` from `shellquote` and `0:pkg` from
   `callPackageVersionCheck` on `luci`, plus `0:a` / `1:b` from
-  `formal_order` on `ssa_pos`. Builtin `system(...)` still does not
-  enter `formal_order`.
+  `formal_order` on `ssa_pos`. `member_order` on `ssa_pos` may inhabit
+  `viableSourceCallable` but does not `jumpStep`. Builtin `system(...)`
+  still does not enter `formal_order`.
 - `Call.getArguments()` stays `none()`. Summary steps stay out of
   `localFlowStep`. Public `localFlowStep` does not include `jumpStep`.
   Body continuation from that `ParameterNode` is `parameterToSsaDef`
@@ -30,9 +31,10 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - Function expressions (`function(request) { ... }`) and arrows are
   not declarations, so they are not simple-call targets.
 - Member, subscript, parenthesized, and nested-call callees have no
-  `getIdentifier`. Imported `luci.sys` names are not same-file
-  declarations.
-- Unique same-file identifier FunctionDeclarations inhabit
+  `getIdentifier`, so they do not `jumpStep`. Unique same-file member
+  FunctionDeclarations inhabit `viableSourceCallable` separately.
+  Imported `luci.sys` names are not same-file declarations.
+- Unique same-file identifier and member-property FunctionDeclarations inhabit
   `viableSourceCallable` separately. `jumpStep` still uses unfiltered
   `simpleIdentifierCall`.
 - Return-to-out is `jumpStep` to `OutNode` (see

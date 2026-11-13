@@ -5,7 +5,8 @@
  *              ParameterNodes that locally reach an SSA read without a
  *              jump. Testing only. Not production taint and not
  *              setInitAction path_found. Unique same-file identifier
- *              FunctionDeclarations may resolve separately.
+ *              and member-property FunctionDeclarations may resolve
+ *              separately. jumpStep stays identifier-only.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/jump-local

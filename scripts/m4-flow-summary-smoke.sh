@@ -4,7 +4,7 @@
 # scripts/m4-get-a-call-smoke.sh. ActiveThreatModelSource is uninhabited
 # (no Range models). Production LocalTaint / RequestArgsExec stay on
 # Models. Not path_found.
-# Unique same-file identifier FunctionDeclarations may resolve;
+# Unique same-file identifier and member-property FunctionDeclarations may resolve;
 # imported luci.sys stays unresolved. Do not wire summary steps
 # into localFlowStep.
 set -euo pipefail

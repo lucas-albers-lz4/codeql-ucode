@@ -93,9 +93,10 @@ private class ContentContainerNodeImpl extends ContentContainerNode, NodeImpl {
  * through assignments, value-preserving choices and returns. A named
  * formal `ParameterNode` that already has an SSA write continues into
  * that write (`parameterToSsaDef`); `jumpStep` itself stays out of
- * `localFlowStep`. Unique same-file identifier FunctionDeclarations
- * may resolve; imported luci.sys stays unresolved. Not
- * `setInitAction` `path_found`.
+ * `localFlowStep`. Unique same-file identifier and member-property
+ * FunctionDeclarations may resolve; imported luci.sys stays
+ * unresolved. `jumpStep` stays on identifier `simpleIdentifierCall`.
+ * Not `setInitAction` `path_found`.
  */
 module SsaFlow {
   /**
@@ -591,9 +592,10 @@ abstract class OutNode extends Node {
 private module OutNodes {
   /**
    * Call expression as the output of that call. Identifier calls are
-   * already `ExprCfgNode`s. Unique same-file identifier
-   * FunctionDeclarations may resolve separately; imported luci.sys
-   * stays unresolved. Not production taint and not `path_found`.
+   * already `ExprCfgNode`s. Unique same-file identifier and
+   * member-property FunctionDeclarations may resolve separately;
+   * imported luci.sys stays unresolved. `jumpStep` stays on identifier
+   * `simpleIdentifierCall`. Not production taint and not `path_found`.
    */
   private class ExprOutNode extends OutNode, ExprNode {
     private DataFlowCall call;
@@ -614,8 +616,9 @@ import OutNodes
  * call expression (`OutNode`). Position match alone is not enough
  * (`system(...)` must not jump into `formal_order`). Body continuation
  * is `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
- * itself. Uses `simpleIdentifierCall` (name match, not uniqueness).
- * Unique non-imported declarations inhabit `viableSourceCallable`
+ * itself. Uses `simpleIdentifierCall` (name match, not uniqueness;
+ * identifier callees only). Unique non-imported identifier and
+ * member-property declarations inhabit `viableSourceCallable`
  * separately. Not production taint and not `path_found`.
  */
 predicate jumpStep(Node pred, Node succ) {

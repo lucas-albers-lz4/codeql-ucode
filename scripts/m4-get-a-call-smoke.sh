@@ -3,7 +3,7 @@
 # string-keyed summaries. Member callees stay none(). Future stays
 # none(). Not production taint, not localFlowStep, not call resolution.
 # Production LocalTaint / RequestArgsExec stay on Models. Not path_found.
-# Unique same-file identifier FunctionDeclarations may resolve;
+# Unique same-file identifier and member-property FunctionDeclarations may resolve;
 # imported luci.sys stays unresolved.
 set -euo pipefail
 

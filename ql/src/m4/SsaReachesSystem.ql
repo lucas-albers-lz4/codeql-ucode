@@ -7,8 +7,8 @@
  *              Not request.args taint, not imported-callee flow, and not
  *              setInitAction path_found. LocalTaint stays on Models.
  *              viableSourceCallable resolves unique same-file identifier
- *              FunctionDeclarations only; imported luci.sys stays
- *              unresolved / inconclusive.
+ *              and member-property FunctionDeclarations; imported
+ *              luci.sys stays unresolved / inconclusive.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/m4/ssa-reaches-system

@@ -1,7 +1,7 @@
 # M4: `ReturnValueNode` jumps to same-file identifier `OutNode`
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier FunctionDeclarations may resolve;
+Unique same-file identifier and member-property FunctionDeclarations may resolve;
 imported `luci.sys` stays unresolved. Production `LocalTaint` /
 `RequestArgsExec` stay on Models.
 
@@ -14,14 +14,14 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - `OutNode` is the call expression (`CallCfgNode` is an `ExprCfgNode`).
   `jumpStep` takes that declaration's `ReturnValueNode` to each
   `simpleIdentifierCall` `OutNode`. Same evidence as `#30`, not a call
-  graph. Unique same-file identifier FunctionDeclarations inhabit
+  graph. Unique same-file identifier and member-property FunctionDeclarations inhabit
   `viableSourceCallable` separately.
 - `jumpStep` stays out of `localFlowStep`. `Call.getArguments()` stays
   `none()`. Summary steps stay out of `localFlowStep`.
 - Smoke reports `out` / `jump-out` for `shellquote` and
   `callPackageVersionCheck` on `luci`, plus `formal_order` on
-  `ssa_pos`. Builtin `system(...)` still does not enter
-  `formal_order`.
+  `ssa_pos`. `member_order` does not `jumpStep`. Builtin `system(...)`
+  still does not enter `formal_order`.
 
 ## Gaps (later PR)
 
@@ -33,7 +33,7 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - Member, subscript, parenthesized, and nested-call callees have no
   `getIdentifier`. Imported `luci.sys` names are not same-file
   declarations.
-- Unique same-file identifier FunctionDeclarations inhabit
+- Unique same-file identifier and member-property FunctionDeclarations inhabit
   `viableSourceCallable` separately. `jumpStep` still uses unfiltered
   `simpleIdentifierCall`.
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.

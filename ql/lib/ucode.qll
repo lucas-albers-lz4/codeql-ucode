@@ -11,5 +11,6 @@ import codeql.ucode.AST
 // Models. SsaReachesSystem.ql imports DataFlow additively and uses ordered
 // expression and SSA definition/read nodes. That is not setInitAction
 // path_found. viableSourceCallable resolves unique same-file identifier
-// FunctionDeclarations only; imported luci.sys callees remain unresolved /
-// inconclusive.
+// and member-property FunctionDeclarations; imported luci.sys callees
+// remain unresolved / inconclusive. jumpStep stays on identifier
+// simpleIdentifierCall.

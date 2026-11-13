@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# M4 gate: unique same-file identifier FunctionDeclarations resolve.
-# Imported luci.sys / builtins / member callees stay unresolved.
-# Production LocalTaint / RequestArgsExec stay on Models. Not path_found.
-# In-file SSA localFlowStep+ still reaches builtin system on ssa_pos.
+# M4 gate: unique same-file identifier and member-property
+# FunctionDeclarations resolve. Imported luci.sys / builtins / library
+# member callees (read/close) stay unresolved. Production LocalTaint /
+# RequestArgsExec stay on Models. Not path_found. jumpStep stays on
+# unfiltered simpleIdentifierCall. In-file SSA localFlowStep+ still
+# reaches builtin system on ssa_pos.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -48,6 +50,12 @@ if ! grep -q 'uniqueSameFileFunctionDeclaration' \
 	exit 1
 fi
 
+if ! grep -q 'uniqueSameFileMemberFunctionDeclaration' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "viableSourceCallable lost same-file member FunctionDeclaration resolution" >&2
+	exit 1
+fi
+
 if grep -q 'none() // TODO' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
 	echo "viableSourceCallable still none() TODO" >&2
@@ -57,6 +65,12 @@ fi
 if ! grep -q 'simpleIdentifierCall' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
 	echo "jumpStep lost simpleIdentifierCall" >&2
+	exit 1
+fi
+
+if grep -n 'uniqueSameFileMemberFunctionDeclaration\|simpleMemberCall' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
+	echo "jumpStep picked up member resolution" >&2
 	exit 1
 fi
 
@@ -93,6 +107,7 @@ for msg in [
 	"shellquote in luci",
 	"callPackageVersionCheck in luci",
 	"formal_order in ssa_pos",
+	"member_order in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing same-file target {msg}: {blob}")

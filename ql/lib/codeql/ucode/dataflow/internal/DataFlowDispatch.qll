@@ -129,6 +129,8 @@ private class RelevantCall extends CfgNodes::StmtNodes::CallCfgNode { }
 private DataFlowCallable viableSourceCallable(DataFlowCall call) {
   result = uniqueSameFileFunctionDeclaration(call)
   or
+  result = uniqueSameFileMemberFunctionDeclaration(call)
+  or
   result = any(AdditionalCallTarget t).viableTarget(call.asCall())
 }
 
@@ -185,9 +187,9 @@ private module Cached {
    * Bare `x => ...` arrows use the `parameter` field, not that list.
    * `sourceParameterCfg` overlays `ParameterNode` on named formals that
    * already have a CFG node, including expression-bodied arrows after
-   * #28. Unique same-file identifier FunctionDeclarations may resolve
-   * separately; imported luci.sys stays unresolved. Not production
-   * taint and not `path_found`.
+   * #28. Unique same-file identifier and member-property
+   * FunctionDeclarations may resolve separately; imported luci.sys
+   * stays unresolved. Not production taint and not `path_found`.
    */
   cached
   newtype TParameterPosition =
@@ -217,9 +219,9 @@ private predicate namedFormalAt(UCODE::Identifier id, int pos) {
  * formals. Expression-bodied arrows are included now that they have an
  * inner CfgScope. Unused `_`/`m` stay SSA-write holes. Identity
  * `x => x` is an access of the formal (see `docs/m4-identity-arrow.md`).
- * Unique same-file identifier FunctionDeclarations may resolve
- * separately; imported luci.sys stays unresolved. Not production
- * taint and not `path_found`.
+ * Unique same-file identifier and member-property FunctionDeclarations
+ * may resolve separately; imported luci.sys stays unresolved. Not
+ * production taint and not `path_found`.
  */
 predicate sourceParameterCfg(
   CfgNodes::ExprCfgNode n, DataFlowCallable c, ParameterPosition pos
@@ -271,9 +273,10 @@ predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
  * whose body is `callee`. Uses `Call.getIdentifier` plus the extracted
  * declaration name. Member, subscript, parenthesized, and nested-call
  * callees have no identifier. Function expressions and arrows are not
- * declarations. `jumpStep` uses this name match. Unique non-imported
- * declarations inhabit `viableSourceCallable` separately. Not
- * production taint and not `path_found`.
+ * declarations. `jumpStep` uses this name match and does not use
+ * member-property resolution. Unique non-imported identifier and
+ * member-property declarations inhabit `viableSourceCallable`
+ * separately. Not production taint and not `path_found`.
  */
 pragma[nomagic]
 predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
@@ -310,22 +313,70 @@ private predicate importedSpecifierName(UCODE::ImportStatement imp, string name)
 }
 
 /**
- * Unique same-file identifier `function name(...)` body. Member,
- * imported, builtin, and duplicate-name callees have no result.
- * Does not resolve luci.sys or score setInitAction `path_found`.
+ * Unique non-imported same-file `function name(...)`. Duplicate names
+ * and imported specifiers have no result. Does not resolve luci.sys
+ * or score setInitAction `path_found`.
+ */
+private predicate uniqueNonImportedSameFileFunctionName(DataFlowCall call, string name) {
+  name != "" and
+  not exists(UCODE::ImportStatement imp |
+    imp.getLocation().getFile() = call.getLocation().getFile() and
+    importedSpecifierName(imp, name)
+  ) and
+  strictcount(UCODE::FunctionDeclaration other |
+    other.getName().getValue() = name and
+    other.getLocation().getFile() = call.getLocation().getFile()
+  ) = 1
+}
+
+/**
+ * Unique same-file identifier `function name(...)` body. Imported,
+ * builtin, and duplicate-name callees have no result. Member callees
+ * use `uniqueSameFileMemberFunctionDeclaration`. Does not resolve
+ * luci.sys or score setInitAction `path_found`.
  */
 private DataFlowCallable uniqueSameFileFunctionDeclaration(DataFlowCall call) {
   simpleIdentifierCall(call, result) and
   exists(string name |
     name = call.asCall().getCall().getIdentifier().getName() and
-    name != "" and
-    not exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = call.getLocation().getFile() and
-      importedSpecifierName(imp, name)
-    ) and
-    strictcount(UCODE::FunctionDeclaration other |
-      other.getName().getValue() = name and
-      other.getLocation().getFile() = call.getLocation().getFile()
-    ) = 1
+    uniqueNonImportedSameFileFunctionName(call, name)
+  )
+}
+
+/**
+ * Unique same-file member-property `function name(...)` body. Uses
+ * TreeSitter `CallExpression.getFunction` as `MemberExpression` plus
+ * the extracted declaration name. Does not walk `getAFieldOrChild` and
+ * does not widen `Call.getIdentifier`. Subscript, parenthesized, and
+ * nested-call callees have no result. The receiver object is not
+ * resolved. `jumpStep` stays on `simpleIdentifierCall`. Does not
+ * resolve luci.sys or score setInitAction `path_found`.
+ */
+private DataFlowCallable uniqueSameFileMemberFunctionDeclaration(DataFlowCall call) {
+  exists(UCODE::CallExpression raw, UCODE::MemberExpression mem, UCODE::FunctionDeclaration f,
+    string name
+  |
+    toTreeSitter(call.asCall().getCall()) = raw and
+    mem = raw.getFunction() and
+    name = mem.getProperty().getValue() and
+    uniqueNonImportedSameFileFunctionName(call, name) and
+    f.getName().getValue() = name and
+    call.asCall().getLocation().getFile() = f.getLocation().getFile() and
+    toTreeSitter(result.asCfgScope()) = f.getBody()
+  )
+}
+
+/**
+ * Identifier token or member property of a source call. Subscript,
+ * parenthesized, and nested-call callees have no result. Does not walk
+ * `getAFieldOrChild`.
+ */
+string sourceCallName(DataFlowCall call) {
+  result = call.asCall().getCall().getIdentifier().getName()
+  or
+  exists(UCODE::CallExpression raw, UCODE::MemberExpression mem |
+    toTreeSitter(call.asCall().getCall()) = raw and
+    mem = raw.getFunction() and
+    result = mem.getProperty().getValue()
   )
 }
