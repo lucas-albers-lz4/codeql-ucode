@@ -20,9 +20,18 @@ class CallExpressionImpl extends TCallExpression, CallsImpl {
   CallExpressionImpl() { this = TCallExpression(ast) }
 
   override string toString() { result = ast.toString() }
-  override IdentsImpl getIdentifier() { none() } 
+  override IdentsImpl getIdentifier() { none() }
 
   override ExprImpl getArguments() { none() }
 
-  override ExprImpl getArgument(int n) { none() }
+  /**
+   * Gets the `n`th extracted argument expression.
+   *
+   * Children that are not `TExpr` (template strings, numbers, arrays,
+   * objects, spreads, arrows, `this`) have no result. `getArguments()`
+   * stays `none()` because the `arguments` node is not an expression.
+   */
+  override ExprImpl getArgument(int n) {
+    toTreeSitter(result) = ast.getArguments().getChild(n)
+  }
 }
