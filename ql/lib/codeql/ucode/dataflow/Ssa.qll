@@ -24,6 +24,9 @@ module Ssa {
   }
 
   class WriteDefinition extends Definition, SsaImpl::WriteDefinition {
+    /** Reads reachable through this write and any intervening phi joins. */
+    final CfgNode getAFlowRead() { SsaImpl::writeReachesRead(this, result) }
+
     final CfgNode getControlFlowNode() {
       exists(BasicBlock bb, int i | this.definesAt(_, bb, i) | result = bb.getNode(i))
     }

@@ -10,6 +10,19 @@ const methods = {
 			print(ssa_same_line); system("literal"); // ssa_same_line_read
 			let ssa_sibling = "unrelated"; // ssa_sibling_write
 			print(ssa_sibling, system("literal")); // ssa_sibling_read
+			let discarded = "tainted"; // discarded_write
+			let result = (print(discarded), "safe"); // result_write
+			system(result); // result_read
+			let decl_taint = "tainted", decl_safe = "safe"; // decl_taint_write
+			print(decl_taint); // decl_taint_read
+			system(decl_safe); // decl_safe_read
+			let obj = { field: "safe" }; // obj_write
+			let from_field = obj.field; // from_field_write
+			system(from_field); // from_field_read
+			let skip_src = "tainted"; // skip_src_write
+			print(skip_src); // skip_src_read
+			let skip_safe = "safe"; // skip_safe_write
+			system(skip_safe); // skip_safe_read
 		}
 	}
 };

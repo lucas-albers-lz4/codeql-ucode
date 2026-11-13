@@ -6,8 +6,8 @@ const methods = {
 			let ssa_pos_src = "ssa_pos_val"; // ssa_pos_write
 			system(ssa_pos_src); // ssa_pos_read
 			let ssa_multiline = "multiline"; // ssa_multiline_write
-			print( // ssa_multiline_read
-				system(ssa_multiline)
+			print(
+				system(ssa_multiline) // ssa_multiline_read
 			);
 			let seq = "a"; // seq_decl
 			system(seq); // seq_before
@@ -41,6 +41,9 @@ const methods = {
 				system(independent); // independent_read
 			};
 			system(param); // param_outer_read
+			let ssa_chain_src = "chained"; // ssa_chain_src_write
+			let ssa_chain_copy = ssa_chain_src; // ssa_chain_copy_write
+			system(ssa_chain_copy); // ssa_chain_copy_read
 		}
 	}
 };

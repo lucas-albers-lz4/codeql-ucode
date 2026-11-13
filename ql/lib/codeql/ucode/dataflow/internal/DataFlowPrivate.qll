@@ -1,7 +1,11 @@
 private import codeql.util.Boolean
 private import codeql.util.Unit
 private import codeql.ucode.ast.Expr
+private import codeql.ucode.AST
 private import codeql.ucode.CFG
+private import codeql.ucode.ast.internal.AstNodes
+private import codeql.ucode.ast.internal.TreeSitter
+private import codeql.ucode.dataflow.Ssa
 private import DataFlowPublic
 private import DataFlowDispatch
 
@@ -39,17 +43,218 @@ private class ExprNodeImpl extends ExprNode, NodeImpl {
   override string toStringImpl() { result = this.getExprNode().toString() }
 }
 
-/** Provides logic related to SSA. */
+private class SsaDefNodeImpl extends SsaDefinitionNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
+
+  override Location getLocationImpl() { result = this.getDefinition().getLocation() }
+
+  override string toStringImpl() {
+    result = "ssa def " + this.getDefinition().getSourceVariable().getName()
+  }
+}
+
+private class SsaReadNodeImpl extends SsaReadNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getRead().getScope() }
+
+  override Location getLocationImpl() { result = this.getRead().getLocation() }
+
+  override string toStringImpl() {
+    result = "ssa read " + this.getDefinition().getSourceVariable().getName()
+  }
+}
+
+private class ReturnValueNodeImpl extends ReturnValueNode, ReturnNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
+
+  override Location getLocationImpl() { result = this.getCfgNode().getLocation() }
+
+  override string toStringImpl() { result = "return value" }
+
+  override ReturnKind getKind() { result = TNormalReturnKind() }
+}
+
+/**
+ * SSA value flow with per-definition identities.
+ *
+ * Ordered CFG nodes distinguish expression evaluation, reads and writes.
+ * Definitions flow to their reads through phi joins; expression values flow
+ * through assignments, value-preserving choices and returns. Not call
+ * resolution (`viableSourceCallable` stays
+ * `none()`) and not imported luci.sys `path_found`.
+ */
 module SsaFlow {
-  // TODO
+  /**
+   * Innermost CFG node containing `inner`, excluding nested CFG nodes.
+   */
+  private predicate astInCfg(CfgNode n, AstNode inner) {
+    inner.getParent*() = n.getAstNode() and
+    not exists(CfgNode closer |
+      closer != n and
+      inner.getParent*() = closer.getAstNode() and
+      closer.getAstNode().getParent+() = n.getAstNode()
+    )
+  }
+
+  /**
+   * Value of `e` after stripping parentheses, taking the last comma operand,
+   * and taking the RHS of a nested assignment expression (`a = b = x`).
+   */
+  private UCODE::AstNode copyValue(UCODE::AstNode e) {
+    result = copyValue(e.(UCODE::ParenthesizedExpression).getChild())
+    or
+    exists(UCODE::SequenceExpression seq, int last |
+      e = seq and
+      last = max(int i | exists(seq.getChild(i))) and
+      result = copyValue(seq.getChild(last))
+    )
+    or
+    exists(UCODE::AssignmentExpression a |
+      e = a and
+      result = copyValue(a.getRight())
+    )
+    or
+    exists(UCODE::TernaryExpression t |
+      e = t and
+      (result = copyValue(t.getConsequence()) or result = copyValue(t.getAlternative()))
+    )
+    or
+    exists(UCODE::BinaryExpression b |
+      e = b and
+      b.getOperator() in ["&&", "||", "??"] and
+      (result = copyValue(b.getLeft()) or result = copyValue(b.getRight()))
+    )
+    or
+    exists(UCODE::AugmentedAssignmentExpression a |
+      e = a and
+      a.getOperator() in ["&&=", "||=", "??="] and
+      (result = copyValue(a.getLeft()) or result = copyValue(a.getRight()))
+    )
+    or
+    not e instanceof UCODE::ParenthesizedExpression and
+    not e instanceof UCODE::SequenceExpression and
+    not e instanceof UCODE::AssignmentExpression and
+    not e instanceof UCODE::TernaryExpression and
+    not exists(UCODE::BinaryExpression b | e = b and b.getOperator() in ["&&", "||", "??"]) and
+    not exists(UCODE::AugmentedAssignmentExpression a |
+      e = a and a.getOperator() in ["&&=", "||=", "??="]
+    ) and
+    result = e
+  }
+
+  /** RHS expression stored by `dstDef` (declarator initializer or `=` RHS). */
+  private UCODE::AstNode assignedRhs(Ssa::WriteDefinition dstDef) {
+    exists(Variable v, UCODE::VariableDeclarator d |
+      v = dstDef.getSourceVariable() and
+      v.getAstNode() = TVariableDeclarator(d) and
+      astInCfg(dstDef.getControlFlowNode(), v.getAstNode()) and
+      result = d.getValue()
+    )
+    or
+    exists(VariableWriteAccess wa, UCODE::Identifier ident, UCODE::AssignmentExpression a |
+      wa.getVariable() = dstDef.getSourceVariable() and
+      astInCfg(dstDef.getControlFlowNode(), wa.getAstNode()) and
+      wa.getAstNode() = TIdentifier(ident) and
+      a.getLeft() = ident and
+      result = a.getRight()
+    )
+    or
+    exists(VariableWriteAccess wa, UCODE::Identifier ident, UCODE::AugmentedAssignmentExpression a |
+      wa.getVariable() = dstDef.getSourceVariable() and
+      wa.getAstNode() = TIdentifier(ident) and
+      a.getLeft() = ident and
+      a.getOperator() in ["&&=", "||=", "??="] and
+      toTreeSitter(dstDef.getControlFlowNode().getAstNode()) = a and
+      result = a.getRight()
+    )
+  }
+
+  /** Write of `def` to a read reachable through any phi joins. */
+  predicate ssaDefToRead(Node nodeFrom, Node nodeTo) {
+    exists(Ssa::WriteDefinition def, CfgNode read |
+      nodeFrom = TSsaDefNode(def) and
+      read = def.getAFlowRead() and
+      nodeTo = TSsaReadNode(def, read)
+    )
+  }
+
+  /**
+   * Identifier copy: the assigned value of `dstDef` is a read of `srcDef`.
+   * Does not step through calls, field reads, or independent declarators.
+   */
+  predicate identifierCopy(Node nodeFrom, Node nodeTo) {
+    exists(
+      Ssa::WriteDefinition srcDef, Ssa::WriteDefinition dstDef, CfgNode read, VariableReadAccess ra,
+      UCODE::Identifier ident
+    |
+      nodeFrom = TSsaReadNode(srcDef, read) and
+      nodeTo = TSsaDefNode(dstDef) and
+      read.getScope() = dstDef.getControlFlowNode().getScope() and
+      srcDef.getSourceVariable() != dstDef.getSourceVariable() and
+      ra.getVariable() = srcDef.getSourceVariable() and
+      read.getAstNode() = ra.getAstNode() and
+      toTreeSitter(ra.getAstNode()) = ident and
+      copyValue(assignedRhs(dstDef)) = ident
+    )
+  }
+
+  /** A precise SSA read denotes the value of its identifier expression. */
+  predicate readToExpression(Node nodeFrom, Node nodeTo) {
+    exists(Ssa::WriteDefinition def, CfgNode read, CfgNodes::ExprCfgNode expr |
+      nodeFrom = TSsaReadNode(def, read) and nodeTo = TExprNode(expr) and expr = read
+    )
+  }
+
+  /** An expression value assigned to a local reaches that particular write. */
+  predicate expressionToDefinition(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::ExprCfgNode expr, Ssa::WriteDefinition def |
+      nodeFrom = TExprNode(expr) and
+      nodeTo = TSsaDefNode(def) and
+      expr.getScope() = def.getControlFlowNode().getScope() and
+      copyValue(assignedRhs(def)) = toTreeSitter(expr.getAstNode())
+    )
+  }
+
+  /** Expressions preserve values through parentheses, final comma operands and choices. */
+  predicate expressionValue(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::ExprCfgNode fromExpr, CfgNodes::ExprCfgNode toExpr |
+      nodeFrom = TExprNode(fromExpr) and
+      nodeTo = TExprNode(toExpr) and
+      fromExpr.getScope() = toExpr.getScope() and
+      toTreeSitter(fromExpr.getAstNode()) != toTreeSitter(toExpr.getAstNode()) and
+      copyValue(toTreeSitter(toExpr.getAstNode())) = toTreeSitter(fromExpr.getAstNode())
+    )
+  }
+
+  /** The value of the returned expression reaches its callable's return node. */
+  predicate expressionToReturn(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::ExprCfgNode expr, CfgNodes::AstCfgNode retNode, UCODE::ReturnStatement ret |
+      nodeFrom = TExprNode(expr) and
+      nodeTo = TReturnNode(retNode) and
+      retNode.getAstNode() = TReturnStatement(ret) and
+      expr.getScope() = retNode.getScope() and
+      copyValue(ret.getChild()) = toTreeSitter(expr.getAstNode())
+    )
+  }
+
+  predicate localFlowStep(Node nodeFrom, Node nodeTo) {
+    ssaDefToRead(nodeFrom, nodeTo)
+    or
+    identifierCopy(nodeFrom, nodeTo)
+    or
+    readToExpression(nodeFrom, nodeTo)
+    or
+    expressionToDefinition(nodeFrom, nodeTo)
+    or
+    expressionValue(nodeFrom, nodeTo)
+    or
+    expressionToReturn(nodeFrom, nodeTo)
+  }
 }
 
 /** Provides predicates related to local data flow. */
 module LocalFlow {
   pragma[nomagic]
-  predicate localFlowStepCommon(Node nodeFrom, Node nodeTo) {
-    none() // TODO
-  }
+  predicate localFlowStepCommon(Node nodeFrom, Node nodeTo) { none() }
 
   predicate localMustFlowStep(Node node1, Node node2) { none() }
 }
@@ -78,6 +283,11 @@ private module Cached {
   cached
   newtype TNode =
     TExprNode(CfgNodes::ExprCfgNode n) or
+    // Per-definition SSA identities. Do not use statement CFG nodes: those
+    // collapse unrelated values in one statement into one DataFlow node.
+    TSsaDefNode(Ssa::WriteDefinition def) or
+    TSsaReadNode(Ssa::WriteDefinition def, CfgNode read) { read = def.getAFlowRead() } or
+    TReturnNode(CfgNodes::AstCfgNode n) { n.getAstNode() instanceof ReturnStatement } or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
       none() // TODO
     }
@@ -93,11 +303,18 @@ private module Cached {
    * data flow.
    */
   cached
-  predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo, string model) { none() }
+  predicate simpleLocalFlowStep(Node nodeFrom, Node nodeTo, string model) {
+    SsaFlow::localFlowStep(nodeFrom, nodeTo) and
+    model = ""
+  }
 
   /** This is the local flow predicate that is exposed. */
   cached
-  predicate localFlowStepImpl(Node nodeFrom, Node nodeTo) { none() }
+  predicate localFlowStepImpl(Node nodeFrom, Node nodeTo) {
+    LocalFlow::localFlowStepCommon(nodeFrom, nodeTo)
+    or
+    SsaFlow::localFlowStep(nodeFrom, nodeTo)
+  }
 
   cached
   newtype TContentSet = TSingletonContent(Content c)

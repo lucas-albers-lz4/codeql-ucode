@@ -3,14 +3,31 @@ private import DataFlowDispatch
 private import DataFlowPrivate
 private import codeql.ucode.controlflow.ControlFlowGraph
 private import codeql.ucode.controlflow.CfgNodes as CfgNodes
+private import codeql.ucode.dataflow.Ssa
 
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
- * (`ExprNode`) or a Expr (`ParameterNode`).
+ * (`ExprNode`), an SSA definition or read (`SsaDefinitionNode` /
+ * `SsaReadNode`), a returned value (`ReturnValueNode`), or an entry parameter
+ * (`ParameterNode`).
+ *
+ * SSA nodes retain the identity of individual definitions and reads.
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
   CfgNodes::ExprCfgNode asExpr() { result = this.(ExprNode).getExprNode() }
+
+  /**
+   * Gets the CFG node for this SSA def or read, if any.
+   *
+   * This is a location, not a value identity. Public `localFlowStep` uses
+   * `SsaDefinitionNode` / `SsaReadNode`.
+   */
+  CfgNode asCfgNode() {
+    result = this.(SsaDefinitionNode).getCfgNode()
+    or
+    result = this.(SsaReadNode).getRead()
+  }
 
   /** Gets the Expr corresponding to this node, if any. */
   Expr asParameter() { result = this.(ParameterNode).getParameter() }
@@ -46,6 +63,54 @@ class ExprNode extends Node, TExprNode {
 
   /** Gets the expression corresponding to this node. */
   CfgNodes::ExprCfgNode getExprNode() { result = n }
+}
+
+/**
+ * An SSA write, viewed as a data-flow node.
+ *
+ * Distinct from other writes in the same statement. Public `localFlowStep`
+ * from this node reaches this definition's reads, not every value in the
+ * enclosing CFG statement.
+ */
+class SsaDefinitionNode extends Node, TSsaDefNode {
+  private Ssa::WriteDefinition def;
+
+  SsaDefinitionNode() { this = TSsaDefNode(def) }
+
+  /** Gets the SSA write. */
+  Ssa::WriteDefinition getDefinition() { result = def }
+
+  /** Gets the CFG node of this write. */
+  CfgNode getCfgNode() { result = def.getControlFlowNode() }
+}
+
+/**
+ * A read of an SSA write, viewed as a data-flow node.
+ *
+ * Keyed by definition and read CFG node so a read of `x` is not a write of
+ * `y` even when both occur in the same statement.
+ */
+class SsaReadNode extends Node, TSsaReadNode {
+  private Ssa::WriteDefinition def;
+  private CfgNode read;
+
+  SsaReadNode() { this = TSsaReadNode(def, read) }
+
+  /** Gets the SSA write being read. */
+  Ssa::WriteDefinition getDefinition() { result = def }
+
+  /** Gets the CFG node of this read. */
+  CfgNode getRead() { result = read }
+}
+
+/** The value returned by a return statement in a callable. */
+class ReturnValueNode extends Node, TReturnNode {
+  private CfgNodes::AstCfgNode n;
+
+  ReturnValueNode() { this = TReturnNode(n) }
+
+  /** Gets the return statement's CFG node. */
+  CfgNodes::AstCfgNode getCfgNode() { result = n }
 }
 
 /**
@@ -110,21 +175,23 @@ ExprNode exprNode(CfgNodes::ExprCfgNode e) { result.getExprNode() = e }
 ParameterNode parameterNode(Expr p) { result.getParameter() = p }
 
 /**
- * Holds if data flows from `nodeFrom` to `nodeTo` in exactly one local
- * (intra-procedural) step.
+ * Holds if a value flows from `nodeFrom` to `nodeTo` in exactly one local
+ * (intra-procedural) value-preserving step. Value-transforming operations,
+ * such as arithmetic and `+=`, have no local flow edge; taint propagation
+ * through those operations is not modeled here.
  */
 predicate localFlowStep = localFlowStepImpl/2;
 
 /**
- * Holds if data flows from `source` to `sink` in zero or more local
- * (intra-procedural) steps.
+ * Holds if a value flows from `source` to `sink` in zero or more local
+ * (intra-procedural) value-preserving steps.
  */
 pragma[inline]
 predicate localFlow(Node source, Node sink) { localFlowStep*(source, sink) }
 
 /**
- * Holds if data can flow from `e1` to `e2` in zero or more
- * local (intra-procedural) steps.
+ * Holds if a value can flow from `e1` to `e2` in zero or more
+ * local (intra-procedural) value-preserving steps.
  */
 pragma[inline]
 predicate localExprFlow(CfgNodes::ExprCfgNode e1, CfgNodes::ExprCfgNode e2) {

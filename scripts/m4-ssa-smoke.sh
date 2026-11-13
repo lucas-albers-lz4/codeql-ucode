@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # M4 gate: wrapper SSA/dataflow compiles; production SsaReachesSystem.ql
-# imports DataFlow additively. Isolated SsaReads.ql remains extractor-smoke.
+# requires DataFlow localFlowStep+ from an SSA def node to a read of that
+# definition. Isolated SsaReads.ql remains extractor-smoke.
+# Public localFlowStep uses SSA identities, not statement CFG nodes.
 # Production LocalTaint/RequestArgsExec stay on Models.
 # Does not claim setInitAction path_found. Does not treat basename/shellquote
-# as sanitizers.
+# as sanitizers. viableSourceCallable stays none().
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -14,6 +16,7 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-ssa"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 Q="$ROOT/ql/src/extractor-smoke/SsaReads.ql"
+FLOW="$ROOT/ql/src/extractor-smoke/LocalFlowStep.ql"
 PROD="$ROOT/ql/src/m4/SsaReachesSystem.ql"
 
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
@@ -26,6 +29,7 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 
 echo "== compile import codeql.ucode.DataFlow =="
 codeql query compile "$Q" --search-path="$QLPATH"
+codeql query compile "$FLOW" --search-path="$QLPATH"
 codeql query compile "$PROD" --search-path="$QLPATH"
 
 rm -rf "$DB"
@@ -98,6 +102,8 @@ for name, write, read in [
     ("both", "both_false", "both_join"),
     ("param", "param_decl", "param_outer_read"),
     ("independent", "independent_decl", "independent_read"),
+    ("ssa_chain_src", "ssa_chain_src_write", "ssa_chain_copy_write"),
+    ("ssa_chain_copy", "ssa_chain_copy_write", "ssa_chain_copy_read"),
 ]:
     if not has_pair(name, fixture, write, read):
         sys.exit(f"missing SSA pair {name}: {write} -> {read}")
@@ -112,7 +118,36 @@ for name, write, read in [
 ]:
     if has_pair(name, fixture, write, read):
         sys.exit(f"unexpected SSA pair {name}: {write} -> {read}")
-print("SSA pos/neg statement-level checks passed")
+print("SSA pos/neg access-level checks passed")
+PY
+
+echo "== LocalFlowStep =="
+codeql query run "$FLOW" --database="$DB" --search-path="$QLPATH" --output="$DB/flow.bqrs"
+codeql bqrs decode --format=csv "$DB/flow.bqrs" | tee "$DB/flow.csv"
+
+python3 - <<'PY'
+import csv, sys
+rows = list(csv.reader(open(".codeql-database/m4-ssa/flow.csv")))
+msgs = [r[1] for r in rows[1:] if len(r) > 1]
+blob = "\n".join(msgs)
+
+def has(src, dst, fixture):
+    return f"{src} -> {dst} in {fixture}" in msgs
+
+if not has("ssa_pos_src", "ssa_pos_src", "ssa_pos"):
+    sys.exit("missing localFlowStep ssa_pos_src -> ssa_pos_src: " + blob)
+if not has("ssa_chain_src", "ssa_chain_copy", "ssa_pos"):
+    sys.exit("missing identifier-copy localFlowStep ssa_chain_src -> ssa_chain_copy: " + blob)
+for src, dst, fixture in [
+    ("discarded", "result", "ssa_neg"),
+    ("decl_taint", "decl_safe", "ssa_neg"),
+    ("obj", "from_field", "ssa_neg"),
+    ("skip_src", "skip_safe", "ssa_neg"),
+    ("ssa_neg_x", "ssa_neg_y", "ssa_neg"),
+]:
+    if has(src, dst, fixture):
+        sys.exit(f"unsound localFlowStep {src} -> {dst} in {fixture}: " + blob)
+print("localFlowStep pos/neg soundness ok")
 PY
 
 echo "== SsaReachesSystem =="
@@ -128,7 +163,8 @@ for name, fixture in [("ssa_pos_src", "ssa_pos"), ("ssa_multiline", "ssa_pos"),
                       ("ssa_neg_y", "ssa_neg")]:
     if f"{name} reaches system in {fixture}" not in msgs:
         sys.exit(f"missing {name} reaches system: " + blob)
-for name in ["ssa_neg_x", "ssa_same_line", "ssa_sibling"]:
+for name in ["ssa_neg_x", "ssa_same_line", "ssa_sibling", "discarded",
+             "decl_taint", "obj", "skip_src", "ssa_chain_src"]:
     if any(m.startswith(name + " reaches system") for m in msgs):
         sys.exit(f"{name} false positive: " + blob)
 if any("setInitAction" in m or "init_action" in m or "luci" in m for m in msgs):

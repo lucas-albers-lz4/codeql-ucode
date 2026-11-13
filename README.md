@@ -30,21 +30,30 @@ Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Ident
 
 Fresh checkouts: `./scripts/clone-grammar.sh` before `cargo test`. The grammar clone is gitignored.
 
-## Statement-level SSA status
+## Local SSA and data-flow status
 
-The experimental SSA smoke covers lexical declarations, ordinary and compound
-assignments, block and function-parameter shadowing, and `if`/`else` joins.
+The experimental CFG has partial coverage of ordered expression and access
+nodes, branches, loops (including `for-in`), `switch`, `break`, and `continue`.
+Its `try`/`catch` paths use an incomplete may-throw approximation, so some
+runtime exception paths may be missed.
 Parameters shadow outer variables but are not themselves SSA source variables.
-Loop, switch, and exception control flow remain statement leaves, and multiple
-writes within one statement cannot be ordered.
+The regression smoke covers same-statement ordering, joins, loop-carried flow,
+short-circuit expressions, optional chains and return values.
 
 `ql/src/m4/SsaReachesSystem.ql` is an additive pack query that imports
-`codeql.ucode.DataFlow` and reports lexical SSA writes whose statement-level
-read contains an access in builtin `system()`'s command argument, on
-`ssa_pos`/`ssa_neg` only. Production
-LocalTaint / RequestArgsExec / ImportedCalleeTaint stay on Models. DataFlow
-`localFlowStep` and `viableSourceCallable` remain `none()`, so imported
-`luci.sys` callees stay unresolved — not `setInitAction` `path_found`.
+`codeql.ucode.DataFlow` and reports lexical SSA writes whose read is an access
+in builtin `system()`'s command argument, on
+`ssa_pos`/`ssa_neg` only, requiring `DataFlow::localFlowStep+` from that
+write's SSA node to a read of the same definition. Production LocalTaint /
+RequestArgsExec / ImportedCalleeTaint stay on Models. Public
+`localFlowStep` connects expressions, SSA definitions and reads, copies and
+return values through value-preserving edges. Value-transforming operations
+such as arithmetic and `+=` have no local flow edge, and taint propagation
+through those operations is not modeled here. Field content and
+interprocedural calls remain unmodeled;
+`viableSourceCallable` remains `none()`, so
+imported `luci.sys` callees stay unresolved / inconclusive — not
+`setInitAction` `path_found`.
 
 ## M1 spike status
 
