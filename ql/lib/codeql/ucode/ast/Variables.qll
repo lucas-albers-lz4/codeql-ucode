@@ -126,12 +126,31 @@ private predicate parameterBinding(UCODE::AstNode body, string name) {
   )
 }
 
-private predicate access(AstNode node, Variable v, string name) {
-  exists(UCODE::Identifier ident, UCODE::AstNode scope |
+/** Whether an identifier occurrence resolves to this lexical binding. */
+private predicate visibleAt(UCODE::AstNode occurrence, Variable v, string name) {
+  exists(UCODE::AstNode scope |
     scope = bindingScope(v) and
-    ident.getValue() = name and
     name = v.getName() and
-    ident.getParent+() = scope and
+    occurrence.getParent+() = scope and
+    not exists(Variable other, UCODE::AstNode inner |
+      other != v and
+      other.getName() = name and
+      inner = bindingScope(other) and
+      inner.getParent+() = scope and
+      occurrence.getParent+() = inner
+    ) and
+    not exists(UCODE::AstNode body |
+      parameterBinding(body, name) and
+      body.getParent+() = scope and
+      occurrence.getParent*() = body
+    )
+  )
+}
+
+private predicate access(AstNode node, Variable v, string name) {
+  exists(UCODE::Identifier ident |
+    ident.getValue() = name and
+    visibleAt(ident, v, name) and
     node = TIdentifier(ident) and
     not exists(UCODE::VariableDeclarator d | d.getName() = ident) and
     not exists(UCODE::FormalParameters ps | ident.getParent+() = ps) and
@@ -146,19 +165,13 @@ private predicate access(AstNode node, Variable v, string name) {
     not exists(UCODE::ForInAltStatement f |
       exists(f.getKind()) and
       (ident = f.getVariable() or ident = f.getKey() or ident = f.getValue())
-    ) and
-    not exists(Variable other, UCODE::AstNode inner |
-      other != v and
-      other.getName() = name and
-      inner = bindingScope(other) and
-      inner.getParent+() = scope and
-      ident.getParent+() = inner
-    ) and
-    not exists(UCODE::AstNode body |
-      parameterBinding(body, name) and
-      body.getParent+() = scope and
-      ident.getParent*() = body
     )
+  )
+  or
+  exists(UCODE::ShorthandPropertyIdentifier ident |
+    ident.getValue() = name and
+    visibleAt(ident, v, name) and
+    node = TShorthandPropertyIdentifier(ident)
   )
 }
 
@@ -182,7 +195,7 @@ private predicate modifyingWrite(UCODE::Identifier ident) {
 }
 
 /**
- * An identifier use of a variable.
+ * An identifier use of a variable, including a shorthand object property.
  */
 class VariableAccess extends MkVariableAccess {
   private string name;
@@ -246,9 +259,7 @@ class VariableWriteAccess extends VariableAccess {
    * updates have no assigned RHS; those are not value-preserving copies.
    */
   UCODE::AstNode getAssignedRhs() {
-    exists(UCODE::AssignmentExpression a |
-      a = this.getWriteOperation() and result = a.getRight()
-    )
+    exists(UCODE::AssignmentExpression a | a = this.getWriteOperation() and result = a.getRight())
     or
     exists(UCODE::AugmentedAssignmentExpression a |
       a = this.getWriteOperation() and
@@ -266,6 +277,8 @@ class VariableReadAccess extends VariableAccess {
       this.getAstNode() = TIdentifier(ident) and
       not simpleWrite(ident)
     )
+    or
+    this.getAstNode() instanceof TShorthandPropertyIdentifier
   }
 
   override string getAPrimaryQlClass() { result = "VariableRead" }

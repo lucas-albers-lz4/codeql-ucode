@@ -1,8 +1,8 @@
 /**
  * @name MaD encodeContent Field and Element tokens
  * @description Reports Field and Element MaD tokens from encodeContent.
- *              Testing only. Not storeStep / readStep, not production
- *              taint, and not setInitAction path_found.
+ *              Testing only. Not production taint, and not
+ *              setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/encode-content
@@ -12,7 +12,6 @@
 import codeql.files.FileSystem
 import codeql.ucode.DataFlow
 private import codeql.ucode.ast.internal.TreeSitter
-private import codeql.ucode.dataflow.internal.DataFlowPrivate
 private import codeql.ucode.dataflow.internal.FlowSummaryImpl
 
 private predicate extractedField(File f, string name) {
@@ -28,8 +27,6 @@ private predicate extractedElement(File f) {
 
 from File f, DataFlow::ContentSet cs, string arg, string token, string label
 where
-  not storeStep(_, _, _) and
-  not readStep(_, _, _) and
   not exists(string futureArg | Input::encodeContent(_, futureArg) = "Future") and
   token = Input::encodeContent(cs, arg) and
   (f.getBaseName() = "luci" or f.getBaseName() = "ssa_neg") and

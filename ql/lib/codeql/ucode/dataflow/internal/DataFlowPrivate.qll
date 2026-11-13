@@ -74,6 +74,18 @@ private class ReturnValueNodeImpl extends ReturnValueNode, ReturnNode, NodeImpl 
 }
 
 /**
+ * Object / array literal CFG node. Those wrappers are not `TExpr`, so they
+ * have no `ExprCfgNode`. Used as `storeStep` targets (and nested stores).
+ */
+private class ContentContainerNodeImpl extends ContentContainerNode, NodeImpl {
+  override CfgScope getCfgScope() { result = this.getCfgNode().getScope() }
+
+  override Location getLocationImpl() { result = this.getCfgNode().getLocation() }
+
+  override string toStringImpl() { result = this.getCfgNode().toString() }
+}
+
+/**
  * SSA value flow with per-definition identities.
  *
  * Ordered CFG nodes distinguish expression evaluation, reads and writes.
@@ -212,6 +224,17 @@ module SsaFlow {
     )
   }
 
+  /** A literal container assigned to a local reaches that particular write. */
+  predicate containerToDefinition(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::AstCfgNode container, Ssa::WriteDefinition def, UCODE::AstNode raw |
+      container = containerCfg(raw) and
+      nodeFrom = TContentContainerNode(container) and
+      nodeTo = TSsaDefNode(def) and
+      container.getScope() = def.getControlFlowNode().getScope() and
+      copyValue(assignedRhs(def)) = raw
+    )
+  }
+
   /** Expressions preserve values through parentheses, final comma operands and choices. */
   predicate expressionValue(Node nodeFrom, Node nodeTo) {
     exists(CfgNodes::ExprCfgNode fromExpr, CfgNodes::ExprCfgNode toExpr |
@@ -220,6 +243,17 @@ module SsaFlow {
       fromExpr.getScope() = toExpr.getScope() and
       toTreeSitter(fromExpr.getAstNode()) != toTreeSitter(toExpr.getAstNode()) and
       copyValue(toTreeSitter(toExpr.getAstNode())) = toTreeSitter(fromExpr.getAstNode())
+    )
+  }
+
+  /** A literal container can be the value of a surrounding expression. */
+  predicate containerToExpression(Node nodeFrom, Node nodeTo) {
+    exists(CfgNodes::AstCfgNode container, CfgNodes::ExprCfgNode expr, UCODE::AstNode raw |
+      container = containerCfg(raw) and
+      nodeFrom = TContentContainerNode(container) and
+      nodeTo = TExprNode(expr) and
+      container.getScope() = expr.getScope() and
+      copyValue(toTreeSitter(expr.getAstNode())) = raw
     )
   }
 
@@ -234,6 +268,21 @@ module SsaFlow {
     )
   }
 
+  /** A returned object or array literal reaches the callable's return node. */
+  predicate containerToReturn(Node nodeFrom, Node nodeTo) {
+    exists(
+      CfgNodes::AstCfgNode container, CfgNodes::AstCfgNode retNode, UCODE::AstNode raw,
+      UCODE::ReturnStatement ret
+    |
+      container = containerCfg(raw) and
+      nodeFrom = TContentContainerNode(container) and
+      nodeTo = TReturnNode(retNode) and
+      retNode.getAstNode() = TReturnStatement(ret) and
+      container.getScope() = retNode.getScope() and
+      copyValue(ret.getChild()) = raw
+    )
+  }
+
   predicate localFlowStep(Node nodeFrom, Node nodeTo) {
     ssaDefToRead(nodeFrom, nodeTo)
     or
@@ -243,9 +292,15 @@ module SsaFlow {
     or
     expressionToDefinition(nodeFrom, nodeTo)
     or
+    containerToDefinition(nodeFrom, nodeTo)
+    or
     expressionValue(nodeFrom, nodeTo)
     or
+    containerToExpression(nodeFrom, nodeTo)
+    or
     expressionToReturn(nodeFrom, nodeTo)
+    or
+    containerToReturn(nodeFrom, nodeTo)
   }
 }
 
@@ -286,22 +341,33 @@ private string extractedFieldName() {
     exists(UCODE::Pair p | result = staticPairKey(p))
     or
     exists(UCODE::ShorthandPropertyIdentifier s | result = s.getValue())
-  ) and
-  result != ""
+    or
+    exists(UCODE::SubscriptExpression s, UCODE::String key |
+      key = s.getIndex() and result = staticStringKey(key)
+    )
+  )
 }
 
-/** Property-identifier or string pair keys. Not computed names. */
-private string staticPairKey(UCODE::Pair p) {
-  result = p.getKey().(UCODE::PropertyIdentifier).getValue()
-  or
-  exists(UCODE::String s | s = p.getKey() |
+/** String keys without escape sequences, whose fragments are their actual value. */
+private string staticStringKey(UCODE::String s) {
+  not exists(UCODE::EscapeSequence escape | escape = s.getChild(_)) and
+  (
     result =
       strictconcat(int i, UCODE::StringFragment frag |
         frag = s.getChild(i)
       |
         frag.getValue() order by i
       )
+    or
+    not exists(s.getChild(_)) and result = ""
   )
+}
+
+/** Property-identifier or unescaped string pair keys. Not computed names. */
+private string staticPairKey(UCODE::Pair p) {
+  result = p.getKey().(UCODE::PropertyIdentifier).getValue()
+  or
+  exists(UCODE::String s | s = p.getKey() and result = staticStringKey(s))
 }
 
 /** Subscript reads or non-empty array literals. */
@@ -309,6 +375,15 @@ private predicate extractedElementContent() {
   exists(UCODE::SubscriptExpression s)
   or
   exists(UCODE::Array a, int i | exists(a.getChild(i)))
+}
+
+/**
+ * Wrapper whose generated class matches the TreeSitter node. Drops the
+ * `TExpression` / `TPrimaryExpression` aliases for the same entity.
+ */
+private predicate canonicalWrapper(AstNode n, UCODE::AstNode raw) {
+  toTreeSitter(n) = raw and
+  n.getAPrimaryQlClass() = raw.getAPrimaryQlClass()
 }
 
 /** A collection of cached types and predicates to be evaluated in the same stage. */
@@ -324,6 +399,9 @@ private module Cached {
     TReturnNode(CfgNodes::AstCfgNode n) { n.getAstNode() instanceof ReturnStatement } or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
       none() // TODO
+    } or
+    TContentContainerNode(CfgNodes::AstCfgNode n) {
+      n.getAstNode() instanceof Object or n.getAstNode() instanceof Array
     }
 
   cached
@@ -358,9 +436,10 @@ private module Cached {
    *
    * `Field` names are member properties, object pair keys, and shorthand
    * properties. `Element` holds when a subscript or a non-empty array is
-   * present. No `Future`: ucode has no async/future nodes. Does not add
-   * `storeStep` / `readStep`, resolve calls, or production taint. Not
-   * `path_found`.
+   * present. No `Future`: ucode has no async/future nodes. `storeStep` /
+   * `readStep` are inhabited from member, subscript, object, and array
+   * AST; they are not wired into `localFlowStep`. Not call resolution
+   * and not `path_found`.
    */
   cached
   newtype TContent =
@@ -443,18 +522,106 @@ predicate jumpStep(Node pred, Node succ) {
 }
 
 /**
+ * CFG expression whose wrapper class matches the TreeSitter node.
+ */
+private CfgNodes::ExprCfgNode exprCfg(UCODE::AstNode raw) {
+  canonicalWrapper(result.getExpr(), raw)
+}
+
+/**
+ * Object / array CFG node whose wrapper class matches the TreeSitter node.
+ */
+private CfgNodes::AstCfgNode containerCfg(UCODE::AstNode raw) {
+  canonicalWrapper(result.getAstNode(), raw) and
+  (
+    result.getAstNode() instanceof Object or
+    result.getAstNode() instanceof Array
+  )
+}
+
+/**
+ * Value of an extracted AST node: expression CFG when the wrapper is
+ * `TExpr`, otherwise the object/array container. Numbers, arrows,
+ * templates, `this`, regex, and spreads have neither.
+ */
+private Node valueNode(UCODE::AstNode raw) {
+  result = TExprNode(exprCfg(raw))
+  or
+  result = TContentContainerNode(containerCfg(raw))
+}
+
+/**
  * Holds if data can flow from `node1` to `node2` via an assignment to
  * content `c`.
+ *
+ * Object pair values and shorthand properties store `Field[name]`.
+ * Array children store `Element`. Assignment to `obj.field` / `arr[i]`
+ * is not modeled (`TExprPostUpdateNode` stays `none()`). Not summary
+ * steps and not `localFlowStep`.
  */
 predicate storeStep(Node node1, ContentSet c, Node node2) {
-  none() // TODO
+  exists(UCODE::Object obj, UCODE::Pair p, string name |
+    p = obj.getChild(_) and
+    name = staticPairKey(p) and
+    node1 = valueNode(p.getValue()) and
+    node2 = TContentContainerNode(containerCfg(obj)) and
+    c.isSingleton(TFieldContent(name))
+  )
+  or
+  exists(UCODE::Object obj, UCODE::ShorthandPropertyIdentifier s |
+    s = obj.getChild(_) and
+    node1 = TExprNode(exprCfg(s)) and
+    node2 = TContentContainerNode(containerCfg(obj)) and
+    c.isSingleton(TFieldContent(s.getValue()))
+  )
+  or
+  exists(UCODE::Array arr, int i |
+    exists(arr.getChild(i)) and
+    not arr.getChild(i) instanceof UCODE::SpreadElement and
+    node1 = valueNode(arr.getChild(i)) and
+    node2 = TContentContainerNode(containerCfg(arr)) and
+    c.isSingleton(TElementContent())
+  )
+}
+
+/** Plain assignment and deletion evaluate a reference without reading its value. */
+private predicate writeOnlyReference(UCODE::AstNode n) {
+  exists(UCODE::AssignmentExpression a | a.getLeft() = n)
+  or
+  exists(UCODE::DeleteExpression d | d.getArgument() = n)
 }
 
 /**
  * Holds if there is a read step of content `c` from `node1` to `node2`.
+ *
+ * `obj.field` reads `Field[field]`. `obj[i]` reads `Element` and any
+ * object fields that the index may name. No
+ * `Future` (no async AST). Not summary steps and not `localFlowStep`.
  */
 predicate readStep(Node node1, ContentSet c, Node node2) {
-  none() // TODO
+  exists(UCODE::MemberExpression m, string name |
+    name = m.getProperty().getValue() and
+    not writeOnlyReference(m) and
+    node1 = valueNode(m.getObject()) and
+    node2 = TExprNode(exprCfg(m)) and
+    c.isSingleton(TFieldContent(name))
+  )
+  or
+  exists(UCODE::SubscriptExpression s |
+    not writeOnlyReference(s) and
+    node1 = valueNode(s.getObject()) and
+    node2 = TExprNode(exprCfg(s)) and
+    (
+      c.isSingleton(TElementContent())
+      or
+      exists(UCODE::String key, string name |
+        key = s.getIndex() and name = staticStringKey(key) and c.isSingleton(TFieldContent(name))
+      )
+      or
+      not exists(UCODE::String key | key = s.getIndex() and exists(staticStringKey(key))) and
+      exists(string name | c.isSingleton(TFieldContent(name)))
+    )
+  )
 }
 
 /**

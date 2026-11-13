@@ -2,8 +2,7 @@
  * @name Field and Element content from extracted AST
  * @description Reports Field and Element Content values that match
  *              member properties or subscripts. Testing only. Not
- *              storeStep / readStep, not production taint, and not
- *              setInitAction path_found.
+ *              production taint, and not setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/content-encoding
@@ -13,7 +12,6 @@
 import codeql.files.FileSystem
 import codeql.ucode.DataFlow
 private import codeql.ucode.ast.internal.TreeSitter
-private import codeql.ucode.dataflow.internal.DataFlowPrivate
 
 private predicate extractedField(File f, string name) {
   exists(UCODE::MemberExpression m |
@@ -28,8 +26,6 @@ private predicate extractedElement(File f) {
 
 from File f, DataFlow::Content c, string label
 where
-  not storeStep(_, _, _) and
-  not readStep(_, _, _) and
   (f.getBaseName() = "luci" or f.getBaseName() = "ssa_neg") and
   (
     exists(string name |

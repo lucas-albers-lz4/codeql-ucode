@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # M4 gate: TContent Field/Element is inhabited from extracted member
-# properties and subscripts. Not storeStep/readStep, not Future, not
-# production taint, not call resolution. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. viableSourceCallable
-# stays none().
+# properties and subscripts. Not Future, not production taint, not call
+# resolution. Production LocalTaint / RequestArgsExec stay on Models.
+# Not path_found. viableSourceCallable stays none(). storeStep/readStep
+# are a separate smoke (scripts/m4-store-read-smoke.sh).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
