@@ -16,6 +16,11 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 - Smoke reports `param` / `request` on `ssa_pos` and `s` on `luci`,
   each with a CFG node and an SSA write. `ParameterNode` stays
   uninhabited.
+- Only direct identifier formals and rest-identifier formals are modeled.
+  The locked grammar does not parse defaulted or destructured bindings, so
+  those forms are not Variables and cannot live in extractor fixtures.
+  Smoke uses two identifier formals on `ssa_pos`: later `b` keeps compact
+  parameter order and sits on the CFG before the body return.
 
 ## Gaps (later PR)
 
