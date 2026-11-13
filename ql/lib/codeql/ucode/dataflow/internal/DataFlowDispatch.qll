@@ -214,8 +214,9 @@ private predicate namedFormalAt(UCODE::Identifier id, int pos) {
  * Overlay: CFG node of a named formal that already has an expression
  * CFG node, at the ParameterPosition already inhabited from extracted
  * formals. Expression-bodied arrows are included now that they have an
- * inner CfgScope. Unused `_`/`m` and identity `x => x` stay holes as
- * documented by the arrow-CfgScope leftover. Does not resolve calls
+ * inner CfgScope. Unused `_`/`m` stay SSA-write holes. Identity
+ * `x => x` is an access of the formal (see `docs/m4-identity-arrow.md`).
+ * Does not resolve calls
  * (`viableSourceCallable` stays `none()`). Not production taint and
  * not `path_found`.
  */

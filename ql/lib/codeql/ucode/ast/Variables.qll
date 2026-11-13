@@ -167,18 +167,24 @@ private predicate parameterBinding(UCODE::AstNode body, string name) {
   )
 }
 
-/** Whether an identifier occurrence resolves to this lexical binding. */
+/**
+ * Whether an identifier occurrence resolves to this lexical binding.
+ *
+ * `getParent*()` includes the binding-scope node itself so an identity
+ * body (`x => x`) counts as a read of the formal. Nested reads stay
+ * descendants. Does not resolve calls and not `path_found`.
+ */
 private predicate visibleAt(UCODE::AstNode occurrence, Variable v, string name) {
   exists(UCODE::AstNode scope |
     scope = bindingScope(v) and
     name = v.getName() and
-    occurrence.getParent+() = scope and
+    occurrence.getParent*() = scope and
     not exists(Variable other, UCODE::AstNode inner |
       other != v and
       other.getName() = name and
       inner = bindingScope(other) and
       inner.getParent+() = scope and
-      occurrence.getParent+() = inner
+      occurrence.getParent*() = inner
     ) and
     not exists(UCODE::AstNode body |
       parameterBinding(body, name) and
