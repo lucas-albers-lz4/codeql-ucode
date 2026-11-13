@@ -22,8 +22,9 @@ same way. It is not a global builtin. It does not score
 - Builtin identifier `system` and imported `'fs'` `popen` /
   `basename` / `access` stay library callables. Unique same-file
   FunctionDeclarations stay source `CfgScope`s.
-- Imported `readfile` from `'fs'`, imported `luci.sys`
-  (`init_action`), and library members (`fd.read` / `fd.close`) do
+- Imported `readfile` from `'fs'` is a separate library callable
+  (`docs/m4-imported-fs-readfile.md`). Imported `luci.sys`
+  (`init_action`) and library members (`fd.read` / `fd.close`) do
   not resolve. Identifier `getACall` for Frameworks keys (`system` /
   `popen` / `shellquote`) is unchanged and is not through-flow.
 - In-file `localFlowStep+` from `ssa_pos_src` to builtin `system`
@@ -34,8 +35,8 @@ same way. It is not a global builtin. It does not score
 - Function expressions and arrows assigned to locals (`let fn = function`).
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- `readfile` stays imported and unresolved. Do not treat it as a
-  builtin.
+- Imported `'fs'` `readfile` is a library callable
+  (`docs/m4-imported-fs-readfile.md`). Do not treat it as a builtin.
 - Member `getACall` stays `none()`. Do not walk `getAFieldOrChild`.
 - `getARuntimeTarget` stays `none()`.
 - Do not wire summary steps into `localFlowStep` / production taint.

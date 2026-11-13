@@ -3,9 +3,9 @@
  * @description Reports viableCallable targets for unique same-file
  *              identifier and member-property FunctionDeclarations,
  *              builtin identifier system, and imported fs popen /
- *              basename / access / open as library callables. Testing
- *              only. Imported luci.sys / readfile / fd.read stay
- *              unresolved. Not argument-to-parameter taint, not
+ *              basename / access / open / readfile as library
+ *              callables. Testing only. Imported luci.sys / fd.read
+ *              stay unresolved. Not argument-to-parameter taint, not
  *              production taint, and not setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation

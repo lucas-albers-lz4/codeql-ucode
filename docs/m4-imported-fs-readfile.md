@@ -1,0 +1,42 @@
+# M4: imported `'fs'` `readfile` as `viableLibraryCallable`
+
+Typecheck and extractor-smoke only. Not production taint and not `path_found`.
+Production `LocalTaint` / `RequestArgsExec` stay on Models.
+`#41` inhabits identifier `open(...)` imported from `'fs'` as a
+library callable. This slice inhabits identifier `readfile(...)` the
+same way. It is not a global builtin. It does not score
+`setInitAction`. `propagatesFlow` stays `none()`.
+`jumpStep` does not enter `readfile`. `getARuntimeTarget` stays
+`none()`.
+
+## What compiles
+
+- `ImportedFsReadfileLibraryCallable` is the string key `readfile`.
+  `getACall` matches `Call.getIdentifier` named `readfile` that is an
+  unaliased `'fs'` specifier in the same file and is not a same-file
+  FunctionDeclaration. `Call.getIdentifier` stays identifier-only;
+  this does not walk `getAFieldOrChild`.
+- `viableLibraryCallable` maps those calls to
+  `TLibraryCallable("readfile")`. Smoke reports `library readfile` on
+  `luci` and `sys.uc`. `ssa_pos` has no `readfile`.
+- Builtin identifier `system` and imported `'fs'` `popen` /
+  `basename` / `access` / `open` stay library callables. Unique
+  same-file FunctionDeclarations stay source `CfgScope`s.
+- Imported `luci.sys` (`init_action`) and library members
+  (`fd.read` / `fd.close`) do not resolve. Identifier `getACall` for
+  Frameworks keys (`system` / `popen` / `shellquote`) is unchanged
+  and is not through-flow.
+- In-file `localFlowStep+` from `ssa_pos_src` to builtin `system`
+  still holds. That is not interprocedural taint.
+
+## Gaps (later PR)
+
+- Function expressions and arrows assigned to locals (`let fn = function`).
+- Cross-file / import resolution for `luci.sys`. Do not claim
+  `setInitAction` `path_found`.
+- Library members (`fd.read` / `fd.close`) stay unresolved. Do not
+  walk `getAFieldOrChild`.
+- Member `getACall` stays `none()`.
+- `getARuntimeTarget` stays `none()`.
+- Do not wire summary steps into `localFlowStep` / production taint.
+- Subscript, parenthesized, and nested-call callees stay unresolved.
