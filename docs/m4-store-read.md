@@ -17,6 +17,12 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
   (`Field[name]`) and from array children (`Element`). Object and array
   wrappers are not `TExpr`, so they use `ContentContainerNode` as the
   store target.
+- Assignment `obj.field = v` / `arr[i] = v` stores into
+  `TExprPostUpdateNode` of the extracted base when that base already has
+  an `ExprCfgNode`. The pre-update node is the same expression. Smoke
+  reports `assign store Field[probe_field]` on `content_member_write` /
+  `content_subscript_write` and `assign store Element` on
+  `content_subscript_write`.
 - Local value flow carries literal containers through assignments,
   value-preserving expressions, and returns. Shorthand properties read
   their lexical variable, so stores and subsequent reads can compose through
@@ -30,8 +36,13 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 
 ## Gaps (later PR)
 
-- Assignment stores (`obj.field = v`, `arr[i] = v`) need
-  `TExprPostUpdateNode`; that constructor stays `none()`.
+- Assignment post-update does not flow into later SSA reads of the same
+  variable. That needs object-mutation SSA, not a `localFlowStep` summary
+  wire.
+- Compound assignment (`+=`) is a field read plus a computed write, not a
+  store of the RHS.
+- Object/array literal assignment bases and `this` have no `ExprCfgNode`
+  (`This` is not `TExpr`). Do not widen `TExpr` here.
 - Escaped object-literal keys are not decoded. Their stores are omitted until
   the extractor exposes their decoded value; escaped subscript keys are
   conservatively treated as dynamic.

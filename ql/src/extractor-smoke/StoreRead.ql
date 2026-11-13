@@ -1,9 +1,10 @@
 /**
  * @name storeStep / readStep from extracted member, subscript, object AST
  * @description Reports Field and Element store and read steps that match
- *              member properties, subscripts, object pairs, or array
- *              children. Testing only. Not production taint, not
- *              localFlowStep, and not setInitAction path_found.
+ *              member properties, subscripts, object pairs, array
+ *              children, or assignment post-update stores. Testing only.
+ *              Not production taint, not localFlowStep, and not
+ *              setInitAction path_found.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/store-read

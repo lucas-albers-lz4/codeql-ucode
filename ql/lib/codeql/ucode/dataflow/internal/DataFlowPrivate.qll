@@ -370,6 +370,18 @@ private string staticPairKey(UCODE::Pair p) {
   exists(UCODE::String s | s = p.getKey() and result = staticStringKey(s))
 }
 
+/**
+ * Object of `obj.field = v` or `arr[i] = v`. Compound assignment and
+ * deletion are not stores of the RHS. Bases without a canonical
+ * `ExprCfgNode` (object/array literals, `this`) do not inhabit
+ * `TExprPostUpdateNode`.
+ */
+private UCODE::Expression assignmentStoreBase(UCODE::AssignmentExpression a) {
+  result = a.getLeft().(UCODE::MemberExpression).getObject()
+  or
+  result = a.getLeft().(UCODE::SubscriptExpression).getObject()
+}
+
 /** Subscript reads or non-empty array literals. */
 private predicate extractedElementContent() {
   exists(UCODE::SubscriptExpression s)
@@ -398,7 +410,7 @@ private module Cached {
     TSsaReadNode(Ssa::WriteDefinition def, CfgNode read) { read = def.getAFlowRead() } or
     TReturnNode(CfgNodes::AstCfgNode n) { n.getAstNode() instanceof ReturnStatement } or
     TExprPostUpdateNode(CfgNodes::ExprCfgNode n) {
-      none() // TODO
+      canonicalWrapper(n.getExpr(), assignmentStoreBase(_))
     } or
     TContentContainerNode(CfgNodes::AstCfgNode n) {
       n.getAstNode() instanceof Object or n.getAstNode() instanceof Array
@@ -437,9 +449,9 @@ private module Cached {
    * `Field` names are member properties, object pair keys, and shorthand
    * properties. `Element` holds when a subscript or a non-empty array is
    * present. No `Future`: ucode has no async/future nodes. `storeStep` /
-   * `readStep` are inhabited from member, subscript, object, and array
-   * AST; they are not wired into `localFlowStep`. Not call resolution
-   * and not `path_found`.
+   * `readStep` are inhabited from member, subscript, object, array, and
+   * assignment AST; they are not wired into `localFlowStep`. Not call
+   * resolution and not `path_found`.
    */
   cached
   newtype TContent =
@@ -555,9 +567,9 @@ private Node valueNode(UCODE::AstNode raw) {
  * content `c`.
  *
  * Object pair values and shorthand properties store `Field[name]`.
- * Array children store `Element`. Assignment to `obj.field` / `arr[i]`
- * is not modeled (`TExprPostUpdateNode` stays `none()`). Not summary
- * steps and not `localFlowStep`.
+ * Array children store `Element`. Assignment `obj.field = v` /
+ * `arr[i] = v` stores into `TExprPostUpdateNode` of the extracted
+ * base expression. Not summary steps and not `localFlowStep`.
  */
 predicate storeStep(Node node1, ContentSet c, Node node2) {
   exists(UCODE::Object obj, UCODE::Pair p, string name |
@@ -581,6 +593,30 @@ predicate storeStep(Node node1, ContentSet c, Node node2) {
     node1 = valueNode(arr.getChild(i)) and
     node2 = TContentContainerNode(containerCfg(arr)) and
     c.isSingleton(TElementContent())
+  )
+  or
+  exists(UCODE::AssignmentExpression a, UCODE::MemberExpression m, string name |
+    m = a.getLeft() and
+    name = m.getProperty().getValue() and
+    node1 = valueNode(a.getRight()) and
+    node2 = TExprPostUpdateNode(exprCfg(m.getObject())) and
+    c.isSingleton(TFieldContent(name))
+  )
+  or
+  exists(UCODE::AssignmentExpression a, UCODE::SubscriptExpression s |
+    s = a.getLeft() and
+    node1 = valueNode(a.getRight()) and
+    node2 = TExprPostUpdateNode(exprCfg(s.getObject())) and
+    (
+      c.isSingleton(TElementContent())
+      or
+      exists(UCODE::String key, string name |
+        key = s.getIndex() and name = staticStringKey(key) and c.isSingleton(TFieldContent(name))
+      )
+      or
+      not exists(UCODE::String key | key = s.getIndex() and exists(staticStringKey(key))) and
+      exists(string name | c.isSingleton(TFieldContent(name)))
+    )
   )
 }
 
@@ -630,7 +666,10 @@ predicate readStep(Node node1, ContentSet c, Node node2) {
  * in `x.f = newValue`.
  */
 predicate clearsContent(Node n, ContentSet c) {
-  none() // TODO
+  exists(CfgNodes::ExprCfgNode e |
+    n = TExprNode(e) and
+    storeStep(_, c, TExprPostUpdateNode(e))
+  )
 }
 
 /**
@@ -682,7 +721,19 @@ abstract class PostUpdateNodeImpl extends Node {
 }
 
 private module PostUpdateNodes {
-  // TODO
+  class ExprPostUpdateNode extends PostUpdateNodeImpl, NodeImpl, TExprPostUpdateNode {
+    private CfgNodes::ExprCfgNode n;
+
+    ExprPostUpdateNode() { this = TExprPostUpdateNode(n) }
+
+    override Node getPreUpdateNode() { result = TExprNode(n) }
+
+    override CfgScope getCfgScope() { result = n.getScope() }
+
+    override Location getLocationImpl() { result = n.getLocation() }
+
+    override string toStringImpl() { result = "[post] " + n.toString() }
+  }
 }
 
 private import PostUpdateNodes

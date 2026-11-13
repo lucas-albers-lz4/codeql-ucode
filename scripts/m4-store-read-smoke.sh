@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# M4 gate: storeStep / readStep from extracted member, subscript, object
-# and array AST. Not production taint, not localFlowStep, not Future,
-# not call resolution. Production LocalTaint / RequestArgsExec stay on
-# Models. Not path_found. viableSourceCallable stays none().
+# M4 gate: storeStep / readStep from extracted member, subscript, object,
+# array, and assignment-post-update AST. Not production taint, not
+# localFlowStep, not Future, not call resolution. Production LocalTaint /
+# RequestArgsExec stay on Models. Not path_found. viableSourceCallable
+# stays none().
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -120,6 +121,9 @@ with open(".codeql-database/m4-store-read/store-read-semantics.csv", newline="")
 required = [
 	("store Field[probe_field]", "content_field_store"),
 	("store Field[]", "content_empty_store"),
+	("assign store Field[probe_field]", "content_member_write"),
+	("assign store Field[probe_field]", "content_subscript_write"),
+	("assign store Element", "content_subscript_write"),
 	("read Field[probe_field]", "content_member_compound"),
 	("read Field[probe_field]", "content_subscript_compound"),
 	("read Field[probe_field]", "content_member_read"),
@@ -136,6 +140,9 @@ for label, marker in required:
 for marker in ["content_member_write", "content_subscript_write", "content_member_delete", "content_subscript_delete"]:
 	if any(message.startswith("read ") and message.endswith(f":{line(marker)}") for message in messages):
 		sys.exit(f"write-only reference produced a read at {marker}: {sorted(messages)}")
+for marker in ["content_member_compound", "content_member_delete", "content_subscript_delete"]:
+	if any(message.startswith("assign store ") and message.endswith(f":{line(marker)}") for message in messages):
+		sys.exit(f"non-assignment produced an assign store at {marker}: {sorted(messages)}")
 for label, marker in [("read Field[probe_field]", "content_other_read"), ("store Field[esckey]", "content_escaped_store")]:
 	if f"{label}:{line(marker)}" in messages:
 		sys.exit(f"incorrect content identity at {marker}: {sorted(messages)}")

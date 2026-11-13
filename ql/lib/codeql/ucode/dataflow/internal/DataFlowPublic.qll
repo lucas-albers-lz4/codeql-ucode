@@ -9,11 +9,13 @@ private import codeql.ucode.dataflow.Ssa
  * An element, viewed as a node in a data flow graph. Either an expression
  * (`ExprNode`), an SSA definition or read (`SsaDefinitionNode` /
  * `SsaReadNode`), a returned value (`ReturnValueNode`), an object or array
- * literal (`ContentContainerNode`), or an entry parameter (`ParameterNode`).
+ * literal (`ContentContainerNode`), a post-update of an assigned object
+ * (`PostUpdateNode`), or an entry parameter (`ParameterNode`).
  *
  * SSA nodes retain the identity of individual definitions and reads.
  * Object and array literals are not `TExpr`, so they use container nodes
- * as `storeStep` targets.
+ * as `storeStep` targets. Assignment `obj.field = v` stores into the
+ * post-update of the extracted base expression.
  */
 class Node extends TNode {
   /** Gets the expression corresponding to this node, if any. */
