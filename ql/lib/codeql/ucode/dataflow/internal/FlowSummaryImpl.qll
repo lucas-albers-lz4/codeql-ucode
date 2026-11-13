@@ -33,10 +33,25 @@ module Input implements InputSig<Location, DataFlowImplSpecific::UcodeDataFlow> 
     exists(int i | pos.isPositional(i) and result = i.toString())
   }
 
+  /**
+   * MaD `Field[name]` and `Element` tokens from inhabited `TContent`.
+   * `Future` stays `none()`: ucode has no async/future AST. Does not
+   * add `storeStep` / `readStep` or attach summaries to calls.
+   */
+  string encodeContent(DataFlowImplSpecific::UcodeDataFlow::ContentSet cs, string arg) {
+    exists(DataFlowImplSpecific::UcodeDataFlow::Content c |
+      cs.isSingleton(c) and
+      (
+        c = TFieldContent(arg) and result = "Field"
+        or
+        c = TElementContent() and result = "Element" and arg = ""
+      )
+    )
+  }
+
   bindingset[token]
   ParameterPosition decodeUnknownParameterPosition(AccessPath::AccessPathTokenBase token) {
-    // Needed to support `Argument[x..y]` ranges. ParameterPosition is still
-    // uninhabited in DataFlowDispatch, so this currently never holds.
+    // Needed to support `Argument[x..y]` ranges.
     token.getName() = "Argument" and
     result.isPositional(AccessPath::parseInt(token.getAnArgument()))
   }

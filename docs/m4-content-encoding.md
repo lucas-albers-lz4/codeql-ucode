@@ -16,9 +16,6 @@ Typecheck and extractor-smoke only. Not production taint and not `path_found`.
 
 ## Gaps (later PR)
 
-- MaD `encodeContent` (`Field` / `Element` / `Future` tokens) lives in
-  `FlowSummaryImpl` (open FlowSummary/Concepts draft). This slice does
-  not touch that file.
 - `storeStep` / `readStep` as production taint. Do not wire summary
   steps into `localFlowStep`.
 - `ParameterNode` / argument-to-parameter flow (open ParameterPosition
