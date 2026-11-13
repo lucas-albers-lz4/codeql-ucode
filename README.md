@@ -60,18 +60,19 @@ RequestArgsExec / ImportedCalleeTaint stay on Models. Public
 return values through value-preserving edges. Value-transforming operations
 such as arithmetic and `+=` have no local flow edge, and taint propagation
 through those operations is not modeled here. Field content is
-store/read only, not `localFlowStep`. Same-file identifier calls can
-`jumpStep` from `Call.getArgument` into that declaration's
-`ParameterNode`. That node continues into the formal's SSA write
-through `parameterToSsaDef`; `jumpStep` itself stays out of
-`localFlowStep`. That callee's `ReturnValueNode` `jumpStep`s to the
-call expression (`OutNode`) for the same simpleIdentifierCall.
-An identity expression body (`x => x`) is a read of
-that formal, so `parameterToSsaDef` continues into `ssaDefToRead`.
-`viableSourceCallable` resolves unique same-file identifier and
-member-property FunctionDeclarations; imported `luci.sys` callees stay
-unresolved / inconclusive — not `setInitAction` `path_found`.
-`jumpStep` still uses unfiltered identifier `simpleIdentifierCall`.
+store/read only, not `localFlowStep`. Same-file identifier calls and
+unique same-file member-property FunctionDeclarations can `jumpStep`
+from `Call.getArgument` into that declaration's `ParameterNode`. That
+node continues into the formal's SSA write through `parameterToSsaDef`;
+`jumpStep` itself stays out of `localFlowStep`. That callee's
+`ReturnValueNode` `jumpStep`s to the call expression (`OutNode`) for
+the same `sameFileJumpCall`. An identity expression body (`x => x`) is
+a read of that formal, so `parameterToSsaDef` continues into
+`ssaDefToRead`. `viableSourceCallable` resolves unique same-file
+identifier and member-property FunctionDeclarations; imported
+`luci.sys` callees stay unresolved / inconclusive — not `setInitAction`
+`path_found`. Identifier `jumpStep` stays unfiltered
+`simpleIdentifierCall`; member `jumpStep` uses the unique declaration.
 
 ## M1 spike status
 

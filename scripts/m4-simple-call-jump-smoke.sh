@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# M4 gate: jumpStep from same-file identifier Call.getArgument into
+# M4 gate: jumpStep from same-file identifier Call.getArgument and
+# unique same-file member-property FunctionDeclarations into
 # ParameterNode. Not production taint. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. Unique same-file
-# identifier and member-property FunctionDeclarations may also inhabit
-# viableSourceCallable. jumpStep stays on simpleIdentifierCall.
+# RequestArgsExec stay on Models. Not path_found. Call.getIdentifier
+# stays identifier-only. Library members, imports, and builtins stay
+# unresolved.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -46,8 +47,20 @@ if grep -n 'summaryStoreStep\|summaryReadStep' \
 fi
 
 if ! grep -q 'simpleIdentifierCall' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
 	echo "jumpStep lost simpleIdentifierCall" >&2
+	exit 1
+fi
+
+if ! grep -q 'sameFileJumpCall' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
+	echo "jumpStep lost sameFileJumpCall" >&2
+	exit 1
+fi
+
+if ! grep -q 'uniqueSameFileMemberFunctionDeclaration' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "sameFileJumpCall lost unique member FunctionDeclaration" >&2
 	exit 1
 fi
 
@@ -79,11 +92,18 @@ for msg in [
 	"jump-param 0:pkg from callPackageVersionCheck in luci",
 	"jump-param 0:a from formal_order in ssa_pos",
 	"jump-param 1:b from formal_order in ssa_pos",
+	"jump-param 0:a from member_order in ssa_pos",
+	"jump-param 1:b from member_order in ssa_pos",
 ]:
 	if not has(msg):
 		sys.exit(f"missing simple-call jumpStep {msg}: {blob}")
 
-if any(" in ssa_pos" in m and "from formal_order" not in m for m in msgs):
+if any(
+	" in ssa_pos" in m
+	and "from formal_order" not in m
+	and "from member_order" not in m
+	for m in msgs
+):
 	sys.exit("unexpected ssa_pos jumpStep: " + blob)
 
 if any("from system" in m or "path_found" in m or "setInitAction" in m for m in msgs):

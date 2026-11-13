@@ -2,8 +2,8 @@
 # M4 gate: jumpStep ParameterNode continues into SSA localFlowStep.
 # Not production taint. Production LocalTaint / RequestArgsExec stay
 # on Models. Not path_found. Unique same-file identifier and
-# member-property FunctionDeclarations may resolve separately.
-# jumpStep stays on simpleIdentifierCall and out of localFlowStep.
+# member-property FunctionDeclarations may jump. jumpStep stays out of
+# localFlowStep. Call.getIdentifier stays identifier-only.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -86,6 +86,7 @@ for msg in [
 	"jump-local 0:s from shellquote in luci",
 	"jump-local 0:pkg from callPackageVersionCheck in luci",
 	"jump-local 1:b from formal_order in ssa_pos",
+	"jump-local 1:b from member_order in ssa_pos",
 	"param-local 0:request in ssa_pos",
 	"param-local 0:param in ssa_pos",
 ]:
@@ -93,7 +94,10 @@ for msg in [
 		sys.exit(f"missing jump/param localFlow {msg}: {blob}")
 
 if any(
-	m.startswith("jump-local ") and m.endswith(" in ssa_pos") and "from formal_order" not in m
+	m.startswith("jump-local ")
+	and m.endswith(" in ssa_pos")
+	and "from formal_order" not in m
+	and "from member_order" not in m
 	for m in msgs
 ):
 	sys.exit("unexpected ssa_pos jump-local: " + blob)

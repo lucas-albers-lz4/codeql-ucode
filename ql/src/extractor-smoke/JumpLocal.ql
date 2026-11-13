@@ -5,8 +5,8 @@
  *              ParameterNodes that locally reach an SSA read without a
  *              jump. Testing only. Not production taint and not
  *              setInitAction path_found. Unique same-file identifier
- *              and member-property FunctionDeclarations may resolve
- *              separately. jumpStep stays identifier-only.
+ *              and member-property FunctionDeclarations may jump.
+ *              Call.getIdentifier stays identifier-only.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/extractor-smoke/jump-local
@@ -35,14 +35,13 @@ where
       jumpStep(arg, pn) and
       DataFlow::localFlowStep+(pn, snk) and
       isArgumentNode(arg, call, apos) and
-      simpleIdentifierCall(call, _) and
+      sameFileJumpCall(call, _) and
       id = pn.getParameter() and
       snk.getDefinition().getSourceVariable().getName() = id.getName() and
       apos.isPositional(i) and
       msg =
         "jump-local " + i.toString() + ":" + id.getName() + " from " +
-          call.asCall().getCall().getIdentifier().getName() + " in " +
-          f.getBaseName()
+          sourceCallName(call) + " in " + f.getBaseName()
     )
     or
     exists(

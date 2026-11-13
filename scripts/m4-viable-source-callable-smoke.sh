@@ -2,9 +2,10 @@
 # M4 gate: unique same-file identifier and member-property
 # FunctionDeclarations resolve. Imported luci.sys / builtins / library
 # member callees (read/close) stay unresolved. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. jumpStep stays on
-# unfiltered simpleIdentifierCall. In-file SSA localFlowStep+ still
-# reaches builtin system on ssa_pos.
+# RequestArgsExec stay on Models. Not path_found. jumpStep uses
+# unfiltered simpleIdentifierCall and unique same-file member
+# FunctionDeclarations. In-file SSA localFlowStep+ still reaches
+# builtin system on ssa_pos.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -63,14 +64,20 @@ if grep -q 'none() // TODO' \
 fi
 
 if ! grep -q 'simpleIdentifierCall' \
-	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
 	echo "jumpStep lost simpleIdentifierCall" >&2
 	exit 1
 fi
 
-if grep -n 'uniqueSameFileMemberFunctionDeclaration\|simpleMemberCall' \
+if ! grep -q 'sameFileJumpCall' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
-	echo "jumpStep picked up member resolution" >&2
+	echo "jumpStep lost sameFileJumpCall" >&2
+	exit 1
+fi
+
+if ! grep -q 'uniqueSameFileMemberFunctionDeclaration' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "sameFileJumpCall lost unique member FunctionDeclaration" >&2
 	exit 1
 fi
 

@@ -18,9 +18,10 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   enter `formal_order`).
 - Smoke reports `0:s` from `shellquote` and `0:pkg` from
   `callPackageVersionCheck` on `luci`, plus `0:a` / `1:b` from
-  `formal_order` on `ssa_pos`. `member_order` on `ssa_pos` may inhabit
-  `viableSourceCallable` but does not `jumpStep`. Builtin `system(...)`
-  still does not enter `formal_order`.
+  `formal_order` on `ssa_pos`. Unique same-file member
+  FunctionDeclarations also `jumpStep` (see
+  `docs/m4-member-call-jump.md`). Builtin `system(...)` still does not
+  enter `formal_order`.
 - `Call.getArguments()` stays `none()`. Summary steps stay out of
   `localFlowStep`. Public `localFlowStep` does not include `jumpStep`.
   Body continuation from that `ParameterNode` is `parameterToSsaDef`
@@ -30,13 +31,14 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 
 - Function expressions (`function(request) { ... }`) and arrows are
   not declarations, so they are not simple-call targets.
-- Member, subscript, parenthesized, and nested-call callees have no
-  `getIdentifier`, so they do not `jumpStep`. Unique same-file member
-  FunctionDeclarations inhabit `viableSourceCallable` separately.
+- Subscript, parenthesized, and nested-call callees have no
+  `getIdentifier` and are not unique member-property declarations, so
+  they do not `jumpStep`. Unique same-file member FunctionDeclarations
+  jump via `sameFileJumpCall` (see `docs/m4-member-call-jump.md`).
   Imported `luci.sys` names are not same-file declarations.
-- Unique same-file identifier and member-property FunctionDeclarations inhabit
-  `viableSourceCallable` separately. `jumpStep` still uses unfiltered
-  `simpleIdentifierCall`.
+- Identifier `jumpStep` still uses unfiltered `simpleIdentifierCall`.
+  Unique same-file identifier FunctionDeclarations inhabit
+  `viableSourceCallable` separately.
 - Return-to-out is `jumpStep` to `OutNode` (see
   `docs/m4-return-out.md`). Do not wire ParameterNode into
   production taint or `path_found`.

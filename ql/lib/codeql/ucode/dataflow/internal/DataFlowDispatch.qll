@@ -273,10 +273,10 @@ predicate parameterMatch(ParameterPosition ppos, ArgumentPosition apos) {
  * whose body is `callee`. Uses `Call.getIdentifier` plus the extracted
  * declaration name. Member, subscript, parenthesized, and nested-call
  * callees have no identifier. Function expressions and arrows are not
- * declarations. `jumpStep` uses this name match and does not use
- * member-property resolution. Unique non-imported identifier and
- * member-property declarations inhabit `viableSourceCallable`
- * separately. Not production taint and not `path_found`.
+ * declarations. Unique non-imported identifier and member-property
+ * declarations inhabit `viableSourceCallable` separately. `jumpStep`
+ * uses this name match or `uniqueSameFileMemberFunctionDeclaration`.
+ * Not production taint and not `path_found`.
  */
 pragma[nomagic]
 predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
@@ -349,8 +349,9 @@ private DataFlowCallable uniqueSameFileFunctionDeclaration(DataFlowCall call) {
  * the extracted declaration name. Does not walk `getAFieldOrChild` and
  * does not widen `Call.getIdentifier`. Subscript, parenthesized, and
  * nested-call callees have no result. The receiver object is not
- * resolved. `jumpStep` stays on `simpleIdentifierCall`. Does not
- * resolve luci.sys or score setInitAction `path_found`.
+ * resolved. `jumpStep` uses this unique member target in addition to
+ * unfiltered identifier `simpleIdentifierCall`. Does not resolve
+ * luci.sys or score setInitAction `path_found`.
  */
 private DataFlowCallable uniqueSameFileMemberFunctionDeclaration(DataFlowCall call) {
   exists(UCODE::CallExpression raw, UCODE::MemberExpression mem, UCODE::FunctionDeclaration f,
@@ -364,6 +365,21 @@ private DataFlowCallable uniqueSameFileMemberFunctionDeclaration(DataFlowCall ca
     call.asCall().getLocation().getFile() = f.getLocation().getFile() and
     toTreeSitter(result.asCfgScope()) = f.getBody()
   )
+}
+
+/**
+ * Same-file identifier name match, or unique same-file member-property
+ * `function name(...)` body. Identifier `jumpStep` stays unfiltered
+ * (`simpleIdentifierCall`). Member `jumpStep` uses the unique
+ * non-imported declaration from #35. Subscript, parenthesized, and
+ * nested-call callees have no result. Does not widen
+ * `Call.getIdentifier`. Not production taint and not `path_found`.
+ */
+pragma[nomagic]
+predicate sameFileJumpCall(DataFlowCall call, DataFlowCallable callee) {
+  simpleIdentifierCall(call, callee)
+  or
+  callee = uniqueSameFileMemberFunctionDeclaration(call)
 }
 
 /**

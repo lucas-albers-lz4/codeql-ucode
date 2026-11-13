@@ -95,8 +95,9 @@ private class ContentContainerNodeImpl extends ContentContainerNode, NodeImpl {
  * that write (`parameterToSsaDef`); `jumpStep` itself stays out of
  * `localFlowStep`. Unique same-file identifier and member-property
  * FunctionDeclarations may resolve; imported luci.sys stays
- * unresolved. `jumpStep` stays on identifier `simpleIdentifierCall`.
- * Not `setInitAction` `path_found`.
+ * unresolved. `jumpStep` uses identifier `simpleIdentifierCall` and
+ * unique same-file member FunctionDeclarations. Not
+ * `setInitAction` `path_found`.
  */
 module SsaFlow {
   /**
@@ -594,8 +595,9 @@ private module OutNodes {
    * Call expression as the output of that call. Identifier calls are
    * already `ExprCfgNode`s. Unique same-file identifier and
    * member-property FunctionDeclarations may resolve separately;
-   * imported luci.sys stays unresolved. `jumpStep` stays on identifier
-   * `simpleIdentifierCall`. Not production taint and not `path_found`.
+   * imported luci.sys stays unresolved. `jumpStep` uses identifier
+   * `simpleIdentifierCall` and unique same-file member
+   * FunctionDeclarations. Not production taint and not `path_found`.
    */
   private class ExprOutNode extends OutNode, ExprNode {
     private DataFlowCall call;
@@ -616,10 +618,11 @@ import OutNodes
  * call expression (`OutNode`). Position match alone is not enough
  * (`system(...)` must not jump into `formal_order`). Body continuation
  * is `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
- * itself. Uses `simpleIdentifierCall` (name match, not uniqueness;
- * identifier callees only). Unique non-imported identifier and
- * member-property declarations inhabit `viableSourceCallable`
- * separately. Not production taint and not `path_found`.
+ * itself. Identifier callees use unfiltered `simpleIdentifierCall`.
+ * Unique same-file member-property FunctionDeclarations also jump
+ * (`member_order` on `ssa_pos`). Does not widen `Call.getIdentifier`
+ * and does not resolve library members, imports, or builtins. Not
+ * production taint and not `path_found`.
  */
 predicate jumpStep(Node pred, Node succ) {
   exists(
@@ -631,13 +634,13 @@ predicate jumpStep(Node pred, Node succ) {
     isArgumentNode(arg, call, apos) and
     isParameterNode(p, callee, ppos) and
     parameterMatch(ppos, apos) and
-    simpleIdentifierCall(call, callee)
+    sameFileJumpCall(call, callee)
   )
   or
   exists(ReturnValueNode ret, DataFlowCall call, DataFlowCallable callee |
     pred = ret and
     succ.(OutNode).getCall(_) = call and
-    simpleIdentifierCall(call, callee) and
+    sameFileJumpCall(call, callee) and
     ret.getCfgNode().getScope() = callee.asCfgScope()
   )
 }

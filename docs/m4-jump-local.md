@@ -17,11 +17,11 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   stays `none()`. Summary steps stay out of `localFlowStep`.
 - Smoke reports `jump-local 0:s` from `shellquote` and `0:pkg` from
   `callPackageVersionCheck` on `luci`, `jump-local 1:b` from
-  `formal_order` on `ssa_pos`, plus `param-local` for `ssa_pos`
-  formals that have an SSA read (`request`, inner `param`) without a
-  jump. Unused `formal_order` `a` has no SSA read, so it has no
-  jump-local row. Builtin `system(...)` still does not enter
-  `formal_order`.
+  `formal_order` and `member_order` on `ssa_pos`, plus `param-local`
+  for `ssa_pos` formals that have an SSA read (`request`, inner
+  `param`) without a jump. Unused `formal_order` / `member_order` `a`
+  have no SSA read, so they have no jump-local row. Builtin
+  `system(...)` still does not enter `formal_order`.
 
 ## Gaps (later PR)
 
@@ -30,9 +30,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   WriteDefinition. Do not invent a pseudo-read. Identity `x => x` is
   an access of the formal (see `docs/m4-identity-arrow.md`).
 - Function expressions and arrows are still not `simpleIdentifierCall`
-  targets. This step is intra-procedural; unique same-file identifier
-  and member-property FunctionDeclarations inhabit
-  `viableSourceCallable` separately. `jumpStep` stays identifier-only.
+  targets. This step is intra-procedural; unique same-file member
+  FunctionDeclarations also jump (see `docs/m4-member-call-jump.md`).
 - Return-to-out is `jumpStep` to `OutNode` (see
   `docs/m4-return-out.md`).
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
