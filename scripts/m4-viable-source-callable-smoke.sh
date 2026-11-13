@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 # M4 gate: unique same-file identifier and member-property
-# FunctionDeclarations resolve. Imported luci.sys / builtins / library
-# member callees (read/close) stay unresolved. Production LocalTaint /
-# RequestArgsExec stay on Models. Not path_found. jumpStep uses
-# unfiltered simpleIdentifierCall and unique same-file member
-# FunctionDeclarations. In-file SSA localFlowStep+ still reaches
-# builtin system on ssa_pos.
+# FunctionDeclarations resolve as source CfgScopes. Builtin identifier
+# system resolves as a library callable. Imported luci.sys / popen /
+# basename / library member callees (read/close) stay unresolved.
+# Production LocalTaint / RequestArgsExec stay on Models. Not
+# path_found. jumpStep uses unfiltered simpleIdentifierCall and unique
+# same-file member FunctionDeclarations. In-file SSA localFlowStep+
+# still reaches builtin system on ssa_pos. Summary through-flow stays
+# none().
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -81,7 +83,13 @@ if ! grep -q 'uniqueSameFileMemberFunctionDeclaration' \
 	exit 1
 fi
 
-if grep -n 'summaryStoreStep\|summaryReadStep' \
+if ! grep -q 'BuiltinSystemLibraryCallable' \
+	ql/lib/codeql/ucode/dataflow/internal/DataFlowDispatch.qll; then
+	echo "viableLibraryCallable lost builtin system" >&2
+	exit 1
+fi
+
+if grep -n 'summaryStoreStep\|summaryReadStep\|summaryThroughStep' \
 	ql/lib/codeql/ucode/dataflow/internal/DataFlowPrivate.qll; then
 	echo "viableSourceCallable wired summary steps" >&2
 	exit 1
@@ -115,9 +123,12 @@ for msg in [
 	"callPackageVersionCheck in luci",
 	"formal_order in ssa_pos",
 	"member_order in ssa_pos",
+	"library system in ssa_pos",
+	"library system in luci",
+	"library system in sys.uc",
 ]:
 	if not has(msg):
-		sys.exit(f"missing same-file target {msg}: {blob}")
+		sys.exit(f"missing same-file or builtin library target {msg}: {blob}")
 
 for bad in [
 	"init_action in luci",
@@ -128,9 +139,19 @@ for bad in [
 	"basename in sys.uc",
 	"read in luci",
 	"close in luci",
+	"library init_action in luci",
+	"library init_action in sys.uc",
+	"library popen in luci",
+	"library popen in sys.uc",
+	"library basename in sys.uc",
+	"library shellquote in luci",
+	"library read in luci",
+	"library close in luci",
+	"library formal_order in ssa_pos",
+	"library member_order in ssa_pos",
 ]:
 	if has(bad):
-		sys.exit(f"resolved non-local or imported callee {bad}: {blob}")
+		sys.exit(f"resolved non-local, imported, or mis-kinded callee {bad}: {blob}")
 
 if any("path_found" in m or "setInitAction" in m for m in msgs):
 	sys.exit("viableSourceCallable smoke scored taint/path_found: " + blob)

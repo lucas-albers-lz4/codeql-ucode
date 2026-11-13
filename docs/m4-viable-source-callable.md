@@ -25,10 +25,12 @@ FunctionDeclarations. This slice also inhabits unique same-file
   receiver object is not resolved. `Call.getIdentifier` stays
   identifier-only; this does not walk `getAFieldOrChild`.
 - Imported names (`init_action` from `'luci.sys'`, `popen` from
-  `'fs'`, `basename` from `'fs'`), builtins (`system`), and library
-  member callees (`fd.read` / `fd.close`) do not resolve, including
-  when `sys.uc` is in the database. Those members have no matching
-  FunctionDeclaration.
+  `'fs'`, `basename` from `'fs'`) and library member callees
+  (`fd.read` / `fd.close`) do not resolve as source `CfgScope`s,
+  including when `sys.uc` is in the database. Those members have no
+  matching FunctionDeclaration. Builtin identifier `system` is a
+  library callable, not a source `CfgScope`
+  (see `docs/m4-viable-library-callable.md`).
 - Duplicate same-file FunctionDeclaration names have no
   `viableSourceCallable` target. Identifier `jumpStep` still uses
   unfiltered `simpleIdentifierCall`. Unique member FunctionDeclarations
@@ -41,9 +43,9 @@ FunctionDeclarations. This slice also inhabits unique same-file
 - Function expressions and arrows assigned to locals (`let fn = function`).
 - Cross-file / import resolution for `luci.sys`. Do not claim
   `setInitAction` `path_found`.
-- `viableLibraryCallable` stays `none()`. Identifier `getACall` is
-  already inhabited and is not library-call resolution. Member
-  `getACall` stays `none()`.
 - Nested duplicate names and lexical shadowing.
 - `getARuntimeTarget` stays `none()`.
 - Subscript, parenthesized, and nested-call callees stay unresolved.
+- Imported `popen` / `basename` / luci.sys stay unresolved. Member
+  `getACall` stays `none()`. Builtin identifier `system` is a library
+  callable (see `docs/m4-viable-library-callable.md`).
