@@ -1,0 +1,16 @@
+let methods = {
+  setBlockDetect: { call: function() {
+    function shadow() {
+      let system = function(command) { return command; };
+      system('/sbin/block detect > /etc/config/fstab');
+    }
+    function sibling() {
+      system('/sbin/block detect > /etc/config/fstab');
+    }
+    {
+      let system = function(command) { return command; };
+      system('/sbin/block detect > /etc/config/fstab');
+    }
+    system('/sbin/block detect > /etc/config/fstab');
+  } }
+};
