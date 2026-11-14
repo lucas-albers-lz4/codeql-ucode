@@ -25,8 +25,9 @@ corpus revision, profile, entrypoint binding, conditions, uncertainty and policy
 context before mapping an observation into interchange records. That mapping
 and policy assessment are not implemented here. The focused smoke checks the
 pinned file hash, extraction errors, table columns, exact values and locations,
-plus synthetic positive and negative controls, including sibling scopes and
-shadowed calls.
+plus synthetic positive and negative controls, including sibling scopes,
+shadowed calls, and a `system` formal parameter whose literal call must stay
+excluded.
 
 ## Reproduction and provenance
 
@@ -101,5 +102,18 @@ A second scratch mutation broadened the lexical scope of declarations: the
 builtin sibling call at line 8 and the later builtin at line 14 disappeared;
 the same assertion rejected that output and passed after restoring real output.
 The serial local aggregate exited 0 and visited all 33 expected M4 script markers
-exactly once, including this smoke. `cargo test` and
-`python3 -m unittest discover -s tests -v` also passed.
+exactly once, including this smoke. The successful CI `cargo-test` job is recorded
+in [run 43652449266](https://github.com/lucas-albers-lz4/codeql-ucode/actions/runs/43652449266),
+and the successful `m3-m4-smoke` job in
+[run 43652449286](https://github.com/lucas-albers-lz4/codeql-ucode/actions/runs/43652449286).
+Both runs have head SHA `10644b70c5dbd2dd5b90f5d5dfcf82a1fafd6965`; this is the
+pre-change PR head, not a claim that these runs exercised the later formal
+parameter fixture. The local Python unit-test result is not claimed here.
+
+For the new formal-parameter control, a scratch-pack mutant removing
+`not systemFormalInBody(this)` produced six rows and the unchanged smoke
+assertion failed on the extra call at `negative-formal-parameter`, `4:7–4:54`.
+With the real model, the smoke passed with exactly the original five source
+sites. The mutant and clean BQRS/CSV outputs plus assertion logs are preserved
+under `/root/.hermes/profiles/work/cache/scratch/pr79-formal-red/artifacts/`
+and `/root/.hermes/profiles/work/cache/scratch/pr79-formal-green/`.

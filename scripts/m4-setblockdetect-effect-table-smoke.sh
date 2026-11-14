@@ -4,8 +4,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 PACK="$ROOT/extractor-pack"
-DB="$ROOT/.codeql-database/m4-setblockdetect-effect-table"
-QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
+DB="${M4_SETBLOCKDETECT_DB:-$ROOT/.codeql-database/m4-setblockdetect-effect-table}"
+QLPATH="${M4_SETBLOCKDETECT_QLPATH:-$PACK:$ROOT/ql/lib:$ROOT/ql/src}"
+QLSRC="${M4_SETBLOCKDETECT_QLSRC:-$ROOT/ql/src}"
 TMP_ROOT="$(mktemp -d)"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 SRC="$TMP_ROOT/src"
@@ -26,7 +27,8 @@ if pin is None or pin[1] != expected_sha or hashlib.sha256(luci.read_bytes()).he
 names = ('real', 'positive', 'positive-renamed-import', 'negative-method',
          'negative-command', 'negative-nonliteral', 'negative-member',
          'negative-receiver', 'negative-import-named', 'negative-import-alias',
-         'negative-import-default', 'negative-extra-argument', 'sibling-shadow')
+         'negative-import-default', 'negative-extra-argument', 'sibling-shadow',
+         'negative-formal-parameter')
 for name in names:
     dest = src / 'modules' / name / 'root/usr/share/rpcd/ucode/luci'
     dest.parent.mkdir(parents=True)
@@ -46,18 +48,19 @@ codeql database finalize "$DB"
 for entry in 'diagnostics/SuccessfullyExtractedFiles.ql extracted' \
 	'diagnostics/ExtractionErrors.ql errors' 'm4/SetBlockDetectEffectTable.ql effects'; do
 	read -r query output <<< "$entry"
-	codeql query run "$ROOT/ql/src/$query" --database="$DB" --search-path="$QLPATH" --output="$DB/$output.bqrs"
+	codeql query run "$QLSRC/$query" --database="$DB" --search-path="$QLPATH" --output="$DB/$output.bqrs"
 	codeql bqrs decode --format=csv "$DB/$output.bqrs" > "$DB/$output.csv"
 done
 python3 - <<'PY'
 import csv
+import os
 from pathlib import Path
 
-db = Path('.codeql-database/m4-setblockdetect-effect-table')
+db = Path(os.environ.get('M4_SETBLOCKDETECT_DB', '.codeql-database/m4-setblockdetect-effect-table'))
 with (db / 'extracted.csv').open() as f:
     extracted = list(csv.DictReader(f))
-if len(extracted) != 13:
-    raise SystemExit(f'expected all thirteen input files extracted: {extracted}')
+if len(extracted) != 14:
+    raise SystemExit(f'expected all fourteen input files extracted: {extracted}')
 with (db / 'errors.csv').open() as f:
     errors = list(csv.DictReader(f))
 if errors:
