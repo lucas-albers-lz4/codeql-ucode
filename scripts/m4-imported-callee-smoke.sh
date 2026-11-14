@@ -14,8 +14,8 @@ if [[ ! -d "$DB/db-ucode" ]]; then
 	bash scripts/m3-smoke.sh
 fi
 
-codeql pack install "$ROOT/ql/lib" >/dev/null
-codeql pack install "$ROOT/ql/src" >/dev/null
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
 
 echo "== ImportedCalleeTaint =="
 codeql query run "$ROOT/ql/src/m4/ImportedCalleeTaint.ql" \

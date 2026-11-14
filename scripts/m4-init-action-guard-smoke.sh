@@ -19,8 +19,8 @@ cp ql/test/extractor-smoke/usr/share/rpcd/ucode/luci "$SRC/usr/share/rpcd/ucode/
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	bash scripts/create-extractor-pack.sh
 fi
-codeql pack install "$ROOT/ql/lib" >/dev/null
-codeql pack install "$ROOT/ql/src" >/dev/null
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
 rm -rf "$DB"
 mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
