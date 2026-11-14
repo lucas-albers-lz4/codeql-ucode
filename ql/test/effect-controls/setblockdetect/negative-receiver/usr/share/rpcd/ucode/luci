@@ -1,0 +1,5 @@
+let methods = {
+  setBlockDetect: { call: function() {
+    system.run('/sbin/block detect > /etc/config/fstab');
+  } }
+};
