@@ -14,7 +14,15 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+      - name: Checkout OpenWrt routing implementation at ed6ec31
+        uses: actions/checkout@v4
+        with:
+          repository: lucas-albers-lz4/codeql-openwrt
+          ref: ed6ec314d9796621bbcc98c43824189a44c9a0c2
+          path: codeql-openwrt
       - name: Clone pinned grammar
         run: bash scripts/clone-grammar.sh
       - name: Parser-load test
+        env:
+          CODEQL_OPENWRT_ROOT: ${{ github.workspace }}/codeql-openwrt
         run: cargo test -p codeql-extractor-ucode -- --nocapture

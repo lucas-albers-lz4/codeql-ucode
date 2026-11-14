@@ -79,11 +79,12 @@ impl RoutingReport {
 }
 
 /// Classify using the complete path, not its basename. The source archive
-/// keeps the original path; the installed-path suffix is only used to model
-/// the known loader rules in the frozen profile.
+/// keeps the original path; named package layouts are mapped to installed
+/// paths before applying the shared routing rules.
 fn classify(path: &Path, source: &[u8]) -> Option<Route> {
     let installed_path = installed_path_for_source(path);
-    let rpcd_raw_mode = is_immediate_rpcd_plugin(&installed_path);
+    let installed_path = installed_path.trim_start_matches('/');
+    let rpcd_raw_mode = is_rpcd_ucode_path(installed_path);
     let ucode_share_path = installed_path.starts_with("usr/share/ucode/");
     let extension = path.extension().and_then(|x| x.to_str()).unwrap_or("");
 
@@ -110,7 +111,7 @@ fn classify(path: &Path, source: &[u8]) -> Option<Route> {
         });
     }
 
-    if ucode_share_path && has_markup_tag(source) {
+    if has_markup_tag(source) {
         return Some(Route {
             classification: Classification::Markup,
             reason: "markup_tag_content",
@@ -171,10 +172,10 @@ fn installed_path_for_source(path: &Path) -> String {
     full_path
 }
 
-fn is_immediate_rpcd_plugin(installed_path: &str) -> bool {
+fn is_rpcd_ucode_path(installed_path: &str) -> bool {
     installed_path
         .strip_prefix("usr/share/rpcd/ucode/")
-        .is_some_and(|filename| !filename.is_empty() && !filename.contains('/'))
+        .is_some_and(|path| !path.is_empty())
 }
 
 fn source_tail_after_components(path: &[&str], prefix: &[&str]) -> Option<Vec<String>> {
@@ -512,9 +513,10 @@ mod tests {
     }
 
     #[test]
-    fn seven_case_routing_gate_uses_synthetic_cases_where_profile_has_gaps() {
-        // `synthetic:` labels are deliberate: pinned luci-ssl has no rpcd
-        // `.uc`, no ucode-shebang libexec helper, and no raw-mode `.ut`.
+    fn routing_gate_matches_file_routing_rules_with_synthetic_paths() {
+        // Synthetic paths exercise documented loader rules outside the
+        // frozen luci-ssl inventory, including nested rpcd plugins and markup
+        // content outside /usr/share/ucode.
         let cases = [
             (
                 "usr/share/rpcd/ucode/plugin",
@@ -525,6 +527,12 @@ mod tests {
             (
                 "usr/share/rpcd/ucode/plugin.uc",
                 "// synthetic .uc plugin\nlet value = 1;\n",
+                Classification::Plain,
+                "rpcd_raw_mode_full_path",
+            ),
+            (
+                "usr/share/rpcd/ucode/nested/plugin.ut",
+                "// synthetic nested raw-mode plugin\nlet value = 1;\n",
                 Classification::Plain,
                 "rpcd_raw_mode_full_path",
             ),
@@ -543,6 +551,12 @@ mod tests {
             (
                 "usr/share/ucode/tagged.uc",
                 "{% synthetic tagged template %}\n",
+                Classification::Markup,
+                "markup_tag_content",
+            ),
+            (
+                "var/lib/luci/tagged-template",
+                "{% synthetic markup outside usr/share/ucode %}\n",
                 Classification::Markup,
                 "markup_tag_content",
             ),
@@ -601,7 +615,7 @@ mod tests {
                 Classification::Uncertain => counts[2] += 1,
             }
         }
-        assert_eq!(counts, [4, 2, 1]);
+        assert_eq!(counts, [5, 3, 1]);
 
         let unmatched = source_root.join("misc/unmatched.bin");
         std::fs::create_dir_all(unmatched.parent().unwrap()).unwrap();
@@ -623,9 +637,9 @@ mod tests {
         )
         .unwrap();
         assert!(report.is_reconciled());
-        assert_eq!(report.input_count, 9);
-        assert_eq!(report.plain_count, 4);
-        assert_eq!(report.markup_count, 2);
+        assert_eq!(report.input_count, 11);
+        assert_eq!(report.plain_count, 5);
+        assert_eq!(report.markup_count, 3);
         assert_eq!(report.uncertain_count, 1);
         assert_eq!(report.excluded_count, 1);
         assert_eq!(report.duplicate_input_count, 1);
@@ -638,7 +652,7 @@ mod tests {
                 + report.duplicate_input_count
         );
         let routing_json = std::fs::read_to_string(trap_root.join("routing.json")).unwrap();
-        assert!(routing_json.contains("\"markup_inconclusive_count\":2"));
+        assert!(routing_json.contains("\"markup_inconclusive_count\":3"));
         assert!(routing_json.contains("\"inconclusive_reason\":\"markup_not_modeled\""));
         assert!(routing_json.contains("\"classification\":\"excluded\""));
         assert!(routing_json.contains("\"classification\":\"duplicate\""));
@@ -649,7 +663,7 @@ mod tests {
             .iter()
             .map(|path| file_paths::path_for(&trap_root, path, "trap.gz"))
             .collect();
-        assert_eq!(trap_paths.iter().filter(|path| path.is_file()).count(), 4);
+        assert_eq!(trap_paths.iter().filter(|path| path.is_file()).count(), 5);
         for source_path in &plain_paths {
             let archived = file_paths::path_for(&archive_root, source_path, "");
             assert_eq!(
@@ -690,10 +704,8 @@ mod tests {
             installed_path_for_source(Path::new("/src/modules/luci-base/ucode/plugin")),
             "usr/share/ucode/luci/plugin"
         );
-        assert!(!is_immediate_rpcd_plugin(
-            "usr/share/rpcd/ucode/nested/plugin"
-        ));
-        assert!(!is_immediate_rpcd_plugin("usr/share/rpcd/ucodeish/plugin"));
+        assert!(is_rpcd_ucode_path("usr/share/rpcd/ucode/nested/plugin"));
+        assert!(!is_rpcd_ucode_path("usr/share/rpcd/ucodeish/plugin"));
         assert!(!is_legacy_smoke_input(Path::new("/repo/src/taint_pos")));
         assert_eq!(
             installed_path_for_source(Path::new(
@@ -725,13 +737,84 @@ mod tests {
                 .classification,
             Classification::Plain
         );
+        let unrelated_markup = classify(
+            Path::new("/src/unrelated/ucode/template"),
+            b"{% markup-looking content %}",
+        )
+        .unwrap();
+        assert_eq!(unrelated_markup.classification, Classification::Markup);
         assert_eq!(
             classify(
-                Path::new("/src/unrelated/ucode/template"),
-                b"{% markup-looking content %}"
+                Path::new("usr/share/ucode/shebang-tagged.uc"),
+                b"#!/usr/bin/ucode\n{% shebang keeps rule 3 precedence %}\n"
             ),
-            None
+            Some(Route {
+                classification: Classification::Plain,
+                reason: "ucode_shebang"
+            })
         );
+        assert_eq!(
+            classify(
+                Path::new("/usr/share/rpcd/ucode/nested/plugin.ut"),
+                b"let value = 1;\n"
+            ),
+            Some(Route {
+                classification: Classification::Plain,
+                reason: "rpcd_raw_mode_full_path"
+            })
+        );
+        assert_eq!(
+            classify(Path::new("/usr/share/ucode/extensionless"), b"// unknown\n"),
+            Some(Route {
+                classification: Classification::Uncertain,
+                reason: "unclassified_usr_share_ucode_path"
+            })
+        );
+    }
+
+    #[test]
+    fn matches_pinned_openwrt_frozen_routing_inventory() {
+        let Ok(openwrt_root) = std::env::var("CODEQL_OPENWRT_ROOT") else {
+            eprintln!("skipping OpenWrt parity check without CODEQL_OPENWRT_ROOT");
+            return;
+        };
+        let script = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .parent()
+            .expect("extractor workspace root")
+            .join("scripts/export-openwrt-routing-evidence.py");
+        let output = std::process::Command::new("python3")
+            .arg(script)
+            .arg(&openwrt_root)
+            .output()
+            .expect("run pinned OpenWrt classifier exporter");
+        assert!(
+            output.status.success(),
+            "OpenWrt evidence export failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let rows: Vec<serde_json::Value> =
+            serde_json::from_slice(&output.stdout).expect("OpenWrt JSON routing rows");
+        assert_eq!(rows.len(), 24, "pinned OpenWrt routing row count changed");
+
+        let root = std::env::temp_dir().join(format!(
+            "ucode-openwrt-routing-parity-{}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&root);
+        for row in rows {
+            let installed_path = row["fs_path"].as_str().expect("installed path");
+            let expected = row["classification"].as_str().expect("classification");
+            let source = row["source"].as_str().expect("source evidence");
+            let fixture_path = root
+                .join("ql/test/extractor-smoke")
+                .join(installed_path.trim_start_matches('/'));
+            std::fs::create_dir_all(fixture_path.parent().unwrap()).unwrap();
+            std::fs::write(&fixture_path, source).unwrap();
+            let actual = classify(&fixture_path, source.as_bytes())
+                .unwrap_or_else(|| panic!("ucode excluded OpenWrt path {installed_path}"));
+            assert_eq!(actual.classification.as_str(), expected, "{installed_path}");
+        }
+        std::fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
