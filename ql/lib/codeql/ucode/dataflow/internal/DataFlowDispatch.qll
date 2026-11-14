@@ -145,8 +145,8 @@ class AdditionalCallTarget extends Unit {
 /**
  * Builtin identifier `system(...)` as a library callable. Uses
  * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
- * not widen member callees. Imported specifiers and same-file
- * FunctionDeclarations are not builtins. Imported `'fs'` `popen`,
+ * not widen member callees. Shares the lexical binding check in Models.
+ * Imported `'fs'` `popen`,
  * `basename`, `access`, `open`, and `readfile` are separate library
  * callables. luci.sys stays unresolved. `propagatesFlow` stays
  * `none()`. Does not jump. Not production taint and not `path_found`.
@@ -156,14 +156,7 @@ private class BuiltinSystemLibraryCallable extends LibraryCallable {
 
   override ucode::Call getACall() {
     result.getIdentifier().getName() = this and
-    not exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      importedSpecifierName(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    toTreeSitter(result) instanceof ucode::BuiltinSystemCall
   }
 }
 
