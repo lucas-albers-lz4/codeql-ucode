@@ -19,7 +19,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 9. `./scripts/m3-smoke.sh` indexes `luci`, `taint_pos`, and `taint_neg` (`SuccessfullyExtractedFiles == 3`) and asserts the M3 queries.
 10. `./scripts/m4-smoke.sh` reuses that database and asserts `RequestArgsExec.ql` methods (`getSwconfigFeatures`, `getSwconfigPortState`, `getRealtimeStats`, `setPassword`, `setLocaltime`).
 11. `./scripts/m4-fixed-helpers-smoke.sh` asserts `GetFeaturesDirectExec.ql` (hostapd/wpa_supplicant `system`, dnsmasq/odhcpd/ipset `popen`).
-12. `./scripts/m4-quote-smoke.sh` indexes those plus `quote_ok`/`quote_exe` and asserts the complete-argument `shellquote` barrier.
+12. `./scripts/m4-quote-smoke.sh` indexes those plus the `quote_*` controls and checks conservative candidate retention and necessary template shapes; no `shellquote` helper currently has trusted sanitizer semantics.
 13. `./scripts/m4-imported-callee-smoke.sh` asserts `ImportedCalleeTaint.ql` sees `init_action` from `luci.sys`.
 14. `./scripts/m4-sys-smoke.sh` indexes `luci` plus installed luci.sys (`sys.uc`) and asserts `InitActionSystem.ql` plus the `setInitAction` action-token switch (not a sanitizer of `name`).
 15. `./scripts/m4-luci-sys-status-exec-smoke.sh` asserts `LuciSysStatusExec.ql` (`getConntrackList` / `getProcessList` helpers: fixed `conntrack` and `busybox top` popen in `sys.uc`; not interprocedural `path_found`).

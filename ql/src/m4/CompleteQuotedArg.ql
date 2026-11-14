@@ -1,6 +1,6 @@
 /**
  * @name complete-argument shellquote
- * @description M4: request.args wrapped by shellquote as a template substitution into a larger popen/system command.
+ * @description M4: reserved barrier query; currently empty because no shellquote implementation has trusted semantics.
  * @kind problem
  * @problem.severity recommendation
  * @id ucode/m4/complete-quoted-arg
