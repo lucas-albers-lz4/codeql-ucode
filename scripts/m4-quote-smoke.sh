@@ -53,10 +53,11 @@ def msgs(path):
 	rows = list(csv.reader(open(path)))
 	return [r[1] for r in rows[1:]]
 
-def pairs(path):
-	"""(message, sink name) per result row: the message names only the fixture."""
-	rows = list(csv.reader(open(path)))
-	return [(r[1], r[3] if len(r) > 3 else "") for r in rows[1:]]
+def luci_candidates(path):
+    """(method, sink, sink line, source line) for each luci result row."""
+    rows = list(csv.reader(open(path)))
+    return [(r[4], r[3], int(r[5]), int(r[6])) for r in rows[1:]
+            if len(r) > 6 and r[1].endswith(" in luci")]
 
 quoted = msgs(".codeql-database/m4-quote/quoted.csv")
 inject = msgs(".codeql-database/m4-quote/inject.csv")
@@ -81,21 +82,29 @@ inject_names = fixture_names(
 if quoted:
     sys.exit("No shellquote implementation currently has proven trusted semantics")
 bad_controls = [p.name for p in Path("ql/test/extractor-smoke").glob("quote_bad_*")]
-for good in ("quote_ok", "quote_ok_echo.uc", "quote_ok_printf.uc"):
+good_controls = [p.name for p in Path("ql/test/extractor-smoke").glob("quote_ok*")]
+if not good_controls:
+    sys.exit("No quote_ok* fixtures found")
+for good in good_controls:
     if good not in shape_names or good not in inject_names:
         sys.exit(f"Expected supported shape but unknown semantics for {good}")
 for bad in bad_controls:
     if bad in shape_names or bad not in inject_names:
         sys.exit(f"Must reject shape and retain candidate for {bad}")
-# The real luci fixture calls a local shellquote helper whose semantics are not
-# modeled, so its request.args to popen/system candidates must be retained. The
-# message carries only the fixture basename, so pin the retained set by sink; a
-# lost candidate changes the counts. Method identity for the same call sites is
-# asserted separately by scripts/m4-smoke.sh (RequestArgsExec rows for
-# getSwconfigFeatures / getSwconfigPortState "via shellquote").
-luci_sinks = Counter(sink for message, sink in inject_pairs if message.endswith(" in luci"))
-if luci_sinks != Counter({"popen": 4, "system": 3}):
-    sys.exit(f"Expected 7 retained luci candidates (4 popen, 3 system), got {dict(luci_sinks)}")
+# Assert each real call site, not just method/sink counts: substitutions within
+# one method and sink must not silently replace another candidate.
+want_luci = Counter({
+    ("getSwconfigFeatures", "popen", 343, 343): 1,
+    ("getSwconfigPortState", "popen", 400, 400): 1,
+    ("getRealtimeStats", "popen", 585, 575): 1,
+    ("getRealtimeStats", "popen", 585, 577): 1,
+    ("setPassword", "system", 474, 470): 1,
+    ("setPassword", "system", 474, 471): 1,
+    ("setLocaltime", "system", 111, 108): 1,
+})
+luci_rows = Counter(luci_candidates(".codeql-database/m4-quote/inject.csv"))
+if luci_rows != want_luci:
+    sys.exit(f"Expected exact luci method/sink/line candidates {dict(want_luci)}, got {dict(luci_rows)}")
 if "luci" in shape_names:
     sys.exit("Local luci helper must not pass the unresolved binding check")
 if "taint_pos" not in inject_names:

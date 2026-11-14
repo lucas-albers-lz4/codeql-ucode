@@ -22,4 +22,6 @@ where
   shellInjectionCandidate(src, sink)
 select src,
   "shell-injection candidate via " + sink.getName() + " in " +
-    src.getLocation().getFile().getBaseName() + exeNote(src, sink), sink, sink.getName()
+    src.getLocation().getFile().getBaseName() + exeNote(src, sink), sink, sink.getName(),
+  rpcMethodName(sink), sink.getLocation().getStartLine().toString(),
+  src.getLocation().getStartLine().toString()
