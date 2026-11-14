@@ -25,6 +25,7 @@ codeql bqrs decode --format=csv "$DB/m4exec.bqrs" | tee "$DB/m4exec.csv"
 
 python3 - <<'PY'
 import csv, sys
+from collections import Counter
 
 rows = list(csv.DictReader(open(".codeql-database/m3-luci/m4exec.csv")))
 msgs = [r.get("col1", "") for r in rows]
@@ -51,6 +52,19 @@ if "setLocaltime request.args reaches system" not in blob:
 	sys.exit("missing setLocaltime system")
 if "getFeatures " in blob:
 	sys.exit("RequestArgsExec unexpectedly includes getFeatures")
+# The quote gate pins how many ShellInjection candidates luci retains; this pins
+# which method and sink owns each of those call sites, so a candidate cannot move
+# between methods while the totals stay put.
+want_counts = {
+	("setLocaltime", "system"): 1,
+	("getSwconfigFeatures", "popen"): 1,
+	("getSwconfigPortState", "popen"): 1,
+	("setPassword", "system"): 2,
+	("getRealtimeStats", "popen"): 2,
+}
+counts = Counter((r["col1"].split()[0], r["col3"]) for r in rows if r.get("col1"))
+if dict(counts) != want_counts:
+	sys.exit(f"RequestArgsExec method/sink distribution {dict(counts)} != {want_counts}")
 print("m4 methods", sorted(methods), "rows", len(rows))
 PY
 

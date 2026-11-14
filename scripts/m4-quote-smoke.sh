@@ -24,8 +24,7 @@ echo "== index luci + taint + quote fixtures =="
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode \
 	--include='**/luci' --include='**/taint_pos' --include='**/taint_neg' \
-	--include='**/quote_ok' --include='**/quote_exe' \
-	--include='**/quote_bad_suffix' --include='**/quote_bad_sh_c' --include='**/quote_bad_echo' \
+	--include='**/quote_*' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 
@@ -37,44 +36,85 @@ echo "== CompleteQuotedArg =="
 runq "$ROOT/ql/src/m4/CompleteQuotedArg.ql" "$DB/quoted.bqrs"
 codeql bqrs decode --format=csv "$DB/quoted.bqrs" | tee "$DB/quoted.csv"
 
+echo "== ShellquoteTemplateShape (not a barrier) =="
+runq "$ROOT/ql/src/m4/ShellquoteTemplateShape.ql" "$DB/shape.bqrs"
+codeql bqrs decode --format=csv "$DB/shape.bqrs" > "$DB/shape.csv"
+
 echo "== ShellInjection =="
 runq "$ROOT/ql/src/m4/ShellInjection.ql" "$DB/inject.bqrs"
 codeql bqrs decode --format=csv "$DB/inject.bqrs" | tee "$DB/inject.csv"
 
 python3 - <<'PY'
-import csv, sys
+import csv, re, sys
+from collections import Counter
+from pathlib import Path
 
 def msgs(path):
 	rows = list(csv.reader(open(path)))
 	return [r[1] for r in rows[1:]]
 
-quoted = "\n".join(msgs(".codeql-database/m4-quote/quoted.csv"))
-inject = "\n".join(msgs(".codeql-database/m4-quote/inject.csv"))
+def luci_candidates(path):
+    """(method, sink, sink line, source line) for each luci result row."""
+    rows = list(csv.reader(open(path)))
+    return [(r[4], r[3], int(r[5]), int(r[6])) for r in rows[1:]
+            if len(r) > 6 and r[1].endswith(" in luci")]
 
-if "quote_ok" not in quoted:
-	sys.exit("CompleteQuotedArg missing quote_ok")
-if "taint_pos" in quoted or "quote_exe" in quoted or "taint_neg" in quoted:
-	sys.exit("CompleteQuotedArg should only be complete template quote")
-for bad in ("quote_bad_suffix", "quote_bad_sh_c", "quote_bad_echo"):
-	if bad in quoted:
-		sys.exit(f"CompleteQuotedArg unexpectedly includes unsupported {bad}")
-if "getSwconfigFeatures" not in quoted and "luci" not in quoted:
-	# luci getSwconfig* uses the same template pattern
-	pass
-if "quote_ok" in inject:
-	sys.exit("ShellInjection must not include quote_ok (complete-argument barrier)")
-if "taint_pos" not in inject:
-	sys.exit("ShellInjection missing unquoted taint_pos")
-if "quote_exe" not in inject or "quoted executable selection" not in inject:
-	sys.exit("ShellInjection missing quote_exe executable-selection candidate")
-if "taint_neg" in inject:
-	sys.exit("ShellInjection unexpectedly includes taint_neg")
-for bad in ("quote_bad_suffix", "quote_bad_sh_c", "quote_bad_echo"):
-	if bad not in inject:
-		sys.exit(f"ShellInjection must retain unsupported context {bad}")
+quoted = msgs(".codeql-database/m4-quote/quoted.csv")
+inject = msgs(".codeql-database/m4-quote/inject.csv")
+shape = msgs(".codeql-database/m4-quote/shape.csv")
+
+# Match the complete fixture basename, not a substring: e.g. quote_ok must
+# not be satisfied by quote_ok_echo.uc, nor quote_bad_separator by its variant.
+def fixture_names(messages, pattern):
+    names = set()
+    for message in messages:
+        match = re.fullmatch(pattern, message)
+        if not match:
+            sys.exit(f"Unexpected query message: {message}")
+        names.add(match.group(1))
+    return names
+
+shape_names = fixture_names(shape, r"supported template shape in (.+)")
+inject_names = fixture_names(
+    inject, r"shell-injection candidate via \S+ in (.+?)(?: \(quoted executable selection\))?"
+)
+if quoted:
+    sys.exit("No shellquote implementation currently has proven trusted semantics")
+bad_controls = [p.name for p in Path("ql/test/extractor-smoke").glob("quote_bad_*")]
+good_controls = [p.name for p in Path("ql/test/extractor-smoke").glob("quote_ok*")]
+if not good_controls:
+    sys.exit("No quote_ok* fixtures found")
+for good in good_controls:
+    if good not in shape_names or good not in inject_names:
+        sys.exit(f"Expected supported shape but unknown semantics for {good}")
+for bad in bad_controls:
+    if bad in shape_names or bad not in inject_names:
+        sys.exit(f"Must reject shape and retain candidate for {bad}")
+# Assert each real call site, not just method/sink counts: substitutions within
+# one method and sink must not silently replace another candidate.
+want_luci = Counter({
+    ("getSwconfigFeatures", "popen", 343, 343): 1,
+    ("getSwconfigPortState", "popen", 400, 400): 1,
+    ("getRealtimeStats", "popen", 585, 575): 1,
+    ("getRealtimeStats", "popen", 585, 577): 1,
+    ("setPassword", "system", 474, 470): 1,
+    ("setPassword", "system", 474, 471): 1,
+    ("setLocaltime", "system", 111, 108): 1,
+})
+luci_rows = Counter(luci_candidates(".codeql-database/m4-quote/inject.csv"))
+if luci_rows != want_luci:
+    sys.exit(f"Expected exact luci method/sink/line candidates {dict(want_luci)}, got {dict(luci_rows)}")
+if "luci" in shape_names:
+    sys.exit("Local luci helper must not pass the unresolved binding check")
+if "taint_pos" not in inject_names:
+    sys.exit("ShellInjection missing unquoted taint_pos")
+if not any(re.fullmatch(r"shell-injection candidate via \S+ in quote_exe \(quoted executable selection\)", m) for m in inject):
+    sys.exit("ShellInjection missing quote_exe executable-selection candidate")
+if "taint_neg" in inject_names:
+    sys.exit("ShellInjection unexpectedly includes taint_neg")
 print("quote barrier controls ok")
-print("quoted:\n", quoted)
-print("inject:\n", inject)
+print("quoted:\n", "\n".join(quoted))
+print("inject:\n", "\n".join(inject))
 PY
 
 echo "M4 quote smoke passed"
