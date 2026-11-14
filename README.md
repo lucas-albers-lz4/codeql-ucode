@@ -37,9 +37,12 @@ The experimental CFG has partial coverage of ordered expression and access
 nodes, branches, loops (including `for-in`), `switch`, `break`, and `continue`.
 Its `try`/`catch` paths use an incomplete may-throw approximation, so some
 runtime exception paths may be missed.
-Named formals of block-bodied functions are Variables with CFG nodes and SSA
-writes. Expression-bodied arrows are Variables without an inner CfgScope.
-Parameters still shadow outer variables.
+Named formals of block-bodied functions and expression-bodied arrows are
+Variables with CFG nodes and SSA writes. Since #28, an expression-bodied
+arrow's body expression is its inner `CfgScope`, analogous to the block scope
+of a block-bodied function. Parameters still shadow outer variables. See
+[`docs/m4-arrow-cfgscope.md`](docs/m4-arrow-cfgscope.md) for the supported
+formal shapes and current limits.
 The regression smoke covers same-statement ordering, joins, loop-carried flow,
 short-circuit expressions, optional chains and return values.
 
