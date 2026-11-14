@@ -26,11 +26,9 @@ predicate namedImport(UCODE::ImportStatement imp, string moduleName, string loca
   )
 }
 
-/** Callee identifier of a call, including when the function field is a wrapper expression. */
+/** Direct identifier callee of a call; member and wrapped callees are not resolved. */
 UCODE::Identifier calleeIdent(UCODE::CallExpression c) {
-  result = c.getFunction()
-  or
-  result = c.getFunction().getAFieldOrChild()
+  result = c.getFunction().(UCODE::Identifier)
 }
 
 /** A call whose callee is the identifier `name`. */
