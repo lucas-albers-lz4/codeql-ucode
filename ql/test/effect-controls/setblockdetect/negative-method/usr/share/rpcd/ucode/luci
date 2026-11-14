@@ -1,0 +1,5 @@
+let methods = {
+  otherMethod: { call: function() {
+    system('/sbin/block detect > /etc/config/fstab');
+  } }
+};
