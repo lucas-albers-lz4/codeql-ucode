@@ -17,7 +17,7 @@ mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode --include='**/models_callee*.uc' --working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
-for entry in 'diagnostics/ExtractionErrors.ql errors' 'extractor-smoke/ModelsCalleeSinks.ql sinks' 'm4/ShellInjection.ql candidates'; do
+for entry in 'diagnostics/ExtractionErrors.ql errors' 'diagnostics/SuccessfullyExtractedFiles.ql extracted' 'extractor-smoke/ModelsCalleeSinks.ql sinks' 'm4/ShellInjection.ql candidates'; do
 	read -r query output <<< "$entry"
 	codeql query run "$ROOT/ql/src/$query" --database="$DB" --search-path="$QLPATH" --output="$DB/$output.bqrs"
 	codeql bqrs decode --format=csv "$DB/$output.bqrs" > "$DB/$output.csv"
@@ -33,6 +33,18 @@ def rows(name):
 errors = rows('errors')
 if errors:
     raise SystemExit(f'extraction errors: {errors}')
+extracted = [row[0] for row in rows('extracted')]
+expected_files = {
+    str((Path('ql/test/extractor-smoke') / name).resolve())
+    for name in (
+        'models_callee.uc',
+        'models_callee_alias.uc',
+        'models_callee_default.uc',
+        'models_callee_named.uc',
+    )
+}
+if len(extracted) != 4 or set(extracted) != expected_files:
+    raise SystemExit(f'expected all four sink-control fixtures {expected_files}; got {extracted}')
 sinks = [row[1] for row in rows('sinks')]
 expected = {'popen at line 4', 'system at line 5'}
 if len(sinks) != 2 or set(sinks) != expected:
