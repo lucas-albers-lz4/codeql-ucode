@@ -24,9 +24,8 @@ codeql query run "$ROOT/ql/src/m4/RequestArgsExec.ql" \
 codeql bqrs decode --format=csv "$DB/m4exec.bqrs" | tee "$DB/m4exec.csv"
 
 python3 - <<'PY'
-import csv, re, sys
+import csv, sys
 from collections import Counter
-from pathlib import Path
 
 rows = list(csv.DictReader(open(".codeql-database/m3-luci/m4exec.csv")))
 msgs = [r.get("col1", "") for r in rows]

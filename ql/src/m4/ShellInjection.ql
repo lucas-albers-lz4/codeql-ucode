@@ -15,6 +15,12 @@ string exeNote(RequestArgsAccess src, NamedCall sink) {
   else result = ""
 }
 
+string methodLabel(NamedCall sink) {
+  result = rpcMethodName(sink)
+  or
+  not exists(rpcMethodName(sink)) and result = "<none>"
+}
+
 from RequestArgsAccess src, NamedCall sink
 where
   (sink instanceof NamedFsPopenCall or sink instanceof BuiltinSystemCall) and
@@ -23,5 +29,5 @@ where
 select src,
   "shell-injection candidate via " + sink.getName() + " in " +
     src.getLocation().getFile().getBaseName() + exeNote(src, sink), sink, sink.getName(),
-  rpcMethodName(sink), sink.getLocation().getStartLine().toString(),
+  methodLabel(sink), sink.getLocation().getStartLine().toString(),
   src.getLocation().getStartLine().toString()

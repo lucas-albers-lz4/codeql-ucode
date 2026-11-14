@@ -61,7 +61,6 @@ def luci_candidates(path):
 
 quoted = msgs(".codeql-database/m4-quote/quoted.csv")
 inject = msgs(".codeql-database/m4-quote/inject.csv")
-inject_pairs = pairs(".codeql-database/m4-quote/inject.csv")
 shape = msgs(".codeql-database/m4-quote/shape.csv")
 
 # Match the complete fixture basename, not a substring: e.g. quote_ok must
