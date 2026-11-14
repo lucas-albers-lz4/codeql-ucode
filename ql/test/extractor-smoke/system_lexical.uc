@@ -67,3 +67,39 @@ function while_control(request) {
     function system(command) { return command; }
   system(request.args.command); // while does not create a scope
 }
+
+// A binding in one function must not suppress the builtin in its sibling.
+function sibling_let_shadow(request) {
+  let system = function(command) { return command; };
+  system(request.args.command); // sibling shadow: let
+}
+function sibling_let_builtin(request) {
+  system(request.args.command); // sibling builtin: let
+}
+function sibling_function_shadow(request) {
+  function system(command) { return command; }
+  system(request.args.command); // sibling shadow: function
+}
+function sibling_function_builtin(request) {
+  system(request.args.command); // sibling builtin: function
+}
+function sibling_parameter_shadow(system, request) {
+  system(request.args.command); // sibling shadow: parameter
+}
+function sibling_parameter_builtin(request) {
+  system(request.args.command); // sibling builtin: parameter
+}
+function sibling_rest_shadow(request, ...system) {
+  system(request.args.command); // sibling shadow: rest
+}
+function sibling_rest_builtin(request) {
+  system(request.args.command); // sibling builtin: rest
+}
+function sibling_catch_shadow(request) {
+  try { fail(); } catch (system) {
+    system(request.args.command); // sibling shadow: catch
+  }
+}
+function sibling_catch_builtin(request) {
+  system(request.args.command); // sibling builtin: catch
+}
