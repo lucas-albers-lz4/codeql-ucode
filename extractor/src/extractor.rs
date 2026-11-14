@@ -143,8 +143,12 @@ fn classify(path: &Path, source: &[u8]) -> Option<Route> {
     None
 }
 
-/// Apply only source layouts named by the frozen profile and PLAN while
-/// keeping `path` unchanged for diagnostics and source archives.
+/// Map the explicit extractor-smoke fixture root and the package `root/` and
+/// `ucode/` layouts handled below. Other source paths pass through in
+/// normalized form. The corresponding source-layout references are in the
+/// sibling OpenWrt pack's `docs/file-routing.md` and pinned luci-ssl-25.12
+/// profile (`corpus/profiles/luci-ssl-25.12/profile.json`, sourced from
+/// `luci.mk`).
 fn installed_path_for_source(path: &Path) -> String {
     let full_path = path.to_string_lossy().replace('\\', "/");
     let components: Vec<_> = full_path
@@ -158,7 +162,7 @@ fn installed_path_for_source(path: &Path) -> String {
         return tail.join("/");
     }
 
-    // PLAN.md §2 and pinned luci.mk: root/ is the package staging root;
+    // For the recognized luci.mk layouts, root/ is the package staging root;
     // package-root ucode/ installs below /usr/share/ucode/luci.
     for category in ["applications", "modules", "protocols", "themes"] {
         if let Some(tail) = package_layout_tail(&components, category, "*", "root") {
