@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Check committed interchange snapshots
+        run: python3 -m unittest discover -s tests -v
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
