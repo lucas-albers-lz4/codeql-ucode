@@ -46,14 +46,21 @@ codeql bqrs decode --format=csv "$DB/inject.bqrs" | tee "$DB/inject.csv"
 
 python3 - <<'PY'
 import csv, re, sys
+from collections import Counter
 from pathlib import Path
 
 def msgs(path):
 	rows = list(csv.reader(open(path)))
 	return [r[1] for r in rows[1:]]
 
+def pairs(path):
+	"""(message, sink name) per result row: the message names only the fixture."""
+	rows = list(csv.reader(open(path)))
+	return [(r[1], r[3] if len(r) > 3 else "") for r in rows[1:]]
+
 quoted = msgs(".codeql-database/m4-quote/quoted.csv")
 inject = msgs(".codeql-database/m4-quote/inject.csv")
+inject_pairs = pairs(".codeql-database/m4-quote/inject.csv")
 shape = msgs(".codeql-database/m4-quote/shape.csv")
 
 # Match the complete fixture basename, not a substring: e.g. quote_ok must
@@ -80,6 +87,15 @@ for good in ("quote_ok", "quote_ok_echo.uc", "quote_ok_printf.uc"):
 for bad in bad_controls:
     if bad in shape_names or bad not in inject_names:
         sys.exit(f"Must reject shape and retain candidate for {bad}")
+# The real luci fixture calls a local shellquote helper whose semantics are not
+# modeled, so its request.args to popen/system candidates must be retained. The
+# message carries only the fixture basename, so pin the retained set by sink; a
+# lost candidate changes the counts. Method identity for the same call sites is
+# asserted separately by scripts/m4-smoke.sh (RequestArgsExec rows for
+# getSwconfigFeatures / getSwconfigPortState "via shellquote").
+luci_sinks = Counter(sink for message, sink in inject_pairs if message.endswith(" in luci"))
+if luci_sinks != Counter({"popen": 4, "system": 3}):
+    sys.exit(f"Expected 7 retained luci candidates (4 popen, 3 system), got {dict(luci_sinks)}")
 if "luci" in shape_names:
     sys.exit("Local luci helper must not pass the unresolved binding check")
 if "taint_pos" not in inject_names:
