@@ -200,6 +200,7 @@ dependencies = [
  "flate2",
  "rayon",
  "regex",
+ "serde_json",
  "tracing",
  "tracing-subscriber",
  "tree-sitter",
