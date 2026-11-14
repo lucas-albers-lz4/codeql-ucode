@@ -25,6 +25,7 @@
     "quote_bad_shell_wrapper.uc",
     "quote_bad_suffix",
     "quote_bad_suffix_join.uc",
+    "quote_bad_trailing_substitution.uc",
     "quote_bad_transform.uc",
     "quote_bad_unknown_command.uc",
     "quote_bad_variable.uc",

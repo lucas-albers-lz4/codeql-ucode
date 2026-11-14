@@ -247,8 +247,11 @@ predicate supportedQuotedArgumentPrefix(UCODE::StringFragment prefix) {
 /**
  * Necessary shape for a future barrier: an unchanged call in the first
  * substitution of a supported literal command. Both adjacent fragments must
- * establish shell-word boundaries. Quoting/backslashes in other template text
- * remain unsupported, as do local helpers or ambiguous shellquote bindings.
+ * establish shell-word boundaries. The template must end at that substitution's
+ * trailing fragment; a later substitution is unquoted program text, so a shape
+ * match there would not describe a completely quoted argument. Quoting or
+ * backslashes in other template text remain unsupported, as do local helpers or
+ * ambiguous shellquote bindings.
  */
 predicate supportedShellquoteTemplateShape(RequestArgsAccess src, NamedCall sink) {
   taintReachesSink(src, sink) and
@@ -262,6 +265,7 @@ predicate supportedShellquoteTemplateShape(RequestArgsAccess src, NamedCall sink
     prefix = tmpl.getChild(0) and
     sub = tmpl.getChild(1) and
     suffix = tmpl.getChild(2) and
+    not exists(tmpl.getChild(3)) and
     tmpl = sink.getArgument(_) and
     supportedQuotedArgumentPrefix(prefix) and
     suffix.getValue().regexpMatch("[ \\t].*") and
