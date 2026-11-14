@@ -15,7 +15,7 @@ codeql pack install "$ROOT/ql/src" >/dev/null
 rm -rf "$DB"
 mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
-codeql database index-files --language=ucode --include='**/models_callee.uc' --working-dir="$SRC" "$DB"
+codeql database index-files --language=ucode --include='**/models_callee*.uc' --working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 for entry in 'diagnostics/ExtractionErrors.ql errors' 'extractor-smoke/ModelsCalleeSinks.ql sinks' 'm4/ShellInjection.ql candidates'; do
 	read -r query output <<< "$entry"

@@ -26,6 +26,26 @@ predicate namedImport(UCODE::ImportStatement imp, string moduleName, string loca
   )
 }
 
+/** Holds if an import binds `localName` in the current module scope. */
+predicate importedLocalName(UCODE::ImportStatement imp, string localName) {
+  exists(UCODE::ImportSpecifier spec |
+    spec = imp.getClause().getNamed().getChild(_) and
+    (
+      exists(UCODE::Identifier alias |
+        alias = spec.getAlias() and localName = alias.getValue()
+      )
+      or
+      not exists(spec.getAlias()) and
+      localName = spec.getName().(UCODE::Identifier).getValue()
+    )
+  )
+  or
+  exists(UCODE::Identifier defaultImport |
+    defaultImport = imp.getClause().getDefault() and
+    localName = defaultImport.getValue()
+  )
+}
+
 /** Direct identifier callee of a call; member and wrapped callees are not resolved. */
 UCODE::Identifier calleeIdent(UCODE::CallExpression c) {
   result = c.getFunction().(UCODE::Identifier)
@@ -53,13 +73,14 @@ class NamedFsPopenCall extends NamedCall {
   }
 }
 
-/** Global builtin `system(...)` (stdlib, not an fs export). */
+/** Global builtin `system(...)` when no same-file import binds that local name. */
 class BuiltinSystemCall extends NamedCall {
   BuiltinSystemCall() {
     this.getName() = "system" and
-    not namedImport(any(UCODE::ImportStatement imp |
-        imp.getLocation().getFile() = this.getLocation().getFile()
-      ), _, "system")
+    not exists(UCODE::ImportStatement imp |
+      imp.getLocation().getFile() = this.getLocation().getFile() and
+      importedLocalName(imp, "system")
+    )
   }
 }
 
