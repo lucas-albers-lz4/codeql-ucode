@@ -4,6 +4,10 @@ use std::path::{Path, PathBuf};
 
 use codeql_extractor::{file_paths, node_types, trap};
 
+#[cfg(test)]
+#[path = "stale_input_tests.rs"]
+mod stale_input_tests;
+
 #[derive(Args)]
 pub struct Options {
     /// Sets a custom source achive folder
@@ -349,7 +353,22 @@ fn process_inputs(
     let mut seen = HashSet::new();
     for line in lines.lines().filter(|line| !line.trim().is_empty()) {
         report.input_count += 1;
-        let path = PathBuf::from(line).canonicalize()?;
+        let path = match PathBuf::from(line).canonicalize() {
+            Ok(path) => path,
+            Err(error) => {
+                eprintln!("warning: could not resolve input path {line:?}: {error}; skipping");
+                report.uncertain_count += 1;
+                report.decisions.push(decision_json(
+                    line,
+                    "",
+                    "uncertain",
+                    "input_path_unresolvable",
+                    "inconclusive",
+                    Some("input_path_unresolvable"),
+                ));
+                continue;
+            }
+        };
         let path_id = file_paths::normalize_path(&path);
         let installed_path = installed_path_for_source(&path);
         if !seen.insert(path.clone()) {
