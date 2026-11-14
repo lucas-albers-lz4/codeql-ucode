@@ -1,0 +1,6 @@
+import { popen } from 'other';
+let methods = {
+  getBlockDevices: { call: function() {
+    popen('/sbin/block info 2>/dev/null');
+  } }
+};
