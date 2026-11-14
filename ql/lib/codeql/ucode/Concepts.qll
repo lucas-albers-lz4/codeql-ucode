@@ -9,6 +9,26 @@
 
 private import codeql.ucode.DataFlow
 private import codeql.threatmodels.ThreatModels
+private import codeql.ucode.ast.internal.TreeSitter
+
+/**
+ * A syntactic `ubus.call(...)` call site. This matches the direct member
+ * expression only; it does not resolve the receiver's binding or establish
+ * that a connection exists, that a call succeeds, or that data reaches it.
+ * Aliases, computed properties, and parenthesized/optional callees are outside
+ * this inventory.
+ */
+class UbusCall extends UCODE::CallExpression {
+  UbusCall() {
+    exists(UCODE::MemberExpression member |
+      member = this.getFunction() and
+      member.getObject().(UCODE::Identifier).getValue() = "ubus" and
+      member.getProperty().getValue() = "call" and
+      not exists(member.getOptionalChain()) and
+      not exists(this.getOptionalChain())
+    )
+  }
+}
 
 /**
  * A data flow source, for a specific threat-model.

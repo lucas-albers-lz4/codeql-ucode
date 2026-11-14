@@ -1,0 +1,11 @@
+// Syntactic inventory only; the receiver binding is deliberately unresolved.
+ubus.call('network.device', 'status');
+call('network.device', 'status');
+other.call('network.device', 'status');
+ubus.connect();
+ubus['call']('network.device', 'status');
+(ubus.call)('network.device', 'status');
+other.ubus.call('network.device', 'status');
+ubus.call.extra('network.device', 'status');
+ubus?.call('network.device', 'status');
+ubus.call?.('network.device', 'status');
