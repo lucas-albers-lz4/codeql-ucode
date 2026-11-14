@@ -14,9 +14,7 @@ pub fn run(_: Options) -> std::io::Result<()> {
         .expect("CODEQL_EXTRACTOR_UCODE_WIP_DATABASE not set");
 
     autobuilder::Autobuilder::new("ucode", PathBuf::from(database))
-        .include_extensions(&[
-            "",
-        ])
+        .include_extensions(&["", ".uc", ".ucode", ".ut"])
         .exclude_globs(&["**/.git"])
         .size_limit("10m")
         .run()
