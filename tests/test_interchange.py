@@ -97,7 +97,10 @@ class SnapshotTests(unittest.TestCase):
 
     def test_negative_and_inconclusive_are_explicit_snapshots(self):
         records = {r['record_id']: r for name in TYPED_COUNTS for r in self.documents[name]}
-        self.assertEqual(records['m3:getfeatures-netifd-request-args-no-path']['evidence_status'], 'no_path')
+        no_path = records['m3:getfeatures-netifd-request-args-no-path']
+        self.assertEqual(no_path['evidence_status'], 'no_path')
+        self.assertIn('policy:grant:unauthenticated:ubus_http:luci.getFeatures', no_path['evidence_refs'])
+        self.assertIn('ql/src/m3/GetFeaturesHelperTaint.ql', no_path['evidence_refs'])
         self.assertEqual(records['m4:setInitAction-init_action-unresolved']['evidence_status'], 'inconclusive')
         self.assertTrue(records['m4:setInitAction-init_action-unresolved']['unknowns'])
 
