@@ -143,7 +143,9 @@ fn classify(path: &Path, source: &[u8]) -> Option<Route> {
     None
 }
 
-/// Apply only source layouts named by the frozen profile and PLAN while
+/// Apply only source layouts specified by the sibling OpenWrt pack's
+/// `docs/file-routing.md` and its pinned luci-ssl-25.12 profile
+/// (`corpus/profiles/luci-ssl-25.12/profile.json`, sourced from `luci.mk`),
 /// keeping `path` unchanged for diagnostics and source archives.
 fn installed_path_for_source(path: &Path) -> String {
     let full_path = path.to_string_lossy().replace('\\', "/");
@@ -158,8 +160,9 @@ fn installed_path_for_source(path: &Path) -> String {
         return tail.join("/");
     }
 
-    // PLAN.md §2 and pinned luci.mk: root/ is the package staging root;
-    // package-root ucode/ installs below /usr/share/ucode/luci.
+    // The sibling pack's file-routing contract and pinned luci.mk profile:
+    // root/ is the package staging root; package-root ucode/ installs below
+    // /usr/share/ucode/luci.
     for category in ["applications", "modules", "protocols", "themes"] {
         if let Some(tail) = package_layout_tail(&components, category, "*", "root") {
             return tail.join("/");
