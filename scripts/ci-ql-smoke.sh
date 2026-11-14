@@ -10,6 +10,12 @@ if ! command -v codeql >/dev/null; then
 	exit 1
 fi
 
+# Readiness belongs to this invocation, never a previous run or caller.
+unset CODEQL_UCODE_SMOKE_PACKS_READY
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
+export CODEQL_UCODE_SMOKE_PACKS_READY="$ROOT"
+
 echo "== M3 smoke =="
 bash scripts/m3-smoke.sh
 

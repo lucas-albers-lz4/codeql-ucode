@@ -8,8 +8,8 @@ FIXTURE_DIR="$TMP/src/ql/test/extractor-smoke"
 mkdir -p "$FIXTURE_DIR"
 cp "$ROOT/ql/test/extractor-smoke/ssa_value_flow" "$FIXTURE_DIR/ssa_pos"
 test -f "$FIXTURE_DIR/ssa_pos"
-codeql pack install "$ROOT/ql/lib" >/dev/null
-codeql pack install "$ROOT/ql/src" >/dev/null
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
 codeql database init "$TMP/db" --language=ucode --search-path="$PACK" --source-root="$TMP/src"
 codeql database index-files --language=ucode --include='**/ssa_pos' --working-dir="$TMP/src" "$TMP/db"
 codeql database finalize "$TMP/db"

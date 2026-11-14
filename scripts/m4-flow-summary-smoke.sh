@@ -22,8 +22,8 @@ SMOKE="$ROOT/ql/src/extractor-smoke/FlowSummaryCompile.ql"
 LOCAL="$ROOT/ql/src/m3/LocalTaint.ql"
 REQ="$ROOT/ql/src/m4/RequestArgsExec.ql"
 
-codeql pack install "$ROOT/ql/lib" >/dev/null
-codeql pack install "$ROOT/ql/src" >/dev/null
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
 
 echo "== compile FlowSummary / Concepts import smoke =="
 codeql query compile "$SMOKE" --search-path="$QLPATH"

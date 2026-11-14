@@ -16,8 +16,8 @@ if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	bash scripts/create-extractor-pack.sh
 fi
 
-codeql pack install "$ROOT/ql/lib" >/dev/null
-codeql pack install "$ROOT/ql/src" >/dev/null
+source "$ROOT/scripts/ql-smoke-pack-install.sh"
+install_smoke_packs
 
 rm -rf "$DB"
 mkdir -p .codeql-database
