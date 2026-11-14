@@ -262,7 +262,8 @@ predicate shellInjectionCandidate(RequestArgsAccess src, NamedCall sink) {
 /** `export function init_action` in installed luci.sys (`sys.uc`). */
 UCODE::FunctionDeclaration initActionFn() {
   result = functionDecl("init_action") and
-  result.getLocation().getFile().getBaseName() = "sys.uc"
+  result.getLocation().getFile().getRelativePath() = "usr/share/ucode/luci/sys.uc" and
+  result = any(UCODE::ExportStatement e).getDeclaration()
 }
 
 /** Holds if `n` is inside `init_action` in `sys.uc`. */
