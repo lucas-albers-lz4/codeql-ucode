@@ -44,6 +44,8 @@ predicate importedLocalName(UCODE::ImportStatement imp, string localName) {
     defaultImport = imp.getClause().getDefault() and
     localName = defaultImport.getValue()
   )
+  or
+  localName = imp.getClause().getNamespace().getChild().getValue()
 }
 
 /** Direct identifier callee of a call; member and wrapped callees are not resolved. */
@@ -73,10 +75,125 @@ class NamedFsPopenCall extends NamedCall {
   }
 }
 
-/** Global builtin `system(...)` when no same-file import binds that local name. */
+/** Identifier or rest identifier from a formal parameter list. */
+private predicate systemFormal(UCODE::FormalParameters ps, UCODE::Identifier id) {
+  id = ps.getChild(_)
+  or
+  exists(UCODE::RestElement rest | rest = ps.getChild(_) and id = rest.getChild())
+}
+
+/** A named formal visible in a function body, including nested closures. */
+private predicate systemFormalInBody(UCODE::AstNode occurrence) {
+  exists(UCODE::Identifier id, UCODE::AstNode body |
+    id.getValue() = "system" and
+    (
+      exists(UCODE::FunctionDeclaration f |
+        systemFormal(f.getParameters(), id) and body = f.getBody()
+      )
+      or
+      exists(UCODE::FunctionExpression f |
+        systemFormal(f.getParameters(), id) and body = f.getBody()
+      )
+      or
+      exists(UCODE::ArrowFunction f |
+        (id = f.getParameter() or systemFormal(f.getParameters(), id)) and body = f.getBody()
+      )
+    ) and
+    occurrence.getParent*() = body
+  )
+}
+
+/** The nearest lexical boundary containing a declaration. Switch cases share a body scope. */
+private predicate systemLexicalScope(UCODE::AstNode scope) {
+  scope instanceof UCODE::StatementBlock or
+  scope instanceof UCODE::StatementList or
+  scope instanceof UCODE::SwitchBody or
+  scope instanceof UCODE::ForStatement or
+  scope instanceof UCODE::ForAltStatement or
+  scope instanceof UCODE::ForInStatement or
+  scope instanceof UCODE::ForInAltStatement or
+  scope instanceof UCODE::Program
+}
+
+private UCODE::AstNode systemDeclarationScope(UCODE::AstNode declaration) {
+  result = declaration.getParent+() and
+  systemLexicalScope(result) and
+  not exists(UCODE::AstNode inner |
+    inner = declaration.getParent+() and inner.getParent+() = result and
+    systemLexicalScope(inner)
+  )
+}
+
+/** Source order used for declarations; ucode compiles lexical names in order. */
+private predicate systemDeclaredBefore(UCODE::Identifier name, UCODE::AstNode occurrence) {
+  name.getLocation().getFile() = occurrence.getLocation().getFile() and
+  (
+    name.getLocation().getStartLine() < occurrence.getLocation().getStartLine()
+    or
+    name.getLocation().getStartLine() = occurrence.getLocation().getStartLine() and
+    name.getLocation().getStartColumn() < occurrence.getLocation().getStartColumn()
+  )
+}
+
+/** A named function declaration in an enclosing lexical scope. */
+private predicate systemFunctionInScope(UCODE::AstNode occurrence) {
+  exists(UCODE::FunctionDeclaration f |
+    f.getName().getValue() = "system" and
+    systemDeclaredBefore(f.getName(), occurrence) and
+    occurrence.getParent*() = systemDeclarationScope(f)
+  )
+  or
+  exists(UCODE::FunctionExpression f |
+    f.getName().getValue() = "system" and occurrence.getParent*() = f.getBody()
+  )
+}
+
+/** A lexical declarator in an enclosing block, or its for-loop scope. */
+private predicate systemVariableInScope(UCODE::AstNode occurrence) {
+  exists(UCODE::VariableDeclarator d, UCODE::AstNode scope |
+    d.getName().getValue() = "system" and
+    systemDeclaredBefore(d.getName(), occurrence) and
+    (
+      exists(UCODE::ForStatement f | d.getParent() = f.getInitializer() and scope = f)
+      or
+      exists(UCODE::ForAltStatement f | d.getParent() = f.getInitializer() and scope = f)
+      or
+      not exists(UCODE::ForStatement f | d.getParent() = f.getInitializer()) and
+      not exists(UCODE::ForAltStatement f | d.getParent() = f.getInitializer()) and
+      scope = systemDeclarationScope(d)
+    ) and
+    occurrence.getParent*() = scope
+  )
+  or
+  exists(UCODE::ForInStatement f, UCODE::Identifier id |
+    exists(f.getKind()) and
+    (id = f.getVariable() or id = f.getKey() or id = f.getValue()) and
+    id.getValue() = "system" and occurrence.getParent*() = f
+  )
+  or
+  exists(UCODE::ForInAltStatement f, UCODE::Identifier id |
+    exists(f.getKind()) and
+    (id = f.getVariable() or id = f.getKey() or id = f.getValue()) and
+    id.getValue() = "system" and occurrence.getParent*() = f
+  )
+  or
+  exists(UCODE::CatchClause c |
+    c.getParameter().getValue() = "system" and occurrence.getParent*() = c.getBody()
+  )
+}
+
+/**
+ * Direct `system(...)` treated as the builtin when no supported lexical or
+ * imported binding is visible. This is a syntactic approximation, not proof
+ * of runtime target: globals may be reassigned, and an excluded local or
+ * imported binding may itself refer to the builtin. Exclusion is not safety.
+ */
 class BuiltinSystemCall extends NamedCall {
   BuiltinSystemCall() {
     this.getName() = "system" and
+    not systemFormalInBody(this) and
+    not systemFunctionInScope(this) and
+    not systemVariableInScope(this) and
     not exists(UCODE::ImportStatement imp |
       imp.getLocation().getFile() = this.getLocation().getFile() and
       importedLocalName(imp, "system")

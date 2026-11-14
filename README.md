@@ -77,6 +77,15 @@ identifier and member-property FunctionDeclarations; imported
 `path_found`. `viableLibraryCallable` resolves builtin identifier
 `system` and imported `'fs'` `popen` / `basename` / `access` / `open` /
 `readfile`; `luci.sys` / `fd.read` stay unresolved.
+The shared `system` check uses visible imports, named formals, function names,
+lexical declarations, loop bindings and catch parameters, including enclosing
+scopes. Declarations are considered in source order. It is a syntactic
+approximation, not dynamic call-target resolution: global reassignment and
+local aliases of the builtin are not resolved, unsupported syntax may be
+misclassified, and an excluded call is **not** a safety or no-execution result.
+`scripts/m4-system-lexical-smoke.sh` and `scripts/m4-system-rpc-smoke.sh`
+exercise positive and shadowed calls through Models-backed and experimental
+queries.
 `propagatesFlow` stays `none()`. Identifier `jumpStep` stays unfiltered
 `simpleIdentifierCall`; member `jumpStep` uses the unique declaration.
 

@@ -1,0 +1,15 @@
+#!/usr/bin/ucode
+'use strict';
+const methods = {
+  local: {
+    call: function(system, request) {
+      system(request.args.command);
+    }
+  },
+  builtin: {
+    call: function(request) {
+      system(request.args.command);
+    }
+  }
+};
+return methods;
