@@ -12,9 +12,29 @@ PACK = ROOT / 'extractor-pack'
 DB = ROOT / '.codeql-database/m4-backend-declarations-control'
 SEARCH = f'{PACK}:{ROOT}/ql/lib:{ROOT}/ql/src'
 CASES = {
+    'two-module-const': ('''const methods = { first: { call: function() {} } };
+const methods = { second: { call: function() {} } };
+return { luci: methods };
+''', []),
+    'string-call-key': ('''const methods = { first: { 'call': function() {} } };
+return { luci: methods };
+''', []),
+    'sequence-return': ('''const methods = { first: { call: function() {} } };
+const other = {};
+return { luci: methods }, { luci: other };
+''', []),
+    'parenthesized-return': ('''const methods = { first: { call: function() {} } };
+return ({ luci: methods });
+''', []),
     'parse-error': ('''const methods = { first: { call: function() {} } };
 return { luci: methods };
 const broken = ;
+''', []),
+    'duplicate-valid-method': ('''const methods = {
+  first: { call: function() {} },
+  first: { call: function(request) {} },
+};
+return { luci: methods };
 ''', []),
     'duplicate-method': ('''const methods = {
   first: { call: function() {} },

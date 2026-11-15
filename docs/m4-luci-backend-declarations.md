@@ -68,8 +68,11 @@ the raw CSVs, BQRS, routing receipt and SHA-256 list. The shell log records the
 commands and results. It then runs independently extracted synthetic programs
 serially, including a basename-identical wrong path (with a ucode shebang so it
 is actually routed), positive no-argument/request callbacks and unreturned
-lookalikes, nested and wrong bindings, duplicate method/call/return keys,
-unsupported forms, and alias/mutation controls. Every valid control requires its
+lookalikes, nested and wrong bindings, duplicate method/call/return keys (including
+two valid callbacks under the same method key) and duplicate program-level
+`methods` declarations, a quoted `call` key, sequence
+and parenthesized return expressions, other unsupported forms, and
+alias/mutation controls. Every valid control requires its
 actual file to appear in `SuccessfullyExtractedFiles` and zero extraction
 errors. A malformed source instead requires a reported extraction error and no
 table rows. It tests QL output, not a string-matched or mocked result.
