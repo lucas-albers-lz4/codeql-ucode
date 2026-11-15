@@ -8,14 +8,15 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
 from typing import Any
+from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 CODEQL = shutil.which("codeql")
-assert CODEQL is not None, "codeql CLI must be on PATH"
 PACK = ROOT / "extractor-pack"
 QLPATH = os.pathsep.join((str(PACK), str(ROOT / "ql/lib"), str(ROOT / "ql/src")))
 CORPUS = ROOT / "ql/test/models-fs-popen-controls"
@@ -24,7 +25,9 @@ DB = ROOT / ".codeql-database/m4-models-fs-popen"
 EXPECTED_CALLS = json.loads((CORPUS / "proposed-targets.json").read_text())["targets"]
 RAW_MANIFEST = json.loads((CORPUS / "raw-entity-manifest.json").read_text())
 INPUTS = json.loads((CORPUS / "final-input-manifest.json").read_text())
-BASELINE = json.loads((CORPUS / "pinned-production-baseline.json").read_text())
+BASELINE_BYTES = (CORPUS / "pinned-production-baseline.json").read_bytes()
+BASELINE_DIGEST = "ace8f6ff871c3261992c9088d4065c2fdf9e5e77d391f34447fb5ebb254fa4ac"
+BASELINE = json.loads(BASELINE_BYTES)
 OBSERVATIONS = {
     "observation_formal/usr/share/rpcd/ucode/luci",
     "observation_lexical/usr/share/rpcd/ucode/luci",
@@ -46,7 +49,10 @@ def command(args: list[str | Path], *, cwd: Path = ROOT, expect: int = 0) -> sub
 
 
 def decode(bqrs: Path, fmt: str) -> Any:
-    result = command([CODEQL, "bqrs", "decode", f"--format={fmt}", bqrs])
+    args = [CODEQL, "bqrs", "decode", f"--format={fmt}"]
+    if fmt == "json":
+        args.append("--entities=url,string")
+    result = command([*args, bqrs])
     if fmt == "json":
         return json.loads(result.stdout)
     return list(csv.reader(result.stdout.splitlines()))
@@ -63,18 +69,147 @@ def tuples(result: Any) -> list[list[Any]]:
     return result["#select"]["tuples"]
 
 
-def projected(value: object) -> object:
-    if isinstance(value, dict):
-        if "entity" in value and "label" in value:
-            return {"label": value["label"]}
-        return {key: projected(item) for key, item in value.items()}
-    if isinstance(value, list):
-        return [projected(item) for item in value]
-    return value
+def normalize_rows(rows: list[list[Any]], source: Path) -> list[list[Any]]:
+    """Normalize only decoded entity cells, never ordinary domain strings."""
+    def normalize(cell: Any) -> Any:
+        if not isinstance(cell, dict):
+            return cell
+        require(set(cell) == {"label", "url"} and isinstance(cell["url"], dict), f"invalid entity: {cell}")
+        url = cell["url"]
+        require(set(url) == {"uri", "startLine", "startColumn", "endLine", "endColumn"}, f"invalid entity URL: {url}")
+        parsed = urlsplit(url["uri"])
+        require(parsed.scheme == "file" and not parsed.netloc and not parsed.query and not parsed.fragment, f"invalid entity URI: {url['uri']}")
+        require(not re.search(r"%(?![0-9a-fA-F]{2})", parsed.path), f"invalid URI escape: {url['uri']}")
+        try:
+            decoded_path = unquote(parsed.path, errors="strict")
+            require("\x00" not in decoded_path, f"invalid entity path: {url['uri']}")
+            path = Path(decoded_path)
+            require(path.is_absolute() and ".." not in path.parts, f"invalid entity path: {path}")
+            relative = path.relative_to(source)
+        except (ValueError, UnicodeError) as error:
+            raise SystemExit(f"entity outside staged source root: {url['uri']}: {error}") from error
+        coords = [url[k] for k in ("startLine", "startColumn", "endLine", "endColumn")]
+        require(all(type(n) is int and n > 0 for n in coords) and tuple(coords[:2]) <= tuple(coords[2:]), f"invalid entity span: {url}")
+        return {"label": cell["label"], "entity": [relative.as_posix(), *coords]}
+    return [[normalize(cell) for cell in row] for row in rows]
 
 
-def expected_consumer_projection(rows: list[list[object]]) -> list[list[object]]:
-    return [[projected(cell) for cell in row] for row in rows]
+def row_counter(rows: list[list[Any]]) -> collections.Counter[str]:
+    return collections.Counter(json.dumps(row, sort_keys=True) for row in rows)
+
+
+def named_oracle(rows: list[list[Any]], expected: set[tuple[Any, ...]]) -> None:
+    require(all(len(row) >= 1 and isinstance(row[0], dict) and row[0].get("label") == "CallExpression" and "entity" in row[0] for row in rows), "NamedFsPopen returned a non-call entity")
+    observed = collections.Counter(tuple(row[0]["entity"]) for row in rows)
+    require(observed == collections.Counter(expected), f"NamedFsPopen exact entity mismatch: missing={collections.Counter(expected)-observed} extra={observed-collections.Counter(expected)}")
+
+
+def consumer_oracle(key: str, actual: list[list[Any]], expected: list[list[Any]]) -> None:
+    require(row_counter(actual) == row_counter(expected), f"{key} exact consumer rows changed: missing={row_counter(expected)-row_counter(actual)} extra={row_counter(actual)-row_counter(expected)}")
+
+
+def identity_fault_controls(temp_root: Path, source: Path, out: Path,
+                            expected_targets: set[tuple[Any, ...]], consumers: dict[str, Path]) -> None:
+    """Run Sol's count-preserving faults as actual queries, through the same oracles."""
+    pack = temp_root / "identity-fault-pack"
+    (pack / "ql").mkdir(parents=True)
+    shutil.copyfile(ROOT / ".codeqlmanifest.json", pack / ".codeqlmanifest.json")
+    shutil.copytree(ROOT / "ql/lib", pack / "ql/lib")
+    shutil.copytree(ROOT / "ql/src", pack / "ql/src")
+    search = os.pathsep.join((str(PACK), str(pack / "ql/lib"), str(pack / "ql/src")))
+
+    def replace_once(text: str, old: str, new: str) -> str:
+        require(text.count(old) == 1, f"cannot isolate fault insertion: {old}")
+        return text.replace(old, new, 1)
+
+    def query_rows(text: str, name: str) -> list[list[Any]]:
+        query = pack / "ql/src/extractor-smoke" / f"{name}.ql"
+        query.write_text(text)
+        return normalize_rows(tuples(run_query(query, DB, out, name, search_path=search)), source)
+
+    named_text = (ROOT / "ql/src/m3/NamedFsPopen.ql").read_text()
+    helper = '''
+UCODE::CallExpression reportedCall(NamedFsPopenCall original) {
+  if original.getLocation().getFile().getRelativePath() = "direct.uc" then
+    result.getLocation().getFile().getRelativePath() = "issue_formal.uc" and
+    result.getLocation().getStartLine() = 2 and result.getLocation().getStartColumn() = 32
+  else result = original
+}
+'''
+    named_text = replace_once(named_text, "from NamedFsPopenCall c", helper + "\nfrom NamedFsPopenCall c")
+    named_text = replace_once(named_text, "select c,", "select reportedCall(c),")
+    rows = query_rows(named_text, "fault-named-same-type")
+    actual_ids = collections.Counter(tuple(row[0]["entity"]) for row in rows)
+    require(len(rows) == len(expected_targets) and all(row[0]["label"] == "CallExpression" for row in rows) and
+            actual_ids - collections.Counter(expected_targets) == collections.Counter({("issue_formal.uc", 2, 32, 2, 46): 1}) and
+            collections.Counter(expected_targets) - actual_ids == collections.Counter({("direct.uc", 3, 17, 3, 35): 1}), "named mutation did not exercise Sol's exact same-type substitution")
+    try:
+        named_oracle(rows, expected_targets)
+    except SystemExit:
+        print("PASS same-type wrong-call query rejected by exact NamedFsPopen oracle")
+    else:
+        raise SystemExit("same-type wrong-call query unexpectedly passed")
+
+    source_helper = '''
+UCODE::AstNode reportedSource(RequestArgsAccess original) {
+  if original.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/luci" and
+     original.getLocation().getStartLine() = 108 and original.getLocation().getEndColumn() = 43 then
+    result.(RequestArgsAccess).getLocation().getFile().getRelativePath() = "SOURCE_PATH" and
+    result.getLocation().getStartLine() = SOURCE_LINE and result.getLocation().getStartColumn() = SOURCE_COL and
+    result.getLocation().getEndColumn() = SOURCE_END
+  else result = original
+}
+'''
+    sink_helper = '''
+UCODE::CallExpression reportedSink(RequestArgsAccess src, NamedCall original) {
+  if src.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/luci" and
+     src.getLocation().getStartLine() = 108 and src.getLocation().getEndColumn() = 43 then
+    result.getLocation().getFile().getRelativePath() = "SINK_PATH" and
+    result.getLocation().getStartLine() = SINK_LINE and result.getLocation().getStartColumn() = SINK_COL
+  else result = original
+}
+'''
+    pinned = "usr/share/rpcd/ucode/luci"
+    for key, original in consumers.items():
+        for mode in ("synthetic-pair", "pinned-pair", "pinned-source", "pinned-sink"):
+            synthetic = mode == "synthetic-pair"
+            use_source = mode != "pinned-sink"
+            use_sink = mode != "pinned-source"
+            source_id = ("observation_formal/usr/share/rpcd/ucode/luci", 5, 18, 5, 37) if synthetic else (pinned, 343, 49, 343, 67)
+            sink_id = ("issue_formal.uc", 2, 32, 2, 46) if synthetic else (pinned, 26, 12, 26, 75)
+            text = original.read_text()
+            helpers = ""
+            if use_source:
+                h = source_helper
+                for old, new in (("SOURCE_PATH", source_id[0]), ("SOURCE_LINE", str(source_id[1])), ("SOURCE_COL", str(source_id[2])), ("SOURCE_END", str(source_id[4]))):
+                    h = h.replace(old, new)
+                helpers += h
+                text = replace_once(text, "select src,", "select reportedSource(src),")
+            if use_sink:
+                h = sink_helper
+                for old, new in (("SINK_PATH", sink_id[0]), ("SINK_LINE", str(sink_id[1])), ("SINK_COL", str(sink_id[2]))):
+                    h = h.replace(old, new)
+                helpers += h
+                text, count = re.subn(r"\bsink, sink.getName\(\)", "reportedSink(src, sink), sink.getName()", text)
+                require(count == 1, f"cannot isolate sink selection in {original}")
+            text = replace_once(text, "from RequestArgsAccess src,", helpers + "\nfrom RequestArgsAccess src,")
+            rows = query_rows(text, f"fault-{key}-{mode}")
+            expected = BASELINE[key]
+            missing, extra = row_counter(expected) - row_counter(rows), row_counter(rows) - row_counter(expected)
+            require(len(rows) == len(expected) and sum(missing.values()) == sum(extra.values()) == 1, f"{key} {mode}: fault did not change exactly one row")
+            before, after = json.loads(next(iter(missing))), json.loads(next(iter(extra)))
+            require(tuple(before[0]["entity"]) == (pinned, 108, 22, 108, 43) and
+                    tuple(before[2]["entity"]) == (pinned, 111, 5, 111, 118), f"{key} {mode}: original Sol row not selected")
+            require(all(before[i] == after[i] for i in range(len(before)) if i not in (0, 2)), f"{key} {mode}: scalar changed")
+            for i, changed, target in ((0, use_source, source_id), (2, use_sink, sink_id)):
+                require(before[i]["label"] == after[i]["label"] and
+                        (tuple(after[i]["entity"]) == target if changed else before[i] == after[i]), f"{key} {mode}: wrong fault entity at column {i}")
+            try:
+                consumer_oracle(key, rows, expected)
+            except SystemExit:
+                print(f"PASS {key} {mode}: actual count-preserving query rejected by exact consumer oracle")
+            else:
+                raise SystemExit(f"{key} {mode}: wrong entities unexpectedly accepted")
 
 
 def run_model_database(temp_root: Path) -> None:
@@ -89,7 +224,7 @@ def run_model_database(temp_root: Path) -> None:
 
     indexed = {entry["file"] for entry in INPUTS if entry["role"] == "indexed"}
     support = {entry["file"] for entry in INPUTS if entry["role"] == "runtime-module-support"}
-    require(len(indexed) == 83 and len(support) == 8 and indexed.isdisjoint(support), "unexpected committed fixture manifest shape")
+    require(len(indexed) == 84 and len(support) == 8 and indexed.isdisjoint(support), "unexpected committed fixture manifest shape")
 
     shutil.rmtree(DB, ignore_errors=True)
     DB.parent.mkdir(parents=True, exist_ok=True)
@@ -101,8 +236,8 @@ def run_model_database(temp_root: Path) -> None:
     routing = json.loads(routing_path.read_text())
     decisions = routing["decisions"]
     routed = [Path(item["path"]).relative_to(source).as_posix() for item in decisions]
-    require((routing["input_count"], routing["plain_count"], routing["excluded_count"], routing["duplicate_input_count"]) == (83, 83, 0, 0), f"unexpected routing counters: {routing}")
-    require(len(set(routed)) == 83 and set(routed) == indexed, "routing decisions do not exactly match indexed input manifest")
+    require((routing["input_count"], routing["plain_count"], routing["excluded_count"], routing["duplicate_input_count"]) == (84, 84, 0, 0), f"unexpected routing counters: {routing}")
+    require(len(set(routed)) == 84 and set(routed) == indexed, "routing decisions do not exactly match indexed input manifest")
     require(all(item["classification"] == "plain" and item["status"] == "plain_route_selected" for item in decisions), "unexpected or failed extractor route")
 
     command([CODEQL, "database", "finalize", DB])
@@ -116,7 +251,7 @@ def run_model_database(temp_root: Path) -> None:
     expected_errors = {"malformed.uc"}
     require(set(observed_files) == indexed, f"extracted file set mismatch: missing={sorted(indexed-set(observed_files))} extra={sorted(set(observed_files)-indexed)}")
     require({name for name, status in observed_files.items() if status == "error"} == expected_errors, f"unexpected extracted-file errors: {observed_files}")
-    require(sum(status == "ok" for status in observed_files.values()) == 82, "expected exactly 82 successful extractions")
+    require(sum(status == "ok" for status in observed_files.values()) == 83, "expected exactly 83 successful extractions")
 
     raw_query = ROOT / "ql/src/extractor-smoke/ModelsFsPopenRawCalls.ql"
     raw_bqrs = out / "raw-calls.bqrs"
@@ -131,15 +266,17 @@ def run_model_database(temp_root: Path) -> None:
         raw.append((*identity, callee))
         if classification == "named-fs-popen":
             classified.add(identity)
-    require(len(raw) == 529, f"expected 529 raw call entities, got {len(raw)}")
+    require(len(raw) == 530, f"expected 530 raw call entities, got {len(raw)}")
     require(collections.Counter(raw) == collections.Counter(tuple(row) for row in RAW_MANIFEST), "raw call identities differ from frozen full-span inventory")
     expected_targets = {tuple(row) for row in EXPECTED_CALLS}
     require(classified == expected_targets, f"NamedFsPopenCall exact-target mismatch: missing={sorted(expected_targets-classified)} extra={sorted(classified-expected_targets)}")
+    require(("arrow_unshadowed.uc", 2, 15, 2, 33) in classified, "unshadowed expression-bodied arrow target missing")
+    print("PASS unshadowed expression-bodied arrow: exact target arrow_unshadowed.uc:2:15-2:33")
     require(any(row[0] == "malformed.uc" and row[5] == "popen" for row in raw), "malformed recovered prefix call is absent from actual query output")
     require(not (OBSERVATIONS & {name for name, status in observed_files.items() if status == "error"}), "synthetic observation unexpectedly failed extraction")
 
-    named = tuples(run_query(ROOT / "ql/src/m3/NamedFsPopen.ql", DB, out, "named-fs-popen"))
-    require(len(named) == len(expected_targets) and all(row[0] == {"label": "CallExpression"} for row in named), "actual NamedFsPopen query does not select exactly 21 call entities")
+    named = normalize_rows(tuples(run_query(ROOT / "ql/src/m3/NamedFsPopen.ql", DB, out, "named-fs-popen")), source)
+    named_oracle(named, expected_targets)
 
     consumers = {
         "local-taint": ROOT / "ql/src/m3/LocalTaint.ql",
@@ -147,21 +284,25 @@ def run_model_database(temp_root: Path) -> None:
         "shell-injection": ROOT / "ql/src/m4/ShellInjection.ql",
     }
     for key, query in consumers.items():
-        actual = tuples(run_query(query, DB, out, key))
-        expected = expected_consumer_projection(BASELINE[key])
-        require(collections.Counter(map(json.dumps, actual)) == collections.Counter(map(json.dumps, expected)), f"{key} consumer rows changed or include synthetic observations: got={len(actual)} expected={len(expected)}")
-        require(not any(any(path in json.dumps(row) for path in OBSERVATIONS) for row in actual), f"{key} contains a synthetic observation row")
+        actual = normalize_rows(tuples(run_query(query, DB, out, key)), source)
+        consumer_oracle(key, actual, BASELINE[key])
+        require(not any(cell["entity"][0] in OBSERVATIONS for row in actual for cell in row if isinstance(cell, dict)), f"{key} contains a synthetic observation entity")
         print(f"PASS {key}: {len(actual)} pinned rows; no observation_* rows")
 
     # Fault controls use the same exact target/type oracle against real BQRS.
     def expect_rejected(query: Path, name: str) -> None:
-        candidate = tuples(run_query(query, DB, out, name))
-        if len(candidate) == len(expected_targets) and all(row and row[0] == {"label": "CallExpression"} for row in candidate):
-            raise SystemExit(f"{name} mutation unexpectedly passed candidate identity oracle")
+        candidate = normalize_rows(tuples(run_query(query, DB, out, name)), source)
+        try:
+            named_oracle(candidate, expected_targets)
+        except SystemExit:
+            pass
+        else:
+            raise SystemExit(f"{name} mutation unexpectedly passed exact candidate oracle")
         print(f"PASS {name}: actual query output rejected by exact candidate oracle")
 
     expect_rejected(ROOT / "ql/src/extractor-smoke/ModelsFsPopenNoTargets.ql", "models-no-targets")
     expect_rejected(ROOT / "ql/src/extractor-smoke/ModelsFsPopenWrongEntity.ql", "models-wrong-entity")
+    identity_fault_controls(temp_root, source, out, expected_targets, consumers)
 
     # Revert only the Models constructor to its pre-fix same-file import matcher.
     mutant = temp_root / "legacy-pack"
@@ -277,7 +418,8 @@ def run_effect_database(temp_root: Path) -> None:
     query = ROOT / "ql/src/m4/GetBlockDevicesEffectTable.ql"
     old = query.read_text().replace(
         '  c instanceof NamedFsPopenCall and',
-        '''  exists(UCODE::ImportStatement imp |
+        '''  c.getFunction().(UCODE::Identifier).getValue() = "popen" and
+  exists(UCODE::ImportStatement imp |
     imp.getLocation().getFile() = c.getLocation().getFile() and
     namedImport(imp, "fs", "popen")
   ) and''',
@@ -300,17 +442,18 @@ def run_effect_database(temp_root: Path) -> None:
             ("negative-formal-shadow", 4, 5, 41),
             ("negative-local-shadow", 5, 5, 41),
             ("negative-escaped-module", 4, 5, 41),
-            ("negative-member", 4, 5, 47),
         )
     }
     require(mutant_ids - expected == bad, f"legacy effect predicate produced unexpected mutation rows: {mutant_ids-expected}")
-    print("PASS effect-query rollback: old import-only predicate adds exact formal/local/member/escape rows")
+    print("PASS effect-query rollback: old import-only predicate adds exact formal/local/escape rows")
 
 
 def main() -> None:
 
+    require(CODEQL is not None, "codeql CLI must be on PATH")
+    require(hashlib.sha256(BASELINE_BYTES).hexdigest() == BASELINE_DIGEST, "pinned consumer baseline digest mismatch")
     require((PACK / "tools/linux64/extractor").is_file(), "extractor-pack is missing; run scripts/create-extractor-pack.sh first")
-    temp_parent = Path(os.environ.get("CODEQL_UCODE_SMOKE_TMPDIR", tempfile.gettempdir()))
+    temp_parent = Path(os.environ.get("CODEQL_UCODE_SMOKE_TMPDIR", tempfile.gettempdir())).resolve()
     temp_parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="models-fs-popen-", dir=temp_parent) as temp:
         temp_root = Path(temp)

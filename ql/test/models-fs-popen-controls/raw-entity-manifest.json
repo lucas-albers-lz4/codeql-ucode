@@ -208,6 +208,14 @@
     "local"
   ],
   [
+    "arrow_unshadowed.uc",
+    2,
+    15,
+    2,
+    33,
+    "popen"
+  ],
+  [
     "augmented_import.uc",
     2,
     32,

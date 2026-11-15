@@ -45,6 +45,11 @@
     "role": "indexed"
   },
   {
+    "file": "arrow_unshadowed.uc",
+    "sha256": "9132a30d5895ed1c8556d4aeacead2f9a67ab87ad661140173644857d3490ae0",
+    "role": "indexed"
+  },
+  {
     "file": "augmented_import.uc",
     "sha256": "30b6543de50560e33428276cca138770314d0efb372c3bbef3bc469087518934",
     "role": "indexed"
