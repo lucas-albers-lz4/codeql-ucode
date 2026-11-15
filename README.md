@@ -76,7 +76,11 @@ identifier and member-property FunctionDeclarations; imported
 `luci.sys` callees stay unresolved / inconclusive — not `setInitAction`
 `path_found`. `viableLibraryCallable` resolves builtin identifier
 `system` and imported `'fs'` `popen` / `basename` / `access` / `open` /
-`readfile`; `luci.sys` / `fd.read` stay unresolved.
+`readfile`; a separate, stricter source-declared `readlink` subset is
+covered by [`docs/m4-imported-fs-readlink.md`](docs/m4-imported-fs-readlink.md).
+Its whole-file guard intentionally leaves genuine calls unresolved when any
+competing same-name binding or write occurs, even in an unrelated scope.
+`luci.sys` / `fd.read` stay unresolved.
 The shared `system` check uses visible imports, named formals, function names,
 lexical declarations, loop bindings and catch parameters, including enclosing
 scopes. Declarations are considered in source order. It is a syntactic

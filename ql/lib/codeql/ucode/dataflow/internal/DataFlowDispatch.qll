@@ -3,6 +3,7 @@ private import codeql.Locations
 private import codeql.ucode.CFG
 private import codeql.ucode.ast.internal.AstNodes
 private import codeql.ucode.ast.internal.TreeSitter
+private import codeql.ucode.Diagnostics
 private import DataFlowPrivate
 private import codeql.util.Boolean
 private import codeql.util.Unit
@@ -283,6 +284,70 @@ private class ImportedFsReadfileLibraryCallable extends LibraryCallable {
     not exists(UCODE::FunctionDeclaration f |
       f.getName().getValue() = this and
       f.getLocation().getFile() = result.getIdentifier().getFile()
+    )
+  }
+}
+
+/** A local identifier introduced by any import clause in `imp`. */
+private UCODE::Identifier readlinkImportBinding(UCODE::ImportStatement imp) {
+  exists(UCODE::ImportSpecifier spec |
+    spec = imp.getClause().getNamed().getChild(_) and
+    (result = spec.getAlias() or not exists(spec.getAlias()) and result = spec.getName())
+  )
+  or result = imp.getClause().getDefault()
+  or result = imp.getClause().getNamespace().getChild()
+}
+
+/** Competing binding or write, deliberately checked across the entire file. */
+private predicate readlinkCompetingBindingOrWrite(UCODE::Identifier id) {
+  exists(UCODE::VariableDeclarator d | d.getName() = id)
+  or exists(UCODE::FunctionDeclaration f | f.getName() = id)
+  or exists(UCODE::FunctionExpression f | f.getName() = id)
+  or exists(UCODE::FormalParameters ps | id = ps.getChild(_))
+  or exists(UCODE::RestElement rest, UCODE::FormalParameters ps |
+    rest = ps.getChild(_) and id = rest.getChild()
+  )
+  or exists(UCODE::ArrowFunction f | f.getParameter() = id)
+  or exists(UCODE::CatchClause c | c.getParameter() = id)
+  or exists(UCODE::ForInStatement f | id = f.getVariable() or id = f.getKey() or id = f.getValue())
+  or exists(UCODE::ForInAltStatement f | id = f.getVariable() or id = f.getKey() or id = f.getValue())
+  or exists(UCODE::AssignmentExpression a | a.getLeft() = id)
+  or exists(UCODE::AugmentedAssignmentExpression a | a.getLeft() = id)
+  or exists(UCODE::UpdateExpression u | u.getArgument() = id)
+}
+
+/**
+ * Source-declared, unaliased `fs.readlink`: a conservative whole-file
+ * no-competing-binding subset, not a runtime target or flow summary.
+ * Even unrelated, later or out-of-scope shadows leave calls unresolved.
+ */
+private class ImportedFsReadlinkLibraryCallable extends LibraryCallable {
+  ImportedFsReadlinkLibraryCallable() { this = "readlink" }
+
+  override ucode::Call getACall() {
+    result.getIdentifier().getName() = this and
+    exists(UCODE::CallExpression raw, UCODE::ImportStatement imp, UCODE::ImportSpecifier spec |
+      raw = toTreeSitter(result) and raw.getFunction() instanceof UCODE::Identifier and
+      not exists(raw.getOptionalChain()) and
+      imp.getLocation().getFile() = raw.getLocation().getFile() and
+      imp.getParent() instanceof UCODE::Program and
+      (imp.getLocation().getEndLine() < raw.getLocation().getStartLine() or
+        imp.getLocation().getEndLine() = raw.getLocation().getStartLine() and
+        imp.getLocation().getEndColumn() < raw.getLocation().getStartColumn()) and
+      spec = imp.getClause().getNamed().getChild(_) and
+      spec.getName().(UCODE::Identifier).getValue() = this and
+      not exists(spec.getAlias()) and
+      imp.getSource().getChild(0).(UCODE::StringFragment).getValue() = "fs" and
+      not exists(imp.getSource().getChild(1)) and
+      strictcount(UCODE::ImportStatement other, UCODE::Identifier id |
+        id = readlinkImportBinding(other) and
+        other.getLocation().getFile() = raw.getLocation().getFile() and id.getValue() = this
+      ) = 1 and
+      not exists(UCODE::Identifier id |
+        id.getLocation().getFile() = raw.getLocation().getFile() and
+        id.getValue() = this and readlinkCompetingBindingOrWrite(id)
+      ) and
+      not exists(ExtractionError error | error.getLocation().getFile() = raw.getLocation().getFile())
     )
   }
 }
