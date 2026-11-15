@@ -48,19 +48,34 @@ the targeted source calls have exact inclusive spans:
 | `usr/share/rpcd/ucode/luci` (`getFeatures.call`) | 235:17–42 |
 | `usr/share/ucode/luci/sys.uc` (`init_enabled`) | 142:14–27 |
 
-The focused smoke stages these byte-hash-checked files and 59 independent
+The focused smoke stages these byte-hash-checked files and 66 independent
 controls into an actual extraction database. It checks routing, the successful
 extraction set, the malformed file's diagnostic and recovered call, and exact
-call entity URLs and spans for the three pinned sites and five supported
-controls. The negative controls include aliases, absent/wrong/escaped imports,
-source order, shadows, writes, malformed and compiler-invalid inputs, optional
-and non-identifier callees. Parse success is not treated as compiler success.
+call entity URLs and spans for the three pinned sites, five supported controls,
+and ten explicitly unresolved call sites. The latter include both inside and
+after-loop sites for ordinary/alternative key binders and an alternative
+single-variable binder. Other negative controls include aliases,
+absent/wrong/escaped imports, source order, shadows, writes, malformed and
+compiler-invalid inputs, optional and non-identifier callees. Parse success
+is not treated as compiler success.
 
 The oracle was checked against real counterfactual queries in isolated pack
 copies: replacing the `getFeatures` entity with the actual `readfile` entity
 at 121:18 while keeping its labels and row count was rejected, as was replacing
 the raw-source guard with the fragment-concatenating helper (which introduced
-an `escaped_wrong_module.uc` target). No production readfile matcher, taint
+an `escaped_wrong_module.uc` target). A second independent review found five
+additional surviving mutations in that earlier test set. With separate fixtures,
+real query runs now reject deletion of just the extra-string-child guard,
+the default-import count arm, the namespace-import count arm, both loop-key
+arms, or the alternative loop-variable arm. These mutations add the exact
+counterexample sites to the output; the loop mutations widen both the shadowed
+and after-loop calls. The `'fs\x2fother'` fixture specifically starts with the
+raw `fs` fragment and resolves to a harmless non-fs module in a host runtime
+probe. In that runtime the duplicate default imports were compiler-rejected,
+while the duplicate namespace form reached the call and failed as noncallable;
+the loop probes caught the inner noncallable shadow and then used the native
+import after the loop. These observations do not establish deployed behavior.
+No production readfile matcher, taint
 source/sink, sanitizer, through-flow, runtime target, or security query is
 changed. `propagatesFlow` remains `none()`; this slice does not establish a
 consumer security finding, `path_found`, or deployed runtime behavior.

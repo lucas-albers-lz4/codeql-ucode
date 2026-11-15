@@ -15,17 +15,24 @@
     "decl_after",
     "decl_before",
     "direct",
+    "duplicate_default",
+    "duplicate_default_same_clause",
     "duplicate_import",
+    "duplicate_namespace",
     "duplicate_same_spec",
+    "escape_suffix_wrong_module",
     "escaped_wrong_module",
     "existing_readfile_formal",
     "existing_readfile_local",
     "for_alt",
+    "for_alt_key",
+    "for_alt_variable",
     "for_assignment",
     "for_count",
     "for_in",
     "for_in_alt",
     "for_in_iterable",
+    "for_key",
     "for_unbraced_decl",
     "formal_closure",
     "formal_decl",
@@ -116,6 +123,78 @@
       14,
       142,
       27
+    ]
+  ],
+  "unresolved": [
+    [
+      "duplicate_default.uc",
+      3,
+      7,
+      3,
+      28
+    ],
+    [
+      "duplicate_default_same_clause.uc",
+      2,
+      7,
+      2,
+      28
+    ],
+    [
+      "duplicate_namespace.uc",
+      3,
+      7,
+      3,
+      28
+    ],
+    [
+      "escape_suffix_wrong_module.uc",
+      2,
+      7,
+      2,
+      24
+    ],
+    [
+      "for_alt_key.uc",
+      2,
+      52,
+      2,
+      73
+    ],
+    [
+      "for_alt_key.uc",
+      3,
+      7,
+      3,
+      28
+    ],
+    [
+      "for_alt_variable.uc",
+      2,
+      45,
+      2,
+      66
+    ],
+    [
+      "for_alt_variable.uc",
+      3,
+      7,
+      3,
+      28
+    ],
+    [
+      "for_key.uc",
+      2,
+      53,
+      2,
+      74
+    ],
+    [
+      "for_key.uc",
+      3,
+      7,
+      3,
+      28
     ]
   ]
 }
