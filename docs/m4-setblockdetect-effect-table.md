@@ -20,10 +20,14 @@ shapes are outside this table; absence of a row is not proof that no effect
 exists. This query does not read grants or assert `path_found`, `no_path`, or
 an authorization violation.
 
-A downstream OpenWrt driver must verify the pinned source and supply its own
-corpus revision, profile, entrypoint binding, conditions, uncertainty and policy
-context before mapping an observation into interchange records. That mapping
-and policy assessment are not implemented here. The focused smoke checks the
+The [opt-in typed exporter](interchange.md#opt-in-typed-setblockdetect-source-observation-v1)
+validates the pinned source, supported lock and diagnostic shapes, then maps
+the single supported observation to an unassessed source-only `handler_effect`
+with fixed profile, entrypoint binding, conditions and uncertainty. The lock's
+raw bytes determine the corpus revision. Neither supplied inputs nor that
+mapping authenticate query execution or freshness. A downstream OpenWrt driver
+must establish its own provenance and perform policy assessment; these are not
+implemented by the exporter. The focused smoke checks the
 pinned file hash, extraction errors, table columns, exact values and locations,
 plus synthetic positive and negative controls, including sibling scopes,
 shadowed calls, and a `system` formal parameter whose literal call must stay
@@ -35,9 +39,9 @@ The following local evidence used CodeQL CLI 2.27.4 (CLI SHA
 `7eb0047c90fffaeb822564a0ac56d585dc871f30`), ucode base commit
 `08e2784de4850f55685f05a7e1d47f6c72a838d3`, and **uncommitted** restored
 query SHA-256 `b1c56c68bd96e537e5665d526060f3a09031fdf951d878fba992a5b6db9d338a`.
-There is no new producer commit until this work is committed; the base SHA is
-not a claim that this query exists in that commit. The LuCI fixture is the byte
-copy of revision `b2e0be4b46ec0fd43394c081fa7c50657af14011` with SHA-256
+At the time of that local reproduction there was no new producer commit; the
+base SHA is not a claim that this query existed in that commit. The LuCI fixture
+is the byte copy of revision `b2e0be4b46ec0fd43394c081fa7c50657af14011` with SHA-256
 `6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e`.
 The focused reproduction CSV SHA-256 was
 `add11a618a26fad1c83c3d3ec50b0d2e32bcac4640071b4b217d8bde8bc6f1ff`.

@@ -1,8 +1,9 @@
 """CLI contract controls. Inputs below are synthetic, not CodeQL receipts."""
 import csv
 import hashlib
-import json
 import io
+import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -39,20 +40,86 @@ class ExportTest(unittest.TestCase):
             'lock': (FIXTURES / 'setblock-lock-v1.json').read_bytes(),
         }
 
-    def run_cli(self, omit=None):
+    def run_cli(self, omit=None, env=None):
         for name, data in self.files.items():
             if name != omit:
                 (self.dir / name).write_bytes(data)
         cmd = [sys.executable, '-B', str(CLI), '--csv', str(self.dir / 'csv'),
                '--extracted', str(self.dir / 'extracted'), '--errors', str(self.dir / 'errors'),
                '--source-root', str(self.source), '--lock', str(self.dir / 'lock')]
-        return subprocess.run(cmd, capture_output=True)
+        return subprocess.run(cmd, capture_output=True, env=env)
 
     def test_exact_synthetic_export(self):
         result = self.run_cli()
         self.assertEqual(result.returncode, 0, result.stderr.decode())
         self.assertEqual(result.stdout, (FIXTURES / 'setblock-typed-v1.json').read_bytes())
         self.assertEqual(result.stderr, b'')
+
+    def test_stdout_bytes_ignore_python_io_encoding(self):
+        expected = (FIXTURES / 'setblock-typed-v1.json').read_bytes()
+        for encoding in ('utf-8', 'ascii', 'utf-16', 'utf-32', 'utf-8-sig', 'cp037'):
+            with self.subTest(encoding=encoding):
+                result = self.run_cli(env={**os.environ, 'PYTHONIOENCODING': encoding})
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stderr, b'')
+                self.assertEqual(result.stdout, expected)
+
+    def test_failures_have_no_stdout_under_python_io_encodings(self):
+        self.files['csv'] = b'"unterminated'
+        for encoding in ('utf-8', 'ascii', 'utf-16', 'utf-32', 'utf-8-sig', 'cp037'):
+            with self.subTest(encoding=encoding):
+                result = self.run_cli(env={**os.environ, 'PYTHONIOENCODING': encoding})
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(result.stdout, b'')
+                self.assertTrue(result.stderr)
+
+    def assert_unterminated_equivalent_rejected(self, name, data, expected_rows):
+        # The lenient parser yields the exact valid rows; only strict syntax rejects them.
+        rows = list(
+            csv.reader(io.StringIO(data.decode('utf-8'), newline=''), strict=False)
+        )
+        self.assertEqual(rows, expected_rows)
+        self.files[name] = data
+        result = self.run_cli()
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, b'')
+        self.assertTrue(result.stderr)
+
+    def test_unterminated_equivalent_table_is_rejected(self):
+        data = encode_csv([HEADER, ROW]).rstrip(b'\n')
+        self.assertTrue(data.endswith(b',68'))
+        self.assert_unterminated_equivalent_rejected(
+            'csv', data[:-2] + b'"68', [HEADER, ROW]
+        )
+
+    def test_unterminated_equivalent_extracted_diagnostic_is_rejected(self):
+        path = str(SOURCE / ROW[4])
+        data = encode_csv([['f', 'col1'], [path, '']]).rstrip(b'\n') + b'"'
+        self.assert_unterminated_equivalent_rejected(
+            'extracted', data, [['f', 'col1'], [path, '']]
+        )
+
+    def test_unterminated_equivalent_errors_diagnostic_is_rejected(self):
+        data = b'error,col1,"col2'
+        self.assert_unterminated_equivalent_rejected(
+            'errors', data, [['error', 'col1', 'col2']]
+        )
+
+    def test_other_lock_content_does_not_change_profile(self):
+        baseline = self.run_cli()
+        self.assertEqual(baseline.returncode, 0, baseline.stderr)
+        lock = json.loads(self.files['lock'])
+        lock['profile'] = 'foreign-profile'
+        lock['extra'] = {'note': 'unrelated lock content'}
+        self.files['lock'] = json.dumps(lock).encode('utf-8')
+        result = self.run_cli()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        expected = json.loads(baseline.stdout)
+        expected[0]['corpus_revision'] = (
+            'sha256:' + hashlib.sha256(self.files['lock']).hexdigest()
+        )
+        self.assertEqual(json.loads(result.stdout), expected)
+        self.assertEqual(expected[0]['profile'], 'luci-ssl-25.12')
 
     def test_table_rejections(self):
         cases = [encode_csv([HEADER]), encode_csv([HEADER, ROW, ROW]),

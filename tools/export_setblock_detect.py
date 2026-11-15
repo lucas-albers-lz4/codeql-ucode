@@ -6,6 +6,7 @@ import hashlib
 import io
 import json
 from pathlib import Path
+import sys
 
 
 def read_csv(path):
@@ -76,7 +77,8 @@ def main():
                      'Callback registration, actual execution and live uhttpd/rpcd are not established by the table',
                      'Lexical shadowing and unmodeled call shapes are not resolved by the table'],
     }
-    print(json.dumps([record], indent=2, ensure_ascii=True, sort_keys=True))
+    output = json.dumps([record], indent=2, ensure_ascii=True, sort_keys=True) + '\n'
+    sys.stdout.buffer.write(output.encode('utf-8'))
 
 
 if __name__ == '__main__':
