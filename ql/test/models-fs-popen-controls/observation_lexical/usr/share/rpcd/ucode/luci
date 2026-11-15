@@ -1,0 +1,9 @@
+#!/usr/bin/ucode
+import { popen } from 'fs';
+let methods = {
+  probe: { call: function(request) {
+    let popen = function(x) { return 'shadow'; };
+    return popen(request.args.command);
+  } }
+};
+print(methods.probe.call({ args: { command: 'unused' } }), '\n');

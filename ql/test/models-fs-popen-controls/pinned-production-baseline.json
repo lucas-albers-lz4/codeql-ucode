@@ -1,0 +1,701 @@
+{
+  "local-taint": [
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          108,
+          22,
+          108,
+          43
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          111,
+          5,
+          111,
+          118
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          108,
+          22,
+          108,
+          33
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          111,
+          5,
+          111,
+          118
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          49,
+          343,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          16,
+          343,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          49,
+          343,
+          60
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          16,
+          343,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          49,
+          400,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          16,
+          400,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          49,
+          400,
+          60
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          16,
+          400,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          470,
+          25,
+          470,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          470,
+          25,
+          470,
+          36
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          471,
+          25,
+          471,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          471,
+          25,
+          471,
+          36
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          575,
+          30,
+          575,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          575,
+          30,
+          575,
+          41
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          577,
+          30,
+          577,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          577,
+          30,
+          577,
+          41
+        ],
+        "label": "MemberExpression"
+      },
+      "request.args reaches popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ]
+  ],
+  "request-args": [
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          108,
+          22,
+          108,
+          43
+        ],
+        "label": "MemberExpression"
+      },
+      "setLocaltime request.args reaches system",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          111,
+          5,
+          111,
+          118
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          49,
+          343,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "getSwconfigFeatures request.args reaches popen via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          16,
+          343,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          49,
+          400,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "getSwconfigPortState request.args reaches popen via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          16,
+          400,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          470,
+          25,
+          470,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "setPassword request.args reaches system via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          471,
+          25,
+          471,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "setPassword request.args reaches system via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          575,
+          30,
+          575,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "getRealtimeStats request.args reaches popen via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          577,
+          30,
+          577,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "getRealtimeStats request.args reaches popen via shellquote",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen"
+    ]
+  ],
+  "shell-injection": [
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          108,
+          22,
+          108,
+          43
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          111,
+          5,
+          111,
+          118
+        ],
+        "label": "CallExpression"
+      },
+      "system",
+      "setLocaltime",
+      "111",
+      "108"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          49,
+          343,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          343,
+          16,
+          343,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen",
+      "getSwconfigFeatures",
+      "343",
+      "343"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          49,
+          400,
+          67
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          400,
+          16,
+          400,
+          88
+        ],
+        "label": "CallExpression"
+      },
+      "popen",
+      "getSwconfigPortState",
+      "400",
+      "400"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          470,
+          25,
+          470,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system",
+      "setPassword",
+      "474",
+      "470"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          471,
+          25,
+          471,
+          45
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via system in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          474,
+          13,
+          474,
+          96
+        ],
+        "label": "CallExpression"
+      },
+      "system",
+      "setPassword",
+      "474",
+      "471"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          575,
+          30,
+          575,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen",
+      "getRealtimeStats",
+      "585",
+      "575"
+    ],
+    [
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          577,
+          30,
+          577,
+          48
+        ],
+        "label": "MemberExpression"
+      },
+      "shell-injection candidate via popen in luci",
+      {
+        "entity": [
+          "usr/share/rpcd/ucode/luci",
+          585,
+          15,
+          585,
+          45
+        ],
+        "label": "CallExpression"
+      },
+      "popen",
+      "getRealtimeStats",
+      "585",
+      "577"
+    ]
+  ]
+}

@@ -6,6 +6,7 @@
 
 import codeql.files.FileSystem
 import codeql.ucode.ast.internal.TreeSitter
+import codeql.ucode.internal.SourceDeclaredFs
 
 /** Gets the text of a string literal (joined fragments). */
 string stringLiteralValue(UCODE::String s) {
@@ -68,10 +69,7 @@ class NamedCall extends UCODE::CallExpression {
 class NamedFsPopenCall extends NamedCall {
   NamedFsPopenCall() {
     this.getName() = "popen" and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = this.getLocation().getFile() and
-      namedImport(imp, "fs", "popen")
-    )
+    sourceDeclaredFsCall(this, "popen")
   }
 }
 

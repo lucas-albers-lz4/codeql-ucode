@@ -20,9 +20,13 @@ enter `popen`. `getARuntimeTarget` stays `none()`.
   Only nonoptional identifier calls qualify. The whole-file guard intentionally
   contracts recall: sibling or expired shadows and later declarations can leave
   genuine calls unresolved. A missing result means unknown, not safe.
-  This identifies source declarations, not runtime targets, taint, or security.
-  Production Models uses a separate matcher, tracked in
-  [#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87).
+  Production Models now uses this same source-declared guard for
+  `NamedFsPopenCall`; the bounded `GetBlockDevicesEffectTable` consumer uses
+  that class instead of repeating the former import-only check. The contract
+  deliberately contracts Models recall as well: calls in files with local,
+  formal, later, escaped-module, aliased, optional, or malformed competitors
+  may remain unresolved, including some genuine calls. This is an attribution
+  subset, not a claim that excluded calls are safe.
 - `viableLibraryCallable` maps those calls to `TLibraryCallable("popen")`.
   The historical smoke baseline reports `library popen` on `luci` and
   `sys.uc`. `ssa_pos` has no `popen` in that baseline.

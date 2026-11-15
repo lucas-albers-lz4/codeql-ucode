@@ -1,0 +1,1 @@
+export function popen(x) { return 'wrong-module'; }

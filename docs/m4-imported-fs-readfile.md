@@ -22,8 +22,9 @@ same way. It is not a global builtin. It does not score
   contracts recall: sibling or expired shadows and later declarations can leave
   genuine calls unresolved. A missing result means unknown, not safe.
   This identifies source declarations, not runtime targets, taint, or security.
-  Production Models uses a separate matcher, tracked in
-  [#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87).
+  Models `NamedFsPopenCall` now delegates to this guard for `fs.popen` (#87).
+  The other Models observations still use their separate generic import
+  matcher; this callable-family fix does not make them binding-aware.
 - `viableLibraryCallable` maps those calls to
   `TLibraryCallable("readfile")`. The historical smoke baseline reports
   `library readfile` on `luci` and `sys.uc`. `ssa_pos` has no `readfile`

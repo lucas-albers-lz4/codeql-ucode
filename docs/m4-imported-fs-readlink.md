@@ -77,8 +77,9 @@ probe. In that runtime the duplicate default imports were compiler-rejected,
 while the duplicate namespace form reached the call and failed as noncallable;
 the loop probes caught the inner noncallable shadow and then used the native
 import after the loop. These observations do not establish deployed behavior.
-The separate production Models import matcher remains unchanged and is tracked
-in [#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87). No taint
+Models `NamedFsPopenCall` now delegates to the shared guard for the bounded
+`fs.popen` observation (#87); this does not change the other Models import
+observations, which still use their separate generic matcher. No taint
 source/sink, sanitizer, through-flow, runtime target, or security query is
 changed. `propagatesFlow` remains `none()`; this slice does not establish a
 consumer security finding, `path_found`, or deployed runtime behavior.
