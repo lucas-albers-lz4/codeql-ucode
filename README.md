@@ -83,8 +83,10 @@ Its whole-file guard intentionally leaves genuine calls unresolved when any
 competing same-name binding or write occurs, even in an unrelated scope,
 after a shadow's scope, or later in the file. Optional calls are unresolved.
 Missing results mean unknown, not safe, unreachable, or not an fs call.
-The separate production Models behavior is tracked in
-[#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87).
+Models `NamedFsPopenCall` now uses the shared source-declared guard for the
+bounded `fs.popen` family (#87); other Models import observations still use
+their separate generic matcher. See `docs/m4-imported-fs-popen.md` and
+`scripts/m4-models-fs-popen-smoke.sh` for the contract and regression gate.
 `luci.sys` / `fd.read` stay unresolved.
 The shared `system` check uses visible imports, named formals, function names,
 lexical declarations, loop bindings and catch parameters, including enclosing

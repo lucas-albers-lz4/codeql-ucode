@@ -1,5 +1,5 @@
 {
-  "contract_status": "Recommendation after #85; not an implemented fix or approval of Models recall contraction.",
+  "contract_status": "Implemented in 223397b; exercised by scripts/m4-models-fs-popen-smoke.sh. The conservative Models recall boundary is documented in docs/m4-imported-fs-popen.md.",
   "targets": [
     [
       "alias_out_same_clause.uc",

@@ -1,0 +1,6 @@
+import { popen } from 'f\x2fs';
+let methods = {
+  getBlockDevices: { call: function() {
+    popen('/sbin/block info 2>/dev/null');
+  } }
+};
