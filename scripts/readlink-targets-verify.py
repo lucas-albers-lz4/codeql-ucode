@@ -12,21 +12,21 @@ controls = {name + '.uc' for name in wanted['controls']}
 pinned = {'usr/share/rpcd/ucode/luci', 'usr/share/ucode/luci/sys.uc'}
 paths = controls | pinned
 route = json.loads((results / 'routing.json').read_text())
-assert route['input_count'] == route['plain_count'] == len(paths) == 68, route
+assert route['input_count'] == route['plain_count'] == len(paths) == 76, route
 assert route['duplicate_input_count'] == route['excluded_count'] == 0, route
 assert {d['path'] for d in route['decisions']} == {str(src / p) for p in paths}
 assert all(d['classification'] == 'plain' for d in route['decisions'])
 with (results / 'extracted.csv').open(newline='') as f:
     extracted = list(csv.DictReader(f))
-assert len(extracted) == 67 and {r['f'] for r in extracted} == {str(src / p) for p in paths - {'malformed.uc'}}, extracted
+assert len(extracted) == 75 and {r['f'] for r in extracted} == {str(src / p) for p in paths - {'malformed.uc'}}, extracted
 errors = json.loads((results / 'errors.json').read_text())['#select']['tuples']
 assert len(errors) == 1 and unquote(urlparse(errors[0][0]['url']['uri']).path) == str(src / 'malformed.uc'), errors
 rows = json.loads((results / 'targets.json').read_text())['#select']['tuples']
 assert controls <= {r[1] for r in rows}, 'missing control call ASTs'
 assert any(r[1] == 'malformed.uc' and r[5] == 'readlink' for r in rows), 'missing parse-recovered call'
-# Each new negative is an actual, exact direct call, not just an empty file or
-# a different call in the same fixture. Both inside/after-loop sites matter.
-assert len(wanted['unresolved']) == 10 and len({tuple(x) for x in wanted['unresolved']}) == 10
+# Require exact call entities for import-eligibility negatives and the older
+# negative controls; otherwise an absent call could masquerade as rejection.
+assert len(wanted['unresolved']) == 14 and len({tuple(x) for x in wanted['unresolved']}) == 14
 for path, line, col, end_line, end_col in wanted['unresolved']:
     matches = [r for r in rows if r[1] == path and r[2] == line and r[3] == col]
     assert len(matches) == 1, ('missing unresolved call', path, line, col, matches)
