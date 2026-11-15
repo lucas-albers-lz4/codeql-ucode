@@ -48,11 +48,11 @@ the targeted source calls have exact inclusive spans:
 | `usr/share/rpcd/ucode/luci` (`getFeatures.call`) | 235:17–42 |
 | `usr/share/ucode/luci/sys.uc` (`init_enabled`) | 142:14–27 |
 
-The focused smoke stages these byte-hash-checked files and 66 independent
+The focused smoke stages these byte-hash-checked files and 74 independent
 controls into an actual extraction database. It checks routing, the successful
 extraction set, the malformed file's diagnostic and recovered call, and exact
-call entity URLs and spans for the three pinned sites, five supported controls,
-and ten explicitly unresolved call sites. The latter include both inside and
+call entity URLs and spans for the three pinned sites, nine supported controls,
+and 14 explicitly unresolved call sites. The latter include both inside and
 after-loop sites for ordinary/alternative key binders and an alternative
 single-variable binder. Other negative controls include aliases,
 absent/wrong/escaped imports, source order, shadows, writes, malformed and
