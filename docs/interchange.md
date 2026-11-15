@@ -96,3 +96,61 @@ Run the offline check with:
 ```sh
 python3 -m unittest discover -s tests -v
 ```
+
+## Opt-in typed setBlockDetect source observation (v1)
+
+The exporter is a non-writing, deliberately single-family interface; it does
+not change the CSV query, historical snapshots or their validators. For a
+source root containing only the pinned installed LuCI file, after running and
+decoding the existing table and both diagnostic queries to CSV, invoke:
+
+```sh
+python3 -B tools/export_setblock_detect.py \
+  --csv observation.csv --extracted extracted.csv --errors errors.csv \
+  --source-root /absolute/source/root --lock /path/to/corpus/lock.json > typed.json
+```
+
+All five inputs are required. Inputs must be UTF-8; CSV uses standard quoting
+and parsed rows, not a prescribed byte spelling. The table header and sole row
+are exactly, in order:
+
+```text
+observation_kind,method,sink_kind,command,source_path,start_line,start_column,end_line,end_column
+callback_body_call,setBlockDetect,system,/sbin/block detect > /etc/config/fstab,usr/share/rpcd/ucode/luci,532,21,532,68
+```
+
+The successfully-extracted diagnostic is exactly two rows: header `f,col1`,
+then the absolute canonical resolved source-root joined with
+`usr/share/rpcd/ucode/luci`, and an empty second column. The errors diagnostic
+is exactly one header row `error,col1,col2` and no data rows. These shapes
+match CodeQL 2.27.4 CSV decode, not arbitrary SARIF or a path substring search.
+Additional successfully extracted files also fail this deliberately narrow
+contract. Supply a source root corresponding to the paths in the diagnostic.
+The source bytes must hash to
+`6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e`;
+the lock must be strict JSON without duplicate keys or non-JSON constants and
+`repos.luci.sha` must equal `b2e0be4b46ec0fd43394c081fa7c50657af14011`.
+Other lock content is not independently validated. `corpus_revision` is
+`sha256:` plus the SHA-256 of the **raw supplied lock bytes**, including
+whitespace. Invalid, missing, extra, duplicate or unsupported inputs cause a
+nonzero exit, a diagnostic on stderr and no JSON on stdout; they do not produce
+an empty or safe result.
+
+On success stdout is exactly one UTF-8 JSON array containing one record,
+serialized with sorted keys, two-space indentation, ASCII escaping and a final
+newline. `tests/fixtures/setblock-typed-v1.json` is the complete versioned
+consumer-shareable field, type, string and list-order contract, with corpus
+revision for the byte-identical `tests/fixtures/setblock-lock-v1.json`. Other
+valid lock bytes change only `corpus_revision`. The record is a `handler_effect`
+`fact`, producer `step3`, `analysis_revision` `step3:setblock-typed-v1`,
+`assessment` `unassessed`. It uses the existing aggregate identity, source
+location, three conditions, source/query references and conservative unknowns.
+It has no session, expectation or grant reference: the consumer must validate
+an independent family oracle and perform its own policy assessment. A query
+reference identifies a query, not a claim that it was executed; source and
+lock hashes or supplied diagnostics cannot authenticate execution or freshness.
+The test fixtures exercise synthetic input, not an observed query run. Callback
+registration, runtime execution, policy authorization, taint and broad coverage
+are not established. There is no new typed coverage record; coverage remains
+partial. The paired typed consumer and an observed fresh end-to-end run remain
+separate work.
