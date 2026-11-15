@@ -1,17 +1,17 @@
 {
-  "provenance": "Frozen merged-base entity inventories and manually specified #85 issue examples; readfile guard controls are same-length rewrites of independently extracted PR86 readlink controls.",
+  "provenance": "Frozen merged-base entity inventories with refreshed modified-fixture spans from the real extraction and query, and manually specified #85 issue examples; readfile guard controls are same-length rewrites of independently extracted PR86 readlink controls.",
   "hashes": {
-    "access__after_scope.uc": "f3993c8b5e65352ba147161633267e19623aff1d3c3d1bd49be381f65960ef6a",
-    "access__direct.uc": "7826e3ba68b4a2733f6c2c5855aa0f695d70c5d5d20db0af391e6f762b66c13c",
-    "access__escaped_equivalent.uc": "dc2d4fc816176e2ed18135bd77353c48345b0c37f6710d9722aa18696a5597b6",
-    "access__escaped_wrong.uc": "dec419cd58d8835cfdb35e7e6208876ab78fe5ff04ef035bed3dac546dadaf4b",
-    "access__formal.uc": "fc0a27e327e982399d931a819bc3b4bf41ccc54c35ba59b4fd3b9e5c7c902c51",
-    "access__later_decl.uc": "537006599541bab421fc26da5eb02d21367d55f681723a880ee07d54dc053453",
-    "access__local.uc": "f5ca2da95395b64e4933c7c0635913de800acdaf5c1ada9955a7e2377608388a",
-    "access__nested.uc": "cf1fd03bd73c39cc5be43cffa02719544e6f9569f98630ca0e4f44bf7e49dc23",
-    "access__sibling.uc": "045f207fae158f6a2aa8dd12a468216d97495677126e73afd4407c7147309498",
-    "alias_out_other_clause.uc": "d9e9e6d3d816d6cc7593ad2a3e5138e3c71a7d2e78674c1b58685c1a5b278a38",
-    "alias_out_same_clause.uc": "c281744db55743c5dc4b625e2b6931e1fcdfdc4abc4f8ac634842d697cdc7b25",
+    "access__after_scope.uc": "6342dbc31055e36a18bebf6efc96ba0230f5eb57a30dfecc395c505bc4608d18",
+    "access__direct.uc": "710af9210a507d26fadabc75fc50497701b97ebf1048f576e486605439c27929",
+    "access__escaped_equivalent.uc": "5e68359de48015e596ea4f4ffe136bb1d6eeee0aa886ada2e6ff6450099d41f3",
+    "access__escaped_wrong.uc": "9ba099f65d677aa7cb2bbb036c4a298e41d12837aebe69985bbe4bc6825f226e",
+    "access__formal.uc": "44eb84d3d576ccf5776d5ab6973aa71f99e691cd99355f11764dd35ad77be175",
+    "access__later_decl.uc": "7f5ffe668671e08fb0fcbcf7b181f88e4ae0a54e67df2228c5fd1739aee264c7",
+    "access__local.uc": "dd097a4d7f101b80629da08844a1b911bb93a38dda9aca4137eae8cac97b0246",
+    "access__nested.uc": "747621d15cde2706c577d2291682d1b96453b4e9cbc92898c7b070f9f3f1849c",
+    "access__sibling.uc": "0e9e027342c267f7fe6e79442d5b31b384bb9b284956f21e4e17f18fdcda70d0",
+    "alias_out_other_clause.uc": "d792be114b68d3a5f84917b170b5824a3332be719841f396eb37504168052a14",
+    "alias_out_same_clause.uc": "d7f7478f9c9f55bc35dc8531faef6124fb86d3ffdb780b0e2430cf47e44b7284",
     "basename__after_scope.uc": "e24cfe2f0912fb43d678f542a4bd71144937c7e91312361964a6134bee106bcc",
     "basename__direct.uc": "db7f382d3949d80054611a3cb53e442b4b4659f72cae6afe504602ac79c22318",
     "basename__escaped_equivalent.uc": "62b873ed2e19854a2070f99a3af4add9d57df6cb6b7f8ac16e4234970da8d9d9",
@@ -21,21 +21,21 @@
     "basename__local.uc": "9f8d75f1a68768597bae453ecd645558339fb3dca07d1f46a2add688b710c2e8",
     "basename__nested.uc": "b64370af8a0278b4d73f5b040b0f2f44a620e8ddd765eed7107aa1e6c18a4443",
     "basename__sibling.uc": "8584865a246b80629df155ddf1d9fea800f97e0e49de039e63abeef6094f35a0",
-    "default_other_named_same.uc": "838165008045fc9f463e29da12f47dded5d442a63c19fa1536f00ec8436a6292",
-    "default_other_named_separate.uc": "6304c1b7a7754094620666f0205c5738794a9790272c858fb9f584c3375578ab",
-    "double_quoted.uc": "c056cd522a298c71fdbecbf7ccd0083d23cb72682011e34f75a0396caf6a3513",
+    "default_other_named_same.uc": "bc1cf5ee84a52d205775097afb4578ade8b4126e40fc85861f49300c9358c9e4",
+    "default_other_named_separate.uc": "e5fe6d5773f98b698dd232f29438a8e10dbdd8a0723bb0a8cfb82321658d2760",
+    "double_quoted.uc": "db9d25aaf761ee25b84d1777b8bd7c8300b2c31b35f52e1d50b8734003ee3bfb",
     "issue85_formal.uc": "75b5d8cd211a8ac04ef86ca1dbd5655aa8b8cfa6a746da53fcfac082f419011e",
     "issue85_local.uc": "ffde4653222ba5ff3b3a7bff37c037c8332cc915e9308a4c78c8896781cf1670",
-    "namespace_other_named.uc": "3f606650a631bef9ecc55e57f978726db1bba664ddf35a75e1ff37aefb969700",
-    "open__after_scope.uc": "0ce8cc337ee5cbeeac696ec8eded3967e16ca20e0d5ca08823552c3ababae5ce",
-    "open__direct.uc": "cccf8aae4aa131567d30d44812e5a5c2f5cbfd9383bd5326458d7adc21374385",
-    "open__escaped_equivalent.uc": "a2219e94b16e17c0ef5496b822bb54ffe2fa699520b5eda292714b1a41738da9",
-    "open__escaped_wrong.uc": "f6b2d237830e0f9f5f506a86032371ec080ad1e5dbc7738b32e3b88128a590ad",
-    "open__formal.uc": "853e39ae836f480b6c86016c497175c921d9d0aa588ef2d536f8b52ddac51b47",
-    "open__later_decl.uc": "0a6be663ed4397c9f31a045f82e676300d23e0b43fe9adf9e1b3beb10b3be254",
-    "open__local.uc": "b5e4ae77954bbd52b7b49bf5654a7a4c12e499dd0a6b8823a3d26aa4f01c5029",
-    "open__nested.uc": "6538cdc8a81d58f2b196a12146565abd773f3fc2d7e5614f7747ef7c6b629137",
-    "open__sibling.uc": "089f04190984e15f09977624e504cc731a041ca6af2684e94fa00dc8e8cfb545",
+    "namespace_other_named.uc": "32b46621e4962cabaed7cbf91837745eb489999ef537b4a05984480c72a3f155",
+    "open__after_scope.uc": "49d98e0d9f9bd1ebb1db71c8e4a18e1dfa8c5f50e09194676fabc1125c0bdec3",
+    "open__direct.uc": "18d3b93675dbcb9a6cf3743f8ce2fd53ce7de3096ad02d6213f036b7f3da6928",
+    "open__escaped_equivalent.uc": "0c6aa1fa6a50cd5569aaa772a53bb0beda197ecf7f16cd4394eee6683f1e4d47",
+    "open__escaped_wrong.uc": "fbfa6ab66647fc7aa0005f6854583e33d462869a92a45a4182bcb0af32f0c60f",
+    "open__formal.uc": "39c2193d266ab5c6a8f0d01d24f86ad1d63cf569e48d1a5f642c7f6a803a6f94",
+    "open__later_decl.uc": "e8edfef85f5f5593dbf3a7ad0d36c30ecfc0386a245ed75a38feff8af5d9d6eb",
+    "open__local.uc": "644d0def7490d340767ba35b8cd6bb33df14ac3000813d9828d5dbd580e8ac83",
+    "open__nested.uc": "b2008f1a19fb4f9a6b349b58bde9a6b2c904a674fc2828e8ff707759fd708caa",
+    "open__sibling.uc": "982c0dae1f45142a42c16cd41c92e02e0a0073f0bf281296edaec1ca434f4733",
     "popen__after_scope.uc": "9279577d03734dfae3c769b16c10a944aba7e583544d236df374542fcf3c3c26",
     "popen__direct.uc": "26036ceb14ed9bd1d5b3a2d6e7c421ee02f822277b2dd2ff9dbf8086acbda80c",
     "popen__escaped_equivalent.uc": "33e1345cda492fbd87c90411e2d2793112b9390d22c7e36516b5779621ffca0c",
@@ -45,50 +45,50 @@
     "popen__local.uc": "13ed2b25aa83084b9a4dec2639ca517c9cde1104b3990187b877c88208d6c96a",
     "popen__nested.uc": "9cecba59266063aa96c2e9f57dd2981f0b9df86e9306b9342270ebe370247e8b",
     "popen__sibling.uc": "6e424098a1ec9900a1182c0abb190ddc9df2198d28d86cd817563b446ac44b04",
-    "readfile__absent.uc": "c1e7c8e0b98e492b5ed772155498c1bcc3aca8821a4ceef674b35c4476e748a5",
-    "readfile__after_scope.uc": "19b4b1bb5b05c50c2681e383e37a051624f31118fc66c3247f7d1bdb4cbc543f",
-    "readfile__alias_into.uc": "ad0c6a0f800a87194d8b9e1fa28db5a7d44907dfaee3d246f43ae3de0546284f",
-    "readfile__alias_out.uc": "0b673b1be5c3d4508e575eb92924bcae915e49f887e5951c6d6d207386e5003c",
-    "readfile__alias_same.uc": "4a5355bae81575699c1f51bfc6b9b2a73eff3a1627a8233d77174ccbde0d38d7",
-    "readfile__arrow.uc": "aed0cdf6f269df735f869d09a3713539934eb0166cec2be2d72922ca6a4ae5fd",
-    "readfile__before_import.uc": "0442e3e5bc3196fe4b84d4c8c3a654c410e24317b7774e86d429394b51face4e",
-    "readfile__catch.uc": "8a235a9618810bf3bace969e78f738819491d4841e48e58f57575fd162a340b4",
-    "readfile__closure_before_import.uc": "c18f4fcf034643617e7db242cf879c61d6bbd9655ba052d486a0116e78f93c1f",
+    "readfile__absent.uc": "4a22dd471639c83fae87aad9581e5b8c9c25ba2a03a2cb7b5a0c90d05c8fc20f",
+    "readfile__after_scope.uc": "d3342f0d1aeb15b6ae7696bbe846a3a2f95b879ed5476c69c92ce2ec5d281232",
+    "readfile__alias_into.uc": "682096d914829ca92d353821797412c21541f5b00f48ac7d01ea14f30fbc38e1",
+    "readfile__alias_out.uc": "f58f4cb7491d95b8a0928fd02fe9f9fce2f9c055e1922558070d6fdf8da52d76",
+    "readfile__alias_same.uc": "f0d27d10917fc4bb37f32d8302037be088d3885cd1fc78777edbca0a6c813287",
+    "readfile__arrow.uc": "b5a36f58d9dbc6bc212782f35e983229562c2be4fb0b08c176e8a37fbfe941bd",
+    "readfile__before_import.uc": "65c974e3a0c69e04a8e8135e03a372680939ab76c4c3216bdbee47c68f1e8afa",
+    "readfile__catch.uc": "ba98e4cbe3b4e9de80824f97886f38083b38f9b9ff2719effc31f6aa8562162d",
+    "readfile__closure_before_import.uc": "b25092c4cb0f649030054067b83e2ea1a527381bb84a36412af075914fb0123a",
     "readfile__default_other_named_same.uc": "d7b320bd62d894990fdb1864ea41e214670e0caa85a5941de68d0fb8a62e53d7",
     "readfile__default_other_named_separate.uc": "db63a8e6d60c0c9824baa77d5208e922c41e1a59731d7fbe8e6e44e86552e1ca",
-    "readfile__direct.uc": "babd68e1d84d17a033b925f835f4b454e3ad871dce20f2cb373116f4ce46e579",
-    "readfile__duplicate.uc": "86e90938eb8ae6d1b697d5091562ca719c229a256c26bd39aa0a94200b8a503d",
-    "readfile__duplicate_default.uc": "f4b35447bccf51c8ab02a446e7f3987b3328a7008b2b4524fd28ae1b3fde04ae",
-    "readfile__duplicate_namespace.uc": "153d2d6f78a1b2904ba049eba8b27554175f5075e7cdabd6f6b877f9a04c5f1f",
-    "readfile__escaped_equivalent.uc": "644530bf9370068a7399db249bab1c97cc429d6bab3c02cfda9dac92a418f0e7",
-    "readfile__escaped_wrong.uc": "3555e1dbbdba3f0f3a149ee8bda5c07877cd068b390741c7177ef132749e8930",
-    "readfile__for_count.uc": "90ba00abfc89e44bf1ddf77abb8d64810053ab0c8b98fdd9c7152673bb59e0e1",
-    "readfile__formal.uc": "4b1c16c0138072ea9f4762af8f415bef36c4ea5191202cc936f7252ee0b161b2",
-    "readfile__function_decl.uc": "0836471847f3130fdd37b5cd1de2bb62fd355adc90f7863bb9de0ece96ba1cce",
-    "readfile__later_decl.uc": "d03a1e013cdc0a42356589a9ec449cd93f1e106f6c28c57e9fb1223c4ff4dc9a",
-    "readfile__local.uc": "3c8417d8055af9bd76de6ec270a957716a89ab9975456a1bf4da258254be3161",
-    "readfile__malformed.uc": "4e94791ec561b15e6dc8692c9f4bdbd08e125705101832af09a28489ed4f912d",
+    "readfile__direct.uc": "138e15630b7565cfb9d5227eb23df5e0cb64e0fe9602422780feadc34fff92c8",
+    "readfile__duplicate.uc": "e4f4d0464d32020a2d0fd7c074b79810466242569b728d2ac06a636cb3b2750e",
+    "readfile__duplicate_default.uc": "d2ec3c5d4fbd16c4dde579b5c2a26d62b0949d7ed13702825f712f74a7ffaa1b",
+    "readfile__duplicate_namespace.uc": "9a9271970205fcde41c8bd7519f0446360ceac5c55c1c752f66879ed7783a24c",
+    "readfile__escaped_equivalent.uc": "86ebcf0fd229115fda43c7b0758467732706a8004698216bd7b2ffc8320cf467",
+    "readfile__escaped_wrong.uc": "5eafac7f461118cf9d2ec667ca6f22c3be3e9671126385ff03fe1f6df170fc09",
+    "readfile__for_count.uc": "5146651fdf8a5f06ef0fa7e16a30ab9569d1ac7656e755aa63489161bf00a76e",
+    "readfile__formal.uc": "ade19cd7ffa937dfff138512224f193507353df4592073c5edba06b35ccd1e0d",
+    "readfile__function_decl.uc": "5f5cc48b464b310c0e550998eb2489f87e54e3534fafa959edf82bf98847eb65",
+    "readfile__later_decl.uc": "b1c3f6afc06d8cc4238211769e4e3d15f3161fb04aeb955d24bfde0975b14d4b",
+    "readfile__local.uc": "4af94ba31d91a004e892be349c7c3d907f6e270bf77197d4661fcb8a638fb488",
+    "readfile__malformed.uc": "2345a1120bc303f0c01ad3c04622421ac362740e96b47cef0ae40adf2eb03f54",
     "readfile__named_expr.uc": "24884cc12d6c537047638a70240b2b058e95acb1733a818ffedd811b807903e8",
     "readfile__namespace_other_named.uc": "1be49236e92680b94a0d3ab12b46a52b3c1a686a49b4e37a214e6a1c7b44aabf",
-    "readfile__nested.uc": "16e6ab41609a14455c541665c8c5f0c3e98d82b5ea112ac263d8aa21335c8668",
-    "readfile__nested_import.uc": "8e4115e51264b70c1f32ed4cde89db396aca0c77e0137115e7355deedcc1d95d",
-    "readfile__optional.uc": "ab85d247cec922dc2667145d60f68e00271b573d393f30e9e2c77cb436519c7c",
-    "readfile__rest.uc": "f2431d104dc1503b484f903e89d6c80d9bb528c3041707d399564c8a0e696a68",
-    "readfile__sibling.uc": "91816ee767484a7d1934852179b3f8ccd6a66f6b723225ef4d81537eb00de155",
-    "readfile__switch.uc": "e9ae92c4d6fce1736aad06ad84b24d8c70a6006dbf6c6a1615354c833006941b",
-    "readfile__update.uc": "a563cd26725f45a4467cfacde792ec9b20571b8a74d55b4fb5faff639201405e",
-    "readfile__wrapped.uc": "ba4cf241e20fa17e0da44301f550c9b2ad6a79c2ee2a46da3685d74f09621cb8",
-    "readfile__write.uc": "5c8079a92fb425b8e54ff00266082f4704adb3ff6202b9a7556ac305fa95f71e",
-    "readfile__wrong_module.uc": "e6b88ac6a3354942d4e05df83b6683907e5bdba61f1f73089d9f9ace81e3478b",
-    "readlink__after_scope.uc": "30973ecd09fe787e22ff10d8daed30d1e65c798abf9e3f26599263ab7d45dd4e",
-    "readlink__direct.uc": "c29e9a59ba5d0447bcd0fce427a6f001faaf6256f7b4468e65fe8ef76e4e3857",
-    "readlink__escaped_equivalent.uc": "8df787ec5800cc50a91332414bb355de5327c589ed8e8d67b77252cd0d1a23cf",
-    "readlink__escaped_wrong.uc": "dbee76bdd107201ae3bada2ca07161d2379995c611100c2f0be2314885a00f5e",
-    "readlink__formal.uc": "566d64711db32abee457e578c4257b1da79b31570694696c055c4235ff6f430a",
-    "readlink__later_decl.uc": "35423539af9b6926678c2412ea9499b7fc34a00e050cf324a9e2a059ff9c3b03",
-    "readlink__local.uc": "e738dda7316bf71db3456d3bd2261dd1b46e8857883df454e39a36d09932968b",
-    "readlink__nested.uc": "ea0dd4ffecab71c913d377e11b35c982d3895d138483180f4dbc7239a8595f33",
-    "readlink__sibling.uc": "4adeb48b426309752da7ca552d6e7b3268d25b47faa9a27e9133fba4dc2bc26a",
+    "readfile__nested.uc": "643215316e0257845eb45e2a3288b8662dba66d9bad1e1ddbfe90408ca1d3f6f",
+    "readfile__nested_import.uc": "f20c195f88b30d80fcdd66183989be4972663a71a65354e01c3f5bc4e54e0057",
+    "readfile__optional.uc": "b4629420a828adc67e8b3d1193625f75868a5508d325db5c5b0971d82e762a24",
+    "readfile__rest.uc": "67d8475d9921e33ab4c8605a2fc5c6e43be05b47aa9b8e4d2af074f7bd1b25af",
+    "readfile__sibling.uc": "40e232707b2d2adf46a38eb8a4e6eec139905b096d66439ab34eedefdc528f87",
+    "readfile__switch.uc": "57da4175437d211d45675881991f5fa3f3545f5d2d3f5b9af703c690e5421d13",
+    "readfile__update.uc": "6d3d3b750639dc83408e8826ecf23fdb9f4bff0bb4880f9607203a3d5e7b4474",
+    "readfile__wrapped.uc": "5ff8237ac3148410ad188917dc2d6eea76bbaf6c8de8f450bac47b5176cd2096",
+    "readfile__write.uc": "97d9cdb4a2af027d650de07599acd7f3274026b117357ad4a57ff04f15478ce9",
+    "readfile__wrong_module.uc": "5a2586282d84f38ffbad93586a724a018ba46796dcff5943528199a6cc9a7fbf",
+    "readlink__after_scope.uc": "5606148978205e5f6829804d128b0ac5420b1458226b03fa53e05b5cf771a3bb",
+    "readlink__direct.uc": "3a49c211217e96fe1ef7b9c6b316c2a254e044dd3f1742807b98a3aeee6fdf92",
+    "readlink__escaped_equivalent.uc": "5a0047b315b893e89573ef55201e1649c3687a12d9a478b9fc03943d554fcefb",
+    "readlink__escaped_wrong.uc": "303a1eb8240a0bb4a92269dcad5c9e12573460b8b4d0eeef28535ec16351630b",
+    "readlink__formal.uc": "4eaa68d6550617773fe2077358443580cdb3bf22503e1c1232672522729d857f",
+    "readlink__later_decl.uc": "c16952f215dfc399bd8944023250f021c2777ffad91479c5401566dfa32be5b9",
+    "readlink__local.uc": "daeac022a56b072353673e2a0af8a80ca045367d259abedd3355079fa1c9ff26",
+    "readlink__nested.uc": "00f9292b649eb2d86564764e686be2ac482a1da631f7323f5ea5eaaf23e5f8b6",
+    "readlink__sibling.uc": "8d09d8c1b08f3169015aebb009e1118d50d1ff883b7a6b0af228ffbd4977f2ab",
     "rfguard_alias_out_same_clause.uc": "3e9ae051dc8b85420b75f9612ad496eb9a8e9545cfd9699cdd50b9c72426f92c",
     "rfguard_alias_out_separate_clause.uc": "1d9564ede7eaf6395bc401b8242fc9ce09770b43c81097b89dff2a6810ba5a96",
     "rfguard_augmented_import.uc": "9ee9db55dcc4be664f666d9ec5545f5ed82f4435f4cc6fa9c6f6e3a9db597e41",
@@ -106,8 +106,8 @@
     "rfguard_optional.uc": "f29cc9bc87f8c4490802e76b3a45a1fb496e245b1cbf3e4fda5746917bd41aa5",
     "rfguard_plain_double_quoted.uc": "f3c0519bc79ed4c3ad6a7e5c32c6f389559018fb5a2f5b71dfbac511e0cf4020",
     "rfguard_same_line_after_import.uc": "ca77000f253054c9c030fe2bb08788ddfec10c36bfddb3f346c1dcbdf6537ec2",
-    "same_line.uc": "b50e4f543f96c6688bc133e3a6b3caee413fc9f07bdd5071f0fe20d5afa0f8c4",
-    "same_line_before.uc": "a17d3383545da522b2c908d12b9428adf85f588998cd58828a8f7810795800f5",
+    "same_line.uc": "301a0c72d2cad3d4944babe342ea61d5e49b0228b660bc9b1539c94a8f392432",
+    "same_line_before.uc": "2b6f835e25151e9420e459aeae08166275b0ad7a717595d65671480e4302ea8b",
     "usr/share/rpcd/ucode/luci": "6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e",
     "usr/share/ucode/luci/sys.uc": "0380fba5d843a8950bab0ef70982cb40ab8f475e8d267c873e4199a736b55656"
   },
@@ -117,7 +117,7 @@
       2,
       50,
       2,
-      155,
+      100,
       "Identifier",
       "printf"
     ],
@@ -126,7 +126,7 @@
       2,
       71,
       2,
-      154,
+      99,
       "Identifier",
       "access"
     ],
@@ -135,7 +135,7 @@
       4,
       1,
       4,
-      113,
+      58,
       "Identifier",
       "printf"
     ],
@@ -144,7 +144,7 @@
       4,
       23,
       4,
-      112,
+      57,
       "Identifier",
       "type"
     ],
@@ -153,7 +153,7 @@
       4,
       28,
       4,
-      111,
+      56,
       "Identifier",
       "access"
     ],
@@ -162,7 +162,7 @@
       2,
       1,
       2,
-      113,
+      58,
       "Identifier",
       "printf"
     ],
@@ -171,7 +171,7 @@
       2,
       23,
       2,
-      112,
+      57,
       "Identifier",
       "type"
     ],
@@ -180,7 +180,7 @@
       2,
       28,
       2,
-      111,
+      56,
       "Identifier",
       "access"
     ],
@@ -189,7 +189,7 @@
       2,
       1,
       2,
-      113,
+      58,
       "Identifier",
       "printf"
     ],
@@ -198,7 +198,7 @@
       2,
       23,
       2,
-      112,
+      57,
       "Identifier",
       "type"
     ],
@@ -207,7 +207,7 @@
       2,
       28,
       2,
-      111,
+      56,
       "Identifier",
       "access"
     ],
@@ -216,7 +216,7 @@
       2,
       1,
       2,
-      106,
+      51,
       "Identifier",
       "printf"
     ],
@@ -225,7 +225,7 @@
       2,
       22,
       2,
-      105,
+      50,
       "Identifier",
       "access"
     ],
@@ -234,7 +234,7 @@
       2,
       26,
       2,
-      131,
+      76,
       "Identifier",
       "printf"
     ],
@@ -243,7 +243,7 @@
       2,
       47,
       2,
-      130,
+      75,
       "Identifier",
       "access"
     ],
@@ -261,7 +261,7 @@
       2,
       1,
       2,
-      113,
+      58,
       "Identifier",
       "printf"
     ],
@@ -270,7 +270,7 @@
       2,
       23,
       2,
-      112,
+      57,
       "Identifier",
       "type"
     ],
@@ -279,7 +279,7 @@
       2,
       28,
       2,
-      111,
+      56,
       "Identifier",
       "access"
     ],
@@ -288,7 +288,7 @@
       4,
       1,
       4,
-      106,
+      51,
       "Identifier",
       "printf"
     ],
@@ -297,7 +297,7 @@
       4,
       22,
       4,
-      105,
+      50,
       "Identifier",
       "access"
     ],
@@ -306,7 +306,7 @@
       2,
       50,
       2,
-      155,
+      100,
       "Identifier",
       "printf"
     ],
@@ -315,7 +315,7 @@
       2,
       71,
       2,
-      154,
+      99,
       "Identifier",
       "access"
     ],
@@ -324,7 +324,7 @@
       2,
       20,
       2,
-      132,
+      77,
       "Identifier",
       "printf"
     ],
@@ -333,7 +333,7 @@
       2,
       42,
       2,
-      131,
+      76,
       "Identifier",
       "type"
     ],
@@ -342,7 +342,7 @@
       2,
       47,
       2,
-      130,
+      75,
       "Identifier",
       "access"
     ],
@@ -360,7 +360,7 @@
       3,
       1,
       3,
-      113,
+      58,
       "Identifier",
       "printf"
     ],
@@ -369,7 +369,7 @@
       3,
       23,
       3,
-      112,
+      57,
       "Identifier",
       "type"
     ],
@@ -378,7 +378,7 @@
       3,
       28,
       3,
-      111,
+      56,
       "Identifier",
       "access"
     ],
@@ -387,7 +387,7 @@
       3,
       1,
       3,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -396,7 +396,7 @@
       3,
       7,
       3,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -405,7 +405,7 @@
       2,
       1,
       2,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -414,7 +414,7 @@
       2,
       7,
       2,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -693,7 +693,7 @@
       2,
       1,
       2,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -702,7 +702,7 @@
       2,
       7,
       2,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -711,7 +711,7 @@
       3,
       1,
       3,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -720,7 +720,7 @@
       3,
       7,
       3,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -729,7 +729,7 @@
       2,
       1,
       2,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -738,7 +738,7 @@
       2,
       7,
       2,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -792,7 +792,7 @@
       3,
       1,
       3,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -801,7 +801,7 @@
       3,
       7,
       3,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -810,7 +810,7 @@
       2,
       48,
       2,
-      151,
+      96,
       "Identifier",
       "printf"
     ],
@@ -819,7 +819,7 @@
       2,
       69,
       2,
-      150,
+      95,
       "Identifier",
       "open"
     ],
@@ -828,7 +828,7 @@
       4,
       1,
       4,
-      111,
+      56,
       "Identifier",
       "printf"
     ],
@@ -837,7 +837,7 @@
       4,
       23,
       4,
-      110,
+      55,
       "Identifier",
       "type"
     ],
@@ -846,7 +846,7 @@
       4,
       28,
       4,
-      109,
+      54,
       "Identifier",
       "open"
     ],
@@ -855,7 +855,7 @@
       2,
       1,
       2,
-      111,
+      56,
       "Identifier",
       "printf"
     ],
@@ -864,7 +864,7 @@
       2,
       23,
       2,
-      110,
+      55,
       "Identifier",
       "type"
     ],
@@ -873,7 +873,7 @@
       2,
       28,
       2,
-      109,
+      54,
       "Identifier",
       "open"
     ],
@@ -882,7 +882,7 @@
       2,
       1,
       2,
-      111,
+      56,
       "Identifier",
       "printf"
     ],
@@ -891,7 +891,7 @@
       2,
       23,
       2,
-      110,
+      55,
       "Identifier",
       "type"
     ],
@@ -900,7 +900,7 @@
       2,
       28,
       2,
-      109,
+      54,
       "Identifier",
       "open"
     ],
@@ -909,7 +909,7 @@
       2,
       1,
       2,
-      104,
+      49,
       "Identifier",
       "printf"
     ],
@@ -918,7 +918,7 @@
       2,
       22,
       2,
-      103,
+      48,
       "Identifier",
       "open"
     ],
@@ -927,7 +927,7 @@
       2,
       24,
       2,
-      127,
+      72,
       "Identifier",
       "printf"
     ],
@@ -936,7 +936,7 @@
       2,
       45,
       2,
-      126,
+      71,
       "Identifier",
       "open"
     ],
@@ -954,7 +954,7 @@
       2,
       1,
       2,
-      111,
+      56,
       "Identifier",
       "printf"
     ],
@@ -963,7 +963,7 @@
       2,
       23,
       2,
-      110,
+      55,
       "Identifier",
       "type"
     ],
@@ -972,7 +972,7 @@
       2,
       28,
       2,
-      109,
+      54,
       "Identifier",
       "open"
     ],
@@ -981,7 +981,7 @@
       4,
       1,
       4,
-      104,
+      49,
       "Identifier",
       "printf"
     ],
@@ -990,7 +990,7 @@
       4,
       22,
       4,
-      103,
+      48,
       "Identifier",
       "open"
     ],
@@ -999,7 +999,7 @@
       2,
       48,
       2,
-      151,
+      96,
       "Identifier",
       "printf"
     ],
@@ -1008,7 +1008,7 @@
       2,
       69,
       2,
-      150,
+      95,
       "Identifier",
       "open"
     ],
@@ -1017,7 +1017,7 @@
       2,
       20,
       2,
-      130,
+      75,
       "Identifier",
       "printf"
     ],
@@ -1026,7 +1026,7 @@
       2,
       42,
       2,
-      129,
+      74,
       "Identifier",
       "type"
     ],
@@ -1035,7 +1035,7 @@
       2,
       47,
       2,
-      128,
+      73,
       "Identifier",
       "open"
     ],
@@ -1053,7 +1053,7 @@
       3,
       1,
       3,
-      111,
+      56,
       "Identifier",
       "printf"
     ],
@@ -1062,7 +1062,7 @@
       3,
       23,
       3,
-      110,
+      55,
       "Identifier",
       "type"
     ],
@@ -1071,7 +1071,7 @@
       3,
       28,
       3,
-      109,
+      54,
       "Identifier",
       "open"
     ],
@@ -1350,7 +1350,7 @@
       2,
       1,
       2,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -1359,7 +1359,7 @@
       2,
       22,
       2,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -1368,7 +1368,7 @@
       2,
       52,
       2,
-      159,
+      104,
       "Identifier",
       "printf"
     ],
@@ -1377,7 +1377,7 @@
       2,
       73,
       2,
-      158,
+      103,
       "Identifier",
       "readfile"
     ],
@@ -1386,7 +1386,7 @@
       4,
       1,
       4,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1395,7 +1395,7 @@
       4,
       23,
       4,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1404,7 +1404,7 @@
       4,
       28,
       4,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1413,7 +1413,7 @@
       2,
       1,
       2,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -1422,7 +1422,7 @@
       2,
       22,
       2,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -1431,7 +1431,7 @@
       2,
       1,
       2,
-      109,
+      54,
       "Identifier",
       "printf"
     ],
@@ -1440,7 +1440,7 @@
       2,
       23,
       2,
-      108,
+      53,
       "Identifier",
       "type"
     ],
@@ -1449,7 +1449,7 @@
       2,
       28,
       2,
-      107,
+      52,
       "Identifier",
       "rf"
     ],
@@ -1458,7 +1458,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1467,7 +1467,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1476,7 +1476,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1485,7 +1485,7 @@
       2,
       21,
       2,
-      106,
+      51,
       "Identifier",
       "readfile"
     ],
@@ -1512,7 +1512,7 @@
       1,
       1,
       1,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1521,7 +1521,7 @@
       1,
       23,
       1,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1530,7 +1530,7 @@
       1,
       28,
       1,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1548,16 +1548,16 @@
       2,
       46,
       2,
-      131,
+      76,
       "Identifier",
       "readfile"
     ],
     [
       "readfile__catch.uc",
       2,
-      147,
+      92,
       2,
-      175,
+      120,
       "Identifier",
       "print"
     ],
@@ -1566,7 +1566,7 @@
       3,
       1,
       3,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1575,7 +1575,7 @@
       3,
       23,
       3,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1584,7 +1584,7 @@
       3,
       28,
       3,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1593,7 +1593,7 @@
       1,
       16,
       1,
-      130,
+      75,
       "Identifier",
       "printf"
     ],
@@ -1602,7 +1602,7 @@
       1,
       38,
       1,
-      129,
+      74,
       "Identifier",
       "type"
     ],
@@ -1611,7 +1611,7 @@
       1,
       43,
       1,
-      128,
+      73,
       "Identifier",
       "readfile"
     ],
@@ -1647,7 +1647,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1656,7 +1656,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1665,7 +1665,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1674,7 +1674,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1683,7 +1683,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1692,7 +1692,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1701,7 +1701,7 @@
       3,
       1,
       3,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1710,7 +1710,7 @@
       3,
       23,
       3,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1719,7 +1719,7 @@
       3,
       28,
       3,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1728,7 +1728,7 @@
       3,
       1,
       3,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1737,7 +1737,7 @@
       3,
       23,
       3,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1746,7 +1746,7 @@
       3,
       28,
       3,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1755,7 +1755,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1764,7 +1764,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1773,7 +1773,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1782,7 +1782,7 @@
       2,
       1,
       2,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -1791,7 +1791,7 @@
       2,
       22,
       2,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -1800,7 +1800,7 @@
       2,
       70,
       2,
-      177,
+      122,
       "Identifier",
       "printf"
     ],
@@ -1809,7 +1809,7 @@
       2,
       91,
       2,
-      176,
+      121,
       "Identifier",
       "readfile"
     ],
@@ -1818,7 +1818,7 @@
       4,
       1,
       4,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1827,7 +1827,7 @@
       4,
       23,
       4,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1836,7 +1836,7 @@
       4,
       28,
       4,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1845,7 +1845,7 @@
       2,
       28,
       2,
-      135,
+      80,
       "Identifier",
       "printf"
     ],
@@ -1854,7 +1854,7 @@
       2,
       49,
       2,
-      134,
+      79,
       "Identifier",
       "readfile"
     ],
@@ -1872,7 +1872,7 @@
       3,
       1,
       3,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -1881,7 +1881,7 @@
       3,
       22,
       3,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -1890,7 +1890,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1899,7 +1899,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1908,7 +1908,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -1917,7 +1917,7 @@
       4,
       1,
       4,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -1926,7 +1926,7 @@
       4,
       22,
       4,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -1935,7 +1935,7 @@
       2,
       52,
       2,
-      159,
+      104,
       "Identifier",
       "printf"
     ],
@@ -1944,7 +1944,7 @@
       2,
       73,
       2,
-      158,
+      103,
       "Identifier",
       "readfile"
     ],
@@ -1953,7 +1953,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -1962,7 +1962,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -1971,7 +1971,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -2016,7 +2016,7 @@
       2,
       20,
       2,
-      134,
+      79,
       "Identifier",
       "printf"
     ],
@@ -2025,7 +2025,7 @@
       2,
       42,
       2,
-      133,
+      78,
       "Identifier",
       "type"
     ],
@@ -2034,7 +2034,7 @@
       2,
       47,
       2,
-      132,
+      77,
       "Identifier",
       "readfile"
     ],
@@ -2052,7 +2052,7 @@
       2,
       1,
       2,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -2061,7 +2061,7 @@
       2,
       23,
       2,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -2070,7 +2070,7 @@
       2,
       28,
       2,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -2079,7 +2079,7 @@
       2,
       1,
       2,
-      117,
+      62,
       "Identifier",
       "printf"
     ],
@@ -2088,7 +2088,7 @@
       2,
       23,
       2,
-      116,
+      61,
       "Identifier",
       "type"
     ],
@@ -2097,7 +2097,7 @@
       2,
       28,
       2,
-      115,
+      60,
       "Identifier",
       "readfile"
     ],
@@ -2106,7 +2106,7 @@
       2,
       34,
       2,
-      119,
+      64,
       "Identifier",
       "readfile"
     ],
@@ -2124,7 +2124,7 @@
       3,
       1,
       3,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -2133,7 +2133,7 @@
       3,
       23,
       3,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -2142,7 +2142,7 @@
       3,
       28,
       3,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -2151,7 +2151,7 @@
       2,
       79,
       2,
-      186,
+      131,
       "Identifier",
       "printf"
     ],
@@ -2160,7 +2160,7 @@
       2,
       100,
       2,
-      185,
+      130,
       "Identifier",
       "readfile"
     ],
@@ -2169,7 +2169,7 @@
       4,
       1,
       4,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -2178,7 +2178,7 @@
       4,
       23,
       4,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -2187,7 +2187,7 @@
       4,
       28,
       4,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -2196,7 +2196,7 @@
       3,
       1,
       3,
-      115,
+      60,
       "Identifier",
       "printf"
     ],
@@ -2205,7 +2205,7 @@
       3,
       23,
       3,
-      114,
+      59,
       "Identifier",
       "type"
     ],
@@ -2214,7 +2214,7 @@
       3,
       28,
       3,
-      113,
+      58,
       "Identifier",
       "readfile"
     ],
@@ -2223,7 +2223,7 @@
       2,
       1,
       2,
-      117,
+      62,
       "Identifier",
       "printf"
     ],
@@ -2232,7 +2232,7 @@
       2,
       23,
       2,
-      116,
+      61,
       "Identifier",
       "type"
     ],
@@ -2241,7 +2241,7 @@
       2,
       28,
       2,
-      115,
+      60,
       "ParenthesizedExpression",
       ""
     ],
@@ -2250,7 +2250,7 @@
       3,
       1,
       3,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -2259,7 +2259,7 @@
       3,
       22,
       3,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -2268,7 +2268,7 @@
       2,
       1,
       2,
-      108,
+      53,
       "Identifier",
       "printf"
     ],
@@ -2277,7 +2277,7 @@
       2,
       22,
       2,
-      107,
+      52,
       "Identifier",
       "readfile"
     ],
@@ -2286,7 +2286,7 @@
       2,
       52,
       2,
-      160,
+      105,
       "Identifier",
       "printf"
     ],
@@ -2295,7 +2295,7 @@
       2,
       73,
       2,
-      159,
+      104,
       "Identifier",
       "readlink"
     ],
@@ -2304,7 +2304,7 @@
       4,
       1,
       4,
-      116,
+      61,
       "Identifier",
       "printf"
     ],
@@ -2313,7 +2313,7 @@
       4,
       23,
       4,
-      115,
+      60,
       "Identifier",
       "type"
     ],
@@ -2322,7 +2322,7 @@
       4,
       28,
       4,
-      114,
+      59,
       "Identifier",
       "readlink"
     ],
@@ -2331,7 +2331,7 @@
       2,
       1,
       2,
-      116,
+      61,
       "Identifier",
       "printf"
     ],
@@ -2340,7 +2340,7 @@
       2,
       23,
       2,
-      115,
+      60,
       "Identifier",
       "type"
     ],
@@ -2349,7 +2349,7 @@
       2,
       28,
       2,
-      114,
+      59,
       "Identifier",
       "readlink"
     ],
@@ -2358,7 +2358,7 @@
       2,
       1,
       2,
-      116,
+      61,
       "Identifier",
       "printf"
     ],
@@ -2367,7 +2367,7 @@
       2,
       23,
       2,
-      115,
+      60,
       "Identifier",
       "type"
     ],
@@ -2376,7 +2376,7 @@
       2,
       28,
       2,
-      114,
+      59,
       "Identifier",
       "readlink"
     ],
@@ -2385,7 +2385,7 @@
       2,
       1,
       2,
-      109,
+      54,
       "Identifier",
       "printf"
     ],
@@ -2394,7 +2394,7 @@
       2,
       22,
       2,
-      108,
+      53,
       "Identifier",
       "readlink"
     ],
@@ -2403,7 +2403,7 @@
       2,
       28,
       2,
-      136,
+      81,
       "Identifier",
       "printf"
     ],
@@ -2412,7 +2412,7 @@
       2,
       49,
       2,
-      135,
+      80,
       "Identifier",
       "readlink"
     ],
@@ -2430,7 +2430,7 @@
       2,
       1,
       2,
-      116,
+      61,
       "Identifier",
       "printf"
     ],
@@ -2439,7 +2439,7 @@
       2,
       23,
       2,
-      115,
+      60,
       "Identifier",
       "type"
     ],
@@ -2448,7 +2448,7 @@
       2,
       28,
       2,
-      114,
+      59,
       "Identifier",
       "readlink"
     ],
@@ -2457,7 +2457,7 @@
       4,
       1,
       4,
-      109,
+      54,
       "Identifier",
       "printf"
     ],
@@ -2466,7 +2466,7 @@
       4,
       22,
       4,
-      108,
+      53,
       "Identifier",
       "readlink"
     ],
@@ -2475,7 +2475,7 @@
       2,
       52,
       2,
-      160,
+      105,
       "Identifier",
       "printf"
     ],
@@ -2484,7 +2484,7 @@
       2,
       73,
       2,
-      159,
+      104,
       "Identifier",
       "readlink"
     ],
@@ -2493,7 +2493,7 @@
       2,
       20,
       2,
-      135,
+      80,
       "Identifier",
       "printf"
     ],
@@ -2502,7 +2502,7 @@
       2,
       42,
       2,
-      134,
+      79,
       "Identifier",
       "type"
     ],
@@ -2511,7 +2511,7 @@
       2,
       47,
       2,
-      133,
+      78,
       "Identifier",
       "readlink"
     ],
@@ -2529,7 +2529,7 @@
       3,
       1,
       3,
-      116,
+      61,
       "Identifier",
       "printf"
     ],
@@ -2538,7 +2538,7 @@
       3,
       23,
       3,
-      115,
+      60,
       "Identifier",
       "type"
     ],
@@ -2547,7 +2547,7 @@
       3,
       28,
       3,
-      114,
+      59,
       "Identifier",
       "readlink"
     ],
@@ -2961,7 +2961,7 @@
       1,
       32,
       1,
-      131,
+      76,
       "Identifier",
       "print"
     ],
@@ -2970,7 +2970,7 @@
       1,
       38,
       1,
-      124,
+      69,
       "Identifier",
       "readlink"
     ],
@@ -2979,7 +2979,7 @@
       1,
       1,
       1,
-      100,
+      45,
       "Identifier",
       "print"
     ],
@@ -2988,7 +2988,7 @@
       1,
       7,
       1,
-      93,
+      38,
       "Identifier",
       "readlink"
     ],
@@ -5367,7 +5367,7 @@
       2,
       28,
       2,
-      111
+      56
     ],
     [
       "access",
@@ -5375,7 +5375,7 @@
       2,
       47,
       2,
-      130
+      75
     ],
     [
       "access",
@@ -5663,7 +5663,7 @@
       2,
       28,
       2,
-      109
+      54
     ],
     [
       "open",
@@ -5671,7 +5671,7 @@
       2,
       47,
       2,
-      128
+      73
     ],
     [
       "open",
@@ -5823,7 +5823,7 @@
       2,
       28,
       2,
-      113
+      58
     ],
     [
       "readfile",
@@ -5831,7 +5831,7 @@
       2,
       47,
       2,
-      132
+      77
     ],
     [
       "readfile",
@@ -5959,7 +5959,7 @@
       3,
       7,
       3,
-      93
+      38
     ],
     [
       "readlink",
@@ -5967,7 +5967,7 @@
       2,
       7,
       2,
-      93
+      38
     ],
     [
       "readlink",
@@ -5975,7 +5975,7 @@
       2,
       7,
       2,
-      93
+      38
     ],
     [
       "readlink",
@@ -5983,7 +5983,7 @@
       2,
       28,
       2,
-      114
+      59
     ],
     [
       "readlink",
@@ -5991,7 +5991,7 @@
       2,
       47,
       2,
-      133
+      78
     ],
     [
       "readlink",
@@ -5999,7 +5999,7 @@
       1,
       38,
       1,
-      124
+      69
     ],
     [
       "readlink",
