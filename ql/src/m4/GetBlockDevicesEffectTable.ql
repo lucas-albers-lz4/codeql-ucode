@@ -7,12 +7,10 @@
 
 import codeql.ucode.m3.Models
 
-from UCODE::CallExpression c, UCODE::ImportStatement imp
+from UCODE::CallExpression c
 where
   c.getLocation().getFile().getBaseName() = "luci" and
-  c.getFunction().(UCODE::Identifier).getValue() = "popen" and
-  imp.getLocation().getFile() = c.getLocation().getFile() and
-  namedImport(imp, "fs", "popen") and
+  c instanceof NamedFsPopenCall and
   c.getParent*() = rpcCallFn("getBlockDevices") and
   stringLiteralValue(c.getArguments().getChild(0).(UCODE::String)) =
     "/sbin/block info 2>/dev/null"
