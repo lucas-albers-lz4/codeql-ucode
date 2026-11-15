@@ -23,7 +23,7 @@ The pinned generator (`advanced-security/codeql-extractor-generator@1d5c2de`) fa
 13. `./scripts/m4-imported-callee-smoke.sh` asserts `ImportedCalleeTaint.ql` sees `init_action` from `luci.sys`.
 14. `./scripts/m4-sys-smoke.sh` indexes `luci` plus installed luci.sys (`sys.uc`) and asserts `InitActionSystem.ql` plus the `setInitAction` action-token switch (not a sanitizer of `name`).
 15. `./scripts/m4-luci-sys-status-exec-smoke.sh` asserts `LuciSysStatusExec.ql` (`getConntrackList` / `getProcessList` helpers: fixed `conntrack` and `busybox top` popen in `sys.uc`; not interprocedural `path_found`).
-16. `./scripts/m4-viable-source-callable-smoke.sh` asserts unique same-file identifier and member-property FunctionDeclarations resolve, builtin `system` and imported `'fs'` `popen` / `basename` / `access` / `open` / `readfile` resolve as library callables, and imported `luci.sys` does not.
+16. `./scripts/m4-viable-source-callable-smoke.sh` asserts unique same-file identifier and member-property FunctionDeclarations resolve, builtin `system` and a bounded subset of imported `'fs'` `popen` / `basename` / `access` / `open` / `readfile` resolve as library callables, and imported `luci.sys` does not. The shared `fs` guard also covers `readlink`.
 
 Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Idents` (not only `Stmts`/`Call`). Those are in `generator.yml`.
 
@@ -75,11 +75,16 @@ a read of that formal, so `parameterToSsaDef` continues into
 identifier and member-property FunctionDeclarations; imported
 `luci.sys` callees stay unresolved / inconclusive — not `setInitAction`
 `path_found`. `viableLibraryCallable` resolves builtin identifier
-`system` and imported `'fs'` `popen` / `basename` / `access` / `open` /
-`readfile`; a separate, stricter source-declared `readlink` subset is
-covered by [`docs/m4-imported-fs-readlink.md`](docs/m4-imported-fs-readlink.md).
+`system` and a conservative source-declared subset of imported `'fs'`
+`popen` / `basename` / `access` / `open` / `readfile` / `readlink`.
+All six use the same guard described in
+[`docs/m4-imported-fs-readlink.md`](docs/m4-imported-fs-readlink.md).
 Its whole-file guard intentionally leaves genuine calls unresolved when any
-competing same-name binding or write occurs, even in an unrelated scope.
+competing same-name binding or write occurs, even in an unrelated scope,
+after a shadow's scope, or later in the file. Optional calls are unresolved.
+Missing results mean unknown, not safe, unreachable, or not an fs call.
+The separate production Models behavior is tracked in
+[#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87).
 `luci.sys` / `fd.read` stay unresolved.
 The shared `system` check uses visible imports, named formals, function names,
 lexical declarations, loop bindings and catch parameters, including enclosing

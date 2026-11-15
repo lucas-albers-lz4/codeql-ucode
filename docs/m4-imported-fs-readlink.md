@@ -1,33 +1,35 @@
-# Source-declared `fs.readlink` callable
+# Source-declared imported `fs` callables
 
 `viableLibraryCallable` identifies a deliberately bounded, **source-declared**
-`readlink` import. This is not a runtime module resolver or a flow model.
-It requires a CFG-backed call with a plain identifier callee `readlink` and
-no optional chain; a preceding top-level, unaliased named `readlink` import;
-and an import source consisting of exactly one raw `fs` string fragment, with
-no escape or other child. There must be exactly one local `readlink` import
-binding in the file, counting named aliases, defaults, namespaces and duplicate
-specifiers. Files with an extraction error are excluded.
+subset of `popen`, `basename`, `access`, `open`, `readfile`, and `readlink`
+imports through a shared guard. This is not a runtime module resolver or a flow
+model. For each key it requires a CFG-backed call with that plain identifier
+callee and no optional chain; a preceding top-level, unaliased named import of
+that key; and an import source consisting of exactly one raw `fs` string
+fragment, with no escape or other child. There must be exactly one local import
+binding for that key in the file, counting named aliases, defaults, namespaces
+and duplicate specifiers. Files with an extraction error are excluded.
 
-The entire file must also have no competing `readlink` lexical, function,
+The entire file must also have no competing same-name lexical, function,
 function-expression, formal/rest/arrow, catch or loop binding, or assignment,
 augmented assignment or update. This is intentionally **not lexical scope
 resolution**: an unrelated sibling, later declaration or expired shadow makes
 even genuine imported calls unresolved. Aliases, optional calls, members,
 subscripts and wrapped callees are unresolved. A source call appearing before
 the import is unresolved, even when its enclosing function runs later. A
-missing result means unknown, not safe, unreachable, sanitized or not readlink.
-Extraction success is not successful ucode compilation or module resolution;
-other semantic errors may exist. The source name `fs` does not attest which
-module a runtime loader supplies, execution, return values or filesystem state.
+missing result means unknown, not safe, unreachable, sanitized or not an fs
+call. Extraction success is not successful ucode compilation or module
+resolution; other semantic errors may exist. The source name `fs` does not
+attest which module a runtime loader supplies, execution, return values or
+filesystem state.
 
 ## Evidence and scope
 
 An independent single-reviewer `gpt-6.1-sol` honesty audit, using the latest
 model allowed by the requester (not Grok), tested runtime binding probes and
-actual extracted CodeQL entities. It rejected reusing the existing `readfile`
-matcher: local and formal shadows can receive its library target; that separate
-defect is tracked in [#85](https://github.com/lucas-albers-lz4/codeql-ucode/issues/85).
+actual extracted CodeQL entities. It rejected reusing the then-current `readfile`
+matcher: local and formal shadows received its library target; that defect is
+tracked in [#85](https://github.com/lucas-albers-lz4/codeql-ucode/issues/85).
 It also showed that concatenating only string fragments incorrectly accepts
 `'f\x2fs'`, whose runtime module name is `f/s`. The readlink matcher instead
 rejects escape children. The audit used producer revision
@@ -75,11 +77,20 @@ probe. In that runtime the duplicate default imports were compiler-rejected,
 while the duplicate namespace form reached the call and failed as noncallable;
 the loop probes caught the inner noncallable shadow and then used the native
 import after the loop. These observations do not establish deployed behavior.
-No production readfile matcher, taint
+The separate production Models import matcher remains unchanged and is tracked
+in [#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87). No taint
 source/sink, sanitizer, through-flow, runtime target, or security query is
 changed. `propagatesFlow` remains `none()`; this slice does not establish a
 consumer security finding, `path_found`, or deployed runtime behavior.
 
+The six-family smoke `scripts/m4-fs-binding-smoke.sh` additionally exercises
+actual direct and nested calls, shadows, import-source controls, and the two
+#85 examples. Its entity manifest preserves all 60 pre-existing pinned targets
+and the three readlink targets at their full spans, not just counts. It checks
+routing, extraction diagnostics, and the complete call inventory before
+checking exact fs target identities.
+
 Reproduce after the README bootstrap with
-`bash scripts/m4-imported-fs-readlink-smoke.sh`; the aggregate discovers it
+`bash scripts/m4-fs-binding-smoke.sh` and
+`bash scripts/m4-imported-fs-readlink-smoke.sh`; the aggregate discovers each
 once via `scripts/m4-*-smoke.sh`.

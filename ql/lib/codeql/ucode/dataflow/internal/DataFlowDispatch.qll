@@ -148,7 +148,7 @@ class AdditionalCallTarget extends Unit {
  * `Call.getIdentifier` only: does not walk `getAFieldOrChild` and does
  * not widen member callees. Shares the lexical binding check in Models.
  * Imported `'fs'` `popen`,
- * `basename`, `access`, `open`, and `readfile` are separate library
+ * `basename`, `access`, `open`, `readfile`, and `readlink` are separate library
  * callables. luci.sys stays unresolved. `propagatesFlow` stays
  * `none()`. Does not jump. Not production taint and not `path_found`.
  */
@@ -161,135 +161,53 @@ private class BuiltinSystemLibraryCallable extends LibraryCallable {
   }
 }
 
-/**
- * Identifier `popen(...)` imported from `'fs'` as a library callable.
- * Same `Call.getIdentifier` join as builtin `system`, but the name
- * must be an unaliased `'fs'` specifier (Models `NamedFsPopenCall`),
- * not a global builtin. Same-file FunctionDeclarations are not
- * library `popen`. Imported `'fs'` `basename`, `access`, `open`, and
- * `readfile` are separate library callables. luci.sys and `fd.read`
- * stay unresolved.
- * `propagatesFlow` stays `none()`. Does not jump. Not production taint
- * and not `path_found`.
- */
+/** Source-declared `fs.popen` library callable; see `importedFsCall`. */
 private class ImportedFsPopenLibraryCallable extends LibraryCallable {
   ImportedFsPopenLibraryCallable() { this = "popen" }
 
   override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      namedFsImport(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    importedFsCall(result, this)
   }
 }
 
-/**
- * Identifier `basename(...)` imported from `'fs'` as a library callable.
- * Same `namedFsImport` join as imported `'fs'` `popen`. Not a global
- * builtin and not a modeled sanitizer. Same-file FunctionDeclarations
- * are not library `basename`. Imported `'fs'` `access`, `open`, and
- * `readfile` are separate library callables. luci.sys and `fd.read`
- * stay unresolved.
- * `propagatesFlow` stays `none()`. Does not jump. Not production taint
- * and not `path_found`.
- */
+/** Source-declared `fs.basename` library callable; see `importedFsCall`. */
 private class ImportedFsBasenameLibraryCallable extends LibraryCallable {
   ImportedFsBasenameLibraryCallable() { this = "basename" }
 
   override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      namedFsImport(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    importedFsCall(result, this)
   }
 }
 
-/**
- * Identifier `access(...)` imported from `'fs'` as a library callable.
- * Same `namedFsImport` join as imported `'fs'` `popen` / `basename`.
- * Not a global builtin and not a modeled sanitizer. Same-file
- * FunctionDeclarations are not library `access`. Imported `'fs'`
- * `open` and `readfile` are separate library callables. luci.sys and
- * `fd.read` stay unresolved. `propagatesFlow` stays `none()`. Does
- * not jump. Not production taint and not `path_found`.
- */
+/** Source-declared `fs.access` library callable; see `importedFsCall`. */
 private class ImportedFsAccessLibraryCallable extends LibraryCallable {
   ImportedFsAccessLibraryCallable() { this = "access" }
 
   override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      namedFsImport(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    importedFsCall(result, this)
   }
 }
 
-/**
- * Identifier `open(...)` imported from `'fs'` as a library callable.
- * Same `namedFsImport` join as imported `'fs'` `popen` / `basename` /
- * `access`. Not a global builtin. Same-file FunctionDeclarations are
- * not library `open`. Imported `'fs'` `readfile` is a separate
- * library callable. luci.sys and `fd.read` stay unresolved.
- * `propagatesFlow` stays `none()`. Does not jump. Not production
- * taint and not `path_found`.
- */
+/** Source-declared `fs.open` library callable; see `importedFsCall`. */
 private class ImportedFsOpenLibraryCallable extends LibraryCallable {
   ImportedFsOpenLibraryCallable() { this = "open" }
 
   override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      namedFsImport(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    importedFsCall(result, this)
   }
 }
 
-/**
- * Identifier `readfile(...)` imported from `'fs'` as a library callable.
- * Same `namedFsImport` join as imported `'fs'` `popen` / `basename` /
- * `access` / `open`. Not a global builtin. Same-file FunctionDeclarations
- * are not library `readfile`. luci.sys and `fd.read` stay unresolved.
- * `propagatesFlow` stays `none()`. Does not jump. Not production taint
- * and not `path_found`.
- */
+/** Source-declared `fs.readfile` library callable; see `importedFsCall`. */
 private class ImportedFsReadfileLibraryCallable extends LibraryCallable {
   ImportedFsReadfileLibraryCallable() { this = "readfile" }
 
   override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::ImportStatement imp |
-      imp.getLocation().getFile() = result.getIdentifier().getFile() and
-      namedFsImport(imp, this)
-    ) and
-    not exists(UCODE::FunctionDeclaration f |
-      f.getName().getValue() = this and
-      f.getLocation().getFile() = result.getIdentifier().getFile()
-    )
+    importedFsCall(result, this)
   }
 }
 
 /** A local identifier introduced by any import clause in `imp`. */
-private UCODE::Identifier readlinkImportBinding(UCODE::ImportStatement imp) {
+private UCODE::Identifier fsImportBinding(UCODE::ImportStatement imp) {
   exists(UCODE::ImportSpecifier spec |
     spec = imp.getClause().getNamed().getChild(_) and
     (result = spec.getAlias() or not exists(spec.getAlias()) and result = spec.getName())
@@ -299,7 +217,7 @@ private UCODE::Identifier readlinkImportBinding(UCODE::ImportStatement imp) {
 }
 
 /** Competing binding or write, deliberately checked across the entire file. */
-private predicate readlinkCompetingBindingOrWrite(UCODE::Identifier id) {
+private predicate fsCompetingBindingOrWrite(UCODE::Identifier id) {
   exists(UCODE::VariableDeclarator d | d.getName() = id)
   or exists(UCODE::FunctionDeclaration f | f.getName() = id)
   or exists(UCODE::FunctionExpression f | f.getName() = id)
@@ -317,39 +235,44 @@ private predicate readlinkCompetingBindingOrWrite(UCODE::Identifier id) {
 }
 
 /**
- * Source-declared, unaliased `fs.readlink`: a conservative whole-file
- * no-competing-binding subset, not a runtime target or flow summary.
- * Even unrelated, later or out-of-scope shadows leave calls unresolved.
+ * Source-declared unaliased fs call: conservative whole-file absence of
+ * competing bindings or writes, not a runtime target or flow summary.
+ * Inline and restrict the keys so evaluation specializes this shared guard.
  */
+pragma[inline]
+private predicate importedFsCall(ucode::Call call, string name) {
+  name = ["popen", "basename", "access", "open", "readfile", "readlink"] and
+  call.getIdentifier().getName() = name and
+  exists(UCODE::CallExpression raw, UCODE::ImportStatement imp, UCODE::ImportSpecifier spec |
+    raw = toTreeSitter(call) and raw.getFunction() instanceof UCODE::Identifier and
+    not exists(raw.getOptionalChain()) and
+    imp.getLocation().getFile() = raw.getLocation().getFile() and
+    imp.getParent() instanceof UCODE::Program and
+    (imp.getLocation().getEndLine() < raw.getLocation().getStartLine() or
+      imp.getLocation().getEndLine() = raw.getLocation().getStartLine() and
+      imp.getLocation().getEndColumn() < raw.getLocation().getStartColumn()) and
+    spec = imp.getClause().getNamed().getChild(_) and
+    spec.getName().(UCODE::Identifier).getValue() = name and
+    not exists(spec.getAlias()) and
+    imp.getSource().getChild(0).(UCODE::StringFragment).getValue() = "fs" and
+    not exists(imp.getSource().getChild(1)) and
+    strictcount(UCODE::ImportStatement other, UCODE::Identifier id |
+      id = fsImportBinding(other) and
+      other.getLocation().getFile() = raw.getLocation().getFile() and id.getValue() = name
+    ) = 1 and
+    not exists(UCODE::Identifier id |
+      id.getLocation().getFile() = raw.getLocation().getFile() and
+      id.getValue() = name and fsCompetingBindingOrWrite(id)
+    ) and
+    not exists(ExtractionError error | error.getLocation().getFile() = raw.getLocation().getFile())
+  )
+}
+
+/** Source-declared `fs.readlink` library callable. */
 private class ImportedFsReadlinkLibraryCallable extends LibraryCallable {
   ImportedFsReadlinkLibraryCallable() { this = "readlink" }
 
-  override ucode::Call getACall() {
-    result.getIdentifier().getName() = this and
-    exists(UCODE::CallExpression raw, UCODE::ImportStatement imp, UCODE::ImportSpecifier spec |
-      raw = toTreeSitter(result) and raw.getFunction() instanceof UCODE::Identifier and
-      not exists(raw.getOptionalChain()) and
-      imp.getLocation().getFile() = raw.getLocation().getFile() and
-      imp.getParent() instanceof UCODE::Program and
-      (imp.getLocation().getEndLine() < raw.getLocation().getStartLine() or
-        imp.getLocation().getEndLine() = raw.getLocation().getStartLine() and
-        imp.getLocation().getEndColumn() < raw.getLocation().getStartColumn()) and
-      spec = imp.getClause().getNamed().getChild(_) and
-      spec.getName().(UCODE::Identifier).getValue() = this and
-      not exists(spec.getAlias()) and
-      imp.getSource().getChild(0).(UCODE::StringFragment).getValue() = "fs" and
-      not exists(imp.getSource().getChild(1)) and
-      strictcount(UCODE::ImportStatement other, UCODE::Identifier id |
-        id = readlinkImportBinding(other) and
-        other.getLocation().getFile() = raw.getLocation().getFile() and id.getValue() = this
-      ) = 1 and
-      not exists(UCODE::Identifier id |
-        id.getLocation().getFile() = raw.getLocation().getFile() and
-        id.getValue() = this and readlinkCompetingBindingOrWrite(id)
-      ) and
-      not exists(ExtractionError error | error.getLocation().getFile() = raw.getLocation().getFile())
-    )
-  }
+  override ucode::Call getACall() { importedFsCall(result, this) }
 }
 
 /** Holds if `call` may resolve to the returned summarized library method. */
@@ -489,32 +412,6 @@ predicate simpleIdentifierCall(DataFlowCall call, DataFlowCallable callee) {
     astCall.getIdentifier().getName() = f.getName().getValue() and
     call.asCall().getLocation().getFile() = f.getLocation().getFile() and
     toTreeSitter(callee.asCfgScope()) = f.getBody()
-  )
-}
-
-/**
- * Joined string-literal text of an import source. `'fs'` is one
- * fragment. Not a module resolver.
- */
-private string importSourceLiteral(UCODE::ImportStatement imp) {
-  result =
-    strictconcat(int i, UCODE::StringFragment frag |
-      frag = imp.getSource().getChild(i)
-    |
-      frag.getValue() order by i
-    )
-}
-
-/**
- * Unaliased named import of `name` from `'fs'`. Same shape as Models
- * `namedImport(imp, "fs", name)`. Not luci.sys `path_found`.
- */
-private predicate namedFsImport(UCODE::ImportStatement imp, string name) {
-  importSourceLiteral(imp) = "fs" and
-  exists(UCODE::ImportSpecifier spec |
-    spec = imp.getClause().getNamed().getChild(_) and
-    not exists(spec.getAlias()) and
-    exists(UCODE::Identifier id | id = spec.getName() and name = id.getValue())
   )
 }
 
