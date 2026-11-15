@@ -11,14 +11,21 @@ enter `popen`. `getARuntimeTarget` stays `none()`.
 ## What compiles
 
 - `ImportedFsPopenLibraryCallable` is the string key `popen`.
-  `getACall` matches `Call.getIdentifier` named `popen` that is an
-  unaliased `'fs'` specifier in the same file and is not a same-file
-  FunctionDeclaration. That is Models `NamedFsPopenCall`, not
-  `BuiltinSystemCall`. `Call.getIdentifier` stays identifier-only;
-  this does not walk `getAFieldOrChild`.
+  `getACall` uses the [shared conservative binding guard](m4-imported-fs-readlink.md)
+  for a source-declared `fs` import. It requires a preceding top-level,
+  unaliased named import in the same file, with exactly one raw `fs` source
+  fragment and no other source child. The file must have one local import
+  binding for the key, no competing same-name binding or write, and no
+  extraction error.
+  Only nonoptional identifier calls qualify. The whole-file guard intentionally
+  contracts recall: sibling or expired shadows and later declarations can leave
+  genuine calls unresolved. A missing result means unknown, not safe.
+  This identifies source declarations, not runtime targets, taint, or security.
+  Production Models uses a separate matcher, tracked in
+  [#87](https://github.com/lucas-albers-lz4/codeql-ucode/issues/87).
 - `viableLibraryCallable` maps those calls to `TLibraryCallable("popen")`.
-  Smoke reports `library popen` on `luci` and `sys.uc`. `ssa_pos` has
-  no `popen`.
+  The historical smoke baseline reports `library popen` on `luci` and
+  `sys.uc`. `ssa_pos` has no `popen` in that baseline.
 - Builtin identifier `system` stays a library callable
   (`docs/m4-viable-library-callable.md`). Unique same-file
   FunctionDeclarations stay source `CfgScope`s.
