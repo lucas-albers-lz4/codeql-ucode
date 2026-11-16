@@ -618,7 +618,10 @@ import OutNodes
  * call expression (`OutNode`). Position match alone is not enough
  * (`system(...)` must not jump into `formal_order`). Body continuation
  * is `parameterToSsaDef` in `SsaFlow::localFlowStep`, not `jumpStep`
- * itself. Identifier callees use unfiltered `simpleIdentifierCall`.
+ * itself. A rest formal denotes a collection, so no scalar argument
+ * has a value-identity edge to it. No rest-collection contents or
+ * argument-through-collection flow are added. Identifier callees use
+ * unfiltered `simpleIdentifierCall`.
  * Unique same-file member-property FunctionDeclarations also jump
  * (`member_order` on `ssa_pos`). Does not widen `Call.getIdentifier`
  * and does not resolve library members, imports, or builtins. Not
@@ -633,6 +636,9 @@ predicate jumpStep(Node pred, Node succ) {
     succ = p and
     isArgumentNode(arg, call, apos) and
     isParameterNode(p, callee, ppos) and
+    not exists(UCODE::RestElement rest, UCODE::Identifier id |
+      p.getParameter() = TIdentifier(id) and rest.getChild() = id
+    ) and
     parameterMatch(ppos, apos) and
     sameFileJumpCall(call, callee)
   )

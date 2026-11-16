@@ -114,7 +114,7 @@ function value_flow_regressions() {
   system(alt_if_dst); // alt_if_sink
   let alt_elif_src = source(); // alt_elif_src
   let alt_elif_dst = 'safe'; // alt_elif_initial
-  if (condition()): consume('x'); elif (condition()): alt_elif_dst = alt_elif_src; else: consume('y'); endif // alt_elif_body
+  if (condition()): consume('x'); elif (condition()): alt_elif_dst = alt_elif_src; else consume('y'); endif // alt_elif_body
   system(alt_elif_dst); // alt_elif_sink
   let alt_while_src = source(); // alt_while_src
   let alt_while_dst = 'safe'; // alt_while_initial
