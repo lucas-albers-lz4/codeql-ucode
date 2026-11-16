@@ -15,10 +15,11 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   are SSA writes, not `VariableWriteAccess`. `getCfgScope` maps those
   formals to the body, not the enclosing function.
 - The body expression keeps its existing CFG tree (evaluation,
-  short-circuit, optional). Smoke reports `arrowx` / `arrowa` /
-  `arrowb` / `arrowxs` on `ssa_pos` (extractor glob already includes
-  that basename) and `i` / `n` / `port` on `luci`. `ParameterNode`
-  stays uninhabited.
+  short-circuit, optional). The smoke reports `arrowx` / `arrowa` /
+  `arrowb` / `arrowxs` on `ssa_pos`, and `i` / `n` / `port` on `luci`.
+- Named formals with CFG nodes also have `ParameterNode`s. The parameter
+  overlay includes expression-bodied arrows. See [ParameterNode from named
+  formals](m4-parameter-node.md).
 - Only direct identifier formals and rest-identifier formals are
   modeled. The locked grammar does not parse defaulted or destructured
   bindings (`a = 1` is `ERROR(number)`), so those forms are not in
@@ -35,7 +36,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   The #28 fixture still uses `x => x || 0` so that read remains a child.
 - Defaulted or destructured formals are not in the locked grammar
   (`a = 1` is `ERROR(number)`). Do not add those fixtures.
-- `ParameterNode` / argument-to-parameter flow. Do not add
-  `TSourceParameterNode` here.
-- `DataFlowDispatch` parameter overlay stays later.
-- Do not wire formals into production taint or `path_found`.
+- Same-file call `jumpStep` uses function declarations as targets. The
+  target model does not include arrow expressions. See
+  [identifier call jumps](m4-simple-call-jump.md) and
+  [member call jumps](m4-member-call-jump.md).
+- Production taint and `path_found` do not use these formal-flow models.
