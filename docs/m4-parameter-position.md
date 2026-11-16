@@ -12,18 +12,20 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   `parameter` field (`x => ...`).
 - Smoke reports `pos:name` on `luci` and `ssa_pos`. Position `1` is
   extractable (`(_, n) =>` in the luci plugin).
-- `ParameterNode` stays uninhabited. `parameterMatch` still does not
-  hold: public `Call.getArgument` is `none()` on the generated
-  `CallExpression` wrapper, so `ArgumentPosition` stays empty.
+- The original position smoke tests `ParameterPosition` only. Named
+  formals with CFG nodes also have `ParameterNode`s. Extracted call
+  arguments can have `ArgumentPosition`s. `parameterMatch` compares
+  their positions. This comparison does not resolve calls or prove
+  value identity. See [parameter nodes](m4-parameter-node.md).
 
-## Gaps (later PR)
+## Limits and related models
 
-- `ParameterNode` / argument-to-parameter flow. `ParameterNodes` is
-  still empty. Named block-bodied formals are Variables with CFG
-  nodes (separate leftover).
-- Content encoding (`Field` / `Element` / `Future`). `TContent` is
-  still `TFieldContent` with `none()`. Do not add `storeStep` /
-  `readStep` as production taint.
+- Same-file call `jumpStep` has separate controls. See
+  [identifier call jumps](m4-simple-call-jump.md) and
+  [member call jumps](m4-member-call-jump.md).
+- `TContent` includes extracted field and element content. See
+  [content encoding](m4-content-encoding.md). These content steps are
+  not production taint.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).
 - `codeql/threat-models` pack only with lockfile discipline.
