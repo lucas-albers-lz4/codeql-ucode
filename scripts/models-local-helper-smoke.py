@@ -16,6 +16,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+from contextlib import nullcontext
+from typing import Any
 from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -47,11 +49,19 @@ def entity(cell, source):
     return [rel, *coords]
 
 
+def row_counts(rows):
+    return Counter(json.dumps(row, sort_keys=True) for row in rows)
+
+
 def assert_rows(name, actual, expected):
-    def counts(rows):
-        return Counter(json.dumps(row, sort_keys=True) for row in rows)
-    a, e = counts(actual), counts(expected)
+    a, e = row_counts(actual), row_counts(expected)
     require(a == e, f'{name} mismatch; missing={e-a}; extra={a-e}')
+
+
+def assert_delta(name, actual, baseline, added, removed):
+    a, b = row_counts(actual), row_counts(baseline)
+    require(a - b == row_counts(added) and b - a == row_counts(removed),
+            f'{name} unexpected delta; added={a-b}; removed={b-a}')
 
 
 def command(*args):
@@ -60,13 +70,25 @@ def command(*args):
     return p.stdout
 
 
-def query(codeql, db, source, out, path, name, columns, search):
+def query(codeql, db, source, out, path, name, columns, search, *, complete=False) -> list[list[Any]]:
     bqrs = out / (name + '.bqrs')
     command(codeql, 'query', 'run', path, f'--database={db}', f'--search-path={search}', f'--output={bqrs}', '--ram=2048', '--threads=1')
-    result = json.loads(command(codeql, 'bqrs', 'decode', '--format=json', '--entities=url,string', bqrs))
+    decoded = command(codeql, 'bqrs', 'decode', '--format=json', '--entities=url,string', bqrs)
+    (out / (name + '.json')).write_text(decoded)
+    result = json.loads(decoded)
     require('#select' in result, f'{name}: missing #select')
     rows = result['#select']['tuples']
+    if complete:
+        return [[{'label': cell['label'], 'entity': entity(cell, source)} if isinstance(cell, dict) else cell
+                 for cell in row] for row in rows]
     return [[entity(row[i], source) for i in columns] for row in rows]
+
+
+def assert_added(name, rows, baseline, row):
+    added = row_counts(rows) - row_counts(baseline)
+    removed = row_counts(baseline) - row_counts(rows)
+    require(row_counts([row]) <= added, f'{name}: exact intended added row missing; added={added}; removed={removed}')
+    print(f'{name}: exact row added; all deltas added={added}; removed={removed}')
 
 
 def rejected(name, rows, expected, must_include):
@@ -79,13 +101,92 @@ def rejected(name, rows, expected, must_include):
         raise SystemExit(f'{name}: mutant unexpectedly accepted')
 
 
+IDENTITY_CASES = [
+        ('wrong-call', 'bindings', 0, 'UCODE::CallExpression',
+         ['issue_positive.uc', 4, 3, 4, 35], ['issue_shadow.uc', 4, 3, 4, 35],
+         'select call,', 'select reportIdentity(call),'),
+        ('wrong-helper', 'bindings', 1, 'UCODE::Identifier',
+         ['issue_positive.uc', 2, 10, 2, 32], ['issue_shadow.uc', 2, 10, 2, 32],
+         'select call, declaration.getName()', 'select call, reportIdentity(declaration.getName())'),
+        ('wrong-sink', 'effects', 2, 'UCODE::CallExpression',
+         ['issue_positive.uc', 2, 41, 2, 53], ['issue_shadow.uc', 2, 41, 2, 53],
+         ', popen,\n', ', reportIdentity(popen),\n'),
+        ('wrong-source', 'taints', 0, 'RequestArgsAccess',
+         ['taint_positive.uc', 2, 47, 2, 58], ['taint_shadow.uc', 2, 47, 2, 58],
+         'select src,', 'select reportIdentity(src),'),
+]
+
+
+def identity_mutant_text(text, case):
+    label, _, _, qltype, original_id, wrong_id, old, new = case
+
+    def location(var, identity):
+        path, sl, sc, el, ec = identity
+        loc = f'{var}.getLocation()'
+        return (f'{loc}.getFile().getRelativePath() = "{path}" and\n    '
+                f'{loc}.getStartLine() = {sl} and {loc}.getStartColumn() = {sc} and\n    '
+                f'{loc}.getEndLine() = {el} and {loc}.getEndColumn() = {ec}')
+
+    require(text.count(old) == 1 and len(re.findall(r'\nfrom\b', text)) == 1, f'cannot isolate identity fault: {label}')
+    helper = (f'\n{qltype} reportIdentity({qltype} original) {{\n'
+              f'  if {location("original", original_id)} then\n'
+              f'    {location("result", wrong_id)}\n'
+              f'  else result = original\n}}\n')
+    return re.sub(r'\n(?=from\b)', lambda _: helper + '\n', text.replace(old, new, 1), count=1)
+
+
+def identity_faults(codeql, db, source, out, mutant, search, queries):
+    """Schedule count-preserving substitutions in actual decoded query results."""
+    baselines = {}
+    for case in IDENTITY_CASES:
+        label, group, column, _, original_id, wrong_id, _, _ = case
+        path, columns = queries[group]
+        if group not in baselines:
+            full = query(codeql, db, source, out, ROOT / path, 'identity-baseline-' + group,
+                         columns, search, complete=True)
+            assert_rows('identity baseline ' + group,
+                        [[row[i]['entity'] for i in columns] for row in full], ORACLE[group])
+            baselines[group] = full
+        baseline = baselines[group]
+        selected = [row for row in baseline if isinstance(row[column], dict) and row[column]['entity'] == original_id]
+        require(len(selected) == 1, f'{label}: original identity not unique')
+        before = selected[0]
+        after = list(before)
+        after[column] = dict(before[column], entity=wrong_id)
+        text = identity_mutant_text((ROOT / path).read_text(), case)
+        qp = mutant / 'ql/src/extractor-smoke' / ('HelperIdentityFault-' + label + '.ql')
+        qp.write_text(text)
+        rows = query(codeql, db, source, out, qp, 'identity-' + label, columns, search, complete=True)
+        # Complete rows include labels and scalar messages, not just entity spans.
+        require(len(rows) == len(baseline), f'{label}: not count preserving')
+        assert_delta(label, rows, baseline, [after], [before])
+        projected = [[row[i]['entity'] for i in columns] for row in rows]
+        old_projected = [before[i]['entity'] for i in columns]
+        new_projected = [after[i]['entity'] for i in columns]
+        assert_delta(label + '-oracle', projected, ORACLE[group], [new_projected], [old_projected])
+        try:
+            assert_rows(label + '-oracle', projected, ORACLE[group])
+        except SystemExit:
+            print(f'PASS {label}: same-count full-row substitution rejected')
+        else:
+            raise SystemExit(f'{label}: unchanged oracle accepted wrong entity')
+
+
 def main():
     codeql = shutil.which('codeql')
     require(codeql is not None, 'codeql CLI must be on PATH')
     require((PACK / 'tools/linux64/extractor').is_file(), 'build extractor-pack first')
-    parent = Path(os.environ.get('CODEQL_UCODE_SMOKE_TMPDIR', tempfile.gettempdir())).resolve()
-    parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='models-helper-91-', dir=parent) as tmp:
+    retained = os.environ.get('CODEQL_UCODE_HELPER_EVIDENCE_DIR')
+    if retained:
+        evidence = Path(retained).expanduser().resolve()
+        evidence.mkdir(parents=True, exist_ok=False)
+        print(f'Retaining evidence at {evidence}')
+        context = nullcontext(str(evidence))
+    else:
+        parent = Path(os.environ.get('CODEQL_UCODE_SMOKE_TMPDIR', tempfile.gettempdir())).resolve()
+        parent.mkdir(parents=True, exist_ok=True)
+        context = tempfile.TemporaryDirectory(prefix='models-helper-91-', dir=parent)
+    with context as tmp:
         tmp = Path(tmp)
         source = tmp / 'source/ql/test/extractor-smoke'
         source.mkdir(parents=True)
@@ -111,14 +212,21 @@ def main():
         # This inventory distinguishes an extracted file with errors from a clean file.
         inv = out / 'files.bqrs'
         command(codeql, 'query', 'run', ROOT / 'ql/src/extractor-smoke/ModelsFsPopenFileInventory.ql', f'--database={db}', f'--search-path={search}', f'--output={inv}', '--ram=2048', '--threads=1')
-        data = json.loads(command(codeql, 'bqrs', 'decode', '--format=json', '--entities=url,string', inv))['#select']['tuples']
+        decoded_inventory = command(codeql, 'bqrs', 'decode', '--format=json', '--entities=url,string', inv)
+        (out / 'files.json').write_text(decoded_inventory)
+        data = json.loads(decoded_inventory)['#select']['tuples']
         expected_files = [[name, 'error' if name in ORACLE['errors'] else 'ok'] for name in ORACLE['inputs']]
         assert_rows('file diagnostics', data, expected_files)
         queries = {
             'raw': ('ql/src/extractor-smoke/ModelsLocalHelperRawCalls.ql', [0]),
+            'wrapped_raw': ('ql/src/extractor-smoke/ModelsLocalHelperWrappedRaw.ql', [0]),
             'bindings': ('ql/src/extractor-smoke/ModelsLocalHelperBindings.ql', [0, 1]),
             'effects': ('ql/src/m3/GetFeaturesPopen.ql', [0, 2]),
             'taints': ('ql/src/m3/GetFeaturesHelperTaint.ql', [0, 2]),
+            'generic_raw': ('ql/src/extractor-smoke/ModelsLocalHelperGenericRaw.ql', [0]),
+            'generic_bindings': ('ql/src/extractor-smoke/ModelsLocalHelperGenericBindings.ql', [0, 1]),
+            'generic_effects': ('ql/src/extractor-smoke/ModelsLocalHelperGenericEffects.ql', [0, 1]),
+            'generic_taints': ('ql/src/extractor-smoke/ModelsLocalHelperGenericTaints.ql', [0, 1]),
         }
         for name, (path, columns) in queries.items():
             rows = query(codeql, db, source, out, ROOT / path, name, columns, search)
@@ -133,13 +241,18 @@ def main():
         shutil.copytree(ROOT / 'ql/src', mutant / 'ql/src')
         models = mutant / 'ql/lib/codeql/ucode/m3/Models.qll'
         original = models.read_text()
+
+        def model_mutation(name, text):
+            models.write_text(text)
+            (out / (name + '.qll')).write_text(text)
+
         start = original.index('predicate sameFileCall(')
         end = original.index('\n}\n', start) + 2
         legacy = '''predicate sameFileCall(NamedCall c, UCODE::FunctionDeclaration def) {
   def = functionDecl(c.getName()) and
   c.getLocation().getFile() = def.getLocation().getFile()
 }'''
-        models.write_text(original[:start] + legacy + original[end:])
+        model_mutation('legacy-models', original[:start] + legacy + original[end:])
         mutant_search = os.pathsep.join(map(str, (PACK, mutant / 'ql/lib', mutant / 'ql/src')))
         for name, negative in (('bindings', 'issue_shadow.uc'), ('effects', 'issue_shadow.uc'), ('taints', 'taint_shadow.uc')):
             path, columns = queries[name]
@@ -177,13 +290,56 @@ def main():
         path, columns = queries['bindings']
         for name, old, new, negative in mutations:
             require(original.count(old) == 1, f'cannot isolate mutation: {name}')
-            models.write_text(original.replace(old, new, 1))
+            model_mutation('guard-' + name, original.replace(old, new, 1))
             rows = query(codeql, db, source, out, mutant / path, 'guard-' + name, columns, mutant_search)
+            exact = {
+                'identifier-guard': [['write_after_closure.uc', 4, 17, 4, 49], ['write_after_closure.uc', 2, 10, 2, 32]],
+                'error-guard': [['malformed.uc', 4, 3, 4, 35], ['malformed.uc', 2, 10, 2, 32]],
+            }
+            if name in exact:
+                assert_added('guard-' + name, rows, ORACLE['bindings'], exact[name])
             rejected('guard-' + name, rows, ORACLE['bindings'], negative)
+        # Review controls use isolated mutants with exact call/target AND
+        # production-effect deltas, rather than relying on a textual anchor.
+        cases = [
+            ('declaration-start', order, order.replace('def.getLocation().getEnd', 'def.getLocation().getStart'),
+             [['within_declaration.uc', 5, 5, 5, 37], ['within_declaration.uc', 2, 10, 2, 32]],
+             [['within_declaration.uc', 5, 5, 5, 37], ['within_declaration.uc', 3, 3, 3, 15]]),
+            ('argument-escape', '    not id = calleeIdent(any(NamedCall call))',
+             '    not id = calleeIdent(any(NamedCall call)) and\n    not exists(NamedCall outer | id = outer.getArgument(_))',
+             [['argument_escape.uc', 5, 3, 5, 35], ['argument_escape.uc', 2, 10, 2, 32]],
+             [['argument_escape.uc', 5, 3, 5, 35], ['argument_escape.uc', 2, 41, 2, 53]]),
+        ]
+        for name, old, new, binding, effect in cases:
+            require(original.count(old) == 1, f'cannot isolate {name}')
+            model_mutation('review-' + name, original.replace(old, new, 1))
+            for group, expected_row in (('bindings', binding), ('effects', effect)):
+                path, columns = queries[group]
+                rows = query(codeql, db, source, out, mutant / path, f'review-{name}-{group}', columns, mutant_search)
+                assert_delta(f'{name}-{group}', rows, ORACLE[group], [expected_row], [])
+                rejected(f'{name}-{group}', rows, ORACLE[group], expected_row[0][0])
+        # Test the public predicate's name/argument generality against both
+        # generic consumer-shaped queries as well as binding inventory.
+        restrict = '  def = functionDecl(c.getName()) and'
+        require(original.count(restrict) == 1, 'cannot isolate name restriction')
+        restrictions = [
+            ('name-only', '  c.getName() = "callPackageVersionCheck" and\n'),
+            ('selector-only', '  c instanceof CallPackageVersionCheckNetifd and\n'),
+            ('argument-only', '  stringLiteralValue(c.getArgument(0).(UCODE::String)) = "netifd" and\n'),
+        ]
+        for restriction_name, predicate in restrictions:
+            model_mutation('review-' + restriction_name, original.replace(restrict, predicate + restrict, 1))
+            for group in ('generic_bindings', 'generic_effects', 'generic_taints'):
+                path, columns = queries[group]
+                rows = query(codeql, db, source, out, mutant / path, 'review-' + restriction_name + '-' + group, columns, mutant_search)
+                assert_delta(restriction_name + '-' + group, rows, ORACLE[group], [], ORACLE[group])
+                require(not rows, f'{group}: {restriction_name} mutant retained a row')
+        models.write_text(original)
         # Dropping same-line support removes the positive rather than adding a
         # negative, so prove the exact positive disappeared independently.
         require(original.count(order) == 1, 'cannot isolate same-line support')
-        models.write_text(original.replace(order, '  def.getLocation().getEndLine() < c.getLocation().getStartLine() and\n', 1))
+        path, columns = queries['bindings']
+        model_mutation('guard-same-line-positive', original.replace(order, '  def.getLocation().getEndLine() < c.getLocation().getStartLine() and\n', 1))
         rows = query(codeql, db, source, out, mutant / path, 'guard-same-line-positive', columns, mutant_search)
         require(not any(row[0][0] == 'same_line_positive.uc' for row in rows), 'same-line mutant did not remove positive')
         try:
@@ -200,11 +356,14 @@ def main():
             before = 'sameFileCall(helperCall, helper)'
             after = 'helper = functionDecl(helperCall.getName()) and helperCall.getLocation().getFile() = helper.getLocation().getFile()'
             require(text.count(before) == 1, f'cannot isolate {name} consumer bypass')
-            qp.write_text(text.replace(before, after))
+            changed_query = text.replace(before, after)
+            qp.write_text(changed_query)
+            (out / ('bypass-' + name + '.ql')).write_text(changed_query)
             rows = query(codeql, db, source, out, qp, 'bypass-' + name, columns, mutant_search)
             rejected('bypass-' + name, rows, ORACLE[name], negative)
             qp.write_text(text)
-        print('PASS shared legacy and both independent consumer bypass controls')
+        identity_faults(codeql, db, source, out, mutant, mutant_search, queries)
+        print('PASS shared legacy, both consumer bypass controls, and identity faults')
 
 
 if __name__ == '__main__':

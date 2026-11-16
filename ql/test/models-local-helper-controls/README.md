@@ -14,15 +14,57 @@ sink spans and its empty taint result pinned independently.
 Nonmatches represent unknown, not proof that a call is safe or unreachable.
 The controls deliberately include whole-file recall losses, later writes,
 competing binders, optional and wrapped callees, sibling definitions, and a
-cross-file pair. `malformed.uc` and `stub.uc` are diagnostic-negative controls;
-the first retains a recoverable prefix. The source-derived spans and expected
-parse statuses must be checked against a fresh extraction, not assumed correct.
+cross-file pair. `wrapped_raw` independently inventories the outer call in each
+of the five unsupported wrapper/member/subscript controls. `malformed.uc` and
+`stub.uc` are diagnostic-negative controls; the first retains a recoverable
+prefix. The source-derived spans and expected parse statuses must be checked
+against a fresh extraction, not assumed correct.
 
-When capacity is available, run `bash scripts/m4-models-local-helper-smoke.sh`.
-It checks selected input/routing identities, parse status, raw calls, target
-pairs, both production consumers, the legacy shared matcher, individual guard
-mutations and consumer-only bypasses. A passing run must still be supplemented by
-real count-preserving entity-substitution mutations and before/after comparisons
-on the existing corpus, imported-fs gates and the serial aggregate. No query,
-mutation, parse-status expectation or QL compilation was exercised merely by
-creating this corpus.
+The reviewer-specified `within_declaration.uc` and `argument_escape.uc` are
+negative controls for declaration-end order and the direct-callee-only token
+exemption. The separate `generic_*` inventories exercise `localHelper('value')`.
+Their effect and taint queries are **test-only generalized analogues**, not the
+production consumers: the latter intentionally select only
+`callPackageVersionCheck('netifd')`. Both generic positive and formal-shadow
+controls have a direct tainted sink.
+
+## Scheduled real-query checks — not yet run
+
+When capacity is available, run the command below from the repository root.
+The evidence directory must not already exist. It preserves staged inputs,
+database, routing, copied pack, mutation sources, decoded JSON and BQRS; capture
+stdout separately. Allow adequate free disk. Never run beside the aggregate or
+another process using its database.
+
+```sh
+CODEQL_UCODE_HELPER_EVIDENCE_DIR="$PWD/../helper91-evidence-UNIQUE" \
+  bash scripts/m4-models-local-helper-smoke.sh
+```
+
+In addition to baseline oracles and legacy/bypass mutants, the scheduled checks
+require these exact **predictions**; none is an observed CodeQL result:
+
+- Start-of-declaration ordering adds precisely the within-declaration binding
+  `5:5-5:37 -> 2:10-2:32` and effect `5:5-5:37 -> 3:3-3:15`.
+- Exempting direct call arguments adds precisely the argument-escape binding
+  `5:3-5:35 -> 2:10-2:32` and effect `5:3-5:35 -> 2:41-2:53`.
+- Independently restricting the public predicate to the original name, the
+  original literal argument, or their combined selector removes the second-name
+  binding, generalized effect and generalized taint positives. Raw selected
+  calls and diagnostics must remain intact on the baseline run.
+- Disabling error suppression adds `malformed.uc:4:3-4:35 -> 2:10-2:32` to
+  the **binding inventory**, independently of the fs-popen consumer guard;
+  the baseline must also show that file's extraction error and raw call.
+- Disabling the Identifier guard adds the exact source-later-write edge
+  `write_after_closure.uc:4:17-4:49 -> 2:10-2:32`.
+- Independently substitute the wrong call, declaration-name token, sink and
+  taint source through actual query outputs. Require the exact single added and
+  removed full row, equal counts, unchanged labels and scalar cells, and rejection
+  by the unchanged projected identity oracle.
+
+The runner also checks selected input/routing identities, parse status, both
+production consumers, legacy rollback and independent consumer bypasses. A
+passing run still needs an old/new target-set comparison on the existing corpus,
+imported-fs gates, and the serial aggregate. No extraction, QL compilation,
+query, parse-status expectation or real mutation has yet been exercised for
+these controls; Python source-slice and verifier tests are not CodeQL evidence.
