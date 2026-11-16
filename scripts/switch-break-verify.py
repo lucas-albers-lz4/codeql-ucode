@@ -69,6 +69,12 @@ def verify_flow(source, rows):
         pair = (span(source, name, 3, "source()"), span(source, name, 9, "x"))
         if pair in got:
             raise ValueError(f"overwritten source reached final read: {pair}")
+    # Each fixture needs its own overwrite-to-read witness for a nonvacuous negative.
+    # These spans are source-derived proposals, not yet confirmed by a real CodeQL run.
+    for name in FILES[:2]:
+        positive = (span(source, name, 6, "'safe'"), span(source, name, 9, "x"))
+        if positive not in got:
+            raise ValueError(f"missing positive local-expression flow: {positive}")
     positive = (span(source, "controls.uc", 3, "source()"), span(source, "controls.uc", 4, "x"))
     if positive not in got:
         raise ValueError(f"missing positive local-expression flow: {positive}")

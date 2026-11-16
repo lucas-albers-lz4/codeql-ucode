@@ -30,6 +30,21 @@ class SwitchBreakVerifierTests(unittest.TestCase):
         a = verify.span(SOURCE, "controls.uc", 3, "source()")
         b = verify.span(SOURCE, "controls.uc", 4, "x")
         self.flow = [flow_row(a, b)]
+        # Proposed source-derived spans only; these are not observed CodeQL rows.
+        for name in ("break.uc", "break_control.uc"):
+            a = verify.span(SOURCE, name, 6, "'safe'")
+            b = verify.span(SOURCE, name, 9, "x")
+            self.flow.append(flow_row(a, b))
+
+    def test_rejects_missing_break_overwrite_flow(self):
+        rows = [row for row in self.flow if row["file"] != "break.uc"]
+        with self.assertRaisesRegex(ValueError, r"missing positive.*'break\.uc'"):
+            verify.verify_flow(SOURCE, rows)
+
+    def test_rejects_missing_break_control_overwrite_flow(self):
+        rows = [row for row in self.flow if row["file"] != "break_control.uc"]
+        with self.assertRaisesRegex(ValueError, r"missing positive.*'break_control\.uc'"):
+            verify.verify_flow(SOURCE, rows)
 
     def test_accepts_expected_synthetic_rows(self):
         verify.verify_edges(SOURCE, self.edges)
@@ -48,11 +63,24 @@ class SwitchBreakVerifierTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "CFG successors"):
             verify.verify_edges(SOURCE, rows + [edge_row(a, b)])
 
-    def test_rejects_source_flow_and_missing_positive(self):
+    def test_rejects_break_overwritten_source_flow(self):
         a = verify.span(SOURCE, "break.uc", 3, "source()")
         b = verify.span(SOURCE, "break.uc", 9, "x")
-        with self.assertRaisesRegex(ValueError, "overwritten source"):
+        with self.assertRaisesRegex(ValueError, r"overwritten source.*'break\.uc'"):
             verify.verify_flow(SOURCE, self.flow + [flow_row(a, b)])
+
+    def test_rejects_break_control_overwritten_source_flow(self):
+        a = verify.span(SOURCE, "break_control.uc", 3, "source()")
+        b = verify.span(SOURCE, "break_control.uc", 9, "x")
+        with self.assertRaisesRegex(ValueError, r"overwritten source.*'break_control\.uc'"):
+            verify.verify_flow(SOURCE, self.flow + [flow_row(a, b)])
+
+    def test_rejects_missing_controls_positive(self):
+        rows = [row for row in self.flow if row["file"] != "controls.uc"]
+        with self.assertRaisesRegex(ValueError, r"missing positive.*'controls\.uc'"):
+            verify.verify_flow(SOURCE, rows)
+
+    def test_rejects_empty_flow(self):
         with self.assertRaisesRegex(ValueError, "missing positive"):
             verify.verify_flow(SOURCE, [])
 
