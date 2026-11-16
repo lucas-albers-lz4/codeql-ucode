@@ -70,6 +70,21 @@ def command(*args):
     return p.stdout
 
 
+def index_with_routing(codeql, db, source, receipt):
+    """Preserve any emitted raw routing receipt, even when indexing fails."""
+    routing_file = db / 'trap/ucode/routing.json'
+    try:
+        command(codeql, 'database', 'index-files', db, '--language=ucode',
+                '--include=**/*.uc', f'--working-dir={source}')
+    finally:
+        if routing_file.is_file():
+            raw = routing_file.read_bytes()
+            receipt.write_bytes(raw)
+            print(f'Routing receipt: {receipt} sha256={hashlib.sha256(raw).hexdigest()}')
+    require(receipt.is_file(), f'routing receipt missing: {routing_file}')
+    return json.loads(receipt.read_bytes())
+
+
 def query(codeql, db, source, out, path, name, columns, search, *, complete=False) -> list[list[Any]]:
     bqrs = out / (name + '.bqrs')
     command(codeql, 'query', 'run', path, f'--database={db}', f'--search-path={search}', f'--output={bqrs}', '--ram=2048', '--threads=1')
@@ -199,8 +214,7 @@ def main():
             (source / filename).write_bytes(data)
         db = tmp / 'database'
         command(codeql, 'database', 'init', db, '--language=ucode', f'--search-path={PACK}', f'--source-root={source}')
-        command(codeql, 'database', 'index-files', db, '--language=ucode', '--include=**/*.uc', f'--working-dir={source}')
-        routing = json.loads((db / 'trap/ucode/routing.json').read_text())
+        routing = index_with_routing(codeql, db, source, tmp / 'routing.json')
         paths = [Path(d['path']).relative_to(source).as_posix() for d in routing['decisions']]
         require(Counter(paths) == Counter(ORACLE['inputs'].keys()), 'routing input identity mismatch')
         require(all(d['classification'] == 'plain' and d['status'] == 'plain_route_selected' for d in routing['decisions']), 'unexpected routing decision')
@@ -345,8 +359,7 @@ def main():
         shutil.copyfile(source / 'same_line_positive.uc', mini_source / 'same_line_positive.uc')
         mini_db = tmp / 'same-line-database'
         command(codeql, 'database', 'init', mini_db, '--language=ucode', f'--search-path={PACK}', f'--source-root={mini_source}')
-        command(codeql, 'database', 'index-files', mini_db, '--language=ucode', '--include=**/*.uc', f'--working-dir={mini_source}')
-        mini_routing = json.loads((mini_db / 'trap/ucode/routing.json').read_text())
+        mini_routing = index_with_routing(codeql, mini_db, mini_source, tmp / 'same-line-routing.json')
         require(len(mini_routing['decisions']) == 1 and
                 Path(mini_routing['decisions'][0]['path']) == mini_source / 'same_line_positive.uc' and
                 mini_routing['decisions'][0]['status'] == 'plain_route_selected' and

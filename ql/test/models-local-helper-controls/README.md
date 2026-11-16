@@ -32,9 +32,15 @@ controls have a direct tainted sink.
 
 When capacity is available, run the command below from the repository root.
 The evidence directory must not already exist. It preserves staged inputs,
-database, routing, copied pack, mutation sources, decoded JSON and BQRS; capture
-stdout separately. Allow adequate free disk. Never run beside the aggregate or
-another process using its database.
+databases, copied pack, mutation sources, decoded JSON and BQRS. The raw
+`routing.json` and `same-line-routing.json` receipts live directly in the
+evidence directory, outside the indexed source trees. Each is copied before its
+database is finalized and its absolute path and SHA-256 are printed to stdout.
+Capture stdout separately. A receipt is also copied when indexing fails after
+emitting it or a later validation fails; no receipt can be retained if indexing
+did not emit one. Without an evidence directory, the temporary files are removed
+on exit. Allow adequate free disk. Never run beside the aggregate or another
+process using its database.
 
 ```sh
 CODEQL_UCODE_HELPER_EVIDENCE_DIR="$PWD/../helper91-evidence-UNIQUE" \
