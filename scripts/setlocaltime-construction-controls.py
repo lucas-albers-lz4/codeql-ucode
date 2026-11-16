@@ -31,7 +31,17 @@ def decode(db, query, name, search, additional=None):
         command.append('--additional-packs=' + additional)
     run(*command)
     text = subprocess.check_output(['codeql', 'bqrs', 'decode', '--format=csv', str(output)])
+    (db / (name + '.csv')).write_bytes(text)
     return list(csv.DictReader(text.decode('utf-8').splitlines(), strict=True))
+
+
+def row_counter(data):
+    return collections.Counter(tuple(sorted(row.items())) for row in data)
+
+
+def check_inventory(rows, expected):
+    if row_counter(rows) != row_counter(expected):
+        raise ValueError(f'inventory mismatch: missing={row_counter(expected)-row_counter(rows)} unexpected={row_counter(rows)-row_counter(expected)}')
 
 
 def cases(source):
@@ -76,6 +86,8 @@ def cases(source):
     replace_once('raw-suffix', 't.min, t.sec));', "t.min, t.sec) + 'x');")
     replace_once('wrong-shell', literal, literal.replace('>/dev/null', '>/dev/zero'))
     replace_once('format-escape', literal, literal.replace('date -s', r'date\x20-s'))
+    replace_once('format-escape-suffix', literal, literal + r'\x20')
+    replace_once('args-localtime-nonzero', 'localtime: 0', 'localtime: 1')
     replace_once('malformed', 'return { luci: methods };', 'return { luci: methods };\nconst broken = ;')
     replace_once('duplicate-method', 'setLocaltime: {', 'setLocaltime: { call: function() {} },\n\tsetLocaltime: {')
     replace_once('wrong-return', 'return { luci: methods };', 'return { luci: {} };')
@@ -122,6 +134,7 @@ def main():
         search = f'{PACK}:{ROOT}/ql/lib:{ROOT}/ql/src'
         run('codeql', 'database', 'init', str(db), '--language=ucode', '--search-path=' + str(PACK), '--source-root=' + str(src))
         run('codeql', 'database', 'index-files', '--language=ucode', '--include=**/rpcd/ucode/luci', '--working-dir=' + str(src), str(db))
+        shutil.copy2(db / 'trap/ucode/routing.json', base / 'routing.json')
         routing = json.loads((db / 'trap/ucode/routing.json').read_text())
         decisions = routing['decisions']
         if len(decisions) != len(paths) or {d['path'] for d in decisions} != set(map(str, paths.values())) or any(d['classification'] != 'plain' or d['installed_path'] != 'usr/share/rpcd/ucode/luci' for d in decisions):
@@ -163,9 +176,18 @@ def main():
         }
         for row, (start, end) in zip(expected_base, [(78, 83), (86, 90), (93, 98), (101, 106), (109, 113), (116, 120)]):
             expected.append(dict(row, **minimal_common, field_start_column=str(start), field_end_column=str(end)))
-        counter = lambda data: collections.Counter(tuple(sorted(row.items())) for row in data)
-        if counter(rows) != counter(expected):
-            raise SystemExit(f'inventory mismatch: missing={counter(expected)-counter(rows)} unexpected={counter(rows)-counter(expected)}')
+        check_inventory(rows, expected)
+        evidence_env = os.environ.get('M4_SETLOCALTIME_EVIDENCE_DIR')
+        evidence = Path(evidence_env).resolve() / 'controls' if evidence_env else None
+        if evidence:
+            evidence.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(base / 'routing.json', evidence / 'routing.json')
+            for name in ('extracted', 'errors', 'inventory'):
+                for ext in ('csv', 'bqrs'):
+                    shutil.copy2(db / f'{name}.{ext}', evidence / f'{name}.{ext}')
+            (evidence / 'expected.json').write_text(json.dumps(expected, indent=2) + '\n', encoding='utf-8')
+            for name in ('format-escape-suffix', 'args-localtime-nonzero'):
+                shutil.copy2(paths[name], evidence / (name + '.uc'))
         public = decode(db, PUBLIC, 'public-wrong-path', search)
         if public:
             raise SystemExit(f'public query accepted wrong relative paths: {public!r}')
@@ -176,6 +198,8 @@ def main():
             'format': ('plainString(format, "date -s \\\"%04d-%02d-%02d %02d:%02d:%02d\\\" >/dev/null")', 'exists(format.getChild(0))', 'conversion-1'),
             'order': ('field.getProperty().getValue() = n', '1 = 1', 'wrong-field-order'),
             'sprintf-binding': ('allowedCalleeName(p, "sprintf") and ', '', 'sprintf-formal'),
+            'format-extra-child': ('not exists(s.getChild(1))', '1 = 1', 'format-escape-suffix'),
+            'args-value': ('arg.getValue().(UCODE::Number).getValue() = "0"', 'exists(arg.getValue())', 'args-localtime-nonzero'),
         }
         for kind, (old, new, designated) in mutants.items():
             copied = base / ('mutant-' + kind)
@@ -191,12 +215,26 @@ def main():
             pack_roots = f'{copied}/ql/lib:{copied}/ql/src'
             mutated = decode(db, copied / 'ql/src/extractor-smoke/SetLocaltimeConstructionInventory.ql',
                              'mutant-' + kind, str(PACK), pack_roots)
+            if evidence:
+                shutil.copy2(helper, evidence / ('mutant-' + kind + '.qll'))
+                for ext in ('csv', 'bqrs'):
+                    shutil.copy2(db / f'mutant-{kind}.{ext}', evidence / f'mutant-{kind}.{ext}')
             target = paths[designated].relative_to(src).as_posix()
             hits = [r for r in mutated if r['source_path'] == target]
             if len(hits) != 6 or {r['slot_index'] for r in hits} != set('123456'):
                 raise SystemExit(f'{kind}: mutant failed to expose designated {designated}: {hits!r}')
             if any(r['source_path'] == target for r in rows):
                 raise SystemExit(f'{kind}: control was not negative in original output')
+            if kind in ('format-extra-child', 'args-value'):
+                try:
+                    check_inventory(mutated, expected)
+                except ValueError:
+                    pass
+                else:
+                    raise SystemExit(f'{kind}: unchanged full inventory oracle accepted mutant')
+                if row_counter(mutated) - row_counter(rows) != row_counter(hits) or row_counter(rows) - row_counter(mutated):
+                    raise SystemExit(f'{kind}: mutation changed rows beyond the six designated rows')
+                print(f'PASS: unchanged full inventory oracle rejected {kind}; only six designated rows added', flush=True)
             print(f'PASS: real-query {kind} mutant exposes {designated}', flush=True)
         print(f'PASS: {len(paths)} routed controls; {len(extracted)} extracted; one malformed error; {len(rows)} exact rows from {len(positive) + 1} conditional positives; public path filter rejected all')
 

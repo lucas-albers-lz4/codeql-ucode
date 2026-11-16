@@ -77,16 +77,23 @@ wrong-sink and wrong-field query mutations against the same oracle. A second
 batch exercises a minimal fixture, comments, reflective mutation, six `%s`
 positions, reordered and rebound values, malformed source, wrong paths,
 formatter variations, and whole-file shadowing/binding controls for each
-callee. It checks actual routing and per-file extraction diagnostics. Isolated
-real-query mutants separately exercise the extraction-error, format,
-field-order and `sprintf` lexical guards. Other individual guard mutations
-are not claimed as exhaustively killed. Statement-shape restrictions can make
-some occurrence checks redundant for particular controls.
+callee. It also includes an escape following the entire canonical literal
+fragment and nonzero `args.localtime` metadata. It checks actual routing and
+per-file extraction diagnostics. Isolated real-query mutants separately exercise
+the extraction-error, format, extra-string-child, args-metadata-value,
+field-order and `sprintf` lexical guards. The extra-string-child and
+args-metadata-value mutations each add exactly six rows for their designated
+negative control and are rejected by
+the same complete inventory oracle used for the baseline. Other individual
+guard mutations are not claimed as exhaustively killed. Statement-shape
+restrictions can make some occurrence checks redundant for particular controls.
 
 Set `M4_SETLOCALTIME_EVIDENCE_DIR` to copy the real source table, diagnostics,
 routing, candidate entity decodes, and the two wrong-identity query outputs
-from a successful focused run. The control database and other mutation outputs
-are temporary; a successful test log is not an attested handoff. The copied
+from a successful focused run. It also retains the controls' routing, diagnostic
+and inventory outputs, expected rows, two source controls, and isolated mutant
+helper sources and outputs under `controls/`. The control database remains
+temporary; a successful test log is not an attested handoff. The copied
 extractor binary or cached query plans may be reused, as determined by the
 local environment. Run the consumer independently, with its own oracle and
 context pins; producer tests alone are not a consumer acceptance run.
