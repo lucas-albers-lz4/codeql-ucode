@@ -29,6 +29,7 @@ fn unresolved_input_is_reported_and_later_input_is_extracted() {
         &output,
         &archive,
         trap::Compression::Gzip,
+        None,
     )
     .unwrap();
     assert!(report.is_reconciled());
@@ -69,6 +70,7 @@ fn output_directory_errors_are_not_skipped() {
         &output,
         &root.join("archive"),
         trap::Compression::Gzip,
+        None,
     );
     assert_eq!(result.err().unwrap().kind(), output_error.kind());
     std::fs::remove_dir_all(root).unwrap();

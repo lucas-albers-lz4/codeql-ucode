@@ -31,6 +31,40 @@ Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Ident
 
 Fresh checkouts: `./scripts/clone-grammar.sh` before `cargo test`. The grammar clone is gitignored.
 
+## Extracting an installed staging root
+
+The existing fixture and package-layout routing remains the default. To route
+an ordinary installed filesystem tree, explicitly trust its root: pass
+`--staged-root /absolute/path/to/stage` to the extractor's `extract` command,
+or set `CODEQL_UCODE_STAGED_ROOT` to that path for `codeql database index-files`.
+The caller must still select extensionless files with an `--include` pattern;
+setting the root does not discover them automatically. For example:
+
+```sh
+codeql database init "$DB" --language=ucode --search-path="$PWD/extractor-pack" --source-root="$STAGE"
+CODEQL_UCODE_STAGED_ROOT="$STAGE" codeql database index-files "$DB" --language=ucode \
+  --include='**/rpcd/ucode/luci' --working-dir="$STAGE"
+codeql database finalize "$DB"
+```
+
+The root must exist and be a directory. Both root and inputs are canonicalized;
+an input resolving outside the root (including a symlink escape) is excluded
+with `outside_staged_root`. In this explicit mode installed paths are relative
+to that root, and embedded fixture/package path markers do not grant routing.
+Point to the actual installed root, not its parent or a package source tree.
+Do not leave the variable set for unrelated corpus-layout extractions. Without
+the option, established fixture and package layouts retain their prior rules.
+The extractor exit status alone does not establish completeness: check
+`routing.json`, exact `SuccessfullyExtractedFiles` identities and empty
+`ExtractionErrors` before accepting query results. The focused regression is
+`bash scripts/m4-staged-routing-smoke.sh` after building the extractor pack.
+On Windows the batch wrapper passes the static `--staged-root-from-env` option;
+with that option the extractor reads `CODEQL_UCODE_STAGED_ROOT` directly as an
+OS string, rejecting a missing or empty value. The option conflicts with
+`--staged-root`. Without either option, a direct extractor invocation ignores
+that environment variable and retains legacy routing. Native Windows wrapper
+and filesystem execution are device-gated and have not been verified locally.
+
 ## Local SSA and data-flow status
 
 The experimental CFG has partial coverage of ordered expression and access
