@@ -167,6 +167,18 @@ private predicate parameterBinding(UCODE::AstNode body, string name) {
   )
 }
 
+/** A lexical declarator becomes visible at its name, not at block entry. */
+private predicate declaredAt(Variable v, UCODE::AstNode occurrence) {
+  not v.getAstNode() instanceof TVariableDeclarator
+  or
+  exists(UCODE::VariableDeclarator d |
+    v.getAstNode() = TVariableDeclarator(d) and
+    (d.getName().getLocation().getStartLine() < occurrence.getLocation().getStartLine() or
+      d.getName().getLocation().getStartLine() = occurrence.getLocation().getStartLine() and
+      d.getName().getLocation().getStartColumn() < occurrence.getLocation().getStartColumn())
+  )
+}
+
 /**
  * Whether an identifier occurrence resolves to this lexical binding.
  *
@@ -179,9 +191,11 @@ private predicate visibleAt(UCODE::AstNode occurrence, Variable v, string name) 
     scope = bindingScope(v) and
     name = v.getName() and
     occurrence.getParent*() = scope and
+    declaredAt(v, occurrence) and
     not exists(Variable other, UCODE::AstNode inner |
       other != v and
       other.getName() = name and
+      declaredAt(other, occurrence) and
       inner = bindingScope(other) and
       inner.getParent+() = scope and
       occurrence.getParent*() = inner

@@ -74,8 +74,11 @@ runtime exception paths may be missed.
 Named formals of block-bodied functions and expression-bodied arrows are
 Variables with CFG nodes and SSA writes. Since #28, an expression-bodied
 arrow's body expression is its inner `CfgScope`, analogous to the block scope
-of a block-bodied function. Parameters still shadow outer variables. See
-[`docs/m4-arrow-cfgscope.md`](docs/m4-arrow-cfgscope.md) for the supported
+of a block-bodied function. Parameters still shadow outer variables. Lexical
+`let`/`const` declarations become visible in source order; a later inner
+declaration does not shadow an earlier read. Switch-body scope remains a
+separate known limitation ([#93](https://github.com/lucas-albers-lz4/codeql-ucode/issues/93)).
+See [`docs/m4-arrow-cfgscope.md`](docs/m4-arrow-cfgscope.md) for the supported
 formal shapes and current limits.
 The regression smoke covers same-statement ordering, joins, loop-carried flow,
 short-circuit expressions, optional chains and return values.
