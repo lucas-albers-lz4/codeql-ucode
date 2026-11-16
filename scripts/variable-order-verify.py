@@ -11,7 +11,7 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 
 
-def verify_inputs(source):
+def verify_inputs(source: Path) -> Path:
     if source.is_symlink() or not source.is_dir():
         raise SystemExit(f"invalid fixture source root: {source}")
     source = source.resolve(strict=True)
@@ -32,6 +32,7 @@ def verify_inputs(source):
         if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
             raise SystemExit(f"fixture bytes differ: {path}")
     print(f"PASS fixture identities and hashes: {len(expected)}")
+    return source
 
 
 if len(sys.argv) == 3 and sys.argv[1] == "inputs":
@@ -39,8 +40,8 @@ if len(sys.argv) == 3 and sys.argv[1] == "inputs":
     sys.exit(0)
 if len(sys.argv) != 3:
     raise SystemExit("usage: variable-order-verify.py inputs SOURCE | OUT SOURCE")
-out, source = Path(sys.argv[1]), Path(sys.argv[2]).resolve()
-verify_inputs(source)
+out, source = Path(sys.argv[1]), Path(sys.argv[2])
+source = verify_inputs(source)
 spec = importlib.util.spec_from_file_location(
     "ownership", Path(__file__).with_name("rpc-ownership-verify.py")
 )

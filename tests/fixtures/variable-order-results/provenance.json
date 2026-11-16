@@ -1,0 +1,31 @@
+{
+  "description": "Real CodeQL smoke results from 631f10c, with only the original source-root prefix replaced by @SOURCE_ROOT@. The original extracted/bindings/flow/errors JSON was verified byte-for-byte against fresh BQRS decodes.",
+  "source_sha256": "4ccea382de2ebd7f185617bb6ea0307aa9927dbf57d2d1d57a83f3071ecd3631",
+  "results": {
+    "routing.json": {
+      "original_sha256": "b8d5171d8baee5f3099fcffd28113c04fbffced7725ff17cd8c6a53be89b3694",
+      "portable_sha256": "491daef72dbf69fc249cec2a8533130610d47f6d44a8b7a7739b183d4b7db74b",
+      "root_occurrences": 1
+    },
+    "extracted.json": {
+      "original_sha256": "8bb173678a5c52e376e46af6cdf2a3786f9af23d417ed3bad84b8a794a5bc79f",
+      "portable_sha256": "d1c72e33dfcb5b776d343ad7ca78d9d5df54e1835955e685a6443bc02cd2d5e9",
+      "root_occurrences": 2
+    },
+    "errors.json": {
+      "original_sha256": "2c38be0a7d1935f63300ceccb92fd50f5bb76b829bcd0bac782393521a7665fc",
+      "portable_sha256": "2c38be0a7d1935f63300ceccb92fd50f5bb76b829bcd0bac782393521a7665fc",
+      "root_occurrences": 0
+    },
+    "bindings.json": {
+      "original_sha256": "cf06a8a0cf9e2eeaefd538d63d362bcad4b4e8e29849b76751a84b79666607a4",
+      "portable_sha256": "cf06a8a0cf9e2eeaefd538d63d362bcad4b4e8e29849b76751a84b79666607a4",
+      "root_occurrences": 0
+    },
+    "flow.json": {
+      "original_sha256": "d1a8739ebed5a5cb1f6986c49efa83aa5407fdd2c38a5c83dccee7915832d57c",
+      "portable_sha256": "d1a8739ebed5a5cb1f6986c49efa83aa5407fdd2c38a5c83dccee7915832d57c",
+      "root_occurrences": 0
+    }
+  }
+}
