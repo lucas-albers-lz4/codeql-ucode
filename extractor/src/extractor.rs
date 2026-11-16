@@ -21,6 +21,10 @@ pub struct Options {
     /// A text file containing the paths of the files to extract
     #[arg(long)]
     file_list: String,
+
+    /// Trust this directory as the installed filesystem root for routing.
+    #[arg(long)]
+    staged_root: Option<PathBuf>,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -85,8 +89,17 @@ impl RoutingReport {
 /// Classify using the complete path, not its basename. The source archive
 /// keeps the original path; named package layouts are mapped to installed
 /// paths before applying the shared routing rules.
+#[cfg(test)]
 fn classify(path: &Path, source: &[u8]) -> Option<Route> {
-    let installed_path = installed_path_for_source(path);
+    classify_installed(path, source, &installed_path_for_source(path), true)
+}
+
+fn classify_installed(
+    path: &Path,
+    source: &[u8],
+    installed_path: &str,
+    legacy: bool,
+) -> Option<Route> {
     let installed_path = installed_path.trim_start_matches('/');
     let rpcd_raw_mode = is_rpcd_ucode_path(installed_path);
     let ucode_share_path = installed_path.starts_with("usr/share/ucode/");
@@ -138,7 +151,7 @@ fn classify(path: &Path, source: &[u8]) -> Option<Route> {
 
     // Keep the established extractor smoke fixtures working. These are
     // explicit test inputs, not a production extensionless-file heuristic.
-    if is_legacy_smoke_input(path) {
+    if legacy && is_legacy_smoke_input(path) {
         return Some(Route {
             classification: Classification::Plain,
             reason: "explicit_extractor_smoke_input",
@@ -323,6 +336,20 @@ pub fn run(options: Options) -> std::io::Result<()> {
         }
     };
 
+    let staged_root = options
+        .staged_root
+        .as_ref()
+        .map(|root| {
+            let root = root.canonicalize()?;
+            if !root.is_dir() {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidInput,
+                    "staged root must be a directory",
+                ));
+            }
+            Ok(root)
+        })
+        .transpose()?;
     let report = process_inputs(
         &lines,
         &schema,
@@ -330,6 +357,7 @@ pub fn run(options: Options) -> std::io::Result<()> {
         &options.output_dir,
         &options.source_archive_dir,
         compression,
+        staged_root.as_deref(),
     )?;
     tracing::info!(
         plain_count = report.plain_count,
@@ -349,6 +377,7 @@ fn process_inputs(
     output_dir: &Path,
     source_archive_dir: &Path,
     compression: trap::Compression,
+    staged_root: Option<&Path>,
 ) -> std::io::Result<RoutingReport> {
     let mut report = RoutingReport::default();
     let mut seen = HashSet::new();
@@ -371,7 +400,25 @@ fn process_inputs(
             }
         };
         let path_id = file_paths::normalize_path(&path);
-        let installed_path = installed_path_for_source(&path);
+        let installed_path = if let Some(root) = staged_root {
+            match path.strip_prefix(root) {
+                Ok(relative) => file_paths::normalize_path(relative),
+                Err(_) => {
+                    report.excluded_count += 1;
+                    report.decisions.push(decision_json(
+                        &path_id,
+                        "",
+                        "excluded",
+                        "outside_staged_root",
+                        "excluded",
+                        None,
+                    ));
+                    continue;
+                }
+            }
+        } else {
+            installed_path_for_source(&path)
+        };
         if !seen.insert(path.clone()) {
             report.duplicate_input_count += 1;
             report.decisions.push(decision_json(
@@ -386,7 +433,9 @@ fn process_inputs(
         }
 
         let source = std::fs::read(&path)?;
-        let Some(route) = classify(&path, &source) else {
+        let Some(route) =
+            classify_installed(&path, &source, &installed_path, staged_root.is_none())
+        else {
             report.excluded_count += 1;
             report.decisions.push(decision_json(
                 &path_id,
@@ -657,6 +706,7 @@ mod tests {
             &trap_root,
             &archive_root,
             trap::Compression::Gzip,
+            None,
         )
         .unwrap();
         assert!(report.is_reconciled());
