@@ -13,5 +13,5 @@ type NUL && "%CODEQL_EXTRACTOR_UCODE_ROOT%\tools\win64\extractor.exe" extract ^
         --file-list "%1" ^
         --source-archive-dir "%CODEQL_EXTRACTOR_UCODE_SOURCE_ARCHIVE_DIR%" ^
         --output-dir "%CODEQL_EXTRACTOR_UCODE_TRAP_DIR%" ^
-        --staged-root "%CODEQL_UCODE_STAGED_ROOT%"
+        --staged-root-from-env
 exit /b %ERRORLEVEL%

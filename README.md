@@ -58,6 +58,12 @@ The extractor exit status alone does not establish completeness: check
 `routing.json`, exact `SuccessfullyExtractedFiles` identities and empty
 `ExtractionErrors` before accepting query results. The focused regression is
 `bash scripts/m4-staged-routing-smoke.sh` after building the extractor pack.
+On Windows the batch wrapper passes the static `--staged-root-from-env` option;
+with that option the extractor reads `CODEQL_UCODE_STAGED_ROOT` directly as an
+OS string, rejecting a missing or empty value. The option conflicts with
+`--staged-root`. Without either option, a direct extractor invocation ignores
+that environment variable and retains legacy routing. Native Windows wrapper
+and filesystem execution are device-gated and have not been verified locally.
 
 ## Local SSA and data-flow status
 

@@ -1,5 +1,6 @@
 use clap::Args;
 use std::collections::HashSet;
+use std::ffi::OsString;
 use std::path::{Path, PathBuf};
 
 use codeql_extractor::{file_paths, node_types, trap};
@@ -7,6 +8,10 @@ use codeql_extractor::{file_paths, node_types, trap};
 #[cfg(test)]
 #[path = "stale_input_tests.rs"]
 mod stale_input_tests;
+
+#[cfg(test)]
+#[path = "staged_root_tests.rs"]
+mod staged_root_tests;
 
 #[derive(Args)]
 pub struct Options {
@@ -25,6 +30,33 @@ pub struct Options {
     /// Trust this directory as the installed filesystem root for routing.
     #[arg(long)]
     staged_root: Option<PathBuf>,
+
+    /// Read the trusted installed root from CODEQL_UCODE_STAGED_ROOT.
+    #[arg(long, conflicts_with = "staged_root")]
+    staged_root_from_env: bool,
+}
+
+fn resolve_staged_root(
+    explicit: Option<PathBuf>,
+    from_env: bool,
+    env_root: Option<OsString>,
+) -> std::io::Result<Option<PathBuf>> {
+    if !from_env {
+        return Ok(explicit);
+    }
+    if explicit.is_some() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "--staged-root and --staged-root-from-env conflict",
+        ));
+    }
+    match env_root {
+        Some(root) if !root.is_empty() => Ok(Some(PathBuf::from(root))),
+        _ => Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "CODEQL_UCODE_STAGED_ROOT must be set and nonempty",
+        )),
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -308,6 +340,25 @@ fn is_legacy_smoke_input(path: &Path) -> bool {
 }
 
 pub fn run(options: Options) -> std::io::Result<()> {
+    let env_root = if options.staged_root_from_env {
+        std::env::var_os("CODEQL_UCODE_STAGED_ROOT")
+    } else {
+        None
+    };
+    let staged_root =
+        resolve_staged_root(options.staged_root, options.staged_root_from_env, env_root)?
+            .map(|root| {
+                let root = root.canonicalize()?;
+                if !root.is_dir() {
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::InvalidInput,
+                        "staged root must be a directory",
+                    ));
+                }
+                Ok(root)
+            })
+            .transpose()?;
+
     tracing_subscriber::fmt()
         .with_target(false)
         .without_time()
@@ -336,20 +387,6 @@ pub fn run(options: Options) -> std::io::Result<()> {
         }
     };
 
-    let staged_root = options
-        .staged_root
-        .as_ref()
-        .map(|root| {
-            let root = root.canonicalize()?;
-            if !root.is_dir() {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::InvalidInput,
-                    "staged root must be a directory",
-                ));
-            }
-            Ok(root)
-        })
-        .transpose()?;
     let report = process_inputs(
         &lines,
         &schema,

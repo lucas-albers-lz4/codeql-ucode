@@ -1,5 +1,6 @@
 """End-to-end routing checks against the built extractor binary."""
 import json
+import os
 
 from pathlib import Path
 import subprocess
@@ -49,6 +50,7 @@ class StagedRouting(unittest.TestCase):
                 'prefix/usr/share/rpcd/ucode/luci',
                 'modules/pkg/root/usr/share/rpcd/ucode/luci',
                 'ql/test/extractor-smoke/usr/share/rpcd/ucode/luci',
+                'ql/test/extractor-smoke/luci',
             )]
             for path in paths:
                 path.parent.mkdir(parents=True, exist_ok=True)
@@ -63,10 +65,89 @@ class StagedRouting(unittest.TestCase):
                 str(inputs), '--staged-root', str(root)], text=True, capture_output=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             receipt = json.loads((temp / 'trap/routing.json').read_text())
+            immediate = receipt['decisions'][5]
+            self.assertEqual(immediate, {
+                'path': str(paths[5]), 'installed_path': 'ql/test/extractor-smoke/luci',
+                'classification': 'excluded', 'reason': 'no_ucode_route',
+                'status': 'excluded',
+            })
             self.assertEqual(receipt['plain_count'], 0)
-            self.assertEqual(receipt['excluded_count'], 7)
+            self.assertEqual(receipt['excluded_count'], 8)
             self.assertEqual([d['reason'] for d in receipt['decisions']],
-                             ['no_ucode_route'] * 5 + ['outside_staged_root'] * 2)
+                             ['no_ucode_route'] * 6 + ['outside_staged_root'] * 2)
+
+    def test_env_transport_is_opt_in_and_direct_cli_is_unchanged(self):
+        with tempfile.TemporaryDirectory() as temp:
+            temp = Path(temp)
+            root = temp / 'stagé & (x) ! % ^'
+            plugin = root / 'usr/share/rpcd/ucode/luci'
+            marker = root / 'ql/test/extractor-smoke/luci'
+            for path in (plugin, marker):
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('let x = 1;\n')
+            inputs = temp / 'inputs'
+            inputs.write_text(f'{plugin}\n{marker}\n')
+            for name, flag, ambient, expected in (
+                ('env', ['--staged-root-from-env'], str(root) + '/',
+                 ['rpcd_raw_mode_full_path', 'no_ucode_route']),
+                ('flagless', [], str(root),
+                 ['no_ucode_route', 'explicit_extractor_smoke_input']),
+                ('direct', ['--staged-root', str(root)], str(temp / 'missing'),
+                 ['rpcd_raw_mode_full_path', 'no_ucode_route']),
+            ):
+                with self.subTest(name=name):
+                    env = os.environ.copy()
+                    env['CODEQL_UCODE_STAGED_ROOT'] = ambient
+                    trap = temp / name / 'trap'
+                    cmd = [str(EXTRACTOR), 'extract', '--source-archive-dir',
+                           str(temp / name / 'archive'), '--output-dir', str(trap),
+                           '--file-list', str(inputs), *flag]
+                    result = subprocess.run(cmd, env=env, text=True, capture_output=True)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    receipt = json.loads((trap / 'routing.json').read_text())
+                    self.assertEqual([d['path'] for d in receipt['decisions']],
+                                     [str(plugin), str(marker)])
+                    self.assertEqual([d['reason'] for d in receipt['decisions']], expected)
+                    self.assertEqual(receipt['plain_count'], 1)
+                    self.assertEqual(receipt['excluded_count'], 1)
+
+    def test_env_transport_errors_fail_closed_before_output(self):
+        with tempfile.TemporaryDirectory() as temp:
+            temp = Path(temp)
+            marker = temp / 'stage/ql/test/extractor-smoke/luci'
+            marker.parent.mkdir(parents=True)
+            marker.write_text('let x = 1;\n')
+            inputs = temp / 'inputs'
+            inputs.write_text(str(marker) + '\n')
+            for name, value, extra in (
+                ('missing', None, []), ('empty', '', []),
+                ('nonexistent', str(temp / 'absent-root'), []), ('file', str(inputs), []),
+                ('conflict', str(temp / 'stage'), ['--staged-root', str(temp / 'stage')]),
+            ):
+                with self.subTest(name=name):
+                    env = os.environ.copy()
+                    env.pop('CODEQL_UCODE_STAGED_ROOT', None)
+                    if value is not None:
+                        env['CODEQL_UCODE_STAGED_ROOT'] = value
+                    out = temp / name
+                    out.mkdir()
+                    for directory in ('archive', 'trap', 'diagnostics'):
+                        (out / directory).mkdir()
+                        (out / directory / 'sentinel').write_text('unchanged')
+                    env['CODEQL_EXTRACTOR_UCODE_DIAGNOSTIC_DIR'] = str(out / 'diagnostics')
+                    cmd = [str(EXTRACTOR), 'extract', '--source-archive-dir',
+                           str(out / 'archive'), '--output-dir', str(out / 'trap'),
+                           '--file-list', str(inputs), '--staged-root-from-env', *extra]
+                    result = subprocess.run(cmd, env=env, text=True, capture_output=True)
+                    self.assertNotEqual(result.returncode, 0, name)
+                    for directory in ('archive', 'trap', 'diagnostics'):
+                        self.assertEqual(sorted(p.name for p in (out / directory).iterdir()),
+                                         ['sentinel'])
+                        self.assertEqual((out / directory / 'sentinel').read_text(), 'unchanged')
+                    if name == 'conflict':
+                        self.assertIn('cannot be used with', result.stderr)
+                    elif name in ('missing', 'empty'):
+                        self.assertIn('CODEQL_UCODE_STAGED_ROOT', result.stderr)
 
     def test_staged_root_must_exist_and_be_a_directory(self):
         with tempfile.TemporaryDirectory() as temp:
