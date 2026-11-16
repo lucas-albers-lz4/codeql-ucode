@@ -1,0 +1,153 @@
+'use strict';
+function value_flow_regressions() {
+  let discard_src = source(); // discard_src
+  let discard_dst = (consume(discard_src), 'safe'); // discard_dst
+  system(discard_dst); // discard_sink
+  let independent_src = source(), independent_dst = 'safe'; // independent_both
+  system(independent_dst); // independent_sink
+  let object_src = {field:'safe'}; // object_src
+  let object_dst = object_src.field; // object_dst
+  system(object_dst); // object_sink
+  let member_src = source(); // member_src
+  let member_dst = member_src.field; // member_dst
+  system(member_dst); // member_sink
+  let alias_src = source(); // alias_src
+  let alias_mid = alias_src; // alias_mid
+  let alias_dst = alias_mid; // alias_dst
+  system(alias_dst); // alias_sink
+  let phi_src = source(); // phi_initial
+  if (condition()) { phi_src = 'safe'; } // phi_branch
+  system(phi_src); // phi_sink
+  let zero_src = source(); // zero_initial
+  while (condition()) { zero_src = 'safe'; } // zero_body
+  system(zero_src); // zero_sink
+  let overwrite_src = source(); // overwrite_src
+  let overwrite_dst = 'safe';
+  (overwrite_dst = overwrite_src, overwrite_dst = 'safe'); // overwrite_body
+  system(overwrite_dst); // overwrite_sink
+  let kill_src = source(); // kill_initial
+  let kill_dst = 'safe';
+  (kill_src = 'safe', kill_dst = kill_src); // kill_body
+  system(kill_dst); // kill_sink
+  let iter_src = source(); // iter_src
+  let iter_mid = 'safe';
+  let iter_dst = 'safe';
+  while (condition()) { iter_dst = iter_mid; iter_mid = iter_src; } // iter_body
+  system(iter_dst); // iter_sink
+  let short_src = source(); // short_src
+  let short_dst = 'safe'; // short_initial
+  condition() && (short_dst = short_src); // short_write
+  system(short_dst); // short_sink
+  let tern_src = source(); // tern_src
+  let tern_dst = condition() ? tern_src : 'safe'; // tern_dst
+  system(tern_dst); // tern_sink
+  let for_src = source(); // for_src
+  let for_dst = 'safe'; // for_initial
+  for (let i = 0; condition(); i++) { for_dst = for_src; } // for_body
+  system(for_dst); // for_sink
+  let for_infinite_src = source(); // for_infinite_src
+  let for_infinite_dst = 'safe'; // for_infinite_initial
+  for (;;) { for_infinite_dst = for_infinite_src; break; } // for_infinite_body
+  system(for_infinite_dst); // for_infinite_sink
+  let break_src = source(); // break_src
+  let break_dst = 'safe'; // break_initial
+  while (condition()) { break; break_dst = break_src; } // break_body
+  system(break_dst); // break_sink
+  let continue_src = source(); // continue_src
+  let continue_dst = 'safe'; // continue_initial
+  while (condition()) { continue_dst = continue_src; continue; continue_dst = 'safe'; } // continue_body
+  system(continue_dst); // continue_sink
+  let forin_src = source(); // forin_src
+  let forin_dst = 'safe'; // forin_initial
+  for (let key in items()) { forin_dst = forin_src; } // forin_body
+  system(forin_dst); // forin_sink
+  let forin_shadow = source(); // forin_shadow_outer
+  for (let forin_shadow in items()) { system(forin_shadow); } // forin_shadow_inner
+  system(forin_shadow); // forin_shadow_after
+  let forin_existing = source(); // forin_existing_initial
+  for (forin_existing in items()) {} // forin_existing_loop
+  system(forin_existing); // forin_existing_sink
+  for (let forin_item in items()) { // forin_item_def
+    system(forin_item); // forin_item_read
+  }
+  let switch_src = source(); // switch_src
+  let switch_dst = 'safe'; // switch_initial
+  switch (condition()) { case true: switch_dst = switch_src; break; default: break; } // switch_body
+  system(switch_dst); // switch_sink
+  let try_src = source(); // try_src
+  let try_dst = 'safe'; // try_initial
+  try { maybe(); try_dst = try_src; } catch (problem) {} // try_body
+  system(try_dst); // try_sink
+  let try_kill_src = source(); // try_kill_src
+  let try_kill_dst = try_kill_src;
+  try { try_kill_dst = 'safe'; maybe(); } catch (problem) {} // try_kill_body
+  system(try_kill_dst); // try_kill_sink
+  let catch_shadow = source(); // catch_shadow_outer
+  try { maybe(); } catch (catch_shadow) { system(catch_shadow); } // catch_shadow_inner
+  system(catch_shadow); // catch_shadow_after
+  let logical_preserve = source(); // logical_preserve
+  logical_preserve &&= 'safe'; // logical_preserve_write
+  system(logical_preserve); // logical_preserve_sink
+  let logical_src = source(); // logical_src
+  let logical_dst = unknown();
+  logical_dst ||= logical_src; // logical_dst
+  system(logical_dst); // logical_sink
+  let arithmetic_src = source(); // arithmetic_src
+  let arithmetic_dst = 0;
+  arithmetic_dst += arithmetic_src; // arithmetic_dst
+  system(arithmetic_dst); // arithmetic_sink
+  let optional_call = source(); // optional_call_initial
+  maybe_fn?.(optional_call = 'safe'); // optional_call_body
+  system(optional_call); // optional_call_sink
+  let optional_index = source(); // optional_index_initial
+  maybe_obj?.[(optional_index = 'safe')]; // optional_index_body
+  system(optional_index); // optional_index_sink
+  let optional_member = source(); // optional_member_initial
+  maybe_obj?.method(optional_member = 'safe'); // optional_member_body
+  system(optional_member); // optional_member_sink
+  let exception_iteration = source(); // exception_iteration_initial
+  try { for (let ignored in maybe_items) {} exception_iteration = 'safe'; } catch (problem) {} // exception_iteration_body
+  system(exception_iteration); // exception_iteration_sink
+  let alt_if_src = source(); // alt_if_src
+  let alt_if_dst = 'safe'; // alt_if_initial
+  if (condition()): alt_if_dst = alt_if_src; endif // alt_if_body
+  system(alt_if_dst); // alt_if_sink
+  let alt_elif_src = source(); // alt_elif_src
+  let alt_elif_dst = 'safe'; // alt_elif_initial
+  if (condition()): consume('x'); elif (condition()): alt_elif_dst = alt_elif_src; else: consume('y'); endif // alt_elif_body
+  system(alt_elif_dst); // alt_elif_sink
+  let alt_while_src = source(); // alt_while_src
+  let alt_while_dst = 'safe'; // alt_while_initial
+  while (condition()): alt_while_dst = alt_while_src; endwhile // alt_while_body
+  system(alt_while_dst); // alt_while_sink
+  let alt_for_src = source(); // alt_for_src
+  let alt_for_dst = 'safe'; // alt_for_initial
+  for (let alt_i = 0; condition(); alt_i++): alt_for_dst = alt_for_src; endfor // alt_for_body
+  system(alt_for_dst); // alt_for_sink
+  let alt_forin_src = source(); // alt_forin_src
+  let alt_forin_dst = 'safe'; // alt_forin_initial
+  for (let alt_key in items()): alt_forin_dst = alt_forin_src; endfor // alt_forin_body
+  system(alt_forin_dst); // alt_forin_sink
+  let alt_shadow = source(); // alt_shadow_outer
+  for (let alt_shadow in items()): system(alt_shadow); endfor // alt_shadow_inner
+  system(alt_shadow); // alt_shadow_after
+  for (let alt_item in items()): // alt_item_def
+    system(alt_item); // alt_item_read
+  endfor
+}
+function returns_source() {
+  let return_src = source(); // return_src
+  return return_src; // return_sink
+}
+function returns_safe() {
+  let return_discard = source(); // return_discard_src
+  return (consume(return_discard), 'safe'); // return_discard_sink
+}
+function returns_logical() {
+  let return_logical = source(); // return_logical_src
+  return (return_logical &&= 'safe'); // return_logical_sink
+}
+export let exported_let = source(); // exported_let_def
+system(exported_let); // exported_let_sink
+export const exported_const = source(); // exported_const_def
+system(exported_const); // exported_const_sink
