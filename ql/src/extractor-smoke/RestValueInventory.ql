@@ -7,7 +7,7 @@ private import codeql.ucode.dataflow.internal.DataFlowDispatch
 
 from string kind, string name, int line, int col, int position
 where
-  exists(Call c |
+  exists(CallExpression c |
     c.getLocation().getFile().getBaseName() = "rest.uc" and
     kind = "call" and name = c.getIdentifier().getName() and
     line = c.getLocation().getStartLine() and col = c.getLocation().getStartColumn() and
