@@ -6,6 +6,7 @@
 
 import codeql.files.FileSystem
 import codeql.ucode.ast.internal.TreeSitter
+import codeql.ucode.Diagnostics
 import codeql.ucode.internal.SourceDeclaredFs
 
 /** Gets the text of a string literal (joined fragments). */
@@ -204,10 +205,32 @@ UCODE::FunctionDeclaration functionDecl(string name) {
   result.getName().getValue() = name
 }
 
-/** A call to a same-file function declaration. */
+/**
+ * A deliberately narrow same-file helper association, not a runtime resolver.
+ * A complete top-level declaration must precede the direct non-optional call.
+ * Every same-name token in the file must be this declaration's name or a
+ * direct call callee. Even unrelated or later shadows, writes, and escapes
+ * make the target unknown. Parse-error files are excluded.
+ */
 predicate sameFileCall(NamedCall c, UCODE::FunctionDeclaration def) {
   def = functionDecl(c.getName()) and
-  c.getLocation().getFile() = def.getLocation().getFile()
+  c.getLocation().getFile() = def.getLocation().getFile() and
+  def.getParent() instanceof UCODE::Program and
+  not exists(c.getOptionalChain()) and
+  (def.getLocation().getEndLine() < c.getLocation().getStartLine() or
+    def.getLocation().getEndLine() = c.getLocation().getStartLine() and
+    def.getLocation().getEndColumn() < c.getLocation().getStartColumn()) and
+  not exists(UCODE::Identifier id |
+    id.getLocation().getFile() = c.getLocation().getFile() and
+    id.getValue() = c.getName() and
+    id != def.getName() and
+    not id = calleeIdent(any(NamedCall call))
+  ) and
+  not exists(UCODE::ShorthandPropertyIdentifier id |
+    id.getLocation().getFile() = c.getLocation().getFile() and
+    id.getValue() = c.getName()
+  ) and
+  not exists(ExtractionError error | error.getLocation().getFile() = c.getLocation().getFile())
 }
 
 /** `callPackageVersionCheck('netifd')` (literal package name). */

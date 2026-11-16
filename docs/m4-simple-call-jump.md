@@ -9,8 +9,9 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 
 - `simpleIdentifierCall` joins a `Call.getIdentifier` name to a
   same-file `function` declaration whose body is the callee `CfgScope`.
-  That is the Models `sameFileCall` evidence already on main, not a
-  call graph.
+  This independent experimental relation still matches by name and file;
+  it does not inherit the stricter production Models `sameFileCall` guard
+  and is not a call graph.
 - `jumpStep` takes `Call.getArgument` `ArgumentNode`s into that
   callee's `ParameterNode` at the matching `ParameterPosition`.
   `#29` `arg-param` position match without a same-file identifier
