@@ -98,6 +98,12 @@ Run the offline check with:
 python3 -m unittest discover -s tests -v
 ```
 
+## Source-only setLocaltime construction table
+
+The auxiliary [setLocaltime construction table](m4-setlocaltime-construction.md)
+is a six-row source-shape observation, not a finding record, sanitizer, path
+status, policy assessment, or runtime-target resolution.
+
 ## Opt-in typed setBlockDetect source observation (v1)
 
 The exporter is a non-writing, deliberately single-family interface; it does
