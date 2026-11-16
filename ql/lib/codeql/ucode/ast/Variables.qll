@@ -102,6 +102,7 @@ class Variable extends MkVariable {
 private predicate lexicalScope(UCODE::AstNode scope) {
   scope instanceof UCODE::StatementBlock or
   scope instanceof UCODE::StatementList or
+  scope instanceof UCODE::SwitchBody or
   scope instanceof UCODE::Program
 }
 
