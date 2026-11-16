@@ -6,7 +6,17 @@ Findings are evidence, not proof. Wrapper AST/CFG/dataflow libraries are not imp
 
 `getFeatures.call` → same-file `callPackageVersionCheck('netifd')` → named `popen` imported from `'fs'` (opkg and apk branches).
 
-That is **call reachability**, recorded as `handler_effect` / `fact` (`GetFeaturesPopen.ql`). It is not a taint path. Pairwise syntactic local taint from `request.args` into that helper is **`taint_path` / `no_path`** (`GetFeaturesHelperTaint.ql` is empty).
+The Models helper association only accepts a direct non-optional identifier call
+following a complete top-level function declaration in the same error-free file.
+Every same-name identifier must be the selected declaration's name or a direct
+call callee; shorthand properties also veto it. Competing bindings, writes and
+aliases anywhere in the file intentionally suppress associations, including in
+unrelated scopes or later source text. A missing association means unknown, not
+safe or unreachable. This is syntactic evidence, not lexical or runtime target
+resolution; descendant sink matches also do not establish execution of nested
+functions.
+
+That is a **syntactic helper/sink association**, recorded as `handler_effect` / `fact` (`GetFeaturesPopen.ql`); it does not prove runtime reachability or a taint path. Pairwise syntactic local taint from `request.args` into that helper is **`taint_path` / `no_path`** (the pinned `GetFeaturesHelperTaint.ql` result was empty).
 
 Assessment for stock unauthenticated feature probing: **intended_access**. The helper interpolates a literal package name through `shellquote`. Reaching `popen` here is not BAC or RCE.
 
