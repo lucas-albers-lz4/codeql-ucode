@@ -335,15 +335,41 @@ def main():
                 assert_delta(restriction_name + '-' + group, rows, ORACLE[group], [], ORACLE[group])
                 require(not rows, f'{group}: {restriction_name} mutant retained a row')
         models.write_text(original)
-        # Dropping same-line support removes the positive rather than adding a
-        # negative, so prove the exact positive disappeared independently.
+        # The line-only order mutant induces an expensive Cartesian join on
+        # the full corpus. Exercise it on a fresh single-file database instead;
+        # require the unmodified model to produce the independently pinned row
+        # there first, so empty extraction cannot masquerade as a mutant kill.
         require(original.count(order) == 1, 'cannot isolate same-line support')
+        mini_source = tmp / 'same-line-source/ql/test/extractor-smoke'
+        mini_source.mkdir(parents=True)
+        shutil.copyfile(source / 'same_line_positive.uc', mini_source / 'same_line_positive.uc')
+        mini_db = tmp / 'same-line-database'
+        command(codeql, 'database', 'init', mini_db, '--language=ucode', f'--search-path={PACK}', f'--source-root={mini_source}')
+        command(codeql, 'database', 'index-files', mini_db, '--language=ucode', '--include=**/*.uc', f'--working-dir={mini_source}')
+        mini_routing = json.loads((mini_db / 'trap/ucode/routing.json').read_text())
+        require(len(mini_routing['decisions']) == 1 and
+                Path(mini_routing['decisions'][0]['path']) == mini_source / 'same_line_positive.uc' and
+                mini_routing['decisions'][0]['status'] == 'plain_route_selected' and
+                mini_routing['decisions'][0]['classification'] == 'plain' and
+                mini_routing['duplicate_input_count'] == 0 and mini_routing['excluded_count'] == 0,
+                'same-line routing input mismatch')
+        command(codeql, 'database', 'finalize', mini_db)
+        mini_inventory = out / 'same-line-files.bqrs'
+        command(codeql, 'query', 'run', ROOT / 'ql/src/extractor-smoke/ModelsFsPopenFileInventory.ql',
+                f'--database={mini_db}', f'--search-path={search}', f'--output={mini_inventory}', '--ram=2048', '--threads=1')
+        mini_files = command(codeql, 'bqrs', 'decode', '--format=json', '--entities=url,string', mini_inventory)
+        (out / 'same-line-files.json').write_text(mini_files)
+        assert_rows('same-line file diagnostics', json.loads(mini_files)['#select']['tuples'], [['same_line_positive.uc', 'ok']])
         path, columns = queries['bindings']
+        expected = [row for row in ORACLE['bindings'] if row[0][0] == 'same_line_positive.uc']
+        require(len(expected) == 1, 'same-line positive oracle must have exactly one row')
+        baseline = query(codeql, mini_db, mini_source, out, ROOT / path, 'same-line-baseline', columns, search)
+        assert_rows('same-line baseline', baseline, expected)
         model_mutation('guard-same-line-positive', original.replace(order, '  def.getLocation().getEndLine() < c.getLocation().getStartLine() and\n', 1))
-        rows = query(codeql, db, source, out, mutant / path, 'guard-same-line-positive', columns, mutant_search)
-        require(not any(row[0][0] == 'same_line_positive.uc' for row in rows), 'same-line mutant did not remove positive')
+        rows = query(codeql, mini_db, mini_source, out, mutant / path, 'guard-same-line-positive', columns, mutant_search)
+        assert_delta('same-line positive', rows, baseline, [], expected)
         try:
-            assert_rows('same-line positive', rows, ORACLE['bindings'])
+            assert_rows('same-line positive', rows, expected)
         except SystemExit:
             print('PASS same-line positive: exact oracle rejected removal')
         else:

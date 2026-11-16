@@ -28,7 +28,7 @@ production consumers: the latter intentionally select only
 `callPackageVersionCheck('netifd')`. Both generic positive and formal-shadow
 controls have a direct tainted sink.
 
-## Scheduled real-query checks — not yet run
+## Real-query checks
 
 When capacity is available, run the command below from the repository root.
 The evidence directory must not already exist. It preserves staged inputs,
@@ -41,8 +41,8 @@ CODEQL_UCODE_HELPER_EVIDENCE_DIR="$PWD/../helper91-evidence-UNIQUE" \
   bash scripts/m4-models-local-helper-smoke.sh
 ```
 
-In addition to baseline oracles and legacy/bypass mutants, the scheduled checks
-require these exact **predictions**; none is an observed CodeQL result:
+In addition to baseline oracles and legacy/bypass mutants, the checks require
+these exact expectations:
 
 - Start-of-declaration ordering adds precisely the within-declaration binding
   `5:5-5:37 -> 2:10-2:32` and effect `5:5-5:37 -> 3:3-3:15`.
@@ -63,8 +63,9 @@ require these exact **predictions**; none is an observed CodeQL result:
   by the unchanged projected identity oracle.
 
 The runner also checks selected input/routing identities, parse status, both
-production consumers, legacy rollback and independent consumer bypasses. A
-passing run still needs an old/new target-set comparison on the existing corpus,
-imported-fs gates, and the serial aggregate. No extraction, QL compilation,
-query, parse-status expectation or real mutation has yet been exercised for
-these controls; Python source-slice and verifier tests are not CodeQL evidence.
+production consumers, legacy rollback and independent consumer bypasses. The
+same-line positive mutation uses a separate single-fixture database and checks
+its diagnostics and unmodified positive result before exercising the mutant.
+A passing run still needs an old/new target-set comparison on the existing corpus,
+imported-fs gates, and the serial aggregate. Python source-slice and verifier
+tests alone are not CodeQL evidence.
