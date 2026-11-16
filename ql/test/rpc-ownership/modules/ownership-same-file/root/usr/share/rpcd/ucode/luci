@@ -1,0 +1,19 @@
+'use strict';
+
+import { popen } from 'fs';
+
+const methods = {
+  sourceOnly: {
+    call: function(request) {
+      const methodCmd = request.args.cmd;
+    }
+  },
+  sinkOnly: {
+    call: function(request) {
+      const methodCmd = 'fixed';
+      popen(methodCmd);
+    }
+  }
+};
+
+return methods;

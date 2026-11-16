@@ -1,0 +1,15 @@
+'use strict';
+
+import { popen } from 'fs';
+
+const methods = {
+  probe: {
+    call: function(request) {
+      const unusedCmd = request.args.cmd;
+      const fixedCmd = 'fixed';
+      popen(fixedCmd);
+    }
+  }
+};
+
+return methods;
