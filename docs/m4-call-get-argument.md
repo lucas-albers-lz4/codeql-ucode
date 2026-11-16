@@ -1,31 +1,34 @@
 # M4: `Call.getArgument` from extracted arguments children
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
 - Public `Call.getArgument` is inhabited from TreeSitter
   `call_expression` `arguments` children that are already `TExpr`
   (identifiers, strings, members, nested calls, binary expressions).
-- Smoke reports `0:ssa_pos_src` on `ssa_pos` and `0:pkg` / `1:r` on
-  `luci`. `ArgumentPosition` is therefore inhabited on main's
-  `DataFlowDispatch` without editing that file.
+- The original argument smoke reports `0:ssa_pos_src` on `ssa_pos` and
+  `0:pkg` / `1:r` on `luci`. Extracted arguments can have
+  `ArgumentPosition`s. An argument with a CFG node in the call scope can
+  also have an `ArgumentExpr` and an `ArgumentNode`.
 - `getArguments()` stays `none()` (`Arguments` is not `Expr`).
-  `getIdentifier()` stays `none()`. `ParameterNode` stays uninhabited.
-  `ArgumentExpr` stays `none()`.
+  `getIdentifier()` returns extracted identifier callees. Named formals
+  with CFG nodes have `ParameterNode`s. See
+  [parameter nodes](m4-parameter-node.md).
 
-## Gaps (later PR)
+## Limits and related models
 
 - Children that are not `TExpr` (template strings, numbers, arrays,
   objects, spreads, arrows, `this`) have no `getArgument` result.
-  Do not widen `TExpr` here: that would change CFG membership.
-- `ParameterNode` / argument-to-parameter flow (open ParameterPosition
-  draft).
-- MaD `encodeContent` (`Field` / `Element` / `Future` tokens) lives in
-  `FlowSummaryImpl` (open FlowSummary/Concepts draft).
+  Do not widen `TExpr` here. That change affects CFG membership.
+- Same-file call `jumpStep` has separate controls. See
+  [identifier call jumps](m4-simple-call-jump.md) and
+  [member call jumps](m4-member-call-jump.md).
+- MaD `encodeContent` maps extracted field and element content to
+  tokens. See [content encoding](m4-encode-content.md).
 - `storeStep` / `readStep` as production taint. Do not wire summary
   steps into `localFlowStep`.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /

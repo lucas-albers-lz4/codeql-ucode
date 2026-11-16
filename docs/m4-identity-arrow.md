@@ -1,9 +1,9 @@
 # M4: Identity `x => x` body identifier is an SSA read
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
@@ -22,15 +22,15 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 
 ## Gaps (later PR)
 
-- Unused formals (`formal_order`'s `a`, luci `_` / `m`) still have no
+- Unused formals (`a` in `formal_order`, and luci `_` / `m`) still have no
   `getAnAccess()`. `codeql/ssa` only constructs WriteDefinitions that
   reach a `variableRead`. Do not invent a pseudo-read.
 - Function expressions and arrows are still not `simpleIdentifierCall`
   targets. This step is intra-procedural, not call resolution.
 - Return-to-out is `jumpStep` to `OutNode` (see
   `docs/m4-return-out.md`). Unique same-file identifier and
-  member-property FunctionDeclarations inhabit `viableSourceCallable`
-  separately. `jumpStep` stays identifier-only.
+  member-property function declarations can inhabit `viableSourceCallable`.
+  `jumpStep` also supports unique same-file member-property declarations.
 - MaD `SourceElement` / `SinkElement` are not in dataflow 1.1.6 `Public`.
 - Do not wire summary steps into `localFlowStep`. Do not wire
   ParameterNode into production taint or `path_found`.

@@ -1,19 +1,19 @@
 # M4: `jumpStep` from same-file identifier `Call.getArgument` into `ParameterNode`
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
 - `simpleIdentifierCall` joins a `Call.getIdentifier` name to a
   same-file `function` declaration whose body is the callee `CfgScope`.
-  This independent experimental relation still matches by name and file;
-  it does not inherit the stricter production Models `sameFileCall` guard
+  This independent experimental relation still matches by name and file.
+  It does not inherit the stricter production Models `sameFileCall` guard
   and is not a call graph.
-- `jumpStep` takes `Call.getArgument` `ArgumentNode`s into that
-  callee's `ParameterNode` at the matching `ParameterPosition`.
+- `jumpStep` takes `Call.getArgument` `ArgumentNode`s into the
+  `ParameterNode` of that callee at the matching `ParameterPosition`.
   `#29` `arg-param` position match without a same-file identifier
   declaration does not jump (`system(...)` on `ssa_pos` does not
   enter `formal_order`).
@@ -36,7 +36,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   `getIdentifier` and are not unique member-property declarations, so
   they do not `jumpStep`. Unique same-file member FunctionDeclarations
   jump via `sameFileJumpCall` (see `docs/m4-member-call-jump.md`).
-  Imported `luci.sys` names are not same-file declarations.
+  This relation does not resolve imported `luci.sys` targets. The
+  identifier matcher can match an unrelated same-name declaration.
 - Identifier `jumpStep` still uses unfiltered `simpleIdentifierCall`.
   Unique same-file identifier FunctionDeclarations inhabit
   `viableSourceCallable` separately.

@@ -1,9 +1,9 @@
 # M4: MaD `encodeContent` Field / Element tokens
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
@@ -12,15 +12,20 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   subscript / array content.
 - `Future` stays `none()`. The grammar has no async/future nodes.
 - Smoke reports `Field[args]` on `luci`, `Field[field]` on `ssa_neg`,
-  and `Element` on `luci`. `getACall` stays `none()`, so summaries do
-  not attach to source calls.
+  and `Element` on `luci`. The encoding smoke does not assess call matching.
+- `getACall` matches identifier callees to summary keys by name. This
+  relation does not establish a runtime target or add summary steps to
+  `localFlowStep`. Member callees have no result. See
+  [identifier call matching](m4-get-a-call.md).
 
-## Gaps (later PR)
+## Limits and related models
 
 - `storeStep` / `readStep` as production taint. Extractor-smoke
   inhabitation is in [m4-store-read.md](m4-store-read.md). Do not wire
   summary steps into `localFlowStep`.
-- `ParameterNode` / argument-to-parameter flow.
+- Named formals with CFG nodes have `ParameterNode`s. The separate
+  position match does not resolve calls. See
+  [parameter nodes](m4-parameter-node.md).
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).
 - `codeql/threat-models` pack only with lockfile discipline.
