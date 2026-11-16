@@ -1,0 +1,1 @@
+{"#select":{"columns":[{"name":"f","kind":"Entity"},{"kind":"String"}],"tuples":[[{"label":"/root/workspace/cross-repo-audit/round-20261115T200608Z/lanes/integration/tmp/query-probes/ql/test/extractor-smoke/taint_xfile_a"},""]]}}

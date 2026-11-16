@@ -69,8 +69,8 @@ spec = importlib.util.spec_from_file_location("rpc_ownership_verify", "scripts/r
 module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(module)
 module.input_oracle(source)
-extracted = module.file_identities(json.loads((out / "extracted.json").read_text()), source)
-expected = sorted({str(path.relative_to(source)) for path in source.rglob("luci")})
+expected = sorted(str(path.relative_to(source)) for path in source.rglob("luci"))
+extracted = module.file_identities(json.loads((out / "extracted.json").read_text()), source, expected)
 observed = sorted(extracted)
 if observed != expected:
     raise SystemExit(f"successful extraction identities differ: {observed} != {expected}")

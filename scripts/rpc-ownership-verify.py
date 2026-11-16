@@ -65,22 +65,57 @@ def entity(cell: object, source: Path) -> dict[str, object]:
     return {"label": cell["label"], "path": rel.as_posix(), "span": coords}
 
 
-def file_identities(result: Any, source: Path) -> list[str]:
-    """Decode diagnostic File entities by canonical full URI, not basename."""
-    identities = []
+def file_identities(result: Any, source: Path, expected_paths: list[str], *, require_url: bool = True) -> list[str]:
+    """Verify diagnostic File rows by exact canonical URL and scalar identity.
+
+    BQRS labels for File entities are absolute paths, not the QL class name.
+    Their File.getURL() positions are zero; the JSON decoder may expose those
+    coordinates as fields or leave them encoded in the URI, so accept either
+    representation while requiring the same zero-position source identity.
+    """
+    source = source.resolve()
+    expected = collections.Counter(expected_paths)
+    observed = []
     for row in tuples(result):
-        require(len(row) == 2 and isinstance(row[0], dict) and row[0].get("label") == "File", f"invalid extracted-file row: {row!r}")
-        url = row[0].get("url")
-        require(isinstance(url, dict) and set(url) == {"uri"}, f"invalid File URL: {url!r}")
-        parsed = urlsplit(url["uri"])
-        require(parsed.scheme == "file" and parsed.netloc == "" and not parsed.query and not parsed.fragment, f"invalid file URI: {url['uri']}")
-        require(not re.search(r"%(?![0-9a-fA-F]{2})", parsed.path), f"invalid percent escape in {url['uri']}")
-        path = Path(unquote(parsed.path, errors="strict"))
+        require(len(row) == 2 and isinstance(row[0], dict), f"invalid extracted-file row: {row!r}")
+        cell, message = row
+        require(set(cell).issubset({"label", "url"}) and isinstance(cell.get("label"), str), f"invalid File entity cell: {cell!r}")
+        require(message == "", f"SuccessfullyExtractedFiles message must be empty: {message!r}")
+        url = cell.get("url")
+        if url is None:
+            require(not require_url, f"missing File URL in entity: {cell!r}")
+            # Historical decodes without --entities=url,string carry only the
+            # absolute-path label; use it solely to test compatibility with
+            # that retained real output format.
+            raw_path = Path(cell["label"])
+        else:
+            require(isinstance(url, dict) and "uri" in url, f"invalid File URL object: {url!r}")
+            allowed = {"uri", "startLine", "startColumn", "endLine", "endColumn"}
+            require(set(url) <= allowed and isinstance(url["uri"], str), f"invalid File URL fields: {url!r}")
+            position_keys = ("startLine", "startColumn", "endLine", "endColumn")
+            present = [key in url for key in position_keys]
+            require(not any(present) or all(present), f"partial File URL coordinates: {url!r}")
+            if all(present):
+                require(all(type(url[key]) is int and url[key] == 0 for key in position_keys), f"File URL must be a zero-position identity: {url!r}")
+            uri = urlsplit(url["uri"])
+            require(uri.scheme == "file" and uri.netloc == "" and not uri.query and not uri.fragment, f"invalid File URI: {url['uri']!r}")
+            require(not re.search(r"%(?![0-9a-fA-F]{2})", uri.path), f"invalid percent escape in {url['uri']!r}")
+            uri_path = unquote(uri.path, errors="strict")
+            suffix = re.search(r":(\d+):(\d+):(\d+):(\d+)$", uri_path)
+            if suffix:
+                coords = tuple(int(value) for value in suffix.groups())
+                require(coords == (0, 0, 0, 0), f"File URL URI encodes nonzero coordinates: {url['uri']!r}")
+                uri_path = uri_path[:suffix.start()]
+            raw_path = Path(uri_path)
+        require(raw_path.is_absolute() and ".." not in raw_path.parts, f"invalid diagnostic file path: {raw_path}")
         try:
-            identities.append(path.relative_to(source).as_posix())
+            relative = raw_path.relative_to(source).as_posix()
         except ValueError as error:
-            raise SystemExit(f"diagnostic File outside source root: {url['uri']}") from error
-    return identities
+            raise SystemExit(f"diagnostic File outside canonical source root: {raw_path}") from error
+        observed.append(relative)
+    actual = collections.Counter(observed)
+    require(actual == expected, f"successful-extraction identities/multiplicity differ: missing={expected-actual} extra={actual-expected}")
+    return observed
 
 
 def normalized(rows: list[list[Any]], source: Path) -> list[list[Any]]:
