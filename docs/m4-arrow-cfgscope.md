@@ -25,7 +25,7 @@ member-property function declarations. The models do not resolve imported
   bindings (`a = 1` is `ERROR(number)`), so those forms are not in
   fixtures.
 
-## Gaps (later PR)
+## Limits and related models
 
 - Unused expression-arrow formals (`_` / `m` in luci `(_, n) =>` /
   `(m, n) =>`) have no `getAnAccess()`, same as unused block-bodied

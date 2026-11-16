@@ -9,14 +9,24 @@ SRC="$OUT/src/ql/test/extractor-smoke"
 DB="$OUT/db"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 [[ -x "$PACK/tools/linux64/extractor" ]] || { echo 'build extractor pack first' >&2; exit 1; }
+python3 scripts/variable-order-verify.py inputs "$ROOT/ql/test/variable-order"
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 rm -rf "$OUT"
 mkdir -p "$SRC"
 cp ql/test/variable-order/order.uc "$SRC/order.uc"
+python3 scripts/variable-order-verify.py inputs "$SRC"
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
-codeql database index-files "$DB" --language=ucode --include='**/*.uc' --working-dir="$SRC"
-cp "$DB/trap/ucode/routing.json" "$OUT/routing.json"
+# Preserve emitted routing bytes even if indexing fails.
+if codeql database index-files "$DB" --language=ucode --include='**/*.uc' --working-dir="$SRC"; then
+  cp "$DB/trap/ucode/routing.json" "$OUT/routing.json"
+else
+  rc=$?
+  if [[ -f "$DB/trap/ucode/routing.json" ]]; then
+    cp "$DB/trap/ucode/routing.json" "$OUT/routing.json" || echo 'failed to retain routing' >&2
+  fi
+  exit "$rc"
+fi
 codeql database finalize "$DB"
 for pair in 'diagnostics/SuccessfullyExtractedFiles extracted' 'diagnostics/ExtractionErrors errors' 'extractor-smoke/VariableOrderBindings bindings' 'extractor-smoke/VariableOrderFlow flow'; do
   read -r query name <<< "$pair"

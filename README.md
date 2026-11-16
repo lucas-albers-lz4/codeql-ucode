@@ -75,7 +75,7 @@ Named formals of block-bodied functions and expression-bodied arrows are
 Variables with CFG nodes and SSA writes. Since #28, an expression-bodied
 arrow's body expression is its inner `CfgScope`, analogous to the block scope
 of a block-bodied function. Parameters still shadow outer variables. Lexical
-`let`/`const` declarations become visible in source order; a later inner
+`let`/`const` declarations become visible in source order. A later inner
 declaration does not shadow an earlier read. Switch-body scope remains a
 separate known limitation ([#93](https://github.com/lucas-albers-lz4/codeql-ucode/issues/93)).
 See [`docs/m4-arrow-cfgscope.md`](docs/m4-arrow-cfgscope.md) for the supported

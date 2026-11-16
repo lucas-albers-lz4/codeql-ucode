@@ -1,16 +1,55 @@
 #!/usr/bin/env python3
 """Verify exact extraction, binding, and source-to-read identities."""
+
 import collections
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
 import sys
 
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def verify_inputs(source):
+    if source.is_symlink() or not source.is_dir():
+        raise SystemExit(f"invalid fixture source root: {source}")
+    source = source.resolve(strict=True)
+    expected = json.loads((ROOT / "ql/test/variable-order.json").read_text())["files"]
+    if set(expected) != {"order.uc"}:
+        raise SystemExit(f"invalid fixture manifest: {expected}")
+    observed = {
+        p.relative_to(source).as_posix()
+        for p in source.rglob("*")
+        if p.is_file() or p.is_symlink()
+    }
+    if observed != set(expected):
+        raise SystemExit(f"fixture identity mismatch: {observed} != {set(expected)}")
+    for name, digest in expected.items():
+        path = source / name
+        if path.is_symlink() or not path.is_file():
+            raise SystemExit(f"fixture is not a regular file: {path}")
+        if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            raise SystemExit(f"fixture bytes differ: {path}")
+    print(f"PASS fixture identities and hashes: {len(expected)}")
+
+
+if len(sys.argv) == 3 and sys.argv[1] == "inputs":
+    verify_inputs(Path(sys.argv[2]))
+    sys.exit(0)
+if len(sys.argv) != 3:
+    raise SystemExit("usage: variable-order-verify.py inputs SOURCE | OUT SOURCE")
 out, source = Path(sys.argv[1]), Path(sys.argv[2]).resolve()
-spec = importlib.util.spec_from_file_location('ownership', Path(__file__).with_name('rpc-ownership-verify.py'))
-assert spec is not None and spec.loader is not None
+verify_inputs(source)
+spec = importlib.util.spec_from_file_location(
+    "ownership", Path(__file__).with_name("rpc-ownership-verify.py")
+)
+if spec is None or spec.loader is None:
+    raise SystemExit("cannot load extraction verifier")
 ownership = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ownership)
+
+
 def rows(name):
     return ownership.tuples(json.loads((out / (name + '.json')).read_text()))
 route = json.loads((out / 'routing.json').read_text())
