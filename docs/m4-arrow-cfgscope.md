@@ -1,9 +1,9 @@
 # M4: Expression-bodied arrows get an inner CfgScope
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
@@ -20,8 +20,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - Named formals with CFG nodes also have `ParameterNode`s. The parameter
   overlay includes expression-bodied arrows. See [ParameterNode from named
   formals](m4-parameter-node.md).
-- Only direct identifier formals and rest-identifier formals are
-  modeled. The locked grammar does not parse defaulted or destructured
+- The model supports only direct identifier formals and rest-identifier
+  formals. The locked grammar does not parse defaulted or destructured
   bindings (`a = 1` is `ERROR(number)`), so those forms are not in
   fixtures.
 
@@ -31,8 +31,8 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   `(m, n) =>`) have no `getAnAccess()`, same as unused block-bodied
   `a` on `ssa_pos`. `codeql/ssa` only constructs WriteDefinitions that
   reach a `variableRead`. Do not invent a pseudo-read.
-- Identity bodies (`x => x`) count the body identifier as an access
-  (`visibleAt` walks `getParent*()`; see `docs/m4-identity-arrow.md`).
+- Identity bodies (`x => x`) count the body identifier as an access.
+  `visibleAt` walks `getParent*()`. See `docs/m4-identity-arrow.md`.
   The #28 fixture still uses `x => x || 0` so that read remains a child.
 - Defaulted or destructured formals are not in the locked grammar
   (`a = 1` is `ERROR(number)`). Do not add those fixtures.

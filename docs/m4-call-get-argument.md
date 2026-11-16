@@ -1,9 +1,9 @@
 # M4: `Call.getArgument` from extracted arguments children
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
@@ -23,7 +23,7 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 
 - Children that are not `TExpr` (template strings, numbers, arrays,
   objects, spreads, arrows, `this`) have no `getArgument` result.
-  Do not widen `TExpr` here: that would change CFG membership.
+  Do not widen `TExpr` here. That change affects CFG membership.
 - Same-file call `jumpStep` has separate controls. See
   [identifier call jumps](m4-simple-call-jump.md) and
   [member call jumps](m4-member-call-jump.md).

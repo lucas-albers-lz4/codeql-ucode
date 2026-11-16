@@ -1,16 +1,17 @@
 # M4: storeStep / readStep from extracted AST
 
 Typecheck and extractor-smoke only. Not production taint and not `path_found`.
-Unique same-file identifier and member-property FunctionDeclarations may resolve;
-imported `luci.sys` stays unresolved. Production `LocalTaint` /
-`RequestArgsExec` stay on Models.
+Experimental call models can match unique same-file identifier and
+member-property function declarations. The models do not resolve imported
+`luci.sys` targets. Production `LocalTaint` and `RequestArgsExec` use Models.
 
 ## What compiles
 
 - `readStep` from extracted `MemberExpression` (`Field[name]`) and
   `SubscriptExpression` (`Element` and possible object fields). A literal
-  string subscript selects its field; a dynamic subscript can select any
-  extracted field. Write-only assignment and deletion references are excluded.
+  string subscript selects its field. A dynamic subscript can select any
+  extracted field. `readStep` excludes write-only assignment and deletion
+  references.
   The object of the read is the
   matching expression CFG node, or the object/array container when the
   qualifier is a literal.
@@ -35,7 +36,7 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
 - Content stores and reads are separate from `localFlowStep`. They are not
   summary `storeStep` / `readStep`.
 
-## Gaps (later PR)
+## Limits and related models
 
 - Assignment post-update does not flow into later SSA reads of the same
   variable. That needs object-mutation SSA, not a `localFlowStep` summary
@@ -44,18 +45,20 @@ imported `luci.sys` stays unresolved. Production `LocalTaint` /
   store of the RHS.
 - Object/array literal assignment bases and `this` have no `ExprCfgNode`
   (`This` is not `TExpr`). Do not widen `TExpr` here.
-- Escaped object-literal keys are not decoded. Their stores are omitted until
-  the extractor exposes their decoded value; escaped subscript keys are
-  conservatively treated as dynamic.
+- The model does not decode escaped object-literal keys. It omits their
+  stores until the extractor exposes the decoded values. It treats escaped
+  subscript keys as dynamic.
 - Dynamic subscripts can match every extracted field, so their results can
   grow with the number of field names in the database.
 - Pair / array values that are not `TExpr` and not object/array
   (numbers, arrows, templates, `this`, regex, spreads) have no value
-  node. Do not widen `TExpr` here: that would change CFG membership.
-- `ParameterNode` / argument-to-parameter flow.
-- MaD `encodeContent` lives in `FlowSummaryImpl` (see
-  [m4-encode-content.md](m4-encode-content.md)). This slice does not
-  touch that file.
+  node. Do not widen `TExpr` here. That change affects CFG membership.
+- Named formals with CFG nodes have `ParameterNode`s. The separate
+  position match does not resolve calls. See
+  [parameter nodes](m4-parameter-node.md).
+- MaD `encodeContent` lives in `FlowSummaryImpl`. See
+  [m4-encode-content.md](m4-encode-content.md). The original store/read
+  slice did not change that file.
 - MaD `sourceModel` / `sinkModel` interpretation (`SourceElement` /
   `SinkElement` are not in dataflow 1.1.6 `Public`).
 - `codeql/threat-models` pack only with lockfile discipline.
