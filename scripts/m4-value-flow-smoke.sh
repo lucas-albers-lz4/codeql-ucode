@@ -173,5 +173,13 @@ if (line('return_logical_src'), line('return_logical_sink')) not in return_flows
     errors.append('missing logical short-circuit expression -> return value flow')
 if errors:
     sys.exit('\n'.join(errors))
-print('value-flow regressions passed')
+print('value-flow semantic assertions passed')
 PY
+# Semantic rows can survive parser recovery, so independently require a clean
+# extraction of the exact selected input before reporting the smoke as passed.
+for diagnostic in SuccessfullyExtractedFiles ExtractionErrors; do
+  codeql query run "$ROOT/ql/src/diagnostics/$diagnostic.ql" --database="$TMP/db" --search-path="$PACK:$ROOT/ql/lib:$ROOT/ql/src" --output="$TMP/$diagnostic.bqrs"
+  codeql bqrs decode --format=json --entities=url,string "$TMP/$diagnostic.bqrs" > "$TMP/$diagnostic.json"
+done
+python3 "$ROOT/scripts/value-flow-diagnostics.py" "$FIXTURE_DIR/ssa_pos" "$TMP/SuccessfullyExtractedFiles.json" "$TMP/ExtractionErrors.json"
+echo 'value-flow regressions passed'
