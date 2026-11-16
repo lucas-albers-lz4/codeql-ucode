@@ -33,7 +33,8 @@ python3 - "$DB/routing.json" "$SRC" <<'PY'
 import json, pathlib, sys
 routing = json.loads(pathlib.Path(sys.argv[1]).read_text())
 source = pathlib.Path(sys.argv[2]).resolve()
-paths = {str((source / item["path"]).resolve()) for item in json.loads((source / "manifest.json").read_text())["files"].values()}
+manifest = json.loads((source.parent / "rpc-ownership-manifest.json").read_text())
+paths = {str((source / item["path"]).resolve()) for item in manifest["files"].values()}
 expected = {"input_count": 5, "plain_count": 5, "markup_count": 0,
             "markup_inconclusive_count": 0, "uncertain_count": 0,
             "excluded_count": 0, "duplicate_input_count": 0}

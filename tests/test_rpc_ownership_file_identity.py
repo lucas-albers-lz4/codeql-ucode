@@ -11,6 +11,8 @@ assert SPEC is not None and SPEC.loader is not None
 VERIFY = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(VERIFY)
 HISTORICAL = json.loads((ROOT / "tests/fixtures/rpc-ownership-historical-extracted.json").read_text())
+# Actual fresh --entities=url,string row from the bounded focused DB run.
+URL_DECODE = json.loads((ROOT / "tests/fixtures/rpc-ownership-extracted-url.json").read_text())
 # One actual row retained from query-probes/extracted.json (decoded without
 # --entities=url,string); its absolute-path label and empty message are real.
 HISTORICAL_ROOT = Path("/root/workspace/cross-repo-audit/round-20261115T200608Z/lanes/integration/tmp/query-probes/ql/test/extractor-smoke")
@@ -20,6 +22,13 @@ class FileIdentityTests(unittest.TestCase):
     def test_retained_real_label_only_decode_matches_full_path_and_empty_scalar(self) -> None:
         path = "taint_xfile_a"
         self.assertEqual(VERIFY.file_identities(HISTORICAL, HISTORICAL_ROOT, [path], require_url=False), [path])
+
+    def test_fresh_real_url_decode_matches_full_source_uri(self) -> None:
+        rel = "modules/ownership-cross-sink/root/usr/share/rpcd/ucode/luci"
+        uri = URL_DECODE["#select"]["tuples"][0][0]["url"]["uri"]
+        absolute = Path(uri.removeprefix("file://"))
+        source = absolute.parents[len(Path(rel).parts) - 1]
+        self.assertEqual(VERIFY.file_identities(URL_DECODE, source, [rel]), [rel])
 
     def test_zero_position_url_identity_is_canonical_and_label_independent(self) -> None:
         source = Path("/tmp/rpc-source")

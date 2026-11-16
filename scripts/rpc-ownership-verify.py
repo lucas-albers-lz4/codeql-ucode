@@ -15,7 +15,8 @@ from urllib.parse import unquote, urlsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 CORPUS = ROOT / "ql/test/rpc-ownership"
-MANIFEST = json.loads((CORPUS / "manifest.json").read_text())
+MANIFEST_PATH = CORPUS.with_name("rpc-ownership-manifest.json")
+MANIFEST = json.loads(MANIFEST_PATH.read_text())
 
 
 def require(condition: bool, message: str) -> None:
@@ -28,7 +29,7 @@ def input_oracle(source: Path) -> dict[str, Path]:
     source = source.resolve(strict=True)
     require(source.is_dir(), f"invalid source root: {source}")
     expected = {item["path"] for item in MANIFEST["files"].values()}
-    observed = {p.relative_to(source).as_posix() for p in source.rglob("*") if (p.is_file() or p.is_symlink()) and p.name != "manifest.json"}
+    observed = {p.relative_to(source).as_posix() for p in source.rglob("*") if p.is_file() or p.is_symlink()}
     require(observed == expected, f"selected file identity mismatch: missing={sorted(expected-observed)} extra={sorted(observed-expected)}")
     paths = {}
     for name, item in MANIFEST["files"].items():
