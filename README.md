@@ -76,8 +76,8 @@ Variables with CFG nodes and SSA writes. Since #28, an expression-bodied
 arrow's body expression is its inner `CfgScope`, analogous to the block scope
 of a block-bodied function. Parameters still shadow outer variables. Lexical
 `let`/`const` declarations become visible in source order. A later inner
-declaration does not shadow an earlier read. Switch bodies are lexical scopes;
-switch-local declarations do not bind reads outside the switch. The
+declaration does not shadow an earlier read. Switch bodies are lexical scopes.
+Switch-local declarations do not bind reads outside the switch. The
 `m4-switch-scope` regression smoke checks nested and sibling switches,
 same-name case bodies, nested blocks, loop bindings, source order, bindings
 and SSA flow.
