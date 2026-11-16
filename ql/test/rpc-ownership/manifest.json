@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "source_root": "ql/test/rpc-ownership",
+  "files": {
+    "positive": {"path": "modules/ownership-positive/root/usr/share/rpcd/ucode/luci", "sha256": "974122121c091cecaa85e67039f4ff787192d9c5adfaef6dba4a54e3405c2f93"},
+    "cross-source": {"path": "modules/ownership-cross-source/root/usr/share/rpcd/ucode/luci", "sha256": "b0f6b003252dc269327521c8e6df2c146a191ce945bee447b9aa4acf48465b6c"},
+    "cross-sink": {"path": "modules/ownership-cross-sink/root/usr/share/rpcd/ucode/luci", "sha256": "192e167be7e7c36ff6293d867315ee0cedce06bfbea4108619747f2ad28c1a7a"},
+    "same-file": {"path": "modules/ownership-same-file/root/usr/share/rpcd/ucode/luci", "sha256": "fc19e499aafbabdc22e4f7f8db35e804742cbc539b592049a0a6e6d293a9a7dc"},
+    "wrong-name": {"path": "modules/ownership-wrong-name/root/usr/share/rpcd/ucode/luci", "sha256": "715abb0c1415abcb3f8d86ec6c5ce12e35b9ddc13a6fb89f5c49aec40694dad6"}
+  },
+  "entities": {
+    "positive": {"outer": [8, 27, 8, 42], "inner": [8, 27, 8, 38], "sink": [9, 7, 9, 24]},
+    "cross-source": {"outer": [8, 24, 8, 39], "inner": [8, 24, 8, 35]},
+    "cross-sink": {"sink": [9, 7, 9, 21]},
+    "same-file": {"outer": [8, 25, 8, 40], "inner": [8, 25, 8, 36], "sink": [14, 7, 14, 22]},
+    "wrong-name": {"outer": [8, 25, 8, 40], "inner": [8, 25, 8, 36], "sink": [10, 7, 10, 21]}
+  },
+  "expected": {
+    "RequestArgsExec.ql": [["positive", "outer", "probe request.args reaches popen", "positive", "sink", "popen"]],
+    "LocalTaint.ql": [["positive", "outer", "request.args reaches popen in luci", "positive", "sink", "popen"], ["positive", "inner", "request.args reaches popen in luci", "positive", "sink", "popen"]]
+  },
+  "eligibility": {
+    "positive": {"probe": ["outer", "inner", "sink"]},
+    "cross-source": {"probe": ["outer", "inner"]},
+    "cross-sink": {"probe": ["sink"]},
+    "same-file": {"sourceOnly": ["outer", "inner"], "sinkOnly": ["sink"]},
+    "wrong-name": {"probe": ["outer", "inner", "sink"]}
+  }
+}
