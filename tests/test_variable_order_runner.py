@@ -21,8 +21,10 @@ class VariableOrderRunnerTests(unittest.TestCase):
         (self.root / "scripts").mkdir()
         for name in (
             "m4-variable-order-smoke.sh",
+            "m4-variable-order-controls-smoke.sh",
             "ql-smoke-pack-install.sh",
             "variable-order-verify.py",
+            "variable-order-controls-verify.py",
         ):
             shutil.copy2(REPO / "scripts" / name, self.root / "scripts" / name)
         src = self.root / "ql/test/variable-order"
@@ -30,6 +32,14 @@ class VariableOrderRunnerTests(unittest.TestCase):
         shutil.copy2(REPO / "ql/test/variable-order/order.uc", src / "order.uc")
         (self.root / "ql/test/variable-order.json").write_text(
             json.dumps({"files": {"order.uc": PIN}})
+        )
+        shutil.copytree(
+            REPO / "ql/test/variable-order-controls",
+            self.root / "ql/test/variable-order-controls",
+        )
+        shutil.copy2(
+            REPO / "ql/test/variable-order-controls.json",
+            self.root / "ql/test/variable-order-controls.json",
         )
         extractor = self.root / "extractor-pack/tools/linux64/extractor"
         extractor.parent.mkdir(parents=True)
@@ -52,7 +62,10 @@ elif args[:2] == ["database", "index-files"]:
         p = Path(args[2]) / "trap/ucode/routing.json"
         p.parent.mkdir(parents=True)
         p.write_bytes(b'{"fixture":"routing bytes"}\\n')
-    sys.exit(int(os.environ.get("INDEX_STATUS", "37")))
+    status = int(os.environ.get("INDEX_STATUS", "37"))
+    if status:
+        print(f"index shim: injected failure {status}", file=sys.stderr)
+    sys.exit(status)
 else:
     print("unexpected codeql call", args, file=sys.stderr)
     sys.exit(93)
@@ -63,6 +76,7 @@ else:
             PATH=f"{bindir}:{os.environ['PATH']}",
             CODEQL_UCODE_SMOKE_PACKS_READY=str(self.root),
             CALL_LOG=str(self.root / "calls"),
+            CP_LOG=str(self.root / "routing-copy-calls"),
         )
         for key in ("INDEX_STATUS", "EMIT_RECEIPT", "CP_MODE"):
             self.env.pop(key, None)
@@ -71,8 +85,12 @@ else:
 import os, subprocess, sys
 from pathlib import Path
 args = sys.argv[1:]
-if os.environ.get("CP_MODE") == "fail-route" and args[0].endswith("/trap/ucode/routing.json"):
-    sys.exit(73)
+if args[0].endswith("/trap/ucode/routing.json"):
+    with open(os.environ["CP_LOG"], "a") as log:
+        log.write(args[0] + "\\n")
+    if os.environ.get("CP_MODE") == "fail-route":
+        print("cp shim: injected routing-copy failure", file=sys.stderr)
+        sys.exit(73)
 result = subprocess.run(["/usr/bin/cp", *args])
 if result.returncode:
     sys.exit(result.returncode)
@@ -84,9 +102,9 @@ if os.environ.get("CP_MODE") == "tamper-stage" and args[0] == "ql/test/variable-
 """)
         cp.chmod(0o755)
 
-    def run_smoke(self, **env):
+    def run_smoke(self, script="m4-variable-order-smoke.sh", **env):
         return subprocess.run(
-            ["bash", "scripts/m4-variable-order-smoke.sh"],
+            ["bash", f"scripts/{script}"],
             cwd=self.root,
             env=dict(self.env, **env),
             capture_output=True,
@@ -97,6 +115,64 @@ if os.environ.get("CP_MODE") == "tamper-stage" and args[0] == "ql/test/variable-
     def calls(self):
         p = self.root / "calls"
         return p.read_text().splitlines() if p.exists() else []
+
+    def test_controls_failed_index_copy_failure_preserves_index_status(self):
+        result = self.run_smoke(
+            script="m4-variable-order-controls-smoke.sh", CP_MODE="fail-route"
+        )
+        out = self.root / ".codeql-database/m4-variable-order-controls"
+        raw = out / "db/trap/ucode/routing.json"
+        self.assertEqual(raw.read_bytes(), RECEIPT)
+        self.assertEqual((self.root / "routing-copy-calls").read_text().splitlines(), [str(raw)])
+        self.assertEqual(self.calls(), ["database init", "database index-files"])
+        self.assertFalse((out / "routing.json").exists())
+        self.assertIn("index shim: injected failure 37", result.stderr)
+        self.assertIn("cp shim: injected routing-copy failure", result.stderr)
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertIn("failed to retain routing", result.stderr)
+
+    def test_controls_failed_index_without_receipt_preserves_status(self):
+        result = self.run_smoke(
+            script="m4-variable-order-controls-smoke.sh",
+            CP_MODE="fail-route",
+            EMIT_RECEIPT="0",
+        )
+        out = self.root / ".codeql-database/m4-variable-order-controls"
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertEqual(self.calls(), ["database init", "database index-files"])
+        self.assertFalse((out / "db/trap/ucode/routing.json").exists())
+        self.assertFalse((out / "routing.json").exists())
+        self.assertFalse((self.root / "routing-copy-calls").exists())
+        self.assertIn("index shim: injected failure 37", result.stderr)
+        self.assertNotIn("failed to retain routing", result.stderr)
+        self.assertNotIn("cp shim: injected routing-copy failure", result.stderr)
+
+    def test_controls_failed_index_retains_exact_receipt(self):
+        result = self.run_smoke(script="m4-variable-order-controls-smoke.sh")
+        out = self.root / ".codeql-database/m4-variable-order-controls"
+        raw = out / "db/trap/ucode/routing.json"
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertEqual(self.calls(), ["database init", "database index-files"])
+        self.assertEqual((self.root / "routing-copy-calls").read_text().splitlines(), [str(raw)])
+        self.assertEqual(raw.read_bytes(), RECEIPT)
+        self.assertEqual((out / "routing.json").read_bytes(), RECEIPT)
+        self.assertNotIn("failed to retain routing", result.stderr)
+
+    def test_controls_successful_index_copy_failure_stops_before_finalize(self):
+        result = self.run_smoke(
+            script="m4-variable-order-controls-smoke.sh",
+            CP_MODE="fail-route",
+            INDEX_STATUS="0",
+        )
+        out = self.root / ".codeql-database/m4-variable-order-controls"
+        raw = out / "db/trap/ucode/routing.json"
+        self.assertEqual(result.returncode, 73, result.stderr)
+        self.assertEqual(self.calls(), ["database init", "database index-files"])
+        self.assertEqual((self.root / "routing-copy-calls").read_text().splitlines(), [str(raw)])
+        self.assertEqual(raw.read_bytes(), RECEIPT)
+        self.assertFalse((out / "routing.json").exists())
+        self.assertIn("cp shim: injected routing-copy failure", result.stderr)
+        self.assertNotIn("failed to retain routing", result.stderr)
 
     def test_failed_index_retains_exact_receipt_and_status(self):
         result = self.run_smoke()

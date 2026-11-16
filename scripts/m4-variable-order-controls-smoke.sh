@@ -22,7 +22,9 @@ if codeql database index-files "$DB" --language=ucode --include='**/*.uc' --work
   cp "$DB/trap/ucode/routing.json" "$OUT/routing.json"
 else
   rc=$?
-  if [[ -f "$DB/trap/ucode/routing.json" ]]; then cp "$DB/trap/ucode/routing.json" "$OUT/routing.json"; fi
+  if [[ -f "$DB/trap/ucode/routing.json" ]]; then
+    cp "$DB/trap/ucode/routing.json" "$OUT/routing.json" || echo 'failed to retain routing' >&2
+  fi
   exit "$rc"
 fi
 codeql database finalize "$DB"
