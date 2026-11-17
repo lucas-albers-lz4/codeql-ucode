@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from typing import Any
 from urllib.parse import unquote, urlsplit
@@ -373,6 +374,17 @@ def run_effect_database(temp_root: Path) -> None:
     command([CODEQL, "database", "finalize", db])
     out = db / "effect-evidence"
     out.mkdir()
+
+    # Routing alone does not prove extraction succeeded. Gate this database
+    # independently before consuming any semantic results.
+    for diagnostic in ("SuccessfullyExtractedFiles", "ExtractionErrors"):
+        result = run_query(ROOT / "ql/src/diagnostics" / f"{diagnostic}.ql", db, out, diagnostic)
+        (out / f"{diagnostic}.json").write_text(json.dumps(result))
+    selected = [source / "modules" / case / "root/usr/share/rpcd/ucode/luci" for case in cases]
+    verdict = subprocess.run([sys.executable, "-B", ROOT / "scripts/m4-smoke-diagnostics.py",
+                             out / "SuccessfullyExtractedFiles.json", out / "ExtractionErrors.json", *selected],
+                            cwd=ROOT, text=True, capture_output=True)
+    require(verdict.returncode == 0, f"effect control extraction rejected: {verdict.stderr}")
 
     # Confirm the matching raw call entities exist, including all discriminating negatives.
     run_query(ROOT / "ql/src/extractor-smoke/ModelsFsPopenRawCalls.ql", db, out, "raw-effect-calls")
