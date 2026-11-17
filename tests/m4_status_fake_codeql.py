@@ -13,6 +13,8 @@ fault = os.environ.get('STATUS_TEST_FAULT', '')
 def reject(message):
     sys.exit('fake codeql rejected: ' + message)
 
+QUERY_RUN_OPTIONS = ('--database=', '--search-path=', '--output=')
+
 def option(prefix):
     values = [x[len(prefix):] for x in args if x.startswith(prefix)]
     if len(values) != 1:
@@ -50,10 +52,21 @@ elif args[:2] == ['database', 'finalize']:
     state(Path(args[2]))
 elif args[:2] == ['query', 'run']:
     allowed = [root / 'ql/src/m4/LuciSysStatusExec.ql', root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql']
-    if Path(args[2]) not in allowed:
+    if len(args) < 3 or Path(args[2]) not in allowed:
         reject('unknown query')
+    rest = args[3:]
+    unknown = [x for x in rest if not x.startswith(QUERY_RUN_OPTIONS)]
+    if unknown:
+        reject('unknown query run option ' + ' '.join(unknown))
+    for prefix in QUERY_RUN_OPTIONS:
+        option(prefix)
+    if len(rest) != len(QUERY_RUN_OPTIONS):
+        reject('duplicate query run option')
     db = Path(option('--database='))
     st = state(db)
+    if option('--search-path=') != os.pathsep.join(
+            (str(root / 'extractor-pack'), str(root / 'ql/lib'), str(root / 'ql/src'))):
+        reject('wrong search path')
     output = Path(option('--output='))
     if output.parent != db:
         reject('query output not in database')

@@ -15,13 +15,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class StatusSmokeDiagnostics(unittest.TestCase):
-    def run_smoke(self, leg='', fault=''):
+    def run_smoke(self, leg='', fault='', helper_edit=None):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         temp = Path(directory.name)
         root = temp / 'checkout'
         shutil.copytree(ROOT / 'scripts', root / 'scripts')
         shutil.copytree(ROOT / 'ql', root / 'ql')
+        if helper_edit is not None:
+            helper = root / 'scripts/m4-smoke-diagnostics.sh'
+            original = helper.read_text()
+            rewritten = helper_edit(original)
+            self.assertNotEqual(rewritten, original, 'helper edit did not apply')
+            helper.write_text(rewritten)
         extractor = root / 'extractor-pack/tools/linux64/extractor'
         extractor.parent.mkdir(parents=True)
         extractor.touch(mode=0o755)
@@ -72,6 +78,25 @@ class StatusSmokeDiagnostics(unittest.TestCase):
                     self.assertNotEqual(result.returncode, 0, result.stdout)
                     self.assertIn('expected exact successful-file multiset', result.stderr)
                     self.assertNotIn('expected zero extraction errors', result.stderr)
+
+    def test_invalid_helper_option_is_rejected(self):
+        def inject(original):
+            return original.replace('--output="$DB/$diagnostic.bqrs"',
+                                    '--output="$DB/$diagnostic.bqrs" --bogus-pr115')
+
+        result = self.run_smoke(helper_edit=inject)
+        self.assertIn('fake codeql rejected: unknown query run option --bogus-pr115', result.stderr)
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn('M4 extraction accepted', result.stdout)
+
+    def test_helper_search_path_must_be_exact(self):
+        def narrow(original):
+            return original.replace('--search-path="$QLPATH"', '--search-path="$ROOT/ql/src"')
+
+        result = self.run_smoke(helper_edit=narrow)
+        self.assertIn('fake codeql rejected: wrong search path', result.stderr)
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn('M4 extraction accepted', result.stdout)
 
 
 if __name__ == '__main__':
