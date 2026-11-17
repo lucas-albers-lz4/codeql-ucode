@@ -1,0 +1,180 @@
+"""Exercise standalone L+P smoke wiring with a synthetic CLI adapter.
+
+The adapter supplies synthetic diagnostic and semantic rows; real extraction
+controls are separate from this fast regression.
+"""
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+SMOKES = {'arrow-cfgscope': ('ArrowCfgScope', 'arrow.csv'),
+          'call-get-argument': ('CallGetArgument', 'args.csv')}
+
+FAKE = r'''#!/usr/bin/env python3
+import json, os, sys
+from pathlib import Path
+a = sys.argv[1:]
+root = Path(os.environ['PAIR_ROOT'])
+smoke = os.environ['PAIR_SMOKE']
+expected_db = root / '.codeql-database' / ('m4-' + smoke)
+source = root / 'ql/test/extractor-smoke'
+def reject(s): sys.exit('fake codeql rejected: ' + s)
+def opt(key):
+    values = [x[len(key):] for x in a if x.startswith(key)]
+    if len(values) != 1: reject('missing or duplicate ' + key)
+    return values[0]
+if a[:2] == ['query', 'compile']:
+    if len(a) != 4 or not a[3].startswith('--search-path='): reject('compile options')
+elif a[:2] == ['database', 'init']:
+    if a[2:] != [str(expected_db), '--language=ucode', '--search-path=' + str(root / 'extractor-pack'), '--source-root=' + str(source)]: reject('database init')
+    expected_db.mkdir(parents=True)
+elif a[:2] == ['database', 'index-files']:
+    if a[2:] != ['--language=ucode', '--include=**/rpcd/ucode/luci', '--include=**/ssa_pos', '--working-dir=' + str(source), str(expected_db)]: reject('database index selection')
+elif a[:2] == ['database', 'finalize']:
+    if a[2:] != [str(expected_db)]: reject('database finalize')
+elif a[:2] == ['query', 'run']:
+    if len(a) != 6 or sorted(x.split('=', 1)[0] for x in a[3:]) != ['--database', '--output', '--search-path']:
+        reject('query run options')
+    query = Path(a[2])
+    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / 'ql/src/extractor-smoke/ArrowCfgScope.ql', root / 'ql/src/extractor-smoke/CallGetArgument.ql']:
+        reject('query path')
+    db = Path(opt('--database='))
+    if db != expected_db or not db.is_dir() or Path(opt('--output=')).parent != db: reject('database or output')
+    if opt('--search-path=') != ':'.join(str(root / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')): reject('search path')
+    Path(opt('--output=')).write_text(query.stem)
+elif a[:2] == ['bqrs', 'decode']:
+    name = Path(a[-1]).read_text()
+    if name in ('SuccessfullyExtractedFiles', 'ExtractionErrors'):
+        if a[2:-1] != ['--format=json', '--entities=url,string']: reject('diagnostic decode flags')
+        print(json.dumps(json.loads(Path(os.environ['PAIR_DIAGNOSTICS']).read_text())[name]))
+    elif name in ('ArrowCfgScope', 'CallGetArgument'):
+        if a[2:-1] != ['--format=csv']: reject('semantic decode flags')
+        messages = {'ArrowCfgScope': ['arrowx in ssa_pos', 'arrowa in ssa_pos', 'arrowb in ssa_pos', 'arrowxs in ssa_pos', 'i in luci', 'n in luci', 'port in luci'], 'CallGetArgument': ['0:ssa_pos_src in ssa_pos', '0:pkg in luci', '1:r in luci']}[name]
+        print('"entity","message"')
+        for message in messages: print('"node","' + message + '"')
+    else: reject('unknown decode')
+else: reject(repr(a))
+'''
+
+
+def receipt(path):
+    return [{'label': str(path), 'url': {'uri': path.as_uri(), 'startLine': 0,
+            'startColumn': 0, 'endLine': 0, 'endColumn': 0}}, '']
+
+
+class LuciSsaPairDiagnostics(unittest.TestCase):
+    def run_smoke(self, name, fault, mutant=None):
+        with tempfile.TemporaryDirectory() as tmp:
+            temp = Path(tmp)
+            root = temp / 'checkout'
+            shutil.copytree(ROOT / 'scripts', root / 'scripts')
+            shutil.copytree(ROOT / 'ql', root / 'ql')
+            if mutant in ('errors', 'identity'):
+                verifier = root / 'scripts/m4-smoke-diagnostics.py'
+                text = verifier.read_text()
+                old = ('if errors:' if mutant == 'errors' else
+                       'if Counter(map(encode, success)) != Counter(map(encode, wanted)):')
+                self.assertEqual(text.count(old), 1)
+                verifier.write_text(text.replace(old, old.replace('if ', 'if False and ', 1)))
+            elif mutant == 'wiring':
+                script = root / f'scripts/m4-{name}-smoke.sh'
+                text = script.read_text()
+                lines = text.splitlines(keepends=True)
+                self.assertEqual(sum(line.startswith('check_m4_extraction ') for line in lines), 1)
+                script.write_text(''.join(line for line in lines if not line.startswith('check_m4_extraction ')))
+            elif mutant in ('wrong-query', 'wrong-flags', 'bad-option'):
+                helper = root / 'scripts/m4-smoke-diagnostics.sh'
+                text = helper.read_text()
+                edits = {'wrong-query': ('ql/src/diagnostics/', 'ql/src/extractor-smoke/'),
+                         'wrong-flags': ('--entities=url,string', '--entities=string'),
+                         'bad-option': ('--output="$DB/$diagnostic.bqrs"', '--output="$DB/$diagnostic.bqrs" --bogus-pair')}
+                old, new = edits[mutant]
+                self.assertEqual(text.count(old), 1)
+                helper.write_text(text.replace(old, new))
+            extractor = root / 'extractor-pack/tools/linux64/extractor'
+            extractor.parent.mkdir(parents=True)
+            extractor.touch(mode=0o755)
+            binary = temp / 'bin'
+            binary.mkdir()
+            (binary / 'codeql').write_text(FAKE)
+            (binary / 'codeql').chmod(0o755)
+            src = root / 'ql/test/extractor-smoke'
+            files = [src / 'usr/share/rpcd/ucode/luci', src / 'ssa_pos']
+            successes = list(map(receipt, files))
+            errors = []
+            if fault == 'error_only':
+                errors = [[{'label': 'synthetic parse error'}, 'parse error', 2]]
+            elif fault.startswith('omit'):
+                successes.pop(int(fault[-1]))
+            elif fault.startswith('duplicate'):
+                successes.append(successes[int(fault[-1])])
+            elif fault.startswith('substitute'):
+                successes[int(fault[-1])] = receipt(src / 'ssa_neg')
+            elif fault == 'bad_schema':
+                successes = None
+            data = {'SuccessfullyExtractedFiles': {'#select': {'columns': [{'name': 'f', 'kind': 'Entity'}, {'kind': 'String'}], 'tuples': successes}},
+                    'ExtractionErrors': {'#select': {'columns': [{'name': 'error', 'kind': 'Entity'}, {'kind': 'String'}, {'kind': 'Integer'}], 'tuples': errors}}}
+            diag = temp / 'diagnostics.json'
+            diag.write_text(json.dumps(data))
+            env = os.environ.copy()
+            env.update(PATH=str(binary) + os.pathsep + env['PATH'], CODEQL_UCODE_SMOKE_PACKS_READY=str(root),
+                       PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag), PYTHONDONTWRITEBYTECODE='1',
+                       PYTHONOPTIMIZE=str(sys.flags.optimize))
+            return subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
+                                  env=env, text=True, capture_output=True)
+
+    def test_pristine_diagnostics_accepted(self):
+        for name in SMOKES:
+            with self.subTest(smoke=name):
+                result = self.run_smoke(name, 'valid')
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn('M4 extraction accepted', result.stdout)
+                self.assertIn('smoke passed', result.stdout)
+
+    def test_identity_guard_and_schema_independent_of_errors(self):
+        for name in SMOKES:
+            for fault in ('omit0', 'omit1', 'duplicate0', 'duplicate1',
+                          'substitute0', 'substitute1', 'bad_schema'):
+                with self.subTest(smoke=name, fault=fault):
+                    result = self.run_smoke(name, fault)
+                    self.assertNotIn('fake codeql rejected', result.stderr)
+                    self.assertNotEqual(result.returncode, 0, result.stdout)
+                    self.assertIn('invalid diagnostic tuples' if fault == 'bad_schema' else
+                                  'expected exact successful-file multiset', result.stderr)
+                    self.assertNotIn('expected zero extraction errors', result.stderr)
+
+    def test_individual_guard_and_wiring_mutants_false_green(self):
+        for name in SMOKES:
+            for mutant, fault in (('errors', 'error_only'), ('identity', 'omit0'),
+                                  ('identity', 'omit1'), ('wiring', 'error_only')):
+                with self.subTest(smoke=name, mutant=mutant, fault=fault):
+                    result = self.run_smoke(name, fault, mutant)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertIn('smoke passed', result.stdout)
+
+    def test_adapter_rejects_corrupted_helper_cli_contract(self):
+        for name in SMOKES:
+            for mutant in ('wrong-query', 'wrong-flags', 'bad-option'):
+                with self.subTest(smoke=name, mutant=mutant):
+                    result = self.run_smoke(name, 'valid', mutant)
+                    self.assertNotEqual(result.returncode, 0, result.stdout)
+                    self.assertIn('fake codeql rejected', result.stderr)
+
+    def test_error_guard_is_independent_of_success_receipts(self):
+        for name in SMOKES:
+            with self.subTest(smoke=name):
+                result = self.run_smoke(name, 'error_only')
+                self.assertNotIn('fake codeql rejected', result.stderr)
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn('expected zero extraction errors', result.stderr)
+                self.assertNotIn('expected exact successful-file multiset', result.stderr)
+
+
+if __name__ == '__main__':
+    unittest.main()
