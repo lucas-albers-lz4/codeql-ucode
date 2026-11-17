@@ -27,6 +27,8 @@ codeql database index-files --language=ucode \
 		--include='**/rpcd/ucode/luci' --include='**/sys.uc' \
 		--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/usr/share/rpcd/ucode/luci" "$SRC/usr/share/ucode/luci/sys.uc"
 
 echo "== LuciSysStatusExec =="
 codeql query run "$ROOT/ql/src/m4/LuciSysStatusExec.ql" \
@@ -58,7 +60,7 @@ PY
 NEG_ROOT="$(mktemp -d)"
 trap 'rm -rf "$NEG_ROOT"' EXIT
 for variant in dispatch evidence; do
-    variant_src="$NEG_ROOT/$variant/src"
+    variant_src="$NEG_ROOT/$variant/ql/test/extractor-smoke"
     variant_db="$NEG_ROOT/$variant/db"
     mkdir -p "$variant_src/usr/share/rpcd/ucode" "$variant_src/usr/share/ucode/luci"
     cp "$SRC/usr/share/rpcd/ucode/luci" "$variant_src/usr/share/rpcd/ucode/luci"
@@ -81,6 +83,7 @@ PYNEG
     codeql database index-files --language=ucode --include='**/rpcd/ucode/luci' --include='**/sys.uc' \
         --working-dir="$variant_src" "$variant_db"
     codeql database finalize "$variant_db"
+    DB="$variant_db" check_m4_extraction "$variant_src/usr/share/rpcd/ucode/luci" "$variant_src/usr/share/ucode/luci/sys.uc"
     codeql query run "$ROOT/ql/src/m4/LuciSysStatusExec.ql" --database="$variant_db" \
         --search-path="$QLPATH" --output="$variant_db/result.bqrs"
     codeql bqrs decode --format=csv "$variant_db/result.bqrs" > "$variant_db/result.csv"
