@@ -14,7 +14,47 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 SMOKES = {'arrow-cfgscope': ('ArrowCfgScope', 'arrow.csv'),
-          'call-get-argument': ('CallGetArgument', 'args.csv')}
+          'call-get-argument': ('CallGetArgument', 'args.csv'),
+          'call-get-identifier': ('CallGetIdentifier', 'idents.csv'),
+          'formal-variables': ('FormalVariables', 'formals.csv'),
+          'get-a-call': ('GetACall', 'calls.csv'),
+          'identity-arrow': ('IdentityArrow', 'identity.csv'),
+          'jump-local': ('JumpLocal', 'jump-local.csv'),
+          'parameter-node': ('ParameterNode', 'params.csv'),
+          'parameter-position': ('ParameterPosition', 'pos.csv'),
+          'return-out': ('ReturnOut', 'return-out.csv'),
+          'simple-call-jump': ('SimpleCallJump', 'jump.csv')}
+
+# Minimal synthetic rows satisfying each standalone smoke's semantic assertions.
+# They exercise gate wiring only; they are not extraction evidence.
+MESSAGES = {
+    'call-get-identifier': ['system in ssa_pos', 'popen in luci', 'shellquote in luci'],
+    'formal-variables': ['param in ssa_pos', 'request in ssa_pos', 's in luci', 'b in ssa_pos'],
+    'get-a-call': ['system in ssa_pos', 'popen in luci', 'shellquote in luci'],
+    'identity-arrow': ['identity-access identx in ssa_pos', 'identity-local 0:identx in ssa_pos'],
+    'jump-local': ['jump-local 0:s from shellquote in luci',
+                   'jump-local 0:pkg from callPackageVersionCheck in luci',
+                   'jump-local 1:b from formal_order in ssa_pos',
+                   'jump-local 1:b from member_order in ssa_pos',
+                   'param-local 0:request in ssa_pos', 'param-local 0:param in ssa_pos'],
+    'parameter-node': ['param 0:param in ssa_pos', 'param 0:request in ssa_pos',
+                       'param 1:b in ssa_pos', 'param 0:arrowx in ssa_pos',
+                       'param 0:arrowa in ssa_pos', 'param 1:arrowb in ssa_pos',
+                       'param 0:arrowxs in ssa_pos', 'param 0:s in luci',
+                       'param 0:i in luci', 'param 1:n in luci', 'param 0:port in luci',
+                       'arg-param 0 in ssa_pos', 'arg-param 0 in luci'],
+    'parameter-position': ['0:param in ssa_pos', '0:s in luci', '1:n in luci'],
+    'return-out': ['out shellquote in luci', 'out callPackageVersionCheck in luci',
+                   'out formal_order in ssa_pos', 'out member_order in ssa_pos',
+                   'jump-out shellquote in luci', 'jump-out callPackageVersionCheck in luci',
+                   'jump-out formal_order in ssa_pos', 'jump-out member_order in ssa_pos'],
+    'simple-call-jump': ['jump-param 0:s from shellquote in luci',
+                         'jump-param 0:pkg from callPackageVersionCheck in luci',
+                         'jump-param 0:a from formal_order in ssa_pos',
+                         'jump-param 1:b from formal_order in ssa_pos',
+                         'jump-param 0:a from member_order in ssa_pos',
+                         'jump-param 1:b from member_order in ssa_pos'],
+}
 
 FAKE = r'''#!/usr/bin/env python3
 import json, os, sys
@@ -22,6 +62,7 @@ from pathlib import Path
 a = sys.argv[1:]
 root = Path(os.environ['PAIR_ROOT'])
 smoke = os.environ['PAIR_SMOKE']
+semantic_query = os.environ['PAIR_QUERY']
 expected_db = root / '.codeql-database' / ('m4-' + smoke)
 source = root / 'ql/test/extractor-smoke'
 def reject(s): sys.exit('fake codeql rejected: ' + s)
@@ -35,8 +76,8 @@ def opt(key):
 if a[:2] == ['query', 'compile']:
     if len(a) != 4 or a[3] != '--search-path=' + ':'.join(str(root / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')):
         reject('compile options')
-    if Path(a[2]) not in [root / p for p in ('ql/src/extractor-smoke/ArrowCfgScope.ql',
-            'ql/src/extractor-smoke/CallGetArgument.ql', 'ql/src/m3/LocalTaint.ql', 'ql/src/m4/RequestArgsExec.ql')]:
+    if Path(a[2]) not in [root / ('ql/src/extractor-smoke/' + semantic_query + '.ql'),
+                          root / 'ql/src/m3/LocalTaint.ql', root / 'ql/src/m4/RequestArgsExec.ql']:
         reject('compile query')
 elif a[:2] == ['database', 'init']:
     if a[2:] != [str(expected_db), '--language=ucode', '--search-path=' + str(root / 'extractor-pack'), '--source-root=' + str(source)]: reject('database init')
@@ -49,7 +90,7 @@ elif a[:2] == ['query', 'run']:
     if len(a) != 6 or sorted(x.split('=', 1)[0] for x in a[3:]) != ['--database', '--output', '--search-path']:
         reject('query run options')
     query = Path(a[2])
-    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / 'ql/src/extractor-smoke/ArrowCfgScope.ql', root / 'ql/src/extractor-smoke/CallGetArgument.ql']:
+    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / ('ql/src/extractor-smoke/' + semantic_query + '.ql')]:
         reject('query path')
     db = Path(opt('--database='))
     if db != expected_db or not db.is_dir() or Path(opt('--output=')).parent != db: reject('database or output')
@@ -60,9 +101,9 @@ elif a[:2] == ['bqrs', 'decode']:
     if name in ('SuccessfullyExtractedFiles', 'ExtractionErrors'):
         if a[2:-1] != ['--format=json', '--entities=url,string']: reject('diagnostic decode flags')
         print(json.dumps(json.loads(Path(os.environ['PAIR_DIAGNOSTICS']).read_text())[name]))
-    elif name in ('ArrowCfgScope', 'CallGetArgument'):
+    elif name == semantic_query:
         if a[2:-1] != ['--format=csv']: reject('semantic decode flags')
-        messages = {'ArrowCfgScope': ['arrowx in ssa_pos', 'arrowa in ssa_pos', 'arrowb in ssa_pos', 'arrowxs in ssa_pos', 'i in luci', 'n in luci', 'port in luci'], 'CallGetArgument': ['0:ssa_pos_src in ssa_pos', '0:pkg in luci', '1:r in luci']}[name]
+        messages = {'ArrowCfgScope': ['arrowx in ssa_pos', 'arrowa in ssa_pos', 'arrowb in ssa_pos', 'arrowxs in ssa_pos', 'i in luci', 'n in luci', 'port in luci'], 'CallGetArgument': ['0:ssa_pos_src in ssa_pos', '0:pkg in luci', '1:r in luci']}.get(name, json.loads(os.environ['PAIR_MESSAGES']))
         print('"entity","message"')
         for message in messages: print('"node","' + message + '"')
     else: reject('unknown decode')
@@ -149,6 +190,7 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             commands = temp / 'commands.log'
             env.update(PATH=str(binary) + os.pathsep + env['PATH'], CODEQL_UCODE_SMOKE_PACKS_READY=str(root),
                        PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag),
+                       PAIR_QUERY=SMOKES[name][0], PAIR_MESSAGES=json.dumps(MESSAGES.get(name, [])),
                        PAIR_COMMAND_LOG=str(commands), PYTHONDONTWRITEBYTECODE='1',
                        PYTHONOPTIMIZE=str(sys.flags.optimize))
             result = subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
