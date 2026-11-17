@@ -45,6 +45,9 @@ codeql database index-files --language=ucode \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/ssa_pos" "$SRC/ssa_neg"
+
 echo "== SsaReads =="
 codeql query run "$Q" --database="$DB" --search-path="$QLPATH" --output="$DB/ssa.bqrs"
 codeql bqrs decode --format=csv "$DB/ssa.bqrs" | tee "$DB/ssa.csv"

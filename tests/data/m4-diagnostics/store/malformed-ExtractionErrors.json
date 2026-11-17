@@ -1,0 +1,7 @@
+{"#select":{"columns":[
+   {"name":"error","kind":"Entity"}
+  ,{"kind":"String"}
+  ,{"kind":"Integer"}]
+ ,"tuples":[
+   [{"label":"A parse error occurred. Check the syntax of the file. If the file is invalid, correct the error or exclude the file from analysis.","url":{"uri":"file://__SOURCE_ROOT__/ssa_neg","startLine":65,"startColumn":21,"endLine":65,"endColumn":21}},"Extraction failed in __SOURCE_ROOT__/ssa_neg with error A parse error occurred. Check the syntax of the file. If the file is invalid, correct the error or exclude the file from analysis.",2]]
+ }}

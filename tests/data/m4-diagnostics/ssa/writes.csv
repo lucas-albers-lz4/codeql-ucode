@@ -1,0 +1,6 @@
+"wa","col1"
+"VariableAccess[seq]","seq:14 in ssa_pos"
+"VariableAccess[seq]","seq:16 in ssa_pos"
+"VariableAccess[branch]","branch:26 in ssa_pos"
+"VariableAccess[both]","both:32 in ssa_pos"
+"VariableAccess[both]","both:34 in ssa_pos"
