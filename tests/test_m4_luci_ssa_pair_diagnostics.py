@@ -25,12 +25,19 @@ smoke = os.environ['PAIR_SMOKE']
 expected_db = root / '.codeql-database' / ('m4-' + smoke)
 source = root / 'ql/test/extractor-smoke'
 def reject(s): sys.exit('fake codeql rejected: ' + s)
+log_path = os.environ.get('PAIR_COMMAND_LOG')
+if log_path:
+    with open(log_path, 'a') as stream: stream.write(' '.join(a) + '\n')
 def opt(key):
     values = [x[len(key):] for x in a if x.startswith(key)]
     if len(values) != 1: reject('missing or duplicate ' + key)
     return values[0]
 if a[:2] == ['query', 'compile']:
-    if len(a) != 4 or not a[3].startswith('--search-path='): reject('compile options')
+    if len(a) != 4 or a[3] != '--search-path=' + ':'.join(str(root / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')):
+        reject('compile options')
+    if Path(a[2]) not in [root / p for p in ('ql/src/extractor-smoke/ArrowCfgScope.ql',
+            'ql/src/extractor-smoke/CallGetArgument.ql', 'ql/src/m3/LocalTaint.ql', 'ql/src/m4/RequestArgsExec.ql')]:
+        reject('compile query')
 elif a[:2] == ['database', 'init']:
     if a[2:] != [str(expected_db), '--language=ucode', '--search-path=' + str(root / 'extractor-pack'), '--source-root=' + str(source)]: reject('database init')
     expected_db.mkdir(parents=True)
@@ -88,6 +95,22 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
                 lines = text.splitlines(keepends=True)
                 self.assertEqual(sum(line.startswith('check_m4_extraction ') for line in lines), 1)
                 script.write_text(''.join(line for line in lines if not line.startswith('check_m4_extraction ')))
+            elif mutant == 'late':
+                script = root / f'scripts/m4-{name}-smoke.sh'
+                lines = script.read_text().splitlines(keepends=True)
+                check = [line for line in lines if line.startswith('check_m4_extraction ')]
+                source = [line for line in lines if line.startswith('source "$ROOT/scripts/m4-smoke-diagnostics.sh"')]
+                self.assertEqual(len(check), 1)
+                self.assertEqual(len(source), 1)
+                rest = [line for line in lines if line not in check + source]
+                index = next(i for i, line in enumerate(rest) if 'query run' in line)
+                script.write_text(''.join(rest[:index + 1] + source + check + rest[index + 1:]))
+            elif mutant == 'bad-compile':
+                script = root / f'scripts/m4-{name}-smoke.sh'
+                text = script.read_text()
+                old = 'codeql query compile "$Q"'
+                self.assertEqual(text.count(old), 1)
+                script.write_text(text.replace(old, 'codeql query compile "$ROOT/ql/src/extractor-smoke/Bogus.ql"'))
             elif mutant in ('wrong-query', 'wrong-flags', 'bad-option'):
                 helper = root / 'scripts/m4-smoke-diagnostics.sh'
                 text = helper.read_text()
@@ -123,11 +146,20 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             diag = temp / 'diagnostics.json'
             diag.write_text(json.dumps(data))
             env = os.environ.copy()
+            commands = temp / 'commands.log'
             env.update(PATH=str(binary) + os.pathsep + env['PATH'], CODEQL_UCODE_SMOKE_PACKS_READY=str(root),
-                       PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag), PYTHONDONTWRITEBYTECODE='1',
+                       PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag),
+                       PAIR_COMMAND_LOG=str(commands), PYTHONDONTWRITEBYTECODE='1',
                        PYTHONOPTIMIZE=str(sys.flags.optimize))
-            return subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
-                                  env=env, text=True, capture_output=True)
+            result = subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
+                                    env=env, text=True, capture_output=True)
+            self.commands = commands.read_text() if commands.exists() else ''
+            return result
+
+    def semantic_executed(self, name):
+        query = f"{SMOKES[name][0]}.ql"
+        return any(line.startswith('query run ') and query in line
+                   for line in self.commands.splitlines())
 
     def test_pristine_diagnostics_accepted(self):
         for name in SMOKES:
@@ -173,6 +205,32 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
                 self.assertNotIn('fake codeql rejected', result.stderr)
                 self.assertNotEqual(result.returncode, 0, result.stdout)
                 self.assertIn('expected zero extraction errors', result.stderr)
+                self.assertNotIn('expected exact successful-file multiset', result.stderr)
+
+    def test_rejection_precedes_every_semantic_query(self):
+        for name in SMOKES:
+            for fault in ('error_only', 'omit0'):
+                with self.subTest(smoke=name, fault=fault):
+                    result = self.run_smoke(name, fault)
+                    self.assertNotEqual(result.returncode, 0, result.stdout)
+                    self.assertTrue(self.commands, 'no commands were recorded')
+                    self.assertFalse(self.semantic_executed(name),
+                                     'semantic query ran before the extraction guard rejected')
+
+    def test_gate_after_semantics_mutation_is_detected(self):
+        for name in SMOKES:
+            with self.subTest(smoke=name):
+                result = self.run_smoke(name, 'error_only', 'late')
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertTrue(self.semantic_executed(name),
+                                'late-gate mutation did not run the semantic query')
+
+    def test_adapter_rejects_corrupted_compile_operand(self):
+        for name in SMOKES:
+            with self.subTest(smoke=name):
+                result = self.run_smoke(name, 'valid', 'bad-compile')
+                self.assertNotEqual(result.returncode, 0, result.stdout)
+                self.assertIn('fake codeql rejected', result.stderr)
                 self.assertNotIn('expected exact successful-file multiset', result.stderr)
 
 
