@@ -207,7 +207,9 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             elif fault.startswith('duplicate'):
                 successes.append(successes[int(fault[-1])])
             elif fault.startswith('substitute'):
-                successes[int(fault[-1])] = receipt(src / 'not-selected')
+                substitute = src / 'taint_neg'
+                self.assertTrue(substitute.is_file(), 'substitution fixture must exist')
+                successes[int(fault[-1])] = receipt(substitute)
             elif fault == 'bad_schema':
                 successes = None
             data = {'SuccessfullyExtractedFiles': {'#select': {'columns': [{'name': 'f', 'kind': 'Entity'}, {'kind': 'String'}], 'tuples': successes}},
