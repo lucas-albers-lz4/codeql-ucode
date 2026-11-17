@@ -70,7 +70,7 @@ def verify_flow(source, rows):
         if pair in got:
             raise ValueError(f"overwritten source reached final read: {pair}")
     # Each fixture needs its own overwrite-to-read witness for a nonvacuous negative.
-    # These spans are source-derived proposals, not yet confirmed by a real CodeQL run.
+    # The hosted CodeQL run confirmed these source-derived spans.
     for name in FILES[:2]:
         positive = (span(source, name, 6, "'safe'"), span(source, name, 9, "x"))
         if positive not in got:
