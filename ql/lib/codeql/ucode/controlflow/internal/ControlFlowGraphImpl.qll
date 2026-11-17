@@ -453,7 +453,13 @@ class SwitchStatementTree extends PreOrderTree, TSwitchStatement {
   override predicate propagatesAbnormal(AstNode child) { none() }
 
   override predicate last(AstNode n, Completion c) {
-    exists(int i | not exists(this.caseAt(i + 1)) and last(this.caseAt(i), n, c))
+    // A switch consumes breaks from every case, including the final case.
+    // Only the normalized completion below may leave the switch for a break.
+    exists(int i |
+      not exists(this.caseAt(i + 1)) and
+      last(this.caseAt(i), n, c) and
+      not c instanceof BreakCompletion
+    )
     or
     exists(int i |
       not exists(this.defaultCase()) and
