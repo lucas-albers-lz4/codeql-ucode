@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import tempfile
 import unittest
 from unittest.mock import patch
 
@@ -179,8 +180,23 @@ def validate_documents(documents):
     return seen
 
 
+def unique_json_pairs(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f'duplicate JSON key: {key}')
+        result[key] = value
+    return result
+
+
+def reject_json_constant(value):
+    raise ValueError(f'invalid JSON constant: {value}')
+
+
 def load_documents(directory):
-    return {p.name: json.loads(p.read_text(encoding='utf-8')) for p in directory.glob('*.json')}
+    return {p.name: json.loads(p.read_text(encoding='utf-8'), object_pairs_hook=unique_json_pairs,
+                               parse_constant=reject_json_constant)
+            for p in directory.glob('*.json')}
 
 
 class SnapshotTests(unittest.TestCase):
@@ -190,6 +206,100 @@ class SnapshotTests(unittest.TestCase):
 
     def test_classified_documents_and_records(self):
         self.assertEqual(len(validate_documents(self.documents)), 19)
+
+    def test_shared_raw_interchange_v1_cases(self):
+        raw = (ROOT / 'tests/fixtures/interchange-raw-v1.json').read_bytes()
+        self.assertEqual(hashlib.sha256(raw).hexdigest(),
+                         '37d41d361d417f519b1523a25ddbb9a2ffd4d90b7fce2140d17c03c14eac68da')
+        fixture = json.loads(raw)
+        self.assertEqual(fixture['contract'], 'interchange-raw-v1')
+        self.assertEqual(len(fixture['cases']), 14)
+        for case in fixture['cases']:
+            with self.subTest(name=case['name']), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory)
+                for source in DOCS.glob('*.json'):
+                    (path / source.name).write_bytes(source.read_bytes())
+                target = path / case['file']
+                original = target.read_text(encoding='utf-8')
+                self.assertEqual(original.count(case['anchor']), 1)
+                target.write_text(original.replace(case['anchor'], case['replacement']), encoding='utf-8')
+                # Require rejection by the raw loader, not a later snapshot check.
+                with self.assertRaisesRegex(ValueError, case['error']):
+                    load_documents(path)
+
+    def test_raw_duplicate_status_rejected_before_validation(self):
+        name = 'm4-imported-callee-findings.json'
+        raw = (DOCS / name).read_text(encoding='utf-8')
+        status = '"evidence_status": "inconclusive"'
+        for replacement in (
+            '"evidence_status": "no_path", ' + status,
+            status + ', "evidence_status": "no_path"',
+            status + ', ' + status,
+        ):
+            with self.subTest(replacement=replacement), tempfile.TemporaryDirectory() as directory:
+                path = Path(directory)
+                for source in DOCS.glob('*.json'):
+                    (path / source.name).write_bytes(source.read_bytes())
+                self.assertEqual(raw.count(status), 1)
+                (path / name).write_text(raw.replace(status, replacement), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'duplicate'):
+                    load_documents(path)
+
+    def test_raw_non_json_constants_rejected_before_validation(self):
+        cases = (
+            ('m4-imported-callee-findings.json', '"record_type": "taint_path"',
+             lambda value: '"record_type": "taint_path", "additional": {"nested": [' + value + ']}'),
+            ('m4-getfeatures-direct-exec-coverage.json', '"line": 268',
+             lambda value: '"line": ' + value),
+        )
+        for name, anchor, replacement in cases:
+            raw = (DOCS / name).read_text(encoding='utf-8')
+            self.assertEqual(raw.count(anchor), 1)
+            for constant in ('NaN', 'Infinity', '-Infinity'):
+                with self.subTest(name=name, constant=constant), tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory)
+                    (path / name).write_text(raw.replace(anchor, replacement(constant)), encoding='utf-8')
+                    with self.assertRaisesRegex(ValueError, 'invalid JSON constant'):
+                        load_documents(path)
+
+    def test_raw_duplicate_keys_at_other_locations_rejected(self):
+        typed = 'm4-imported-callee-findings.json'
+        coverage = 'm4-getfeatures-direct-exec-coverage.json'
+        cases = (
+            (typed, '"producer": "step3"', '"producer": "step4", "producer": "step3"'),
+            (typed, '"producer": "step3"', '"producer": "step3", "producer": "step4"'),
+            (typed, '"record_id": "m4:setInitAction-init_action-unresolved"',
+             '"record_id": "wrong", "record_id": "m4:setInitAction-init_action-unresolved"'),
+            (typed, '"unknowns": [', '"unknowns": [], "unknowns": ['),
+            (typed, '"producer": "step3"', '"produc\\u0065r": "step3", "producer": "step3"'),
+            (coverage, '"line": 268', '"line": 1, "line": 268'),
+        )
+        for name, anchor, replacement in cases:
+            with self.subTest(name=name, replacement=replacement), tempfile.TemporaryDirectory() as directory:
+                raw = (DOCS / name).read_text(encoding='utf-8')
+                self.assertEqual(raw.count(anchor), 1)
+                (Path(directory) / name).write_text(raw.replace(anchor, replacement), encoding='utf-8')
+                with self.assertRaisesRegex(ValueError, 'duplicate'):
+                    load_documents(Path(directory))
+
+    def test_raw_valid_json_preserves_historical_documents(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            for source in DOCS.glob('*.json'):
+                (path / source.name).write_bytes(source.read_bytes())
+            name = 'm4-imported-callee-findings.json'
+            rows = json.loads((path / name).read_text(encoding='utf-8'))
+            rows[0]['additional'] = {'nested': [None, True, 1.25, 'NaN', {'x': 'Infinity'}]}
+            rows[0]['unknowns'] = list(reversed(rows[0]['unknowns'])) + ['additional conservative unknown']
+            rows[0] = dict(reversed(list(rows[0].items())))
+            (path / name).write_text(json.dumps(rows), encoding='utf-8')
+            name = 'm4-getfeatures-direct-exec-coverage.json'
+            report = json.loads((path / name).read_text(encoding='utf-8'))
+            report['call_sites'].reverse()
+            (path / name).write_text(json.dumps(report, sort_keys=True), encoding='utf-8')
+            docs = load_documents(path)
+            self.assertEqual(len(docs), 9)
+            self.assertEqual(len(validate_documents(docs)), 19)
 
     def structural_base(self):
         return {

@@ -16,6 +16,20 @@ contents. It also validates coverage profile, family revision, partial status, a
 arrays and nested call sites. Coverage is report-only and remains partial. There
 is no imported-callee coverage report in this legacy bundle.
 
+The historical snapshot loader requires UTF-8 JSON with no duplicate object
+keys at any depth and no `NaN`, `Infinity` or `-Infinity` constants. It rejects
+these before applying the snapshot checks. Valid additional typed-record fields
+remain permitted; the coverage reports retain their documented exact field sets.
+These rules describe this producer's offline check, not enforcement by a
+separately versioned consumer. The normal interchange test also runs the same
+14 raw negative vectors as the consumer from
+`tests/fixtures/interchange-raw-v1.json` (SHA-256
+`37d41d361d417f519b1523a25ddbb9a2ffd4d90b7fce2140d17c03c14eac68da`).
+Each vector modifies raw text in a fresh copy of the historical documents and
+must be rejected by the loader before snapshot validation. The shared vectors
+are not a complete JSON conformance suite; producer-specific positive and
+negative controls remain separate.
+
 The bounded record checks require unique nonempty IDs, `producer: step3`,
 `analysis_revision` matching the entire regular expression `step3:[^\s:]+`,
 `handler_effect` or `taint_path` (not `rpc_surface` or `backend_method`), the
