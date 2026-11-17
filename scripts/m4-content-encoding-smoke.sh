@@ -49,6 +49,8 @@ codeql database index-files --language=ucode \
 	--include='**/rpcd/ucode/luci' --include='**/ssa_neg' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/usr/share/rpcd/ucode/luci" "$SRC/ssa_neg"
 
 echo "== ContentEncoding =="
 codeql query run "$Q" --database="$DB" --search-path="$QLPATH" --output="$DB/content.bqrs"

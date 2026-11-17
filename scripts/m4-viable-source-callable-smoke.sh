@@ -134,6 +134,8 @@ codeql database index-files --language=ucode \
 	--include='**/rpcd/ucode/luci' --include='**/ssa_pos' --include='**/sys.uc' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/usr/share/rpcd/ucode/luci" "$SRC/usr/share/ucode/luci/sys.uc" "$SRC/ssa_pos"
 
 echo "== ViableSourceCallable =="
 codeql query run "$Q" --database="$DB" --search-path="$QLPATH" --output="$DB/viable.bqrs"
