@@ -27,15 +27,51 @@ SMOKES = {'arrow-cfgscope': ('ArrowCfgScope', 'arrow.csv'),
           'content-encoding': ('ContentEncoding', 'content.csv'),
           'encode-content': ('EncodeContent', 'encode.csv'),
           'cfg': ('CfgEdges', 'cfg.csv'),
-          'viable-source-callable': ('ViableSourceCallable', 'viable.csv')}
+          'viable-source-callable': ('ViableSourceCallable', 'viable.csv'),
+          'quote': ('CompleteQuotedArg', 'quoted.csv')}
 
 SELECTIONS = {
+    # Measured diagnostic identities, not derived from includes or globbing.
+    'quote': (
+        'quote_bad_ash_c.uc',
+        'quote_bad_assignment.uc',
+        'quote_bad_bash_c.uc',
+        'quote_bad_conditional.uc',
+        'quote_bad_echo',
+        'quote_bad_import.uc',
+        'quote_bad_local.uc',
+        'quote_bad_parameter.uc',
+        'quote_bad_pipe.uc',
+        'quote_bad_prefix_join.uc',
+        'quote_bad_separator.uc',
+        'quote_bad_separator_space.uc',
+        'quote_bad_sh_c',
+        'quote_bad_sh_c_suffix.uc',
+        'quote_bad_shell_flags.uc',
+        'quote_bad_shell_path.uc',
+        'quote_bad_shell_wrapper.uc',
+        'quote_bad_suffix',
+        'quote_bad_suffix_join.uc',
+        'quote_bad_trailing_substitution.uc',
+        'quote_bad_transform.uc',
+        'quote_bad_unknown_command.uc',
+        'quote_bad_variable.uc',
+        'quote_exe',
+        'quote_ok',
+        'quote_ok_echo.uc',
+        'quote_ok_printf.uc',
+        'taint_neg',
+        'taint_pos',
+        'usr/share/rpcd/ucode/luci',
+        'usr/share/ucode/luci/sys.uc',
+    ),
     'content-encoding': ('usr/share/rpcd/ucode/luci', 'ssa_neg'),
     'encode-content': ('usr/share/rpcd/ucode/luci', 'ssa_neg'),
     'cfg': ('cfg_pos', 'cfg_neg'),
     'viable-source-callable': ('usr/share/rpcd/ucode/luci', 'ssa_pos', 'usr/share/ucode/luci/sys.uc'),
 }
 INCLUDES = {
+    'quote': ('**/luci', '**/taint_pos', '**/taint_neg', '**/quote_*'),
     'content-encoding': ('**/rpcd/ucode/luci', '**/ssa_neg'),
     'encode-content': ('**/rpcd/ucode/luci', '**/ssa_neg'),
     'cfg': ('**/cfg_pos', '**/cfg_neg'),
@@ -128,6 +164,22 @@ elif a[:2] == ['bqrs', 'decode']:
     if name in ('SuccessfullyExtractedFiles', 'ExtractionErrors'):
         if a[2:-1] != ['--format=json', '--entities=url,string']: reject('diagnostic decode flags')
         print(json.dumps(json.loads(Path(os.environ['PAIR_DIAGNOSTICS']).read_text())[name]))
+    elif smoke == 'quote' and name in ('CompleteQuotedArg', 'ShellquoteTemplateShape', 'ShellInjection'):
+        if a[2:-1] != ['--format=csv']: reject('semantic decode flags')
+        import csv
+        w = csv.writer(sys.stdout, lineterminator='\n')
+        w.writerow(['entity', 'message', 'extra', 'sink', 'method', 'sinkline', 'srcline'])
+        fixtures = json.loads(os.environ['PAIR_SELECTION'])
+        if name == 'ShellquoteTemplateShape':
+            for p in fixtures:
+                if p.startswith('quote_ok'): w.writerow(['node', 'supported template shape in ' + p])
+        elif name == 'ShellInjection':
+            for p in fixtures:
+                if p.startswith('quote_bad_') or p.startswith('quote_ok') or p == 'taint_pos':
+                    w.writerow(['node', 'shell-injection candidate via system in ' + p])
+            w.writerow(['node', 'shell-injection candidate via system in quote_exe (quoted executable selection)'])
+            for method, sink, sinkline, srcline in [('getSwconfigFeatures', 'popen', 343, 343), ('getSwconfigPortState', 'popen', 400, 400), ('getRealtimeStats', 'popen', 585, 575), ('getRealtimeStats', 'popen', 585, 577), ('setPassword', 'system', 474, 470), ('setPassword', 'system', 474, 471), ('setLocaltime', 'system', 111, 108)]:
+                w.writerow(['node', 'shell-injection candidate via ' + sink + ' in luci', '', sink, method, sinkline, srcline])
     elif name == semantic_query or name in ('LocalFlowStep', 'SsaReachesSystem') and smoke == 'viable-source-callable':
         if a[2:-1] != ['--format=csv']: reject('semantic decode flags')
         messages = {'ArrowCfgScope': ['arrowx in ssa_pos', 'arrowa in ssa_pos', 'arrowb in ssa_pos', 'arrowxs in ssa_pos', 'i in luci', 'n in luci', 'port in luci'], 'CallGetArgument': ['0:ssa_pos_src in ssa_pos', '0:pkg in luci', '1:r in luci']}.get(name, json.loads(os.environ['PAIR_MESSAGES']))
@@ -203,13 +255,14 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             if fault == 'error_only':
                 errors = [[{'label': 'synthetic parse error'}, 'parse error', 2]]
             elif fault.startswith('omit'):
-                successes.pop(int(fault[-1]))
+                successes.pop(int(fault.removeprefix('omit')))
             elif fault.startswith('duplicate'):
-                successes.append(successes[int(fault[-1])])
+                successes.append(successes[int(fault.removeprefix('duplicate'))])
             elif fault.startswith('substitute'):
-                substitute = src / 'taint_neg'
+                substitute = src / ('cfg_pos' if name == 'quote' else 'taint_neg')
                 self.assertTrue(substitute.is_file(), 'substitution fixture must exist')
-                successes[int(fault[-1])] = receipt(substitute)
+                self.assertNotIn(substitute, files)
+                successes[int(fault.removeprefix('substitute'))] = receipt(substitute)
             elif fault == 'bad_schema':
                 successes = None
             data = {'SuccessfullyExtractedFiles': {'#select': {'columns': [{'name': 'f', 'kind': 'Entity'}, {'kind': 'String'}], 'tuples': successes}},
@@ -231,7 +284,8 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
                        PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag),
                        PAIR_QUERY=SMOKES[name][0], PAIR_MESSAGES=json.dumps(messages),
                        PAIR_INCLUDES=json.dumps(INCLUDES.get(name, ('**/rpcd/ucode/luci', '**/ssa_pos'))),
-                       PAIR_EXTRA_QUERIES=json.dumps(['ql/src/extractor-smoke/LocalFlowStep.ql', 'ql/src/m4/SsaReachesSystem.ql'] if name == 'viable-source-callable' else []),
+                       PAIR_EXTRA_QUERIES=json.dumps(['ql/src/extractor-smoke/LocalFlowStep.ql', 'ql/src/m4/SsaReachesSystem.ql'] if name == 'viable-source-callable' else ['ql/src/m4/CompleteQuotedArg.ql', 'ql/src/m4/ShellquoteTemplateShape.ql', 'ql/src/m4/ShellInjection.ql'] if name == 'quote' else []),
+                       PAIR_SELECTION=json.dumps(SELECTIONS.get(name, ())),
                        PAIR_COMMAND_LOG=str(commands), PYTHONDONTWRITEBYTECODE='1',
                        PYTHONOPTIMIZE=str(sys.flags.optimize))
             result = subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
@@ -243,6 +297,8 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
         queries = [f"{SMOKES[name][0]}.ql"]
         if name == 'viable-source-callable':
             queries += ['LocalFlowStep.ql', 'SsaReachesSystem.ql']
+        if name == 'quote':
+            queries += ['ShellquoteTemplateShape.ql', 'ShellInjection.ql']
         return any(line.startswith('query run ') and any(query in line for query in queries)
                    for line in self.commands.splitlines())
 
@@ -314,7 +370,8 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
                                 'late-gate mutation did not run the semantic query')
 
     def test_adapter_rejects_corrupted_compile_operand(self):
-        for name in SMOKES:
+        # quote does not invoke query compile; the adapter still validates it.
+        for name in (name for name in SMOKES if name != 'quote'):
             with self.subTest(smoke=name):
                 result = self.run_smoke(name, 'valid', 'bad-compile')
                 self.assertNotEqual(result.returncode, 0, result.stdout)
