@@ -23,9 +23,11 @@ def main():
     except subprocess.CalledProcessError as exc:
         detail = (exc.stderr or exc.stdout or '').strip()
         fail(f'codeql resolve failed with status {exc.returncode}: {detail}')
+    except ValueError as exc:
+        fail(f'undecodable codeql output: {exc}')
     try:
         actual = json.loads(result.stdout)['sourceLocationPrefix']
-    except (ValueError, TypeError, KeyError) as exc:
+    except (ValueError, TypeError, KeyError, RecursionError) as exc:
         fail(f'unreadable database metadata: {exc!r}')
     if not isinstance(actual, str):
         fail(f'expected a string prefix, got {actual!r}')

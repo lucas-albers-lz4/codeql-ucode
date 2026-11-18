@@ -236,6 +236,17 @@ class M3ReuseRootFailClosed(unittest.TestCase):
         self.assertNotEqual(p.returncode, 0)
         self.assertIn('cannot run codeql', p.stderr)
 
+    def test_rejects_too_many_arguments(self):
+        p = self.run_root(args=['a', 'b', 'c'])
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('usage:', p.stderr)
+
+    def test_reports_stdout_when_stderr_is_empty(self):
+        p = self.run_root(payload='boom on stdout', exit_code=4)
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('status 4', p.stderr)
+        self.assertIn('boom on stdout', p.stderr)
+
     def test_rejects_wrong_argument_count(self):
         p = self.run_root(args=['only-one-arg'])
         self.assertNotEqual(p.returncode, 0)
