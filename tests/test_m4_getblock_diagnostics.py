@@ -22,8 +22,13 @@ r=Path(os.environ['T_ROOT']); db=r/'.codeql-database/m4-getblock-effect-table'
 qlsrc=r/'ql/src'
 a=sys.argv[1:]; registry=Path(os.environ['T_REGISTRY'])
 with open(os.environ['T_LOG'],'a') as f: f.write(json.dumps(a)+'\n')
+# Model CodeQL's acceptance of checkout aliases and its physical file URIs.
+if os.environ.get('T_ALIAS'):
+    a=[x.replace(os.environ['T_ALIAS'],str(r)) for x in a]
 def die(s): sys.exit('adapter rejected: '+s)
-if a[:2]==['database','init']:
+if a[:2]==['pack','install']:
+    if a[2:] not in ([str(r/'ql/lib')],[str(r/'ql/src')]): die('pack install')
+elif a[:2]==['database','init']:
     if len(a)!=6 or a[2]!=str(db) or a[3]!='--language=ucode' or a[4]!='--search-path='+str(r/'extractor-pack') or not a[5].startswith('--source-root='): die('init')
     src=Path(a[5].split('=',1)[1]); registry.write_text(str(src)); db.mkdir(parents=True)
 elif a[:2]==['database','index-files']:
@@ -42,7 +47,7 @@ elif a[:2]==['bqrs','decode']:
     flags=a[2:-1]; name=Path(a[-1]).read_text(); fault=os.environ['T_FAULT']
     if name in ('SuccessfullyExtractedFiles','ExtractionErrors'):
         if flags not in (['--format=csv'],['--format=json','--entities=url,string']): die('diagnostic decode')
-        src=Path(registry.read_text()); paths=[src/x for x in json.loads(os.environ['T_REL'])]
+        src=Path(registry.read_text()).resolve(); paths=[src/x for x in json.loads(os.environ['T_REL'])]
         index=int(os.environ['T_INDEX'])
         if fault=='omit': paths.pop(index)
         elif fault=='duplicate': paths[index]=paths[(index+1)%len(paths)]
@@ -64,7 +69,7 @@ else: die('unknown')
 '''
 
 class GetBlockDevicesDiagnostics(unittest.TestCase):
-    def run_smoke(self, fault='valid', mutant=None, index=0):
+    def run_smoke(self, fault='valid', mutant=None, index=0, checkout_alias=False, temp_alias=False):
         with tempfile.TemporaryDirectory() as d:
             t=Path(d); root=t/'checkout'
             shutil.copytree(ROOT/'scripts',root/'scripts'); shutil.copytree(ROOT/'ql',root/'ql')
@@ -89,13 +94,24 @@ class GetBlockDevicesDiagnostics(unittest.TestCase):
             extractor=root/'extractor-pack/tools/linux64/extractor'; extractor.parent.mkdir(parents=True); extractor.touch(mode=0o755)
             binary=t/'bin'; binary.mkdir(); cli=binary/'codeql'; cli.write_text(FAKE); cli.chmod(0o755)
             env=os.environ.copy(); env.update(PATH=str(binary)+os.pathsep+env['PATH'],T_ROOT=str(root),T_LOG=str(t/'commands'),T_REGISTRY=str(t/'src'),T_REL=json.dumps(REL),T_FAULT=fault,T_INDEX=str(index),CODEQL_UCODE_SMOKE_PACKS_READY=str(root),PYTHONOPTIMIZE=str(sys.flags.optimize),PYTHONDONTWRITEBYTECODE='1')
-            res=subprocess.run(['bash',str(root/'scripts/m4-getblock-effect-table-smoke.sh')],cwd=root,env=env,text=True,capture_output=True)
+            invocation_root=root
+            if checkout_alias:
+                invocation_root=t/'checkout-alias'; invocation_root.symlink_to(root,target_is_directory=True)
+                env['T_ALIAS']=str(invocation_root)
+            if temp_alias:
+                temp_root=t/'physical-temp'; temp_root.mkdir()
+                alias=t/'temp-alias'; alias.symlink_to(temp_root,target_is_directory=True)
+                env['TMPDIR']=str(alias)
+            res=subprocess.run(['bash',str(invocation_root/'scripts/m4-getblock-effect-table-smoke.sh')],cwd=invocation_root,env=env,text=True,capture_output=True)
             trace=[json.loads(x) for x in (t/'commands').read_text().splitlines()] if (t/'commands').exists() else []
             return res,trace
     def semantic(self,trace):
         return any(a[:2]==['query','run'] and a[2].endswith('/m4/GetBlockDevicesEffectTable.ql') for a in trace)
     def test_pristine(self):
         r,trace=self.run_smoke(); self.assertEqual(r.returncode,0,r.stderr); self.assertTrue(self.semantic(trace))
+    def test_checkout_and_temp_alias_use_physical_receipts(self):
+        r,trace=self.run_smoke(checkout_alias=True,temp_alias=True)
+        self.assertEqual(r.returncode,0,r.stderr); self.assertTrue(self.semantic(trace),trace)
     def test_identity_independent(self):
         for fault in ('omit','duplicate','substitute'):
             for index in range(len(REL)):

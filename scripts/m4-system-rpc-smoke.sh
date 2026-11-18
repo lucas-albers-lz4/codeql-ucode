@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Production LocalTaint and RequestArgsExec controls in an isolated luci corpus.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 cd "$ROOT"
 SRC="$ROOT/ql/test/system-binding"
 PACK="$ROOT/extractor-pack"

@@ -35,6 +35,7 @@ for name in names:
     source = luci if name == 'real' else Path('ql/test/effect-controls/setblockdetect') / name / 'usr/share/rpcd/ucode/luci'
     shutil.copyfile(source, dest)
 PY
+SRC="$(cd "$SRC" && pwd -P)"
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	bash scripts/create-extractor-pack.sh
 fi

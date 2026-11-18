@@ -18,10 +18,15 @@ from pathlib import Path
 r = Path(os.environ['TEST_ROOT']); a = sys.argv[1:]
 db = r / '.codeql-database/m4-system-rpc'; src = r / 'ql/test/system-binding'
 with open(os.environ['TEST_COMMANDS'], 'a') as f: f.write(json.dumps(a) + '\n')
+# CodeQL accepts equivalent path spellings and emits physical source URIs.
+if os.environ.get('TEST_ALIAS'):
+    a = [x.replace(os.environ['TEST_ALIAS'], str(r)) for x in a]
 def reject(s): sys.exit('adapter rejected: ' + s)
 def fileurl(p): return {'uri': p.as_uri(), 'startLine': 0, 'startColumn': 0, 'endLine': 0, 'endColumn': 0}
 expected = src / 'usr/share/rpcd/ucode/luci'
-if a[:2] == ['database', 'init']:
+if a[:2] == ['pack', 'install']:
+    if a[2:] not in ([str(r/'ql/lib')], [str(r/'ql/src')]): reject('pack install')
+elif a[:2] == ['database', 'init']:
     if a[2:] != [str(db), '--language=ucode', '--search-path='+str(r/'extractor-pack'), '--source-root='+str(src)]: reject('init')
     db.mkdir(parents=True)
 elif a[:2] == ['database', 'index-files']:
@@ -62,7 +67,7 @@ else: reject('unknown command')
 '''
 
 class SystemRpcDiagnostics(unittest.TestCase):
-    def run_smoke(self, fault='valid', mutant=None):
+    def run_smoke(self, fault='valid', mutant=None, alias=False):
         with tempfile.TemporaryDirectory() as d:
             tmp = Path(d); root = tmp / 'checkout'
             shutil.copytree(ROOT / 'scripts', root / 'scripts')
@@ -93,12 +98,22 @@ class SystemRpcDiagnostics(unittest.TestCase):
             binary = tmp / 'bin'; binary.mkdir(); cli = binary / 'codeql'; cli.write_text(FAKE); cli.chmod(0o755)
             commands = tmp / 'commands'; env = os.environ.copy()
             env.update(PATH=str(binary)+os.pathsep+env['PATH'], TEST_ROOT=str(root), TEST_FAULT=fault, TEST_COMMANDS=str(commands), CODEQL_UCODE_SMOKE_PACKS_READY=str(root), PYTHONOPTIMIZE=str(sys.flags.optimize), PYTHONDONTWRITEBYTECODE='1')
-            result = subprocess.run(['bash', str(root/'scripts/m4-system-rpc-smoke.sh')], cwd=root, env=env, capture_output=True, text=True)
+            invocation_root = root
+            if alias:
+                invocation_root = tmp / 'checkout-alias'
+                invocation_root.symlink_to(root, target_is_directory=True)
+                env['TEST_ALIAS'] = str(invocation_root)
+            result = subprocess.run(['bash', str(invocation_root/'scripts/m4-system-rpc-smoke.sh')], cwd=invocation_root, env=env, capture_output=True, text=True)
             trace = [json.loads(line) for line in commands.read_text().splitlines()] if commands.exists() else []
             return result, trace
 
     def test_pristine(self):
         result, trace = self.run_smoke()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(any(a[:2] == ['query','run'] and a[2].endswith('/m3/LocalTaint.ql') for a in trace))
+
+    def test_checkout_alias_uses_physical_receipts(self):
+        result, trace = self.run_smoke(alias=True)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(any(a[:2] == ['query','run'] and a[2].endswith('/m3/LocalTaint.ql') for a in trace))
 

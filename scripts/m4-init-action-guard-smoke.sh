@@ -15,6 +15,7 @@ SRC="$TMP/ql/test/extractor-smoke"
 mkdir -p "$SRC/usr/share/rpcd/ucode"
 cp -R ql/test/init-action-guard/usr "$SRC/"
 cp ql/test/extractor-smoke/usr/share/rpcd/ucode/luci "$SRC/usr/share/rpcd/ucode/luci"
+SRC="$(cd "$SRC" && pwd -P)"
 
 if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
 	bash scripts/create-extractor-pack.sh
