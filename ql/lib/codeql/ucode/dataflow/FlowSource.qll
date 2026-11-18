@@ -10,7 +10,9 @@
 
 private import codeql.ucode.DataFlow
 
-// Import all instances below. Frameworks is intentionally empty.
+// Import all instances below. Frameworks contributes identifier-keyed summaries
+// (`system`, `popen`, `shellquote`) through `getACall`; that does not interpret
+// ModelsAsData source rows as `FlowSource` nodes.
 private module Sources {
   private import codeql.ucode.Frameworks
   private import codeql.ucode.dataflow.internal.ModelsAsData
