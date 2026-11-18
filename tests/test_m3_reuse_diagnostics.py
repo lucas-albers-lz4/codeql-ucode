@@ -264,6 +264,12 @@ class M3ReuseRootFailClosed(unittest.TestCase):
         self.assertIn('unusable source prefix', p.stderr)
         self.assertNotIn('Traceback', p.stderr)
 
+    def test_rejects_unencodable_surrogate_prefix(self):
+        p = self.run_root(payload=json.dumps({'sourceLocationPrefix': 'bad\ud800path'}))
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('unusable source prefix', p.stderr)
+        self.assertNotIn('Traceback', p.stderr)
+
     def test_rejects_wrong_argument_count(self):
         p = self.run_root(args=['only-one-arg'])
         self.assertNotEqual(p.returncode, 0)
