@@ -9,15 +9,20 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m3-luci"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 
+REUSED_M3=0
 if [[ ! -d "$DB/db-ucode" ]]; then
 	echo "== no M3 database; running m3-smoke.sh =="
 	bash scripts/m3-smoke.sh
+else
+	REUSED_M3=1
 fi
 
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
-source "$ROOT/scripts/m3-reuse-diagnostics.sh"
-check_m3_reuse_extraction
+if [[ "$REUSED_M3" == 1 ]]; then
+	source "$ROOT/scripts/m3-reuse-diagnostics.sh"
+	check_m3_reuse_extraction
+fi
 
 echo "== ImportedCalleeTaint =="
 codeql query run "$ROOT/ql/src/m4/ImportedCalleeTaint.ql" \

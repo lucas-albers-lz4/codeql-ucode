@@ -20,7 +20,8 @@ db = r / '.codeql-database/m3-luci'
 with open(os.environ['TEST_LOG'], 'a') as f: f.write(json.dumps(a) + '\n')
 def reject(): sys.exit('fake CLI rejected: ' + repr(a))
 if a[:2] == ['resolve', 'database']:
-    if a[2:] != ['--format=json', str(db)] or not (db / 'codeql-database.yml').is_file(): reject()
+    if a[2:-1] != ['--format=json'] or not (db / 'codeql-database.yml').is_file(): reject()
+    if Path(a[-1]).resolve() != db.resolve(): reject()
     prefix = (db / 'codeql-database.yml').read_text().splitlines()[1].removeprefix('sourceLocationPrefix: ')
     print(json.dumps({'sourceLocationPrefix': prefix}))
 elif a[:2] == ['query', 'run']:
@@ -28,18 +29,21 @@ elif a[:2] == ['query', 'run']:
     q = Path(a[2])
     allowed = [r / ('ql/src/diagnostics/' + n + '.ql') for n in ('SuccessfullyExtractedFiles', 'ExtractionErrors')]
     allowed += [r / ('ql/src/m4/' + os.environ['TEST_QUERY'] + '.ql')]
-    if q not in allowed or not q.is_file(): reject()
+    if q.resolve() not in [x.resolve() for x in allowed] or not q.is_file(): reject()
     opts = a[3:]
     if sorted(x.split('=', 1)[0] for x in opts) != ['--database', '--output', '--search-path']: reject()
-    if '--database=' + str(db) not in opts or '--search-path=' + ':'.join(str(r / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')) not in opts: reject()
+    db_opt = next((x[len('--database='):] for x in opts if x.startswith('--database=')), None)
+    if db_opt is None or Path(db_opt).resolve() != db.resolve(): reject()
+    search = next((x[len('--search-path='):] for x in opts if x.startswith('--search-path=')), None)
+    if search is None or [Path(x).resolve() for x in search.split(':')] != [(r / p).resolve() for p in ('extractor-pack', 'ql/lib', 'ql/src')]: reject()
     output = next(x[len('--output='):] for x in opts if x.startswith('--output='))
-    if Path(output).parent != db: reject()
+    if Path(output).parent.resolve() != db.resolve(): reject()
     if q.parent.name == 'm4': sys.exit('SEMANTIC QUERY REACHED')
     Path(output).write_text(q.stem)
 elif a[:2] == ['bqrs', 'decode']:
     if len(a) != 5 or a[2:4] != ['--format=json', '--entities=url,string']: reject()
     p = Path(a[4])
-    if p.parent != db or not p.is_file(): reject()
+    if p.parent.resolve() != db.resolve() or not p.is_file(): reject()
     name = p.read_text()
     if name not in ('SuccessfullyExtractedFiles', 'ExtractionErrors'): reject()
     print(json.dumps(json.loads(Path(os.environ['TEST_DIAGS']).read_text())[name]))
@@ -48,7 +52,7 @@ else: reject()
 
 
 class M3ReuseDiagnostics(unittest.TestCase):
-    def run_case(self, smoke, fault, mutant=None):
+    def run_case(self, smoke, fault, mutant=None, via_symlink=False):
         with tempfile.TemporaryDirectory() as t:
             t = Path(t)
             root = t / 'checkout'
@@ -99,8 +103,12 @@ class M3ReuseDiagnostics(unittest.TestCase):
             diag = t / 'diags.json'; diag.write_text(json.dumps(data))
             binary = t / 'bin'; binary.mkdir(); cli = binary / 'codeql'; cli.write_text(FAKE); cli.chmod(0o755)
             log = t / 'commands'; log.touch()
-            env = dict(os.environ, PATH=str(binary) + ':' + os.environ['PATH'], TEST_ROOT=str(root), TEST_LOG=str(log), TEST_DIAGS=str(diag), TEST_QUERY=QUERIES[SMOKES.index(smoke)], CODEQL_UCODE_SMOKE_PACKS_READY=str(root), PYTHONDONTWRITEBYTECODE='1')
-            p = subprocess.run(['bash', str(root / 'scripts' / smoke)], cwd=root, env=env, text=True, capture_output=True)
+            entry = root
+            if via_symlink:
+                entry = t / 'linked-checkout'
+                entry.symlink_to(root, target_is_directory=True)
+            env = dict(os.environ, PATH=str(binary) + ':' + os.environ['PATH'], TEST_ROOT=str(root), TEST_LOG=str(log), TEST_DIAGS=str(diag), TEST_QUERY=QUERIES[SMOKES.index(smoke)], CODEQL_UCODE_SMOKE_PACKS_READY=str(entry), PYTHONDONTWRITEBYTECODE='1')
+            p = subprocess.run(['bash', str(entry / 'scripts' / smoke)], cwd=entry, env=env, text=True, capture_output=True)
             return p, [json.loads(line) for line in log.read_text().splitlines()]
 
     def test_rejects_bad_diagnostics_before_semantic_queries(self):
@@ -137,6 +145,27 @@ class M3ReuseDiagnostics(unittest.TestCase):
                 self.assertNotEqual(p.returncode, 0)
                 self.assertIn('SEMANTIC QUERY REACHED', p.stderr)
                 self.assertTrue(any(c[:2] == ['query', 'run'] and '/ql/src/m4/' in c[2] for c in commands))
+
+    def test_reuse_check_is_guarded_to_the_reuse_path(self):
+        for smoke in SMOKES:
+            with self.subTest(smoke=smoke):
+                text = (ROOT / 'scripts' / smoke).read_text()
+                self.assertEqual(text.count('check_m3_reuse_extraction'), 1, smoke)
+                guarded = text.split('if [[ "$REUSED_M3" == 1 ]]; then')
+                self.assertEqual(len(guarded), 2, f'{smoke}: missing REUSED_M3 guard')
+                self.assertIn('check_m3_reuse_extraction', guarded[1].split('fi')[0])
+                fallback = text.split('bash scripts/m3-smoke.sh')[1]
+                self.assertNotIn('check_m3_reuse_extraction', fallback.split('else')[0],
+                                 f'{smoke}: reuse check reachable on the fresh-build path')
+
+    def test_symlinked_checkout_is_accepted(self):
+        for smoke in SMOKES:
+            with self.subTest(smoke=smoke):
+                p, commands = self.run_case(smoke, 'good', via_symlink=True)
+                self.assertIn('SEMANTIC QUERY REACHED', p.stderr)
+                self.assertNotIn('source root rejected', p.stderr)
+                self.assertEqual(sum(c[:2] == ['query', 'run'] and '/ql/src/diagnostics/' in c[2]
+                                     for c in commands), 2)
 
     def test_good_receipts_reach_semantics(self):
         for smoke in SMOKES:

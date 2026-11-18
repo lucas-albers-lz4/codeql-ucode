@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Require CodeQL's resolved database source prefix to be the M3 fixture root."""
 import json
+import os
 import subprocess
 import sys
 from typing import NoReturn
@@ -26,7 +27,9 @@ def main():
         actual = json.loads(result.stdout)['sourceLocationPrefix']
     except (ValueError, TypeError, KeyError) as exc:
         fail(f'unreadable database metadata: {exc!r}')
-    if not isinstance(actual, str) or actual != expected:
+    if not isinstance(actual, str):
+        fail(f'expected a string prefix, got {actual!r}')
+    if os.path.realpath(actual) != os.path.realpath(expected):
         fail(f'expected {expected!r}, got {actual!r}')
 
 
