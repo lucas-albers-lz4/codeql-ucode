@@ -70,6 +70,9 @@ SELECTIONS = {
     'cfg': ('cfg_pos', 'cfg_neg'),
     'viable-source-callable': ('usr/share/rpcd/ucode/luci', 'ssa_pos', 'usr/share/ucode/luci/sys.uc'),
 }
+QUERY_DIRS = {'quote': 'ql/src/m4'}
+DEFAULT_QUERY_DIR = 'ql/src/extractor-smoke'
+
 INCLUDES = {
     'quote': ('**/luci', '**/taint_pos', '**/taint_neg', '**/quote_*'),
     'content-encoding': ('**/rpcd/ucode/luci', '**/ssa_neg'),
@@ -139,7 +142,7 @@ def opt(key):
 if a[:2] == ['query', 'compile']:
     if len(a) != 4 or a[3] != '--search-path=' + ':'.join(str(root / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')):
         reject('compile options')
-    if Path(a[2]) not in [root / ('ql/src/extractor-smoke/' + semantic_query + '.ql'),
+    if Path(a[2]) not in [root / os.environ['PAIR_QUERY_DIR'] / (semantic_query + '.ql'),
                           root / 'ql/src/m3/LocalTaint.ql', root / 'ql/src/m4/RequestArgsExec.ql'] + extra_queries:
         reject('compile query')
 elif a[:2] == ['database', 'init']:
@@ -153,7 +156,8 @@ elif a[:2] == ['query', 'run']:
     if len(a) != 6 or sorted(x.split('=', 1)[0] for x in a[3:]) != ['--database', '--output', '--search-path']:
         reject('query run options')
     query = Path(a[2])
-    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / ('ql/src/extractor-smoke/' + semantic_query + '.ql')] + extra_queries:
+    semantic_path = root / os.environ['PAIR_QUERY_DIR'] / (semantic_query + '.ql')
+    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', semantic_path] + extra_queries:
         reject('query path')
     db = Path(opt('--database='))
     if db != expected_db or not db.is_dir() or Path(opt('--output=')).parent != db: reject('database or output')
@@ -282,7 +286,8 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             commands = temp / 'commands.log'
             env.update(PATH=str(binary) + os.pathsep + env['PATH'], CODEQL_UCODE_SMOKE_PACKS_READY=str(root),
                        PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag),
-                       PAIR_QUERY=SMOKES[name][0], PAIR_MESSAGES=json.dumps(messages),
+                       PAIR_QUERY=SMOKES[name][0], PAIR_QUERY_DIR=QUERY_DIRS.get(name, DEFAULT_QUERY_DIR),
+                       PAIR_MESSAGES=json.dumps(messages),
                        PAIR_INCLUDES=json.dumps(INCLUDES.get(name, ('**/rpcd/ucode/luci', '**/ssa_pos'))),
                        PAIR_EXTRA_QUERIES=json.dumps(['ql/src/extractor-smoke/LocalFlowStep.ql', 'ql/src/m4/SsaReachesSystem.ql'] if name == 'viable-source-callable' else ['ql/src/m4/CompleteQuotedArg.ql', 'ql/src/m4/ShellquoteTemplateShape.ql', 'ql/src/m4/ShellInjection.ql'] if name == 'quote' else []),
                        PAIR_SELECTION=json.dumps(SELECTIONS.get(name, ())),
