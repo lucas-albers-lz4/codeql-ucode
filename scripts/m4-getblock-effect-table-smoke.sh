@@ -39,10 +39,15 @@ mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode --include='**/rpcd/ucode/luci' --working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
-codeql query run "$ROOT/ql/src/diagnostics/SuccessfullyExtractedFiles.ql" --database="$DB" --search-path="$QLPATH" --output="$DB/extracted.bqrs"
-codeql bqrs decode --format=csv "$DB/extracted.bqrs" > "$DB/extracted.csv"
-codeql query run "$ROOT/ql/src/diagnostics/ExtractionErrors.ql" --database="$DB" --search-path="$QLPATH" --output="$DB/errors.bqrs"
-codeql bqrs decode --format=csv "$DB/errors.bqrs" > "$DB/errors.csv"
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction \
+	"$SRC/modules/negative-command/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-import/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-member/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-method/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/positive/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/real/root/usr/share/rpcd/ucode/luci"
+
 codeql query run "$ROOT/ql/src/m4/GetBlockDevicesEffectTable.ql" --database="$DB" --search-path="$QLPATH" --output="$DB/effects.bqrs"
 codeql bqrs decode --format=csv "$DB/effects.bqrs" > "$DB/effects.csv"
 python3 - <<'PY'
@@ -50,14 +55,6 @@ import csv
 from pathlib import Path
 
 db = Path('.codeql-database/m4-getblock-effect-table')
-with (db / 'extracted.csv').open() as f:
-    extracted = list(csv.DictReader(f))
-if len(extracted) != 6:
-    raise SystemExit(f'expected all six input files extracted: {extracted}')
-with (db / 'errors.csv').open() as f:
-    errors = list(csv.DictReader(f))
-if errors:
-    raise SystemExit(f'extraction errors: {errors}')
 with (db / 'effects.csv').open() as f:
     reader = csv.DictReader(f)
     fields = reader.fieldnames
