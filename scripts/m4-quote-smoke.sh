@@ -28,6 +28,45 @@ codeql database index-files --language=ucode \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
 
+# This literal inventory is from real extraction diagnostics, not the glob.
+# Adding/removing a glob-selected fixture requires remeasurement and a deliberate
+# inventory update; the gate must fail until that update is made.
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+quote_expected=(
+  "$SRC/quote_bad_ash_c.uc"
+  "$SRC/quote_bad_assignment.uc"
+  "$SRC/quote_bad_bash_c.uc"
+  "$SRC/quote_bad_conditional.uc"
+  "$SRC/quote_bad_echo"
+  "$SRC/quote_bad_import.uc"
+  "$SRC/quote_bad_local.uc"
+  "$SRC/quote_bad_parameter.uc"
+  "$SRC/quote_bad_pipe.uc"
+  "$SRC/quote_bad_prefix_join.uc"
+  "$SRC/quote_bad_separator.uc"
+  "$SRC/quote_bad_separator_space.uc"
+  "$SRC/quote_bad_sh_c"
+  "$SRC/quote_bad_sh_c_suffix.uc"
+  "$SRC/quote_bad_shell_flags.uc"
+  "$SRC/quote_bad_shell_path.uc"
+  "$SRC/quote_bad_shell_wrapper.uc"
+  "$SRC/quote_bad_suffix"
+  "$SRC/quote_bad_suffix_join.uc"
+  "$SRC/quote_bad_trailing_substitution.uc"
+  "$SRC/quote_bad_transform.uc"
+  "$SRC/quote_bad_unknown_command.uc"
+  "$SRC/quote_bad_variable.uc"
+  "$SRC/quote_exe"
+  "$SRC/quote_ok"
+  "$SRC/quote_ok_echo.uc"
+  "$SRC/quote_ok_printf.uc"
+  "$SRC/taint_neg"
+  "$SRC/taint_pos"
+  "$SRC/usr/share/rpcd/ucode/luci"
+  "$SRC/usr/share/ucode/luci/sys.uc"
+)
+check_m4_extraction "${quote_expected[@]}"
+
 runq() {
 	codeql query run "$1" --database="$DB" --search-path="$QLPATH" --output="$2"
 }
