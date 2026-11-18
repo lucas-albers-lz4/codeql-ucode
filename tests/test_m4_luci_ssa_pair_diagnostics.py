@@ -1,4 +1,4 @@
-"""Exercise standalone L+P smoke wiring with a synthetic CLI adapter.
+"""Exercise standalone measured-set smoke wiring with a synthetic CLI adapter.
 
 The adapter supplies synthetic diagnostic and semantic rows; real extraction
 controls are separate from this fast regression.
@@ -23,11 +23,36 @@ SMOKES = {'arrow-cfgscope': ('ArrowCfgScope', 'arrow.csv'),
           'parameter-node': ('ParameterNode', 'params.csv'),
           'parameter-position': ('ParameterPosition', 'pos.csv'),
           'return-out': ('ReturnOut', 'return-out.csv'),
-          'simple-call-jump': ('SimpleCallJump', 'jump.csv')}
+          'simple-call-jump': ('SimpleCallJump', 'jump.csv'),
+          'content-encoding': ('ContentEncoding', 'content.csv'),
+          'encode-content': ('EncodeContent', 'encode.csv'),
+          'cfg': ('CfgEdges', 'cfg.csv'),
+          'viable-source-callable': ('ViableSourceCallable', 'viable.csv')}
+
+SELECTIONS = {
+    'content-encoding': ('usr/share/rpcd/ucode/luci', 'ssa_neg'),
+    'encode-content': ('usr/share/rpcd/ucode/luci', 'ssa_neg'),
+    'cfg': ('cfg_pos', 'cfg_neg'),
+    'viable-source-callable': ('usr/share/rpcd/ucode/luci', 'ssa_pos', 'usr/share/ucode/luci/sys.uc'),
+}
+INCLUDES = {
+    'content-encoding': ('**/rpcd/ucode/luci', '**/ssa_neg'),
+    'encode-content': ('**/rpcd/ucode/luci', '**/ssa_neg'),
+    'cfg': ('**/cfg_pos', '**/cfg_neg'),
+    'viable-source-callable': ('**/rpcd/ucode/luci', '**/ssa_pos', '**/sys.uc'),
+}
 
 # Minimal synthetic rows satisfying each standalone smoke's semantic assertions.
 # They exercise gate wiring only; they are not extraction evidence.
 MESSAGES = {
+    'content-encoding': ['Field[args] in luci', 'Field[field] in ssa_neg', 'Element in luci'],
+    'encode-content': ['Field[args] in luci', 'Field[field] in ssa_neg', 'Element in luci'],
+    'viable-source-callable': ['shellquote in luci', 'callPackageVersionCheck in luci',
+        'formal_order in ssa_pos', 'member_order in ssa_pos', 'library system in ssa_pos',
+        'library system in luci', 'library system in sys.uc', 'library popen in luci',
+        'library popen in sys.uc', 'library basename in luci', 'library basename in sys.uc',
+        'library access in luci', 'library open in luci', 'library open in sys.uc',
+        'library readfile in luci', 'library readfile in sys.uc'],
     'call-get-identifier': ['system in ssa_pos', 'popen in luci', 'shellquote in luci'],
     'formal-variables': ['param in ssa_pos', 'request in ssa_pos', 's in luci', 'b in ssa_pos'],
     'get-a-call': ['system in ssa_pos', 'popen in luci', 'shellquote in luci'],
@@ -63,6 +88,8 @@ a = sys.argv[1:]
 root = Path(os.environ['PAIR_ROOT'])
 smoke = os.environ['PAIR_SMOKE']
 semantic_query = os.environ['PAIR_QUERY']
+extra_queries = [root / p for p in json.loads(os.environ['PAIR_EXTRA_QUERIES'])]
+includes = json.loads(os.environ['PAIR_INCLUDES'])
 expected_db = root / '.codeql-database' / ('m4-' + smoke)
 source = root / 'ql/test/extractor-smoke'
 def reject(s): sys.exit('fake codeql rejected: ' + s)
@@ -77,20 +104,20 @@ if a[:2] == ['query', 'compile']:
     if len(a) != 4 or a[3] != '--search-path=' + ':'.join(str(root / p) for p in ('extractor-pack', 'ql/lib', 'ql/src')):
         reject('compile options')
     if Path(a[2]) not in [root / ('ql/src/extractor-smoke/' + semantic_query + '.ql'),
-                          root / 'ql/src/m3/LocalTaint.ql', root / 'ql/src/m4/RequestArgsExec.ql']:
+                          root / 'ql/src/m3/LocalTaint.ql', root / 'ql/src/m4/RequestArgsExec.ql'] + extra_queries:
         reject('compile query')
 elif a[:2] == ['database', 'init']:
     if a[2:] != [str(expected_db), '--language=ucode', '--search-path=' + str(root / 'extractor-pack'), '--source-root=' + str(source)]: reject('database init')
     expected_db.mkdir(parents=True)
 elif a[:2] == ['database', 'index-files']:
-    if a[2:] != ['--language=ucode', '--include=**/rpcd/ucode/luci', '--include=**/ssa_pos', '--working-dir=' + str(source), str(expected_db)]: reject('database index selection')
+    if a[2:] != ['--language=ucode'] + ['--include=' + item for item in includes] + ['--working-dir=' + str(source), str(expected_db)]: reject('database index selection')
 elif a[:2] == ['database', 'finalize']:
     if a[2:] != [str(expected_db)]: reject('database finalize')
 elif a[:2] == ['query', 'run']:
     if len(a) != 6 or sorted(x.split('=', 1)[0] for x in a[3:]) != ['--database', '--output', '--search-path']:
         reject('query run options')
     query = Path(a[2])
-    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / ('ql/src/extractor-smoke/' + semantic_query + '.ql')]:
+    if query not in [root / 'ql/src/diagnostics/SuccessfullyExtractedFiles.ql', root / 'ql/src/diagnostics/ExtractionErrors.ql', root / ('ql/src/extractor-smoke/' + semantic_query + '.ql')] + extra_queries:
         reject('query path')
     db = Path(opt('--database='))
     if db != expected_db or not db.is_dir() or Path(opt('--output=')).parent != db: reject('database or output')
@@ -101,9 +128,10 @@ elif a[:2] == ['bqrs', 'decode']:
     if name in ('SuccessfullyExtractedFiles', 'ExtractionErrors'):
         if a[2:-1] != ['--format=json', '--entities=url,string']: reject('diagnostic decode flags')
         print(json.dumps(json.loads(Path(os.environ['PAIR_DIAGNOSTICS']).read_text())[name]))
-    elif name == semantic_query:
+    elif name == semantic_query or name in ('LocalFlowStep', 'SsaReachesSystem') and smoke == 'viable-source-callable':
         if a[2:-1] != ['--format=csv']: reject('semantic decode flags')
         messages = {'ArrowCfgScope': ['arrowx in ssa_pos', 'arrowa in ssa_pos', 'arrowb in ssa_pos', 'arrowxs in ssa_pos', 'i in luci', 'n in luci', 'port in luci'], 'CallGetArgument': ['0:ssa_pos_src in ssa_pos', '0:pkg in luci', '1:r in luci']}.get(name, json.loads(os.environ['PAIR_MESSAGES']))
+        messages = {'LocalFlowStep': ['ssa_pos_src -> ssa_pos_src in ssa_pos'], 'SsaReachesSystem': ['ssa_pos_src reaches system in ssa_pos']}.get(name, messages)
         print('"entity","message"')
         for message in messages: print('"node","' + message + '"')
     else: reject('unknown decode')
@@ -169,7 +197,7 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             (binary / 'codeql').write_text(FAKE)
             (binary / 'codeql').chmod(0o755)
             src = root / 'ql/test/extractor-smoke'
-            files = [src / 'usr/share/rpcd/ucode/luci', src / 'ssa_pos']
+            files = [src / p for p in SELECTIONS.get(name, ('usr/share/rpcd/ucode/luci', 'ssa_pos'))]
             successes = list(map(receipt, files))
             errors = []
             if fault == 'error_only':
@@ -179,18 +207,31 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             elif fault.startswith('duplicate'):
                 successes.append(successes[int(fault[-1])])
             elif fault.startswith('substitute'):
-                successes[int(fault[-1])] = receipt(src / 'ssa_neg')
+                substitute = src / 'taint_neg'
+                self.assertTrue(substitute.is_file(), 'substitution fixture must exist')
+                successes[int(fault[-1])] = receipt(substitute)
             elif fault == 'bad_schema':
                 successes = None
             data = {'SuccessfullyExtractedFiles': {'#select': {'columns': [{'name': 'f', 'kind': 'Entity'}, {'kind': 'String'}], 'tuples': successes}},
                     'ExtractionErrors': {'#select': {'columns': [{'name': 'error', 'kind': 'Entity'}, {'kind': 'String'}, {'kind': 'Integer'}], 'tuples': errors}}}
             diag = temp / 'diagnostics.json'
             diag.write_text(json.dumps(data))
+            messages = MESSAGES.get(name, [])
+            if name == 'cfg':
+                def line(fixture, marker):
+                    return next(i for i, text in enumerate((src / fixture).read_text().splitlines(), 1) if marker in text)
+                messages = []
+                for fixture, before, after, scope in [('cfg_pos', '"cfg_pos_one"', '"cfg_pos_two"', 10), ('cfg_neg', '"cfg_neg_a"', '"cfg_neg_a_two"', 20), ('cfg_neg', '"cfg_neg_b"', '"cfg_neg_b_two"', 30)]:
+                    messages.append(f'{fixture}:{line(fixture, before)} -> {fixture}:{line(fixture, after)} scopeEq=1 scopeLine={scope} kind=ast type=statement')
+                n = line('cfg_pos', 'cfg_pos_return')
+                messages.append(f'cfg_pos:{n} -> cfg_pos:{n} scopeEq=1 scopeLine=10 kind=exit type=return')
             env = os.environ.copy()
             commands = temp / 'commands.log'
             env.update(PATH=str(binary) + os.pathsep + env['PATH'], CODEQL_UCODE_SMOKE_PACKS_READY=str(root),
                        PAIR_ROOT=str(root), PAIR_SMOKE=name, PAIR_DIAGNOSTICS=str(diag),
-                       PAIR_QUERY=SMOKES[name][0], PAIR_MESSAGES=json.dumps(MESSAGES.get(name, [])),
+                       PAIR_QUERY=SMOKES[name][0], PAIR_MESSAGES=json.dumps(messages),
+                       PAIR_INCLUDES=json.dumps(INCLUDES.get(name, ('**/rpcd/ucode/luci', '**/ssa_pos'))),
+                       PAIR_EXTRA_QUERIES=json.dumps(['ql/src/extractor-smoke/LocalFlowStep.ql', 'ql/src/m4/SsaReachesSystem.ql'] if name == 'viable-source-callable' else []),
                        PAIR_COMMAND_LOG=str(commands), PYTHONDONTWRITEBYTECODE='1',
                        PYTHONOPTIMIZE=str(sys.flags.optimize))
             result = subprocess.run(['bash', str(root / f'scripts/m4-{name}-smoke.sh')], cwd=root,
@@ -199,8 +240,10 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
             return result
 
     def semantic_executed(self, name):
-        query = f"{SMOKES[name][0]}.ql"
-        return any(line.startswith('query run ') and query in line
+        queries = [f"{SMOKES[name][0]}.ql"]
+        if name == 'viable-source-callable':
+            queries += ['LocalFlowStep.ql', 'SsaReachesSystem.ql']
+        return any(line.startswith('query run ') and any(query in line for query in queries)
                    for line in self.commands.splitlines())
 
     def test_pristine_diagnostics_accepted(self):
@@ -213,8 +256,8 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
 
     def test_identity_guard_and_schema_independent_of_errors(self):
         for name in SMOKES:
-            for fault in ('omit0', 'omit1', 'duplicate0', 'duplicate1',
-                          'substitute0', 'substitute1', 'bad_schema'):
+            for fault in tuple(f'{kind}{i}' for i in range(len(SELECTIONS.get(name, (0, 1))))
+                               for kind in ('omit', 'duplicate', 'substitute')) + ('bad_schema',):
                 with self.subTest(smoke=name, fault=fault):
                     result = self.run_smoke(name, fault)
                     self.assertNotIn('fake codeql rejected', result.stderr)
@@ -222,11 +265,14 @@ class LuciSsaPairDiagnostics(unittest.TestCase):
                     self.assertIn('invalid diagnostic tuples' if fault == 'bad_schema' else
                                   'expected exact successful-file multiset', result.stderr)
                     self.assertNotIn('expected zero extraction errors', result.stderr)
+                    self.assertTrue(self.commands, 'no commands were recorded')
+                    self.assertFalse(self.semantic_executed(name),
+                                     'semantic query ran before identity rejection')
 
     def test_individual_guard_and_wiring_mutants_false_green(self):
         for name in SMOKES:
-            for mutant, fault in (('errors', 'error_only'), ('identity', 'omit0'),
-                                  ('identity', 'omit1'), ('wiring', 'error_only')):
+            for mutant, fault in (('errors', 'error_only'), ('wiring', 'error_only')) + tuple(
+                    ('identity', f'omit{i}') for i in range(len(SELECTIONS.get(name, (0, 1))))):
                 with self.subTest(smoke=name, mutant=mutant, fault=fault):
                     result = self.run_smoke(name, fault, mutant)
                     self.assertEqual(result.returncode, 0, result.stderr)

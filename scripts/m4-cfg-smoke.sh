@@ -31,6 +31,8 @@ codeql database index-files --language=ucode \
 	--include='**/cfg_pos' --include='**/cfg_neg' \
 	--working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/cfg_pos" "$SRC/cfg_neg"
 
 echo "== CfgEdges =="
 codeql query run "$Q" --database="$DB" --search-path="$QLPATH" --output="$DB/cfg.bqrs"
