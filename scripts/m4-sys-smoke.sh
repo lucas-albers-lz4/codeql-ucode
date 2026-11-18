@@ -3,7 +3,7 @@
 # Does not change the M1/M3 extract sets.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 cd "$ROOT"
 
 SRC="$ROOT/ql/test/extractor-smoke"
@@ -38,23 +38,10 @@ runq() {
 	codeql query run "$q" --database="$DB" --search-path="$QLPATH" --output="$out"
 }
 
-echo "== SuccessfullyExtractedFiles == 2 (luci, sys.uc) =="
-runq "$ROOT/ql/src/diagnostics/SuccessfullyExtractedFiles.ql" "$DB/extracted.bqrs"
-codeql bqrs decode --format=csv "$DB/extracted.bqrs" | tee "$DB/extracted.csv"
-extracted="$(csv_rows "$DB/extracted.bqrs")"
-if [[ "$extracted" -ne 2 ]]; then
-	echo "expected count(SuccessfullyExtractedFiles) == 2, got $extracted" >&2
-	exit 1
-fi
-python3 - <<'PY'
-import csv, sys
-from pathlib import Path
-rows = list(csv.DictReader(open(".codeql-database/m4-sys/extracted.csv")))
-names = {Path(r["f"]).name for r in rows}
-if names != {"luci", "sys.uc"}:
-	sys.exit(f"extracted basenames {names} != {{'luci', 'sys.uc'}}")
-print("extracted basenames", sorted(names))
-PY
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction \
+	"$SRC/usr/share/rpcd/ucode/luci" \
+	"$SRC/usr/share/ucode/luci/sys.uc"
 
 echo "== InitActionSystem == 1 =="
 runq "$ROOT/ql/src/m4/InitActionSystem.ql" "$DB/init.bqrs"
