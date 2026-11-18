@@ -45,8 +45,24 @@ mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode --include='**/rpcd/ucode/luci' --working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
-for entry in 'diagnostics/SuccessfullyExtractedFiles.ql extracted' \
-	'diagnostics/ExtractionErrors.ql errors' 'm4/SetBlockDetectEffectTable.ql effects'; do
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+M4_DIAGNOSTIC_QLSRC="$QLSRC" check_m4_extraction \
+	"$SRC/modules/negative-command/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-extra-argument/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-formal-parameter/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-import-alias/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-import-default/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-import-named/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-member/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-method/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-nonliteral/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/negative-receiver/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/positive/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/positive-renamed-import/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/real/root/usr/share/rpcd/ucode/luci" \
+	"$SRC/modules/sibling-shadow/root/usr/share/rpcd/ucode/luci"
+
+for entry in 'm4/SetBlockDetectEffectTable.ql effects'; do
 	read -r query output <<< "$entry"
 	codeql query run "$QLSRC/$query" --database="$DB" --search-path="$QLPATH" --output="$DB/$output.bqrs"
 	codeql bqrs decode --format=csv "$DB/$output.bqrs" > "$DB/$output.csv"
@@ -57,14 +73,6 @@ import os
 from pathlib import Path
 
 db = Path(os.environ.get('M4_SETBLOCKDETECT_DB', '.codeql-database/m4-setblockdetect-effect-table'))
-with (db / 'extracted.csv').open() as f:
-    extracted = list(csv.DictReader(f))
-if len(extracted) != 14:
-    raise SystemExit(f'expected all fourteen input files extracted: {extracted}')
-with (db / 'errors.csv').open() as f:
-    errors = list(csv.DictReader(f))
-if errors:
-    raise SystemExit(f'extraction errors: {errors}')
 with (db / 'effects.csv').open() as f:
     reader = csv.DictReader(f)
     fields = reader.fieldnames
