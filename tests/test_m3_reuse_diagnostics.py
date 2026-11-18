@@ -180,7 +180,7 @@ if __name__ == '__main__': unittest.main()
 class M3ReuseRootFailClosed(unittest.TestCase):
     """The root check must reject every metadata shape it cannot trust."""
 
-    def run_root(self, payload=None, exit_code=0, stderr='', args=None, exact_prefix=False):
+    def run_root(self, payload=None, exit_code=0, stderr='', args=None, exact_prefix=False, raw_bytes=None):
         with tempfile.TemporaryDirectory() as t:
             t = Path(t)
             db, expected = str(t / 'db'), str(t / 'checkout/ql/test/extractor-smoke')
@@ -188,12 +188,17 @@ class M3ReuseRootFailClosed(unittest.TestCase):
                 payload = json.dumps({'sourceLocationPrefix': expected})
             binary = t / 'bin'
             binary.mkdir()
-            if payload is not None or exit_code or stderr:
+            if payload is not None or exit_code or stderr or raw_bytes is not None:
                 cli = binary / 'codeql'
-                cli.write_text('#!' + sys.executable + '\nimport sys\n'
-                               + (f'sys.stderr.write({stderr!r})\n' if stderr else '')
-                               + (f'sys.stdout.write({payload!r})\n' if payload is not None else '')
-                               + f'sys.exit({exit_code})\n')
+                body = '#!' + sys.executable + '\nimport sys\n'
+                if stderr:
+                    body += f'sys.stderr.write({stderr!r})\n'
+                if raw_bytes is not None:
+                    body += f'sys.stdout.buffer.write({raw_bytes!r})\n'
+                elif payload is not None:
+                    body += f'sys.stdout.write({payload!r})\n'
+                body += f'sys.exit({exit_code})\n'
+                cli.write_text(body)
                 cli.chmod(0o755)
             argv = [sys.executable, '-B', str(ROOT / 'scripts/m3-reuse-root.py')]
             argv += args if args is not None else [db, expected]
@@ -246,6 +251,18 @@ class M3ReuseRootFailClosed(unittest.TestCase):
         self.assertNotEqual(p.returncode, 0)
         self.assertIn('status 4', p.stderr)
         self.assertIn('boom on stdout', p.stderr)
+
+    def test_rejects_undecodable_output(self):
+        p = self.run_root(raw_bytes=b'\xff\xfe\x00broken')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('undecodable codeql output', p.stderr)
+        self.assertNotIn('Traceback', p.stderr)
+
+    def test_rejects_unusable_prefix_characters(self):
+        p = self.run_root(payload=json.dumps({'sourceLocationPrefix': 'bad\u0000path'}))
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('unusable source prefix', p.stderr)
+        self.assertNotIn('Traceback', p.stderr)
 
     def test_rejects_wrong_argument_count(self):
         p = self.run_root(args=['only-one-arg'])

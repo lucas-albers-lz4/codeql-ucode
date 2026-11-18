@@ -31,7 +31,11 @@ def main():
         fail(f'unreadable database metadata: {exc!r}')
     if not isinstance(actual, str):
         fail(f'expected a string prefix, got {actual!r}')
-    if os.path.realpath(actual) != os.path.realpath(expected):
+    try:
+        same = os.path.realpath(actual) == os.path.realpath(expected)
+    except ValueError as exc:
+        fail(f'unusable source prefix: {exc}')
+    if not same:
         fail(f'expected {expected!r}, got {actual!r}')
 
 
