@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Production LocalTaint and RequestArgsExec controls in an isolated luci corpus.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 cd "$ROOT"
 SRC="$ROOT/ql/test/system-binding"
 PACK="$ROOT/extractor-pack"
@@ -17,7 +17,9 @@ mkdir -p .codeql-database
 codeql database init "$DB" --language=ucode --search-path="$PACK" --source-root="$SRC"
 codeql database index-files --language=ucode --include='**/luci' --working-dir="$SRC" "$DB"
 codeql database finalize "$DB"
-for entry in 'diagnostics/ExtractionErrors.ql errors' 'diagnostics/SuccessfullyExtractedFiles.ql extracted' 'm3/LocalTaint.ql local' 'm4/RequestArgsExec.ql rpc'; do
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction "$SRC/usr/share/rpcd/ucode/luci"
+for entry in 'm3/LocalTaint.ql local' 'm4/RequestArgsExec.ql rpc'; do
   read -r query output <<< "$entry"
   codeql query run "$ROOT/ql/src/$query" --database="$DB" --search-path="$QLPATH" --output="$DB/$output.bqrs"
   if [[ "$output" == local ]]; then
@@ -35,9 +37,6 @@ db = Path('.codeql-database/m4-system-rpc')
 def rows(name):
     with (db / f'{name}.csv').open() as f:
         return list(csv.reader(f))[1:]
-assert not rows('errors'), rows('errors')
-extracted = rows('extracted')
-assert len(extracted) == 1 and extracted[0][0].endswith('/system-binding/usr/share/rpcd/ucode/luci'), extracted
 local = json.loads((db / 'local.json').read_text())['#select']['tuples']
 assert len(local) == 2, local
 for row in local:

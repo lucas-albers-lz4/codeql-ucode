@@ -2,7 +2,7 @@
 # M1 gate: cargo test, pack, extract luci, SuccessfullyExtractedFiles, printAst.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 cd "$ROOT"
 
 FIXTURE="$ROOT/ql/test/extractor-smoke/usr/share/rpcd/ucode/luci"
@@ -83,28 +83,9 @@ if ! codeql database finalize "$DB/db"; then
 	exit 1
 fi
 
-echo "== SuccessfullyExtractedFiles =="
-codeql query run "$ROOT/ql/src/diagnostics/SuccessfullyExtractedFiles.ql" \
-	--database="$DB/db" \
-	--search-path="$PACK" \
-	--output="$DB/extracted.bqrs"
-codeql bqrs decode --format=csv "$DB/extracted.bqrs" | tee "$DB/extracted.csv"
-if [[ "$(codeql bqrs decode --format=csv "$DB/extracted.bqrs" | tail -n +2 | grep -c .)" -ne 1 ]]; then
-	echo "expected count(SuccessfullyExtractedFiles) == 1" >&2
-	exit 1
-fi
-
-echo "== ExtractionErrors empty =="
-codeql query run "$ROOT/ql/src/diagnostics/ExtractionErrors.ql" \
-	--database="$DB/db" \
-	--search-path="$PACK" \
-	--output="$DB/errors.bqrs"
-ERRS="$(codeql bqrs decode --format=csv "$DB/errors.bqrs" | tail -n +2 | grep -c . || true)"
-if [[ "$ERRS" -ne 0 ]]; then
-	echo "expected empty ExtractionErrors" >&2
-	codeql bqrs decode --format=csv "$DB/errors.bqrs"
-	exit 1
-fi
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+QLPATH="$PACK"
+DB="$DB/db" check_m4_extraction "$FIXTURE"
 
 echo "== PrintLuciAst =="
 codeql query run "$ROOT/ql/src/extractor-smoke/PrintLuciAst.ql" \
