@@ -3,19 +3,31 @@
 import json
 import subprocess
 import sys
+from typing import NoReturn
+
+
+def fail(message: str) -> NoReturn:
+    sys.exit('M3 database source root rejected: ' + message)
 
 
 def main():
-    db, expected = sys.argv[1:]
+    if len(sys.argv) != 3:
+        fail('usage: m3-reuse-root.py <database> <expected-source-root>')
+    db, expected = sys.argv[1], sys.argv[2]
     try:
         result = subprocess.run(['codeql', 'resolve', 'database', '--format=json', db],
                                 check=True, capture_output=True, text=True)
-        metadata = json.loads(result.stdout)
-        actual = metadata['sourceLocationPrefix']
-        if not isinstance(actual, str) or actual != expected:
-            raise ValueError(f'expected {expected!r}, got {actual!r}')
-    except (OSError, subprocess.CalledProcessError, ValueError, TypeError, KeyError) as exc:
-        sys.exit(f'M3 database source root rejected: {exc}')
+    except OSError as exc:
+        fail(f'cannot run codeql: {exc}')
+    except subprocess.CalledProcessError as exc:
+        detail = (exc.stderr or exc.stdout or '').strip()
+        fail(f'codeql resolve failed with status {exc.returncode}: {detail}')
+    try:
+        actual = json.loads(result.stdout)['sourceLocationPrefix']
+    except (ValueError, TypeError, KeyError) as exc:
+        fail(f'unreadable database metadata: {exc!r}')
+    if not isinstance(actual, str) or actual != expected:
+        fail(f'expected {expected!r}, got {actual!r}')
 
 
 if __name__ == '__main__':

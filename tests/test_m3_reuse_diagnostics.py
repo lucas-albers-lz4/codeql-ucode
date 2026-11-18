@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -145,3 +146,68 @@ class M3ReuseDiagnostics(unittest.TestCase):
                 self.assertEqual(sum(c[:2] == ['query', 'run'] and '/ql/src/diagnostics/' in c[2] for c in commands), 2)
 
 if __name__ == '__main__': unittest.main()
+
+
+class M3ReuseRootFailClosed(unittest.TestCase):
+    """The root check must reject every metadata shape it cannot trust."""
+
+    def run_root(self, payload=None, exit_code=0, stderr='', args=None, exact_prefix=False):
+        with tempfile.TemporaryDirectory() as t:
+            t = Path(t)
+            db, expected = str(t / 'db'), str(t / 'checkout/ql/test/extractor-smoke')
+            if exact_prefix:
+                payload = json.dumps({'sourceLocationPrefix': expected})
+            binary = t / 'bin'
+            binary.mkdir()
+            if payload is not None or exit_code or stderr:
+                cli = binary / 'codeql'
+                cli.write_text('#!' + sys.executable + '\nimport sys\n'
+                               + (f'sys.stderr.write({stderr!r})\n' if stderr else '')
+                               + (f'sys.stdout.write({payload!r})\n' if payload is not None else '')
+                               + f'sys.exit({exit_code})\n')
+                cli.chmod(0o755)
+            argv = [sys.executable, '-B', str(ROOT / 'scripts/m3-reuse-root.py')]
+            argv += args if args is not None else [db, expected]
+            env = dict(os.environ, PATH=str(binary), PYTHONDONTWRITEBYTECODE='1')
+            return subprocess.run(argv, env=env, text=True, capture_output=True)
+
+    def test_accepts_exact_prefix(self):
+        p = self.run_root(exact_prefix=True)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(p.stderr, '')
+
+    def test_rejects_unparseable_json(self):
+        p = self.run_root(payload='not-json')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('unreadable database metadata', p.stderr)
+
+    def test_rejects_null_metadata(self):
+        p = self.run_root(payload='null')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('unreadable database metadata', p.stderr)
+
+    def test_rejects_missing_prefix_key(self):
+        p = self.run_root(payload='{}')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('unreadable database metadata', p.stderr)
+
+    def test_rejects_non_string_prefix(self):
+        p = self.run_root(payload=json.dumps({'sourceLocationPrefix': 5}))
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('expected', p.stderr)
+
+    def test_reports_codeql_stderr_on_failure(self):
+        p = self.run_root(exit_code=3, stderr='resolve exploded')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('codeql resolve failed with status 3', p.stderr)
+        self.assertIn('resolve exploded', p.stderr)
+
+    def test_rejects_missing_codeql_binary(self):
+        p = self.run_root()
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('cannot run codeql', p.stderr)
+
+    def test_rejects_wrong_argument_count(self):
+        p = self.run_root(args=['only-one-arg'])
+        self.assertNotEqual(p.returncode, 0)
+        self.assertIn('usage:', p.stderr)
