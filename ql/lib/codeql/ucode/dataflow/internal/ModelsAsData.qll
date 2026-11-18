@@ -76,7 +76,9 @@ predicate interpretModelForTest(QlBuiltins::ExtensionId madId, string model) {
 
 /**
  * A summarized callable from a MaD summary row. Identified by the path string.
- * `FlowSummaryImpl` `getACall` is `none()`, so this does not apply to calls.
+ * `FlowSummaryImpl` `getACall` associates identifier callees whose name equals
+ * this path. That association alone does not interpret source/sink rows or
+ * establish that production flow works.
  */
 private class SummarizedCallableFromModel extends SummarizedCallable::Range {
   private string path;
