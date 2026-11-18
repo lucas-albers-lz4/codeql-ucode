@@ -17,6 +17,8 @@ fi
 
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
+source "$ROOT/scripts/m3-reuse-diagnostics.sh"
+check_m3_reuse_extraction
 
 echo "== RequestArgsExec luci methods =="
 codeql query run "$ROOT/ql/src/m4/RequestArgsExec.ql" \
