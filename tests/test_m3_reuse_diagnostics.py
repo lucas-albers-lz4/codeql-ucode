@@ -174,7 +174,6 @@ class M3ReuseDiagnostics(unittest.TestCase):
                 self.assertIn('SEMANTIC QUERY REACHED', p.stderr)
                 self.assertEqual(sum(c[:2] == ['query', 'run'] and '/ql/src/diagnostics/' in c[2] for c in commands), 2)
 
-if __name__ == '__main__': unittest.main()
 
 
 class M3ReuseRootFailClosed(unittest.TestCase):
@@ -274,3 +273,6 @@ class M3ReuseRootFailClosed(unittest.TestCase):
         p = self.run_root(args=['only-one-arg'])
         self.assertNotEqual(p.returncode, 0)
         self.assertIn('usage:', p.stderr)
+
+if __name__ == '__main__':
+    unittest.main()
