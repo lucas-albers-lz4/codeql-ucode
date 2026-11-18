@@ -3,7 +3,7 @@
 # M1 luci-only extract remains scripts/m1-smoke.sh (count == 1).
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/.." && pwd -P)"
 cd "$ROOT"
 
 SRC="$ROOT/ql/test/extractor-smoke"
@@ -38,32 +38,11 @@ runq() {
 	codeql query run "$q" --database="$DB" --search-path="$QLPATH" --output="$out"
 }
 
-echo "== SuccessfullyExtractedFiles == 3 =="
-runq "$ROOT/ql/src/diagnostics/SuccessfullyExtractedFiles.ql" "$DB/extracted.bqrs"
-codeql bqrs decode --format=csv "$DB/extracted.bqrs" | tee "$DB/extracted.csv"
-extracted="$(csv_rows "$DB/extracted.bqrs")"
-if [[ "$extracted" -ne 3 ]]; then
-	echo "expected count(SuccessfullyExtractedFiles) == 3, got $extracted" >&2
-	exit 1
-fi
-python3 - <<'PY'
-import csv, sys
-from pathlib import Path
-rows = list(csv.DictReader(open(".codeql-database/m3-luci/extracted.csv")))
-names = {Path(r["f"]).name for r in rows}
-want = {"luci", "taint_pos", "taint_neg"}
-if names != want:
-    sys.exit(f"extracted basenames {names} != {want}")
-print("extracted basenames", sorted(names))
-PY
-
-echo "== ExtractionErrors empty =="
-runq "$ROOT/ql/src/diagnostics/ExtractionErrors.ql" "$DB/errors.bqrs"
-if [[ "$(csv_rows "$DB/errors.bqrs")" -ne 0 ]]; then
-	echo "expected empty ExtractionErrors" >&2
-	codeql bqrs decode --format=csv "$DB/errors.bqrs"
-	exit 1
-fi
+source "$ROOT/scripts/m4-smoke-diagnostics.sh"
+check_m4_extraction \
+	"$SRC/taint_neg" \
+	"$SRC/taint_pos" \
+	"$SRC/usr/share/rpcd/ucode/luci"
 
 echo "== PrintLuciAst still has luci nodes =="
 runq "$ROOT/ql/src/extractor-smoke/PrintLuciAst.ql" "$DB/ast.bqrs"
