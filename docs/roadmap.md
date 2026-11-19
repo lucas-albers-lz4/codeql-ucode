@@ -18,7 +18,7 @@ The product goal is a more generally useful ucode language pack. The approved bo
 - Experiment with support for one template-string argument shape. This does not commit to general template-string support.
 - Investigate a design for member-call receiver provenance. This is not a claim that member callees are resolved or that `path_found` is available; see [#48](https://github.com/lucas-albers-lz4/codeql-ucode/issues/48).
 - Implement markup AST extraction only as the foundational capability in [#56](https://github.com/lucas-albers-lz4/codeql-ucode/issues/56). Markup CFG and data flow remain deferred under [#57](https://github.com/lucas-albers-lz4/codeql-ucode/issues/57).
-- Investigate a plain dispatcher source inventory only. Dispatcher HTTP source modeling, authorization guards, and security analysis remain deferred under [#58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58).
+- Investigate a plain dispatcher source inventory only, coordinated with [OpenWrt #70](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/70). Dispatcher HTTP source modeling, authorization guards, and security analysis remain deferred under [#58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58).
 
 Production `LocalTaint` and `RequestArgsExec` remain on Models. Moving production analysis to DataFlow remains blocked under [#50](https://github.com/lucas-albers-lz4/codeql-ucode/issues/50). None of these schedules changes the OpenWrt corpus, policy grants, or release gates.
 
