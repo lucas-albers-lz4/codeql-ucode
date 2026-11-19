@@ -3,12 +3,24 @@
 This roadmap uses current tracked contracts at the revisions in its source links.
 It does not reconstruct `PLAN.md`.
 It assigns no meaning to historical section numbers.
-It commits to no new feature work.
+It schedules the bounded language-pack work listed below.
+A schedule does not claim implementation, coverage, runtime behavior, authorization, or a security finding.
 It does not claim that any issue is closed.
 
 The related epics are [OpenWrt #56](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/56) and [ucode #43](https://github.com/lucas-albers-lz4/codeql-ucode/issues/43).
 
 The paired roadmap is in [codeql-openwrt](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/main/docs/roadmap.md).
+
+## Scheduled language-pack work
+
+The product goal is a more generally useful ucode language pack. The approved bounded work is:
+
+- Experiment with support for one template-string argument shape. This does not commit to general template-string support.
+- Investigate a design for member-call receiver provenance. This is not a claim that member callees are resolved or that `path_found` is available; see [#48](https://github.com/lucas-albers-lz4/codeql-ucode/issues/48).
+- Implement markup AST extraction only as the foundational capability in [#56](https://github.com/lucas-albers-lz4/codeql-ucode/issues/56). Markup CFG and data flow remain deferred under [#57](https://github.com/lucas-albers-lz4/codeql-ucode/issues/57).
+- Investigate a plain dispatcher source inventory only. Dispatcher HTTP source modeling, authorization guards, and security analysis remain deferred under [#58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58).
+
+Production `LocalTaint` and `RequestArgsExec` remain on Models. Moving production analysis to DataFlow remains blocked under [#50](https://github.com/lucas-albers-lz4/codeql-ucode/issues/50). None of these schedules changes the OpenWrt corpus, policy grants, or release gates.
 
 ## Ownership and limits
 
@@ -33,8 +45,11 @@ It does not establish a sanitizer or prove that a result is safe.
 The table does not remove the production candidate.
 Sources: [ucode:docs/m4-setlocaltime-construction.md:3-34](https://github.com/lucas-albers-lz4/codeql-ucode/blob/ecfc24e992674891c5305f7d2505156238868df9/docs/m4-setlocaltime-construction.md#L3-L34), [ucode:docs/m4-setlocaltime-construction.md:72-99](https://github.com/lucas-albers-lz4/codeql-ucode/blob/ecfc24e992674891c5305f7d2505156238868df9/docs/m4-setlocaltime-construction.md#L72-L99).
 
-This roadmap assigns no work on the dispatcher, markup, JavaScript, Track A, or Alloy.
-Sources: [openwrt:docs/pack-contract.md:3-19](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L3-L19), [openwrt:docs/pack-contract.md:114-118](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L114-L118), [openwrt:docs/pack-contract.md:133-133](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L133-L133).
+This roadmap assigns no work on Track A or Alloy.
+The bounded language-pack schedule covers markup AST only, a plain dispatcher source inventory only, and the separately listed experiments and design investigation.
+Markup CFG/data flow, dispatcher HTTP sources and authorization analysis remain deferred. See [ucode #57](https://github.com/lucas-albers-lz4/codeql-ucode/issues/57) and [ucode #58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58).
+The schedule does not change the Models-based production queries. Production Models-to-DataFlow remains blocked under [ucode #50](https://github.com/lucas-albers-lz4/codeql-ucode/issues/50).
+Sources: [ucode #48](https://github.com/lucas-albers-lz4/codeql-ucode/issues/48), [ucode #50](https://github.com/lucas-albers-lz4/codeql-ucode/issues/50), [ucode #56](https://github.com/lucas-albers-lz4/codeql-ucode/issues/56), [ucode #57](https://github.com/lucas-albers-lz4/codeql-ucode/issues/57), [ucode #58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58), [openwrt:docs/pack-contract.md:3-19](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L3-L19), [openwrt:docs/pack-contract.md:114-118](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L114-L118), [openwrt:docs/pack-contract.md:133-133](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L133-L133).
 
 ## Ordered dependencies
 
