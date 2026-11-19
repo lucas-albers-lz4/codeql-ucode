@@ -35,7 +35,7 @@ Sources: [ucode:docs/m4-setlocaltime-construction.md:3-34](https://github.com/lu
 
 OpenWrt #69 schedules only Step 1: a deterministic inventory of pinned-profile JavaScript files and source sites.
 This work adds no taint analysis and makes no security or coverage claims.
-Track A, the dispatcher (#70), markup (#68), and Alloy (#67) remain deferred.
+Track A, the dispatcher ([OpenWrt #70](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/70)), markup ([OpenWrt #68](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/68)), and Alloy ([OpenWrt #67](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/67)) remain deferred.
 This schedule assigns no ucode implementation work.
 Sources: [OpenWrt #69](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/69), [openwrt:docs/pack-contract.md:3-19](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L3-L19), [openwrt:docs/pack-contract.md:114-118](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L114-L118), [openwrt:docs/pack-contract.md:133-133](https://github.com/lucas-albers-lz4/codeql-openwrt/blob/4b767dc178fed8e06b918459c1534780b3f4af56/docs/pack-contract.md#L133-L133).
 
