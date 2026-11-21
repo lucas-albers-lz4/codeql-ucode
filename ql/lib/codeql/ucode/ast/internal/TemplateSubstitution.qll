@@ -3,6 +3,7 @@
  *
  *  WARNING: this file is generated, do not edit manually
  */
+
 private import codeql.ucode.ast.AstNodes
 private import AstNodes
 private import TreeSitter
@@ -18,4 +19,7 @@ class TemplateSubstitutionImpl extends TTemplateSubstitution, AstNode {
   TemplateSubstitutionImpl() { this = TTemplateSubstitution(ast) }
 
   override string toString() { result = ast.toString() }
+
+  /** Gets the exact extracted expression entity without widening the Expr union. */
+  UCODE::AstNode getRawExpression() { result = ast.getChild() }
 }

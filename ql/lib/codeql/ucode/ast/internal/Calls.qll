@@ -1,12 +1,13 @@
-
 /**
  * Call Expr
  */
+
 private import codeql.ucode.ast.AstNodes
 private import AstNodes
 private import TreeSitter
 private import Expr
 private import Idents
+private import TemplateString
 
 /**
  * Call Expression
@@ -19,4 +20,6 @@ class CallsImpl extends AstNode, TCalls {
   abstract ExprImpl getArguments();
 
   abstract ExprImpl getArgument(int n);
+
+  abstract TemplateStringImpl getTemplateArgument(int n);
 }
