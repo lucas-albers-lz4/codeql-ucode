@@ -14,6 +14,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
+      - name: Test grammar bootstrap offline
+        run: python3 -m unittest discover -s tests -p test_clone_grammar.py -v
       - name: Checkout OpenWrt routing implementation at ed6ec31
         uses: actions/checkout@v4
         with:

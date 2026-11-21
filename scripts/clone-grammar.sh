@@ -28,7 +28,12 @@ fi
 # (ABI 15, compiles with codeql-extractor@ce29d8a). Lower the local clone's
 # dev-dep; we do not run the grammar crate's own tests in M1.
 if grep -q 'tree-sitter = "0.27.1"' "$DEST/Cargo.toml"; then
-	sed -i 's/tree-sitter = "0.27.1"/tree-sitter = "=0.26.8"/' "$DEST/Cargo.toml"
+	tmp="$(mktemp "$DEST/.Cargo.toml.XXXXXXXX")"
+	trap 'rm -f "$tmp"' EXIT
+	cp -p "$DEST/Cargo.toml" "$tmp"
+	sed 's/tree-sitter = "0.27.1"/tree-sitter = "=0.26.8"/' "$DEST/Cargo.toml" > "$tmp"
+	mv "$tmp" "$DEST/Cargo.toml"
+	trap - EXIT
 fi
 
 # Hide extra node-types only when CODEQL_UCODE_HIDE_EXTRA_NODE_TYPES=1 (generator init).
