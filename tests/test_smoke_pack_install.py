@@ -13,7 +13,7 @@ class SmokePackInstallTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.root = Path(self.tmp.name)
+        self.root = Path(self.tmp.name).resolve()
         scripts = self.root / "scripts"
         scripts.mkdir()
         for name in ("ci-ql-smoke.sh", "ql-smoke-pack-install.sh"):
@@ -61,6 +61,32 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
                          [str(self.root / "ql/lib"), str(self.root / "ql/src")])
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "m4-smoke.sh",
                                                "m4-block-device-smoke.sh", "m3-smoke.sh"])
+
+    def test_aggregate_propagates_child_failures(self):
+        for child, status, trace in (
+            ("m3-smoke.sh", 37, ["m3-smoke.sh"]),
+            ("m4-smoke.sh", 41, ["m3-smoke.sh", "m4-smoke.sh"]),
+        ):
+            with self.subTest(child=child):
+                for log in ("installs", "smokes"):
+                    (self.root / log).unlink(missing_ok=True)
+                script = self.root / "scripts" / child
+                original = script.read_text()
+                # Fail only on the first M3 invocation, so a swallowed failure
+                # cannot be detected accidentally by the nested M3 smoke.
+                script.write_text(original + f'''
+if [[ $(grep -cx "{child}" "$SMOKE_LOG") -eq 1 ]]; then
+    exit {status}
+fi
+''')
+                try:
+                    result = self.run_script("ci-ql-smoke.sh")
+                    self.assertEqual(result.returncode, status, result.stderr)
+                    self.assertEqual(self.lines("smokes"), trace)
+                    self.assertEqual(self.lines("installs"),
+                                     [str(self.root / "ql/lib"), str(self.root / "ql/src")])
+                finally:
+                    script.write_text(original)
 
     def test_both_install_failures_stop_before_smokes(self):
         for pack, count in (("lib", 1), ("src", 2)):
