@@ -1,7 +1,7 @@
-
 /**
  * Calls nodes in the AST.
  */
+
 private import AstNodes
 private import Expr
 private import Idents
@@ -27,6 +27,12 @@ abstract class Callable extends CallsImpl {
    * Checks if the call expression has a specific name.
    */
   predicate hasName(string name) { this.getName() = name }
+
+  /**
+   * Gets the template-string node at the specified call argument index.
+   * Returns no result when that argument is not a template string.
+   */
+  abstract override TemplateString getTemplateArgument(int index);
 }
 
 /**
@@ -54,9 +60,7 @@ abstract class CallDefinition instanceof Stmts {
    */
   abstract StmtSequence getBody();
 
-  Stmts getStmt(int index) {
-    result = this.getBody().getStmt(index)
-  }
+  Stmts getStmt(int index) { result = this.getBody().getStmt(index) }
 }
 
 /**
@@ -65,33 +69,30 @@ abstract class CallDefinition instanceof Stmts {
 class Call instanceof Callable {
   Call() { this instanceof CallExpression }
 
-  Idents getIdentifier() {
-    result = Callable.super.getIdentifier()
-  }
+  Idents getIdentifier() { result = Callable.super.getIdentifier() }
 
-  Expr getArguments() {
-    result = Callable.super.getArguments()
-  }
+  Expr getArguments() { result = Callable.super.getArguments() }
 
-  Expr getArgument(int index) {
-    result = Callable.super.getArgument(index)
+  Expr getArgument(int index) { result = Callable.super.getArgument(index) }
+
+  TemplateString getTemplateArgument(int index) {
+    result = Callable.super.getTemplateArgument(index)
   }
 
   string toString() { result = "Call[" + super.getName() + "]" }
 }
 
-
 /**
  * A CallExpression expression in the AST.
  */
 class CallExpression extends Callable instanceof CallExpressionImpl {
-  override Idents getIdentifier() {
-    result = CallExpressionImpl.super.getIdentifier()
-  }
+  override Idents getIdentifier() { result = CallExpressionImpl.super.getIdentifier() }
 
   override Expr getArguments() { none() }
 
-  override Expr getArgument(int n) {
-    result = CallExpressionImpl.super.getArgument(n)
+  override Expr getArgument(int n) { result = CallExpressionImpl.super.getArgument(n) }
+
+  override TemplateString getTemplateArgument(int n) {
+    result = CallExpressionImpl.super.getTemplateArgument(n)
   }
 }

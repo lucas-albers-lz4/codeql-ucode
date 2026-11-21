@@ -1,5 +1,5 @@
-
 private import AstNodes
+private import codeql.Locations
 private import internal.Arguments
 private import internal.Array
 private import internal.ArrowFunction
@@ -24,108 +24,163 @@ private import internal.RestElement
 private import internal.SpreadElement
 private import internal.TemplateString
 private import internal.TemplateSubstitution
+private import internal.TreeSitter
 private import internal.This
 private import internal.VariableDeclarator
+
+/** A canonical wrapper for the raw expression entity inside a template substitution. */
+newtype TTemplateSubstitutionExpression = TTemplateSubstitutionExpressionNode(UCODE::AstNode raw)
+
+class TemplateSubstitutionExpression extends TTemplateSubstitutionExpression {
+  private UCODE::AstNode raw;
+
+  TemplateSubstitutionExpression() {
+    exists(UCODE::TemplateSubstitution substitution |
+      raw = substitution.getChild() and
+      this = TTemplateSubstitutionExpressionNode(raw)
+    )
+  }
+
+  string getExpressionKind() { result = raw.getAPrimaryQlClass() }
+
+  string toString() { result = raw.toString() }
+
+  Location getLocation() { result = raw.getLocation() }
+
+  /** Raw TreeSitter identity for correlation with canonical CFG AST nodes. */
+  UCODE::AstNode getRawAstNode() { result = raw }
+}
+
 /**
  *  A Arguments unknown AST node.
  */
 class Arguments extends AstNode instanceof ArgumentsImpl { }
+
 /**
  *  A Array unknown AST node.
  */
 class Array extends AstNode instanceof ArrayImpl { }
+
 /**
  *  A ArrowFunction unknown AST node.
  */
 class ArrowFunction extends AstNode instanceof ArrowFunctionImpl { }
+
 /**
  *  A CatchClause unknown AST node.
  */
 class CatchClause extends AstNode instanceof CatchClauseImpl { }
+
 /**
  *  A ComputedPropertyName unknown AST node.
  */
 class ComputedPropertyName extends AstNode instanceof ComputedPropertyNameImpl { }
+
 /**
  *  A ElifClause unknown AST node.
  */
 class ElifClause extends AstNode instanceof ElifClauseImpl { }
+
 /**
  *  A EscapeSequence unknown AST node.
  */
 class EscapeSequence extends AstNode instanceof EscapeSequenceImpl { }
+
 /**
  *  A ExportClause unknown AST node.
  */
 class ExportClause extends AstNode instanceof ExportClauseImpl { }
+
 /**
  *  A ExportSpecifier unknown AST node.
  */
 class ExportSpecifier extends AstNode instanceof ExportSpecifierImpl { }
+
 /**
  *  A HashBangLine unknown AST node.
  */
 class HashBangLine extends AstNode instanceof HashBangLineImpl { }
+
 /**
  *  A ImportClause unknown AST node.
  */
 class ImportClause extends AstNode instanceof ImportClauseImpl { }
+
 /**
  *  A ImportSpecifier unknown AST node.
  */
 class ImportSpecifier extends AstNode instanceof ImportSpecifierImpl { }
+
 /**
  *  A NamedImports unknown AST node.
  */
 class NamedImports extends AstNode instanceof NamedImportsImpl { }
+
 /**
  *  A NamespaceImport unknown AST node.
  */
 class NamespaceImport extends AstNode instanceof NamespaceImportImpl { }
+
 /**
  *  A Object unknown AST node.
  */
 class Object extends AstNode instanceof ObjectImpl { }
+
 /**
  *  A OptionalChain unknown AST node.
  */
 class OptionalChain extends AstNode instanceof OptionalChainImpl { }
+
 /**
  *  A Pair unknown AST node.
  */
 class Pair extends AstNode instanceof PairImpl { }
+
 /**
  *  A Regex unknown AST node.
  */
 class Regex extends AstNode instanceof RegexImpl { }
+
 /**
  *  A RegexFlags unknown AST node.
  */
 class RegexFlags extends AstNode instanceof RegexFlagsImpl { }
+
 /**
  *  A RegexPattern unknown AST node.
  */
 class RegexPattern extends AstNode instanceof RegexPatternImpl { }
+
 /**
  *  A RestElement unknown AST node.
  */
 class RestElement extends AstNode instanceof RestElementImpl { }
+
 /**
  *  A SpreadElement unknown AST node.
  */
 class SpreadElement extends AstNode instanceof SpreadElementImpl { }
+
 /**
  *  A TemplateString unknown AST node.
  */
 class TemplateString extends AstNode instanceof TemplateStringImpl { }
+
 /**
  *  A TemplateSubstitution unknown AST node.
  */
-class TemplateSubstitution extends AstNode instanceof TemplateSubstitutionImpl { }
+class TemplateSubstitution extends AstNode instanceof TemplateSubstitutionImpl {
+  /** Gets the canonical raw expression entity represented by this substitution. */
+  TemplateSubstitutionExpression getExpression() {
+    result = TTemplateSubstitutionExpressionNode(TemplateSubstitutionImpl.super.getRawExpression())
+  }
+}
+
 /**
  *  A This unknown AST node.
  */
 class This extends AstNode instanceof ThisImpl { }
+
 /**
  *  A VariableDeclarator unknown AST node.
  */

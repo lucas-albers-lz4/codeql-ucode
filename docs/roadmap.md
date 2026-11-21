@@ -43,7 +43,7 @@ The #69 inventory adds no taint analysis and makes no security or coverage claim
 
 The product goal is a more generally useful ucode language pack. The approved bounded work is:
 
-- Experiment with the bounded template-string call-argument capability in [ucode #127](https://github.com/lucas-albers-lz4/codeql-ucode/issues/127). This does not commit to general template-string support.
+- Experiment with the bounded template-string call-argument capability in [ucode #127](https://github.com/lucas-albers-lz4/codeql-ucode/issues/127). This does not commit to general template-string support. The implemented API and its bounds are documented in [M4 experimental template-string call arguments](m4-template-string-call-arguments.md).
 - Investigate a design for member-call receiver provenance under [ucode #128](https://github.com/lucas-albers-lz4/codeql-ucode/issues/128). This is not a claim that member callees are resolved or that `path_found` is available. Production work remains blocked under [ucode #48](https://github.com/lucas-albers-lz4/codeql-ucode/issues/48).
 - Implement markup AST extraction only as the foundational capability in [ucode #56](https://github.com/lucas-albers-lz4/codeql-ucode/issues/56). Markup CFG and data flow remain deferred under [ucode #57](https://github.com/lucas-albers-lz4/codeql-ucode/issues/57).
 - Investigate the plain dispatcher source inventory in [ucode #129](https://github.com/lucas-albers-lz4/codeql-ucode/issues/129), coordinated with [OpenWrt #70](https://github.com/lucas-albers-lz4/codeql-openwrt/issues/70). Dispatcher HTTP source modeling, authorization guards, and security analysis remain deferred under [ucode #58](https://github.com/lucas-albers-lz4/codeql-ucode/issues/58).

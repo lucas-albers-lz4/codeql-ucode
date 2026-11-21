@@ -3,11 +3,13 @@
  *
  *  WARNING: this file is generated, do not edit manually
  */
+
 private import AstNodes
 private import TreeSitter
 private import Calls
 private import Idents
 private import Expr
+private import TemplateString
 
 /**
  *  A CallExpression AST Node.
@@ -27,9 +29,7 @@ class CallExpressionImpl extends TCallExpression, CallsImpl {
    * call callees have no result. `getArguments()` stays `none()` because
    * the `arguments` node is not an expression.
    */
-  override IdentsImpl getIdentifier() {
-    toTreeSitter(result) = ast.getFunction()
-  }
+  override IdentsImpl getIdentifier() { toTreeSitter(result) = ast.getFunction() }
 
   override ExprImpl getArguments() { none() }
 
@@ -40,7 +40,10 @@ class CallExpressionImpl extends TCallExpression, CallsImpl {
    * objects, spreads, arrows, `this`) have no result. `getArguments()`
    * stays `none()` because the `arguments` node is not an expression.
    */
-  override ExprImpl getArgument(int n) {
+  override ExprImpl getArgument(int n) { toTreeSitter(result) = ast.getArguments().getChild(n) }
+
+  /** Gets the concrete template-string node at the `n`th call argument. */
+  override TemplateStringImpl getTemplateArgument(int n) {
     toTreeSitter(result) = ast.getArguments().getChild(n)
   }
 }
