@@ -369,6 +369,10 @@ pub fn run(options: Options) -> std::io::Result<()> {
     let file_list = file_paths::path_from_string(&options.file_list);
     let lines = std::fs::read_to_string(file_list)?;
     let schema = node_types::read_node_types_str("ucode", tree_sitter_ucode::UCODE_NODE_TYPES)?;
+    let markup_schema = node_types::read_node_types_str(
+        "ucode_markup",
+        tree_sitter_ucode::UCODE_MARKUP_NODE_TYPES,
+    )?;
     let diagnostics = codeql_extractor::diagnostics::DiagnosticLoggers::new("ucode");
     let compression = match trap::Compression::from_env("CODEQL_UCODE_TRAP_COMPRESSION") {
         Ok(compression) => compression,
@@ -390,6 +394,7 @@ pub fn run(options: Options) -> std::io::Result<()> {
     let report = process_inputs(
         &lines,
         &schema,
+        &markup_schema,
         &diagnostics,
         &options.output_dir,
         &options.source_archive_dir,
@@ -410,6 +415,7 @@ pub fn run(options: Options) -> std::io::Result<()> {
 fn process_inputs(
     lines: &str,
     schema: &node_types::NodeTypeMap,
+    markup_schema: &node_types::NodeTypeMap,
     diagnostics: &codeql_extractor::diagnostics::DiagnosticLoggers,
     output_dir: &Path,
     source_archive_dir: &Path,
@@ -512,7 +518,20 @@ fn process_inputs(
                     compression,
                 )?;
             }
-            Classification::Markup => report.markup_count += 1,
+            Classification::Markup => {
+                report.markup_count += 1;
+                extract_syntax(
+                    &path,
+                    &source,
+                    markup_schema,
+                    diagnostics,
+                    output_dir,
+                    source_archive_dir,
+                    compression,
+                    &tree_sitter_ucode::LANGUAGE_UCODE_MARKUP.into(),
+                    "ucode_markup",
+                )?;
+            }
             Classification::Uncertain => report.uncertain_count += 1,
         }
     }
@@ -570,11 +589,35 @@ fn extract_plain(
     source_archive_dir: &Path,
     compression: trap::Compression,
 ) -> std::io::Result<()> {
+    extract_syntax(
+        path,
+        source,
+        schema,
+        diagnostics,
+        output_dir,
+        source_archive_dir,
+        compression,
+        &tree_sitter_ucode::LANGUAGE_UCODE.into(),
+        "ucode",
+    )
+}
+
+fn extract_syntax(
+    path: &Path,
+    source: &[u8],
+    schema: &node_types::NodeTypeMap,
+    diagnostics: &codeql_extractor::diagnostics::DiagnosticLoggers,
+    output_dir: &Path,
+    source_archive_dir: &Path,
+    compression: trap::Compression,
+    language: &tree_sitter::Language,
+    name: &str,
+) -> std::io::Result<()> {
     let mut trap_writer = trap::Writer::new();
     let mut diagnostics_writer = diagnostics.logger();
     codeql_extractor::extractor::extract(
-        &tree_sitter_ucode::LANGUAGE_UCODE.into(),
-        "ucode",
+        language,
+        name,
         schema,
         &mut diagnostics_writer,
         &mut trap_writer,
@@ -739,6 +782,11 @@ mod tests {
         let report = process_inputs(
             &file_list,
             &schema,
+            &node_types::read_node_types_str(
+                "ucode_markup",
+                tree_sitter_ucode::UCODE_MARKUP_NODE_TYPES,
+            )
+            .unwrap(),
             &diagnostics,
             &trap_root,
             &archive_root,
@@ -951,6 +999,26 @@ mod tests {
             "# /usr/bin/ucode\n",
         ] {
             assert!(!has_ucode_shebang(negative.as_bytes()), "{negative:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod markup_parser_tests {
+    use tree_sitter::Parser;
+
+    #[test]
+    fn inspect_markup_controls() {
+        let mut parser = Parser::new();
+        parser.set_language(&tree_sitter_ucode::LANGUAGE_UCODE_MARKUP.into()).unwrap();
+        for (name, source) in [
+            ("real", include_str!("../../tests/data/markup/usr/share/ucode/luci/uhttpd.uc")),
+            ("mixed", "Hello {{ name }}!\n{% let x = 1; %}Value {{ x }}\n"),
+            ("malformed", "Hello {{ }}\n"),
+        ] {
+            let tree = parser.parse(source, None).unwrap();
+            eprintln!("{name}: {} error={}", tree.root_node().to_sexp(), tree.root_node().has_error());
+            assert_eq!(tree.root_node().has_error(), name == "malformed");
         }
     }
 }
