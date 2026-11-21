@@ -3,8 +3,10 @@
 The extractor uses `ucode_markup` from `m00qek/tree-sitter-ucode` at
 `4a243af329fae2f4ff01e0fc80133cbab8314600`, alongside the existing plain
 `ucode` grammar. The existing classifier selects the markup parser for `.ut`
-files or inputs containing markup tags, subject to the existing installed-path
-routing rules; raw-mode rpcd inputs continue to use plain ucode. The existing routing receipt still marks markup `inconclusive` with
+files or inputs with a line whose leading whitespace is followed by `{%`, `{{`,
+or `{#`, subject to the existing installed-path routing rules. An inline tag
+after non-whitespace text on a `.uc` line is not detected by this heuristic
+and may take the plain route; raw-mode rpcd inputs continue to use plain ucode. The existing routing receipt still marks markup `inconclusive` with
 `markup_not_modeled` because analysis coverage is not established. The AST is
 extracted despite that classification. Routing is not proof of a clean parse. Check
 `ExtractionErrors` as well as exact `SuccessfullyExtractedFiles` identities.
@@ -50,3 +52,7 @@ gates.
 A temporary copy of `m1-smoke.sh` with only `tools/linux64/extractor` changed
 to `tools/osx64/extractor` also passed on macOS; the copy was removed. The
 original script was not changed and did not pass unmodified on this platform.
+
+The default autobuilder discovers `.ut` files; the smoke exercises it without
+explicit include patterns. The QL smoke checks exact selected node kinds, full
+spans, parent kinds, and parent indexes for mixed and pinned real inputs.

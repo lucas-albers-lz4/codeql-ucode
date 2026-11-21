@@ -19,6 +19,9 @@ export CODEQL_UCODE_SMOKE_PACKS_READY="$ROOT"
 echo "== M3 smoke =="
 bash scripts/m3-smoke.sh
 
+echo "== Markup AST smoke =="
+python3 scripts/markup-ast-smoke.py
+
 shopt -s nullglob
 m4_scripts=()
 for s in scripts/m4-smoke.sh scripts/m4-*-smoke.sh; do

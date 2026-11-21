@@ -2,7 +2,7 @@
 import csv
 import io
 import json
-import os
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
@@ -47,15 +47,45 @@ def main():
         errors = json.loads(query(db, 'diagnostics/ExtractionErrors.ql', valid / 'errors.bqrs'))['#select']['tuples']
         assert not errors, errors
         rows = list(csv.reader(io.StringIO(query(db, 'markup-issue56-test.ql', valid / 'ast.bqrs', 'csv'))))[1:]
-        assert len(rows) == 19, rows
-        assert sum(r[0] == 'uhttpd.uc' and r[1] == 'Markup' for r in rows) == 1, rows
-        assert sum(r[0] == 'mixed.ut' and r[1] == 'Markup' for r in rows) == 1, rows
-        assert ['mixed.ut', 'Identifier', 'name', '1', '10'] in rows, rows
-        assert ['mixed.ut', 'Identifier', 'x', '2', '8'] in rows, rows
-        assert ['mixed.ut', 'Identifier', 'x', '2', '26'] in rows, rows
-        assert ['uhttpd.uc', 'Identifier', 'dispatch', '3', '8'] in rows, rows
-        assert sum(r[0] == 'mixed.ut' and r[1] == 'ExpressionTag' for r in rows) == 2, rows
-        assert not any(r[0] == 'plain.uc' for r in rows), rows
+        expected = {
+            ('RawText', 'Hello ', '1', '1', '1', '6', 'Markup', '0'),
+            ('RawText', '!\n', '1', '17', '1', '18', 'Markup', '2'),
+            ('RawText', 'Value ', '2', '17', '2', '22', 'TextStatement', '1'),
+            ('RawText', '\n', '2', '30', '2', '30', 'TextStatement', '3'),
+            ('Identifier', 'name', '1', '10', '1', '13', 'ExpressionTag', '1'),
+            ('Identifier', 'x', '2', '8', '2', '8', 'VariableDeclarator', '0'),
+            ('Identifier', 'x', '2', '26', '2', '26', 'ExpressionTag', '1'),
+            ('TextStatement', 'TextStatement', '2', '15', '2', '30', 'Markup', '5'),
+            ('ExpressionTag', 'ExpressionTag', '1', '7', '1', '16', 'Markup', '1'),
+            ('ExpressionTag', 'ExpressionTag', '2', '23', '2', '29', 'TextStatement', '2'),
+            ('LexicalDeclaration', 'LexicalDeclaration', '2', '4', '2', '13', 'Markup', '4'),
+        }
+        assert len(rows) == len(expected) and {tuple(row) for row in rows} == expected, rows
+        rows = list(csv.reader(io.StringIO(query(db, 'markup-real-issue56-test.ql', valid / 'real.bqrs', 'csv'))))[1:]
+        expected_real = {
+            ('ImportStatement', '3', '1', '3', '39', 'Markup', '1'),
+            ('ImportStatement', '4', '1', '4', '32', 'Markup', '2'),
+            ('FunctionExpression', '6', '25', '12', '1', 'AssignmentExpression', '2'),
+            ('AssignmentExpression', '6', '1', '12', '1', 'ExpressionStatement', '0'),
+        }
+        assert len(rows) == len(expected_real) and {tuple(row) for row in rows} == expected_real, rows
+
+        # Exercise the actual default autobuilder, without --include overrides.
+        discovery_source = base / 'discovery-source'
+        discovery_source.mkdir()
+        for name in ('mixed.ut', 'plain.uc'):
+            shutil.copyfile(SOURCE / 'usr/share/ucode/controls' / name, discovery_source / name)
+        discovery_db = base / 'discovery-db'
+        run('codeql', 'database', 'create', discovery_db, '--language=ucode',
+            f'--search-path={PACK}', f'--source-root={discovery_source}', '--build-mode=none')
+        extracted = json.loads(query(discovery_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'discovery.bqrs'))['#select']['tuples']
+        assert {row[0]['url']['uri'] for row in extracted} == {
+            (discovery_source / name).resolve().as_uri() for name in ('mixed.ut', 'plain.uc')
+        }, extracted
+        errors = json.loads(query(discovery_db, 'diagnostics/ExtractionErrors.ql', base / 'discovery-errors.bqrs'))['#select']['tuples']
+        assert not errors, errors
+        discovery_rows = list(csv.reader(io.StringIO(query(discovery_db, 'markup-issue56-test.ql', base / 'discovery-ast.bqrs', 'csv'))))[1:]
+        assert len(discovery_rows) == len(expected) and {tuple(row) for row in discovery_rows} == expected, discovery_rows
         malformed = base / 'malformed'
         malformed.mkdir()
         db, receipt = database(malformed, ['malformed.ut'])

@@ -1008,6 +1008,14 @@ mod markup_parser_tests {
     use tree_sitter::Parser;
 
     #[test]
+    fn markup_tag_heuristic_requires_line_start() {
+        assert!(super::has_markup_tag(b"header\n  {{ value }}"));
+        assert!(super::has_markup_tag(b"{% let value = 1; %}"));
+        assert!(super::has_markup_tag(b"  {# comment #}"));
+        assert!(!super::has_markup_tag(b"header {{ value }}"));
+    }
+
+    #[test]
     fn inspect_markup_controls() {
         let mut parser = Parser::new();
         parser.set_language(&tree_sitter_ucode::LANGUAGE_UCODE_MARKUP.into()).unwrap();
