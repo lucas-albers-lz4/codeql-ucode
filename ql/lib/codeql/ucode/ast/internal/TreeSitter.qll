@@ -1274,3 +1274,1467 @@ module UCODE {
     }
   }
 }
+
+module UcodeMarkup {
+  /** The base class for all AST nodes */
+  class AstNode extends @ucode_markup_ast_node {
+    /** Gets a string representation of this element. */
+    string toString() { result = this.getAPrimaryQlClass() }
+
+    /** Gets the location of this element. */
+    final L::Location getLocation() { ucode_markup_ast_node_location(this, result) }
+
+    /** Gets the parent of this element. */
+    final AstNode getParent() { ucode_markup_ast_node_parent(this, result, _) }
+
+    /** Gets the index of this node among the children of its parent. */
+    final int getParentIndex() { ucode_markup_ast_node_parent(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    AstNode getAFieldOrChild() { none() }
+
+    /** Gets the name of the primary QL class for this element. */
+    string getAPrimaryQlClass() { result = "???" }
+
+    /** Gets a comma-separated list of the names of the primary CodeQL classes to which this element belongs. */
+    string getPrimaryQlClasses() { result = concat(this.getAPrimaryQlClass(), ",") }
+  }
+
+  /** A token. */
+  class Token extends @ucode_markup_token, AstNode {
+    /** Gets the value of this token. */
+    final string getValue() { ucode_markup_tokeninfo(this, _, result) }
+
+    /** Gets a string representation of this element. */
+    final override string toString() { result = this.getValue() }
+
+    /** Gets the name of the primary QL class for this element. */
+    override string getAPrimaryQlClass() { result = "Token" }
+  }
+
+  /** A reserved word. */
+  class ReservedWord extends @ucode_markup_reserved_word, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ReservedWord" }
+  }
+
+  /** A class representing `arguments` nodes. */
+  class Arguments extends @ucode_markup_arguments, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Arguments" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_arguments_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_arguments_child(this, _, result) }
+  }
+
+  /** A class representing `array` nodes. */
+  class Array extends @ucode_markup_array, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Array" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_array_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_array_child(this, _, result) }
+  }
+
+  /** A class representing `arrow_function` nodes. */
+  class ArrowFunction extends @ucode_markup_arrow_function, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ArrowFunction" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final AstNode getBody() { ucode_markup_arrow_function_def(this, result) }
+
+    /** Gets the node corresponding to the field `parameter`. */
+    final Identifier getParameter() { ucode_markup_arrow_function_parameter(this, result) }
+
+    /** Gets the node corresponding to the field `parameters`. */
+    final FormalParameters getParameters() { ucode_markup_arrow_function_parameters(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_arrow_function_def(this, result) or
+      ucode_markup_arrow_function_parameter(this, result) or
+      ucode_markup_arrow_function_parameters(this, result)
+    }
+  }
+
+  /** A class representing `assignment_expression` nodes. */
+  class AssignmentExpression extends @ucode_markup_assignment_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "AssignmentExpression" }
+
+    /** Gets the node corresponding to the field `left`. */
+    final AstNode getLeft() { ucode_markup_assignment_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `right`. */
+    final Expression getRight() { ucode_markup_assignment_expression_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_assignment_expression_def(this, result, _) or
+      ucode_markup_assignment_expression_def(this, _, result)
+    }
+  }
+
+  /** A class representing `augmented_assignment_expression` nodes. */
+  class AugmentedAssignmentExpression extends @ucode_markup_augmented_assignment_expression, AstNode
+  {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "AugmentedAssignmentExpression" }
+
+    /** Gets the node corresponding to the field `left`. */
+    final AstNode getLeft() { ucode_markup_augmented_assignment_expression_def(this, result, _, _) }
+
+    /** Gets the node corresponding to the field `operator`. */
+    final string getOperator() {
+      exists(int value | ucode_markup_augmented_assignment_expression_def(this, _, value, _) |
+        result = "%=" and value = 0
+        or
+        result = "&&=" and value = 1
+        or
+        result = "&=" and value = 2
+        or
+        result = "**=" and value = 3
+        or
+        result = "*=" and value = 4
+        or
+        result = "+=" and value = 5
+        or
+        result = "-=" and value = 6
+        or
+        result = "/=" and value = 7
+        or
+        result = "<<=" and value = 8
+        or
+        result = ">>=" and value = 9
+        or
+        result = "??=" and value = 10
+        or
+        result = "^=" and value = 11
+        or
+        result = "|=" and value = 12
+        or
+        result = "||=" and value = 13
+      )
+    }
+
+    /** Gets the node corresponding to the field `right`. */
+    final Expression getRight() {
+      ucode_markup_augmented_assignment_expression_def(this, _, _, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_augmented_assignment_expression_def(this, result, _, _) or
+      ucode_markup_augmented_assignment_expression_def(this, _, _, result)
+    }
+  }
+
+  /** A class representing `binary_expression` nodes. */
+  class BinaryExpression extends @ucode_markup_binary_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "BinaryExpression" }
+
+    /** Gets the node corresponding to the field `left`. */
+    final Expression getLeft() { ucode_markup_binary_expression_def(this, result, _, _) }
+
+    /** Gets the node corresponding to the field `operator`. */
+    final string getOperator() {
+      exists(int value | ucode_markup_binary_expression_def(this, _, value, _) |
+        result = "!=" and value = 0
+        or
+        result = "!==" and value = 1
+        or
+        result = "%" and value = 2
+        or
+        result = "&" and value = 3
+        or
+        result = "&&" and value = 4
+        or
+        result = "*" and value = 5
+        or
+        result = "**" and value = 6
+        or
+        result = "+" and value = 7
+        or
+        result = "-" and value = 8
+        or
+        result = "/" and value = 9
+        or
+        result = "<" and value = 10
+        or
+        result = "<<" and value = 11
+        or
+        result = "<=" and value = 12
+        or
+        result = "==" and value = 13
+        or
+        result = "===" and value = 14
+        or
+        result = ">" and value = 15
+        or
+        result = ">=" and value = 16
+        or
+        result = ">>" and value = 17
+        or
+        result = "??" and value = 18
+        or
+        result = "^" and value = 19
+        or
+        result = "in" and value = 20
+        or
+        result = "|" and value = 21
+        or
+        result = "||" and value = 22
+      )
+    }
+
+    /** Gets the node corresponding to the field `right`. */
+    final Expression getRight() { ucode_markup_binary_expression_def(this, _, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_binary_expression_def(this, result, _, _) or
+      ucode_markup_binary_expression_def(this, _, _, result)
+    }
+  }
+
+  /** A class representing `break_statement` tokens. */
+  class BreakStatement extends @ucode_markup_token_break_statement, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "BreakStatement" }
+  }
+
+  /** A class representing `call_expression` nodes. */
+  class CallExpression extends @ucode_markup_call_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CallExpression" }
+
+    /** Gets the node corresponding to the field `arguments`. */
+    final Arguments getArguments() { ucode_markup_call_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `function`. */
+    final Expression getFunction() { ucode_markup_call_expression_def(this, _, result) }
+
+    /** Gets the node corresponding to the field `optional_chain`. */
+    final OptionalChain getOptionalChain() {
+      ucode_markup_call_expression_optional_chain(this, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_call_expression_def(this, result, _) or
+      ucode_markup_call_expression_def(this, _, result) or
+      ucode_markup_call_expression_optional_chain(this, result)
+    }
+  }
+
+  /** A class representing `catch_clause` nodes. */
+  class CatchClause extends @ucode_markup_catch_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CatchClause" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementBlock getBody() { ucode_markup_catch_clause_def(this, result) }
+
+    /** Gets the node corresponding to the field `parameter`. */
+    final Identifier getParameter() { ucode_markup_catch_clause_parameter(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_catch_clause_def(this, result) or
+      ucode_markup_catch_clause_parameter(this, result)
+    }
+  }
+
+  /** A class representing `comment` tokens. */
+  class Comment extends @ucode_markup_token_comment, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Comment" }
+  }
+
+  /** A class representing `comment_content` tokens. */
+  class CommentContent extends @ucode_markup_token_comment_content, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentContent" }
+  }
+
+  /** A class representing `comment_tag` nodes. */
+  class CommentTag extends @ucode_markup_comment_tag, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentTag" }
+
+    /** Gets the node corresponding to the field `close`. */
+    final AstNode getClose() { ucode_markup_comment_tag_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `content`. */
+    final CommentContent getContent() { ucode_markup_comment_tag_content(this, result) }
+
+    /** Gets the node corresponding to the field `open`. */
+    final AstNode getOpen() { ucode_markup_comment_tag_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_comment_tag_def(this, result, _) or
+      ucode_markup_comment_tag_content(this, result) or
+      ucode_markup_comment_tag_def(this, _, result)
+    }
+  }
+
+  /** A class representing `comment_tag_close` tokens. */
+  class CommentTagClose extends @ucode_markup_token_comment_tag_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentTagClose" }
+  }
+
+  /** A class representing `comment_tag_open` tokens. */
+  class CommentTagOpen extends @ucode_markup_token_comment_tag_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentTagOpen" }
+  }
+
+  /** A class representing `comment_tag_trim_close` tokens. */
+  class CommentTagTrimClose extends @ucode_markup_token_comment_tag_trim_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentTagTrimClose" }
+  }
+
+  /** A class representing `comment_tag_trim_open` tokens. */
+  class CommentTagTrimOpen extends @ucode_markup_token_comment_tag_trim_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "CommentTagTrimOpen" }
+  }
+
+  /** A class representing `computed_property_name` nodes. */
+  class ComputedPropertyName extends @ucode_markup_computed_property_name, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ComputedPropertyName" }
+
+    /** Gets the child of this node. */
+    final Expression getChild() { ucode_markup_computed_property_name_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_computed_property_name_def(this, result)
+    }
+  }
+
+  /** A class representing `continue_statement` tokens. */
+  class ContinueStatement extends @ucode_markup_token_continue_statement, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ContinueStatement" }
+  }
+
+  class Declaration extends @ucode_markup_declaration, AstNode { }
+
+  /** A class representing `default` tokens. */
+  class Default extends @ucode_markup_token_default, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Default" }
+  }
+
+  /** A class representing `delete_expression` nodes. */
+  class DeleteExpression extends @ucode_markup_delete_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "DeleteExpression" }
+
+    /** Gets the node corresponding to the field `argument`. */
+    final AstNode getArgument() { ucode_markup_delete_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `operator`. */
+    final string getOperator() {
+      exists(int value | ucode_markup_delete_expression_def(this, _, value) |
+        (result = "delete" and value = 0)
+      )
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_delete_expression_def(this, result, _)
+    }
+  }
+
+  /** A class representing `doc_comment` tokens. */
+  class DocComment extends @ucode_markup_token_doc_comment, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "DocComment" }
+  }
+
+  /** A class representing `elif_clause` nodes. */
+  class ElifClause extends @ucode_markup_elif_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ElifClause" }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final ParenthesizedExpression getCondition() { ucode_markup_elif_clause_def(this, result) }
+
+    /** Gets the node corresponding to the field `consequence`. */
+    final StatementList getConsequence() { ucode_markup_elif_clause_consequence(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_elif_clause_def(this, result) or
+      ucode_markup_elif_clause_consequence(this, result)
+    }
+  }
+
+  /** A class representing `else_alt_clause` nodes. */
+  class ElseAltClause extends @ucode_markup_else_alt_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ElseAltClause" }
+
+    /** Gets the child of this node. */
+    final StatementList getChild() { ucode_markup_else_alt_clause_child(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_else_alt_clause_child(this, result) }
+  }
+
+  /** A class representing `else_clause` nodes. */
+  class ElseClause extends @ucode_markup_else_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ElseClause" }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_else_clause_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_else_clause_def(this, result) }
+  }
+
+  /** A class representing `empty_statement` tokens. */
+  class EmptyStatement extends @ucode_markup_token_empty_statement, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "EmptyStatement" }
+  }
+
+  /** A class representing `escape_sequence` tokens. */
+  class EscapeSequence extends @ucode_markup_token_escape_sequence, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "EscapeSequence" }
+  }
+
+  /** A class representing `export_clause` nodes. */
+  class ExportClause extends @ucode_markup_export_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExportClause" }
+
+    /** Gets the `i`th child of this node. */
+    final ExportSpecifier getChild(int i) { ucode_markup_export_clause_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_export_clause_child(this, _, result) }
+  }
+
+  /** A class representing `export_specifier` nodes. */
+  class ExportSpecifier extends @ucode_markup_export_specifier, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExportSpecifier" }
+
+    /** Gets the node corresponding to the field `alias`. */
+    final AstNode getAlias() { ucode_markup_export_specifier_alias(this, result) }
+
+    /** Gets the node corresponding to the field `name`. */
+    final AstNode getName() { ucode_markup_export_specifier_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_export_specifier_alias(this, result) or
+      ucode_markup_export_specifier_def(this, result)
+    }
+  }
+
+  /** A class representing `export_statement` nodes. */
+  class ExportStatement extends @ucode_markup_export_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExportStatement" }
+
+    /** Gets the node corresponding to the field `clause`. */
+    final ExportClause getClause() { ucode_markup_export_statement_clause(this, result) }
+
+    /** Gets the node corresponding to the field `declaration`. */
+    final AstNode getDeclaration() { ucode_markup_export_statement_declaration(this, result) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final Expression getValue() { ucode_markup_export_statement_value(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_export_statement_clause(this, result) or
+      ucode_markup_export_statement_declaration(this, result) or
+      ucode_markup_export_statement_value(this, result)
+    }
+  }
+
+  class Expression extends @ucode_markup_expression, AstNode { }
+
+  /** A class representing `expression_statement` nodes. */
+  class ExpressionStatement extends @ucode_markup_expression_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionStatement" }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_expression_statement_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_expression_statement_def(this, result)
+    }
+  }
+
+  /** A class representing `expression_tag` nodes. */
+  class ExpressionTag extends @ucode_markup_expression_tag, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionTag" }
+
+    /** Gets the node corresponding to the field `close`. */
+    final AstNode getClose() { ucode_markup_expression_tag_def(this, result, _, _) }
+
+    /** Gets the node corresponding to the field `open`. */
+    final AstNode getOpen() { ucode_markup_expression_tag_def(this, _, result, _) }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_expression_tag_def(this, _, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_expression_tag_def(this, result, _, _) or
+      ucode_markup_expression_tag_def(this, _, result, _) or
+      ucode_markup_expression_tag_def(this, _, _, result)
+    }
+  }
+
+  /** A class representing `expression_tag_close` tokens. */
+  class ExpressionTagClose extends @ucode_markup_token_expression_tag_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionTagClose" }
+  }
+
+  /** A class representing `expression_tag_open` tokens. */
+  class ExpressionTagOpen extends @ucode_markup_token_expression_tag_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionTagOpen" }
+  }
+
+  /** A class representing `expression_tag_trim_close` tokens. */
+  class ExpressionTagTrimClose extends @ucode_markup_token_expression_tag_trim_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionTagTrimClose" }
+  }
+
+  /** A class representing `expression_tag_trim_open` tokens. */
+  class ExpressionTagTrimOpen extends @ucode_markup_token_expression_tag_trim_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ExpressionTagTrimOpen" }
+  }
+
+  /** A class representing `false` tokens. */
+  class False extends @ucode_markup_token_false, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "False" }
+  }
+
+  /** A class representing `for_alt_statement` nodes. */
+  class ForAltStatement extends @ucode_markup_for_alt_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ForAltStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementList getBody() { ucode_markup_for_alt_statement_body(this, result) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final AstNode getCondition() { ucode_markup_for_alt_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `increment`. */
+    final AstNode getIncrement() { ucode_markup_for_alt_statement_increment(this, result) }
+
+    /** Gets the node corresponding to the field `initializer`. */
+    final AstNode getInitializer() { ucode_markup_for_alt_statement_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_for_alt_statement_body(this, result) or
+      ucode_markup_for_alt_statement_def(this, result, _) or
+      ucode_markup_for_alt_statement_increment(this, result) or
+      ucode_markup_for_alt_statement_def(this, _, result)
+    }
+  }
+
+  /** A class representing `for_in_alt_statement` nodes. */
+  class ForInAltStatement extends @ucode_markup_for_in_alt_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ForInAltStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementList getBody() { ucode_markup_for_in_alt_statement_body(this, result) }
+
+    /** Gets the node corresponding to the field `key`. */
+    final Identifier getKey() { ucode_markup_for_in_alt_statement_key(this, result) }
+
+    /** Gets the node corresponding to the field `kind`. */
+    final ReservedWord getKind() { ucode_markup_for_in_alt_statement_kind(this, result) }
+
+    /** Gets the node corresponding to the field `object`. */
+    final AstNode getObject() { ucode_markup_for_in_alt_statement_def(this, result) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final Identifier getValue() { ucode_markup_for_in_alt_statement_value(this, result) }
+
+    /** Gets the node corresponding to the field `variable`. */
+    final Identifier getVariable() { ucode_markup_for_in_alt_statement_variable(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_for_in_alt_statement_body(this, result) or
+      ucode_markup_for_in_alt_statement_key(this, result) or
+      ucode_markup_for_in_alt_statement_kind(this, result) or
+      ucode_markup_for_in_alt_statement_def(this, result) or
+      ucode_markup_for_in_alt_statement_value(this, result) or
+      ucode_markup_for_in_alt_statement_variable(this, result)
+    }
+  }
+
+  /** A class representing `for_in_statement` nodes. */
+  class ForInStatement extends @ucode_markup_for_in_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ForInStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final AstNode getBody() { ucode_markup_for_in_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `key`. */
+    final Identifier getKey() { ucode_markup_for_in_statement_key(this, result) }
+
+    /** Gets the node corresponding to the field `kind`. */
+    final ReservedWord getKind() { ucode_markup_for_in_statement_kind(this, result) }
+
+    /** Gets the node corresponding to the field `object`. */
+    final AstNode getObject() { ucode_markup_for_in_statement_def(this, _, result) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final Identifier getValue() { ucode_markup_for_in_statement_value(this, result) }
+
+    /** Gets the node corresponding to the field `variable`. */
+    final Identifier getVariable() { ucode_markup_for_in_statement_variable(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_for_in_statement_def(this, result, _) or
+      ucode_markup_for_in_statement_key(this, result) or
+      ucode_markup_for_in_statement_kind(this, result) or
+      ucode_markup_for_in_statement_def(this, _, result) or
+      ucode_markup_for_in_statement_value(this, result) or
+      ucode_markup_for_in_statement_variable(this, result)
+    }
+  }
+
+  /** A class representing `for_statement` nodes. */
+  class ForStatement extends @ucode_markup_for_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ForStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final AstNode getBody() { ucode_markup_for_statement_def(this, result, _, _) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final AstNode getCondition() { ucode_markup_for_statement_def(this, _, result, _) }
+
+    /** Gets the node corresponding to the field `increment`. */
+    final AstNode getIncrement() { ucode_markup_for_statement_increment(this, result) }
+
+    /** Gets the node corresponding to the field `initializer`. */
+    final AstNode getInitializer() { ucode_markup_for_statement_def(this, _, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_for_statement_def(this, result, _, _) or
+      ucode_markup_for_statement_def(this, _, result, _) or
+      ucode_markup_for_statement_increment(this, result) or
+      ucode_markup_for_statement_def(this, _, _, result)
+    }
+  }
+
+  /** A class representing `formal_parameters` nodes. */
+  class FormalParameters extends @ucode_markup_formal_parameters, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "FormalParameters" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_formal_parameters_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_formal_parameters_child(this, _, result)
+    }
+  }
+
+  /** A class representing `function_declaration` nodes. */
+  class FunctionDeclaration extends @ucode_markup_function_declaration, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "FunctionDeclaration" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final AstNode getBody() { ucode_markup_function_declaration_body(this, result) }
+
+    /** Gets the node corresponding to the field `name`. */
+    final Identifier getName() { ucode_markup_function_declaration_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `parameters`. */
+    final FormalParameters getParameters() {
+      ucode_markup_function_declaration_def(this, _, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_function_declaration_body(this, result) or
+      ucode_markup_function_declaration_def(this, result, _) or
+      ucode_markup_function_declaration_def(this, _, result)
+    }
+  }
+
+  /** A class representing `function_expression` nodes. */
+  class FunctionExpression extends @ucode_markup_function_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "FunctionExpression" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementBlock getBody() { ucode_markup_function_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `name`. */
+    final Identifier getName() { ucode_markup_function_expression_name(this, result) }
+
+    /** Gets the node corresponding to the field `parameters`. */
+    final FormalParameters getParameters() { ucode_markup_function_expression_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_function_expression_def(this, result, _) or
+      ucode_markup_function_expression_name(this, result) or
+      ucode_markup_function_expression_def(this, _, result)
+    }
+  }
+
+  /** A class representing `hash_bang_line` tokens. */
+  class HashBangLine extends @ucode_markup_token_hash_bang_line, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "HashBangLine" }
+  }
+
+  /** A class representing `identifier` tokens. */
+  class Identifier extends @ucode_markup_token_identifier, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Identifier" }
+  }
+
+  /** A class representing `if_alt_statement` nodes. */
+  class IfAltStatement extends @ucode_markup_if_alt_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "IfAltStatement" }
+
+    /** Gets the node corresponding to the field `alternative`. */
+    final ElseAltClause getAlternative() { ucode_markup_if_alt_statement_alternative(this, result) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final ParenthesizedExpression getCondition() { ucode_markup_if_alt_statement_def(this, result) }
+
+    /** Gets the node corresponding to the field `consequence`. */
+    final StatementList getConsequence() { ucode_markup_if_alt_statement_consequence(this, result) }
+
+    /** Gets the node corresponding to the field `elif_clause`. */
+    final ElifClause getElifClause(int i) {
+      ucode_markup_if_alt_statement_elif_clause(this, i, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_if_alt_statement_alternative(this, result) or
+      ucode_markup_if_alt_statement_def(this, result) or
+      ucode_markup_if_alt_statement_consequence(this, result) or
+      ucode_markup_if_alt_statement_elif_clause(this, _, result)
+    }
+  }
+
+  /** A class representing `if_statement` nodes. */
+  class IfStatement extends @ucode_markup_if_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "IfStatement" }
+
+    /** Gets the node corresponding to the field `alternative`. */
+    final ElseClause getAlternative() { ucode_markup_if_statement_alternative(this, result) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final ParenthesizedExpression getCondition() { ucode_markup_if_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `consequence`. */
+    final AstNode getConsequence() { ucode_markup_if_statement_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_if_statement_alternative(this, result) or
+      ucode_markup_if_statement_def(this, result, _) or
+      ucode_markup_if_statement_def(this, _, result)
+    }
+  }
+
+  /** A class representing `import_clause` nodes. */
+  class ImportClause extends @ucode_markup_import_clause, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ImportClause" }
+
+    /** Gets the node corresponding to the field `default`. */
+    final Identifier getDefault() { ucode_markup_import_clause_default(this, result) }
+
+    /** Gets the node corresponding to the field `named`. */
+    final NamedImports getNamed() { ucode_markup_import_clause_named(this, result) }
+
+    /** Gets the node corresponding to the field `namespace`. */
+    final NamespaceImport getNamespace() { ucode_markup_import_clause_namespace(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_import_clause_default(this, result) or
+      ucode_markup_import_clause_named(this, result) or
+      ucode_markup_import_clause_namespace(this, result)
+    }
+  }
+
+  /** A class representing `import_specifier` nodes. */
+  class ImportSpecifier extends @ucode_markup_import_specifier, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ImportSpecifier" }
+
+    /** Gets the node corresponding to the field `alias`. */
+    final Identifier getAlias() { ucode_markup_import_specifier_alias(this, result) }
+
+    /** Gets the node corresponding to the field `name`. */
+    final AstNode getName() { ucode_markup_import_specifier_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_import_specifier_alias(this, result) or
+      ucode_markup_import_specifier_def(this, result)
+    }
+  }
+
+  /** A class representing `import_statement` nodes. */
+  class ImportStatement extends @ucode_markup_import_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ImportStatement" }
+
+    /** Gets the node corresponding to the field `clause`. */
+    final ImportClause getClause() { ucode_markup_import_statement_clause(this, result) }
+
+    /** Gets the node corresponding to the field `source`. */
+    final String getSource() { ucode_markup_import_statement_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_import_statement_clause(this, result) or
+      ucode_markup_import_statement_def(this, result)
+    }
+  }
+
+  /** A class representing `lexical_declaration` nodes. */
+  class LexicalDeclaration extends @ucode_markup_lexical_declaration, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "LexicalDeclaration" }
+
+    /** Gets the node corresponding to the field `kind`. */
+    final AstNode getKind() { ucode_markup_lexical_declaration_kind(this, result) }
+
+    /** Gets the `i`th child of this node. */
+    final VariableDeclarator getChild(int i) {
+      ucode_markup_lexical_declaration_child(this, i, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_lexical_declaration_kind(this, result) or
+      ucode_markup_lexical_declaration_child(this, _, result)
+    }
+  }
+
+  /** A class representing `markup` nodes. */
+  class Markup extends @ucode_markup_markup, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Markup" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_markup_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_markup_child(this, _, result) }
+  }
+
+  /** A class representing `member_expression` nodes. */
+  class MemberExpression extends @ucode_markup_member_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "MemberExpression" }
+
+    /** Gets the node corresponding to the field `object`. */
+    final Expression getObject() { ucode_markup_member_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `optional_chain`. */
+    final OptionalChain getOptionalChain() {
+      ucode_markup_member_expression_optional_chain(this, result)
+    }
+
+    /** Gets the node corresponding to the field `property`. */
+    final PropertyIdentifier getProperty() { ucode_markup_member_expression_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_member_expression_def(this, result, _) or
+      ucode_markup_member_expression_optional_chain(this, result) or
+      ucode_markup_member_expression_def(this, _, result)
+    }
+  }
+
+  /** A class representing `named_imports` nodes. */
+  class NamedImports extends @ucode_markup_named_imports, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "NamedImports" }
+
+    /** Gets the `i`th child of this node. */
+    final ImportSpecifier getChild(int i) { ucode_markup_named_imports_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_named_imports_child(this, _, result) }
+  }
+
+  /** A class representing `namespace_import` nodes. */
+  class NamespaceImport extends @ucode_markup_namespace_import, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "NamespaceImport" }
+
+    /** Gets the child of this node. */
+    final Identifier getChild() { ucode_markup_namespace_import_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_namespace_import_def(this, result) }
+  }
+
+  /** A class representing `null` tokens. */
+  class Null extends @ucode_markup_token_null, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Null" }
+  }
+
+  /** A class representing `number` tokens. */
+  class Number extends @ucode_markup_token_number, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Number" }
+  }
+
+  /** A class representing `object` nodes. */
+  class Object extends @ucode_markup_object, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Object" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_object_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_object_child(this, _, result) }
+  }
+
+  /** A class representing `optional_chain` tokens. */
+  class OptionalChain extends @ucode_markup_token_optional_chain, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "OptionalChain" }
+  }
+
+  /** A class representing `pair` nodes. */
+  class Pair extends @ucode_markup_pair, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Pair" }
+
+    /** Gets the node corresponding to the field `key`. */
+    final AstNode getKey() { ucode_markup_pair_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final Expression getValue() { ucode_markup_pair_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_pair_def(this, result, _) or ucode_markup_pair_def(this, _, result)
+    }
+  }
+
+  /** A class representing `parenthesized_expression` nodes. */
+  class ParenthesizedExpression extends @ucode_markup_parenthesized_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ParenthesizedExpression" }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_parenthesized_expression_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_parenthesized_expression_def(this, result)
+    }
+  }
+
+  class PrimaryExpression extends @ucode_markup_primary_expression, AstNode { }
+
+  /** A class representing `property_identifier` tokens. */
+  class PropertyIdentifier extends @ucode_markup_token_property_identifier, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "PropertyIdentifier" }
+  }
+
+  /** A class representing `raw_text` tokens. */
+  class RawText extends @ucode_markup_token_raw_text, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "RawText" }
+  }
+
+  /** A class representing `regex` nodes. */
+  class Regex extends @ucode_markup_regex, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "Regex" }
+
+    /** Gets the node corresponding to the field `flags`. */
+    final RegexFlags getFlags() { ucode_markup_regex_flags(this, result) }
+
+    /** Gets the node corresponding to the field `pattern`. */
+    final RegexPattern getPattern() { ucode_markup_regex_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_regex_flags(this, result) or ucode_markup_regex_def(this, result)
+    }
+  }
+
+  /** A class representing `regex_flags` tokens. */
+  class RegexFlags extends @ucode_markup_token_regex_flags, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "RegexFlags" }
+  }
+
+  /** A class representing `regex_pattern` tokens. */
+  class RegexPattern extends @ucode_markup_token_regex_pattern, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "RegexPattern" }
+  }
+
+  /** A class representing `rest_element` nodes. */
+  class RestElement extends @ucode_markup_rest_element, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "RestElement" }
+
+    /** Gets the child of this node. */
+    final Identifier getChild() { ucode_markup_rest_element_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_rest_element_def(this, result) }
+  }
+
+  /** A class representing `return_statement` nodes. */
+  class ReturnStatement extends @ucode_markup_return_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ReturnStatement" }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_return_statement_child(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_return_statement_child(this, result) }
+  }
+
+  /** A class representing `sequence_expression` nodes. */
+  class SequenceExpression extends @ucode_markup_sequence_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SequenceExpression" }
+
+    /** Gets the `i`th child of this node. */
+    final Expression getChild(int i) { ucode_markup_sequence_expression_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_sequence_expression_child(this, _, result)
+    }
+  }
+
+  /** A class representing `shorthand_property_identifier` tokens. */
+  class ShorthandPropertyIdentifier extends @ucode_markup_token_shorthand_property_identifier, Token
+  {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "ShorthandPropertyIdentifier" }
+  }
+
+  /** A class representing `spread_element` nodes. */
+  class SpreadElement extends @ucode_markup_spread_element, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SpreadElement" }
+
+    /** Gets the child of this node. */
+    final Expression getChild() { ucode_markup_spread_element_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_spread_element_def(this, result) }
+  }
+
+  class Statement extends @ucode_markup_statement, AstNode { }
+
+  /** A class representing `statement_block` nodes. */
+  class StatementBlock extends @ucode_markup_statement_block, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementBlock" }
+
+    /** Gets the `i`th child of this node. */
+    final Statement getChild(int i) { ucode_markup_statement_block_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_statement_block_child(this, _, result)
+    }
+  }
+
+  /** A class representing `statement_list` nodes. */
+  class StatementList extends @ucode_markup_statement_list, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementList" }
+
+    /** Gets the `i`th child of this node. */
+    final Statement getChild(int i) { ucode_markup_statement_list_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_statement_list_child(this, _, result) }
+  }
+
+  /** A class representing `statement_tag_close` tokens. */
+  class StatementTagClose extends @ucode_markup_token_statement_tag_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementTagClose" }
+  }
+
+  /** A class representing `statement_tag_lstrip_open` tokens. */
+  class StatementTagLstripOpen extends @ucode_markup_token_statement_tag_lstrip_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementTagLstripOpen" }
+  }
+
+  /** A class representing `statement_tag_open` tokens. */
+  class StatementTagOpen extends @ucode_markup_token_statement_tag_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementTagOpen" }
+  }
+
+  /** A class representing `statement_tag_trim_close` tokens. */
+  class StatementTagTrimClose extends @ucode_markup_token_statement_tag_trim_close, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementTagTrimClose" }
+  }
+
+  /** A class representing `statement_tag_trim_open` tokens. */
+  class StatementTagTrimOpen extends @ucode_markup_token_statement_tag_trim_open, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StatementTagTrimOpen" }
+  }
+
+  /** A class representing `string` nodes. */
+  class String extends @ucode_markup_string__, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "String" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_string_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_string_child(this, _, result) }
+  }
+
+  /** A class representing `string_fragment` tokens. */
+  class StringFragment extends @ucode_markup_token_string_fragment, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "StringFragment" }
+  }
+
+  /** A class representing `subscript_expression` nodes. */
+  class SubscriptExpression extends @ucode_markup_subscript_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SubscriptExpression" }
+
+    /** Gets the node corresponding to the field `index`. */
+    final AstNode getIndex() { ucode_markup_subscript_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `object`. */
+    final Expression getObject() { ucode_markup_subscript_expression_def(this, _, result) }
+
+    /** Gets the node corresponding to the field `optional_chain`. */
+    final OptionalChain getOptionalChain() {
+      ucode_markup_subscript_expression_optional_chain(this, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_subscript_expression_def(this, result, _) or
+      ucode_markup_subscript_expression_def(this, _, result) or
+      ucode_markup_subscript_expression_optional_chain(this, result)
+    }
+  }
+
+  /** A class representing `switch_body` nodes. */
+  class SwitchBody extends @ucode_markup_switch_body, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SwitchBody" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_switch_body_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_switch_body_child(this, _, result) }
+  }
+
+  /** A class representing `switch_case` nodes. */
+  class SwitchCase extends @ucode_markup_switch_case, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SwitchCase" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final Statement getBody(int i) { ucode_markup_switch_case_body(this, i, result) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final AstNode getValue() { ucode_markup_switch_case_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_switch_case_body(this, _, result) or ucode_markup_switch_case_def(this, result)
+    }
+  }
+
+  /** A class representing `switch_default` nodes. */
+  class SwitchDefault extends @ucode_markup_switch_default, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SwitchDefault" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final Statement getBody(int i) { ucode_markup_switch_default_body(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_switch_default_body(this, _, result) }
+  }
+
+  /** A class representing `switch_statement` nodes. */
+  class SwitchStatement extends @ucode_markup_switch_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "SwitchStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final SwitchBody getBody() { ucode_markup_switch_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final ParenthesizedExpression getValue() { ucode_markup_switch_statement_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_switch_statement_def(this, result, _) or
+      ucode_markup_switch_statement_def(this, _, result)
+    }
+  }
+
+  /** A class representing `template_string` nodes. */
+  class TemplateString extends @ucode_markup_template_string, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "TemplateString" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_template_string_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_template_string_child(this, _, result)
+    }
+  }
+
+  /** A class representing `template_substitution` nodes. */
+  class TemplateSubstitution extends @ucode_markup_template_substitution, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "TemplateSubstitution" }
+
+    /** Gets the child of this node. */
+    final AstNode getChild() { ucode_markup_template_substitution_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_template_substitution_def(this, result)
+    }
+  }
+
+  /** A class representing `ternary_expression` nodes. */
+  class TernaryExpression extends @ucode_markup_ternary_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "TernaryExpression" }
+
+    /** Gets the node corresponding to the field `alternative`. */
+    final Expression getAlternative() { ucode_markup_ternary_expression_def(this, result, _, _) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final Expression getCondition() { ucode_markup_ternary_expression_def(this, _, result, _) }
+
+    /** Gets the node corresponding to the field `consequence`. */
+    final Expression getConsequence() { ucode_markup_ternary_expression_def(this, _, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_ternary_expression_def(this, result, _, _) or
+      ucode_markup_ternary_expression_def(this, _, result, _) or
+      ucode_markup_ternary_expression_def(this, _, _, result)
+    }
+  }
+
+  /** A class representing `text_statement` nodes. */
+  class TextStatement extends @ucode_markup_text_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "TextStatement" }
+
+    /** Gets the `i`th child of this node. */
+    final AstNode getChild(int i) { ucode_markup_text_statement_child(this, i, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_text_statement_child(this, _, result) }
+  }
+
+  /** A class representing `this` tokens. */
+  class This extends @ucode_markup_token_this, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "This" }
+  }
+
+  /** A class representing `true` tokens. */
+  class True extends @ucode_markup_token_true, Token {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "True" }
+  }
+
+  /** A class representing `try_statement` nodes. */
+  class TryStatement extends @ucode_markup_try_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "TryStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementBlock getBody() { ucode_markup_try_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `handler`. */
+    final CatchClause getHandler() { ucode_markup_try_statement_def(this, _, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_try_statement_def(this, result, _) or
+      ucode_markup_try_statement_def(this, _, result)
+    }
+  }
+
+  /** A class representing `unary_expression` nodes. */
+  class UnaryExpression extends @ucode_markup_unary_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "UnaryExpression" }
+
+    /** Gets the node corresponding to the field `argument`. */
+    final Expression getArgument() { ucode_markup_unary_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `operator`. */
+    final string getOperator() {
+      exists(int value | ucode_markup_unary_expression_def(this, _, value) |
+        result = "!" and value = 0
+        or
+        result = "+" and value = 1
+        or
+        result = "-" and value = 2
+        or
+        result = "~" and value = 3
+      )
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_markup_unary_expression_def(this, result, _) }
+  }
+
+  /** A class representing `update_expression` nodes. */
+  class UpdateExpression extends @ucode_markup_update_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "UpdateExpression" }
+
+    /** Gets the node corresponding to the field `argument`. */
+    final AstNode getArgument() { ucode_markup_update_expression_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `operator`. */
+    final string getOperator() {
+      exists(int value | ucode_markup_update_expression_def(this, _, value) |
+        result = "++" and value = 0
+        or
+        result = "--" and value = 1
+      )
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_update_expression_def(this, result, _)
+    }
+  }
+
+  /** A class representing `variable_declarator` nodes. */
+  class VariableDeclarator extends @ucode_markup_variable_declarator, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "VariableDeclarator" }
+
+    /** Gets the node corresponding to the field `name`. */
+    final Identifier getName() { ucode_markup_variable_declarator_def(this, result) }
+
+    /** Gets the node corresponding to the field `value`. */
+    final Expression getValue() { ucode_markup_variable_declarator_value(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_variable_declarator_def(this, result) or
+      ucode_markup_variable_declarator_value(this, result)
+    }
+  }
+
+  /** A class representing `while_alt_statement` nodes. */
+  class WhileAltStatement extends @ucode_markup_while_alt_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "WhileAltStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final StatementList getBody() { ucode_markup_while_alt_statement_body(this, result) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final ParenthesizedExpression getCondition() {
+      ucode_markup_while_alt_statement_def(this, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_while_alt_statement_body(this, result) or
+      ucode_markup_while_alt_statement_def(this, result)
+    }
+  }
+
+  /** A class representing `while_statement` nodes. */
+  class WhileStatement extends @ucode_markup_while_statement, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "WhileStatement" }
+
+    /** Gets the node corresponding to the field `body`. */
+    final AstNode getBody() { ucode_markup_while_statement_def(this, result, _) }
+
+    /** Gets the node corresponding to the field `condition`. */
+    final ParenthesizedExpression getCondition() {
+      ucode_markup_while_statement_def(this, _, result)
+    }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_while_statement_def(this, result, _) or
+      ucode_markup_while_statement_def(this, _, result)
+    }
+  }
+}

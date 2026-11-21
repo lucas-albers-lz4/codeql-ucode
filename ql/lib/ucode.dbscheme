@@ -918,3 +918,869 @@ ucode_ast_node_parent(
   int parent_index: int ref
 );
 
+/*- UcodeMarkup dbscheme -*/
+@ucode_markup_arguments_child_type = @ucode_markup_expression | @ucode_markup_spread_element
+
+#keyset[ucode_markup_arguments, index]
+ucode_markup_arguments_child(
+  int ucode_markup_arguments: @ucode_markup_arguments ref,
+  int index: int ref,
+  unique int child: @ucode_markup_arguments_child_type ref
+);
+
+ucode_markup_arguments_def(
+  unique int id: @ucode_markup_arguments
+);
+
+@ucode_markup_array_child_type = @ucode_markup_expression | @ucode_markup_spread_element
+
+#keyset[ucode_markup_array, index]
+ucode_markup_array_child(
+  int ucode_markup_array: @ucode_markup_array ref,
+  int index: int ref,
+  unique int child: @ucode_markup_array_child_type ref
+);
+
+ucode_markup_array_def(
+  unique int id: @ucode_markup_array
+);
+
+@ucode_markup_arrow_function_body_type = @ucode_markup_expression | @ucode_markup_statement_block
+
+ucode_markup_arrow_function_parameter(
+  unique int ucode_markup_arrow_function: @ucode_markup_arrow_function ref,
+  unique int parameter: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_arrow_function_parameters(
+  unique int ucode_markup_arrow_function: @ucode_markup_arrow_function ref,
+  unique int parameters: @ucode_markup_formal_parameters ref
+);
+
+ucode_markup_arrow_function_def(
+  unique int id: @ucode_markup_arrow_function,
+  int body: @ucode_markup_arrow_function_body_type ref
+);
+
+@ucode_markup_assignment_expression_left_type = @ucode_markup_member_expression | @ucode_markup_subscript_expression | @ucode_markup_token_identifier
+
+ucode_markup_assignment_expression_def(
+  unique int id: @ucode_markup_assignment_expression,
+  int left: @ucode_markup_assignment_expression_left_type ref,
+  int right: @ucode_markup_expression ref
+);
+
+@ucode_markup_augmented_assignment_expression_left_type = @ucode_markup_member_expression | @ucode_markup_subscript_expression | @ucode_markup_token_identifier
+
+case @ucode_markup_augmented_assignment_expression.operator of
+  0 = @ucode_markup_augmented_assignment_expression_percentequal
+| 1 = @ucode_markup_augmented_assignment_expression_ampersandampersandequal
+| 2 = @ucode_markup_augmented_assignment_expression_ampersandequal
+| 3 = @ucode_markup_augmented_assignment_expression_starstarequal
+| 4 = @ucode_markup_augmented_assignment_expression_starequal
+| 5 = @ucode_markup_augmented_assignment_expression_plusequal
+| 6 = @ucode_markup_augmented_assignment_expression_minusequal
+| 7 = @ucode_markup_augmented_assignment_expression_slashequal
+| 8 = @ucode_markup_augmented_assignment_expression_langlelangleequal
+| 9 = @ucode_markup_augmented_assignment_expression_ranglerangleequal
+| 10 = @ucode_markup_augmented_assignment_expression_questionquestionequal
+| 11 = @ucode_markup_augmented_assignment_expression_caretequal
+| 12 = @ucode_markup_augmented_assignment_expression_pipeequal
+| 13 = @ucode_markup_augmented_assignment_expression_pipepipeequal
+;
+
+
+ucode_markup_augmented_assignment_expression_def(
+  unique int id: @ucode_markup_augmented_assignment_expression,
+  int left: @ucode_markup_augmented_assignment_expression_left_type ref,
+  int operator: int ref,
+  int right: @ucode_markup_expression ref
+);
+
+case @ucode_markup_binary_expression.operator of
+  0 = @ucode_markup_binary_expression_bangequal
+| 1 = @ucode_markup_binary_expression_bangequalequal
+| 2 = @ucode_markup_binary_expression_percent
+| 3 = @ucode_markup_binary_expression_ampersand
+| 4 = @ucode_markup_binary_expression_ampersandampersand
+| 5 = @ucode_markup_binary_expression_star
+| 6 = @ucode_markup_binary_expression_starstar
+| 7 = @ucode_markup_binary_expression_plus
+| 8 = @ucode_markup_binary_expression_minus
+| 9 = @ucode_markup_binary_expression_slash
+| 10 = @ucode_markup_binary_expression_langle
+| 11 = @ucode_markup_binary_expression_langlelangle
+| 12 = @ucode_markup_binary_expression_langleequal
+| 13 = @ucode_markup_binary_expression_equalequal
+| 14 = @ucode_markup_binary_expression_equalequalequal
+| 15 = @ucode_markup_binary_expression_rangle
+| 16 = @ucode_markup_binary_expression_rangleequal
+| 17 = @ucode_markup_binary_expression_ranglerangle
+| 18 = @ucode_markup_binary_expression_questionquestion
+| 19 = @ucode_markup_binary_expression_caret
+| 20 = @ucode_markup_binary_expression_in
+| 21 = @ucode_markup_binary_expression_pipe
+| 22 = @ucode_markup_binary_expression_pipepipe
+;
+
+
+ucode_markup_binary_expression_def(
+  unique int id: @ucode_markup_binary_expression,
+  int left: @ucode_markup_expression ref,
+  int operator: int ref,
+  int right: @ucode_markup_expression ref
+);
+
+ucode_markup_call_expression_optional_chain(
+  unique int ucode_markup_call_expression: @ucode_markup_call_expression ref,
+  unique int optional_chain: @ucode_markup_token_optional_chain ref
+);
+
+ucode_markup_call_expression_def(
+  unique int id: @ucode_markup_call_expression,
+  int arguments: @ucode_markup_arguments ref,
+  int function: @ucode_markup_expression ref
+);
+
+ucode_markup_catch_clause_parameter(
+  unique int ucode_markup_catch_clause: @ucode_markup_catch_clause ref,
+  unique int parameter: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_catch_clause_def(
+  unique int id: @ucode_markup_catch_clause,
+  int body: @ucode_markup_statement_block ref
+);
+
+@ucode_markup_comment_tag_close_type = @ucode_markup_token_comment_tag_close | @ucode_markup_token_comment_tag_trim_close
+
+ucode_markup_comment_tag_content(
+  unique int ucode_markup_comment_tag: @ucode_markup_comment_tag ref,
+  unique int content: @ucode_markup_token_comment_content ref
+);
+
+@ucode_markup_comment_tag_open_type = @ucode_markup_token_comment_tag_open | @ucode_markup_token_comment_tag_trim_open
+
+ucode_markup_comment_tag_def(
+  unique int id: @ucode_markup_comment_tag,
+  int close: @ucode_markup_comment_tag_close_type ref,
+  int open: @ucode_markup_comment_tag_open_type ref
+);
+
+ucode_markup_computed_property_name_def(
+  unique int id: @ucode_markup_computed_property_name,
+  int child: @ucode_markup_expression ref
+);
+
+@ucode_markup_declaration = @ucode_markup_function_declaration | @ucode_markup_lexical_declaration
+
+@ucode_markup_delete_expression_argument_type = @ucode_markup_member_expression | @ucode_markup_parenthesized_expression | @ucode_markup_subscript_expression
+
+case @ucode_markup_delete_expression.operator of
+  0 = @ucode_markup_delete_expression_delete
+;
+
+
+ucode_markup_delete_expression_def(
+  unique int id: @ucode_markup_delete_expression,
+  int argument: @ucode_markup_delete_expression_argument_type ref,
+  int operator: int ref
+);
+
+ucode_markup_elif_clause_consequence(
+  unique int ucode_markup_elif_clause: @ucode_markup_elif_clause ref,
+  unique int consequence: @ucode_markup_statement_list ref
+);
+
+ucode_markup_elif_clause_def(
+  unique int id: @ucode_markup_elif_clause,
+  int condition: @ucode_markup_parenthesized_expression ref
+);
+
+ucode_markup_else_alt_clause_child(
+  unique int ucode_markup_else_alt_clause: @ucode_markup_else_alt_clause ref,
+  unique int child: @ucode_markup_statement_list ref
+);
+
+ucode_markup_else_alt_clause_def(
+  unique int id: @ucode_markup_else_alt_clause
+);
+
+@ucode_markup_else_clause_child_type = @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_function_declaration | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+ucode_markup_else_clause_def(
+  unique int id: @ucode_markup_else_clause,
+  int child: @ucode_markup_else_clause_child_type ref
+);
+
+#keyset[ucode_markup_export_clause, index]
+ucode_markup_export_clause_child(
+  int ucode_markup_export_clause: @ucode_markup_export_clause ref,
+  int index: int ref,
+  unique int child: @ucode_markup_export_specifier ref
+);
+
+ucode_markup_export_clause_def(
+  unique int id: @ucode_markup_export_clause
+);
+
+@ucode_markup_export_specifier_alias_type = @ucode_markup_string__ | @ucode_markup_token_default | @ucode_markup_token_identifier
+
+ucode_markup_export_specifier_alias(
+  unique int ucode_markup_export_specifier: @ucode_markup_export_specifier ref,
+  unique int alias: @ucode_markup_export_specifier_alias_type ref
+);
+
+@ucode_markup_export_specifier_name_type = @ucode_markup_string__ | @ucode_markup_token_default | @ucode_markup_token_identifier
+
+ucode_markup_export_specifier_def(
+  unique int id: @ucode_markup_export_specifier,
+  int name: @ucode_markup_export_specifier_name_type ref
+);
+
+ucode_markup_export_statement_clause(
+  unique int ucode_markup_export_statement: @ucode_markup_export_statement ref,
+  unique int clause: @ucode_markup_export_clause ref
+);
+
+@ucode_markup_export_statement_declaration_type = @ucode_markup_function_declaration | @ucode_markup_lexical_declaration
+
+ucode_markup_export_statement_declaration(
+  unique int ucode_markup_export_statement: @ucode_markup_export_statement ref,
+  unique int declaration: @ucode_markup_export_statement_declaration_type ref
+);
+
+ucode_markup_export_statement_value(
+  unique int ucode_markup_export_statement: @ucode_markup_export_statement ref,
+  unique int value: @ucode_markup_expression ref
+);
+
+ucode_markup_export_statement_def(
+  unique int id: @ucode_markup_export_statement
+);
+
+@ucode_markup_expression = @ucode_markup_assignment_expression | @ucode_markup_augmented_assignment_expression | @ucode_markup_binary_expression | @ucode_markup_delete_expression | @ucode_markup_primary_expression | @ucode_markup_ternary_expression | @ucode_markup_unary_expression | @ucode_markup_update_expression
+
+@ucode_markup_expression_statement_child_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_expression_statement_def(
+  unique int id: @ucode_markup_expression_statement,
+  int child: @ucode_markup_expression_statement_child_type ref
+);
+
+@ucode_markup_expression_tag_close_type = @ucode_markup_token_expression_tag_close | @ucode_markup_token_expression_tag_trim_close
+
+@ucode_markup_expression_tag_open_type = @ucode_markup_token_expression_tag_open | @ucode_markup_token_expression_tag_trim_open
+
+@ucode_markup_expression_tag_child_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_expression_tag_def(
+  unique int id: @ucode_markup_expression_tag,
+  int close: @ucode_markup_expression_tag_close_type ref,
+  int open: @ucode_markup_expression_tag_open_type ref,
+  int child: @ucode_markup_expression_tag_child_type ref
+);
+
+ucode_markup_for_alt_statement_body(
+  unique int ucode_markup_for_alt_statement: @ucode_markup_for_alt_statement ref,
+  unique int body: @ucode_markup_statement_list ref
+);
+
+@ucode_markup_for_alt_statement_condition_type = @ucode_markup_expression | @ucode_markup_sequence_expression | @ucode_markup_token_empty_statement
+
+@ucode_markup_for_alt_statement_increment_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_for_alt_statement_increment(
+  unique int ucode_markup_for_alt_statement: @ucode_markup_for_alt_statement ref,
+  unique int increment: @ucode_markup_for_alt_statement_increment_type ref
+);
+
+@ucode_markup_for_alt_statement_initializer_type = @ucode_markup_expression | @ucode_markup_lexical_declaration | @ucode_markup_sequence_expression | @ucode_markup_token_empty_statement
+
+ucode_markup_for_alt_statement_def(
+  unique int id: @ucode_markup_for_alt_statement,
+  int condition: @ucode_markup_for_alt_statement_condition_type ref,
+  int initializer: @ucode_markup_for_alt_statement_initializer_type ref
+);
+
+ucode_markup_for_in_alt_statement_body(
+  unique int ucode_markup_for_in_alt_statement: @ucode_markup_for_in_alt_statement ref,
+  unique int body: @ucode_markup_statement_list ref
+);
+
+ucode_markup_for_in_alt_statement_key(
+  unique int ucode_markup_for_in_alt_statement: @ucode_markup_for_in_alt_statement ref,
+  unique int key__: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_alt_statement_kind(
+  unique int ucode_markup_for_in_alt_statement: @ucode_markup_for_in_alt_statement ref,
+  unique int kind: @ucode_markup_reserved_word ref
+);
+
+@ucode_markup_for_in_alt_statement_object_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_for_in_alt_statement_value(
+  unique int ucode_markup_for_in_alt_statement: @ucode_markup_for_in_alt_statement ref,
+  unique int value: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_alt_statement_variable(
+  unique int ucode_markup_for_in_alt_statement: @ucode_markup_for_in_alt_statement ref,
+  unique int variable: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_alt_statement_def(
+  unique int id: @ucode_markup_for_in_alt_statement,
+  int object: @ucode_markup_for_in_alt_statement_object_type ref
+);
+
+@ucode_markup_for_in_statement_body_type = @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_function_declaration | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+ucode_markup_for_in_statement_key(
+  unique int ucode_markup_for_in_statement: @ucode_markup_for_in_statement ref,
+  unique int key__: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_statement_kind(
+  unique int ucode_markup_for_in_statement: @ucode_markup_for_in_statement ref,
+  unique int kind: @ucode_markup_reserved_word ref
+);
+
+@ucode_markup_for_in_statement_object_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_for_in_statement_value(
+  unique int ucode_markup_for_in_statement: @ucode_markup_for_in_statement ref,
+  unique int value: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_statement_variable(
+  unique int ucode_markup_for_in_statement: @ucode_markup_for_in_statement ref,
+  unique int variable: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_for_in_statement_def(
+  unique int id: @ucode_markup_for_in_statement,
+  int body: @ucode_markup_for_in_statement_body_type ref,
+  int object: @ucode_markup_for_in_statement_object_type ref
+);
+
+@ucode_markup_for_statement_body_type = @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_function_declaration | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+@ucode_markup_for_statement_condition_type = @ucode_markup_expression | @ucode_markup_sequence_expression | @ucode_markup_token_empty_statement
+
+@ucode_markup_for_statement_increment_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_for_statement_increment(
+  unique int ucode_markup_for_statement: @ucode_markup_for_statement ref,
+  unique int increment: @ucode_markup_for_statement_increment_type ref
+);
+
+@ucode_markup_for_statement_initializer_type = @ucode_markup_expression | @ucode_markup_lexical_declaration | @ucode_markup_sequence_expression | @ucode_markup_token_empty_statement
+
+ucode_markup_for_statement_def(
+  unique int id: @ucode_markup_for_statement,
+  int body: @ucode_markup_for_statement_body_type ref,
+  int condition: @ucode_markup_for_statement_condition_type ref,
+  int initializer: @ucode_markup_for_statement_initializer_type ref
+);
+
+@ucode_markup_formal_parameters_child_type = @ucode_markup_rest_element | @ucode_markup_token_identifier
+
+#keyset[ucode_markup_formal_parameters, index]
+ucode_markup_formal_parameters_child(
+  int ucode_markup_formal_parameters: @ucode_markup_formal_parameters ref,
+  int index: int ref,
+  unique int child: @ucode_markup_formal_parameters_child_type ref
+);
+
+ucode_markup_formal_parameters_def(
+  unique int id: @ucode_markup_formal_parameters
+);
+
+@ucode_markup_function_declaration_body_type = @ucode_markup_statement_block | @ucode_markup_statement_list
+
+ucode_markup_function_declaration_body(
+  unique int ucode_markup_function_declaration: @ucode_markup_function_declaration ref,
+  unique int body: @ucode_markup_function_declaration_body_type ref
+);
+
+ucode_markup_function_declaration_def(
+  unique int id: @ucode_markup_function_declaration,
+  int name: @ucode_markup_token_identifier ref,
+  int parameters: @ucode_markup_formal_parameters ref
+);
+
+ucode_markup_function_expression_name(
+  unique int ucode_markup_function_expression: @ucode_markup_function_expression ref,
+  unique int name: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_function_expression_def(
+  unique int id: @ucode_markup_function_expression,
+  int body: @ucode_markup_statement_block ref,
+  int parameters: @ucode_markup_formal_parameters ref
+);
+
+ucode_markup_if_alt_statement_alternative(
+  unique int ucode_markup_if_alt_statement: @ucode_markup_if_alt_statement ref,
+  unique int alternative: @ucode_markup_else_alt_clause ref
+);
+
+ucode_markup_if_alt_statement_consequence(
+  unique int ucode_markup_if_alt_statement: @ucode_markup_if_alt_statement ref,
+  unique int consequence: @ucode_markup_statement_list ref
+);
+
+#keyset[ucode_markup_if_alt_statement, index]
+ucode_markup_if_alt_statement_elif_clause(
+  int ucode_markup_if_alt_statement: @ucode_markup_if_alt_statement ref,
+  int index: int ref,
+  unique int elif_clause: @ucode_markup_elif_clause ref
+);
+
+ucode_markup_if_alt_statement_def(
+  unique int id: @ucode_markup_if_alt_statement,
+  int condition: @ucode_markup_parenthesized_expression ref
+);
+
+ucode_markup_if_statement_alternative(
+  unique int ucode_markup_if_statement: @ucode_markup_if_statement ref,
+  unique int alternative: @ucode_markup_else_clause ref
+);
+
+@ucode_markup_if_statement_consequence_type = @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_function_declaration | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+ucode_markup_if_statement_def(
+  unique int id: @ucode_markup_if_statement,
+  int condition: @ucode_markup_parenthesized_expression ref,
+  int consequence: @ucode_markup_if_statement_consequence_type ref
+);
+
+ucode_markup_import_clause_default(
+  unique int ucode_markup_import_clause: @ucode_markup_import_clause ref,
+  unique int default: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_import_clause_named(
+  unique int ucode_markup_import_clause: @ucode_markup_import_clause ref,
+  unique int named: @ucode_markup_named_imports ref
+);
+
+ucode_markup_import_clause_namespace(
+  unique int ucode_markup_import_clause: @ucode_markup_import_clause ref,
+  unique int namespace: @ucode_markup_namespace_import ref
+);
+
+ucode_markup_import_clause_def(
+  unique int id: @ucode_markup_import_clause
+);
+
+ucode_markup_import_specifier_alias(
+  unique int ucode_markup_import_specifier: @ucode_markup_import_specifier ref,
+  unique int alias: @ucode_markup_token_identifier ref
+);
+
+@ucode_markup_import_specifier_name_type = @ucode_markup_string__ | @ucode_markup_token_default | @ucode_markup_token_identifier
+
+ucode_markup_import_specifier_def(
+  unique int id: @ucode_markup_import_specifier,
+  int name: @ucode_markup_import_specifier_name_type ref
+);
+
+ucode_markup_import_statement_clause(
+  unique int ucode_markup_import_statement: @ucode_markup_import_statement ref,
+  unique int clause: @ucode_markup_import_clause ref
+);
+
+ucode_markup_import_statement_def(
+  unique int id: @ucode_markup_import_statement,
+  int source: @ucode_markup_string__ ref
+);
+
+@ucode_markup_lexical_declaration_kind_type = @ucode_markup_reserved_word
+
+ucode_markup_lexical_declaration_kind(
+  unique int ucode_markup_lexical_declaration: @ucode_markup_lexical_declaration ref,
+  unique int kind: @ucode_markup_lexical_declaration_kind_type ref
+);
+
+#keyset[ucode_markup_lexical_declaration, index]
+ucode_markup_lexical_declaration_child(
+  int ucode_markup_lexical_declaration: @ucode_markup_lexical_declaration ref,
+  int index: int ref,
+  unique int child: @ucode_markup_variable_declarator ref
+);
+
+ucode_markup_lexical_declaration_def(
+  unique int id: @ucode_markup_lexical_declaration
+);
+
+@ucode_markup_markup_child_type = @ucode_markup_comment_tag | @ucode_markup_expression_tag | @ucode_markup_statement | @ucode_markup_token_hash_bang_line | @ucode_markup_token_raw_text | @ucode_markup_token_statement_tag_lstrip_open | @ucode_markup_token_statement_tag_open | @ucode_markup_token_statement_tag_trim_open
+
+#keyset[ucode_markup_markup, index]
+ucode_markup_markup_child(
+  int ucode_markup_markup: @ucode_markup_markup ref,
+  int index: int ref,
+  unique int child: @ucode_markup_markup_child_type ref
+);
+
+ucode_markup_markup_def(
+  unique int id: @ucode_markup_markup
+);
+
+ucode_markup_member_expression_optional_chain(
+  unique int ucode_markup_member_expression: @ucode_markup_member_expression ref,
+  unique int optional_chain: @ucode_markup_token_optional_chain ref
+);
+
+ucode_markup_member_expression_def(
+  unique int id: @ucode_markup_member_expression,
+  int object: @ucode_markup_expression ref,
+  int property: @ucode_markup_token_property_identifier ref
+);
+
+#keyset[ucode_markup_named_imports, index]
+ucode_markup_named_imports_child(
+  int ucode_markup_named_imports: @ucode_markup_named_imports ref,
+  int index: int ref,
+  unique int child: @ucode_markup_import_specifier ref
+);
+
+ucode_markup_named_imports_def(
+  unique int id: @ucode_markup_named_imports
+);
+
+ucode_markup_namespace_import_def(
+  unique int id: @ucode_markup_namespace_import,
+  int child: @ucode_markup_token_identifier ref
+);
+
+@ucode_markup_object_child_type = @ucode_markup_pair | @ucode_markup_spread_element | @ucode_markup_token_shorthand_property_identifier
+
+#keyset[ucode_markup_object, index]
+ucode_markup_object_child(
+  int ucode_markup_object: @ucode_markup_object ref,
+  int index: int ref,
+  unique int child: @ucode_markup_object_child_type ref
+);
+
+ucode_markup_object_def(
+  unique int id: @ucode_markup_object
+);
+
+@ucode_markup_pair_key_type = @ucode_markup_computed_property_name | @ucode_markup_string__ | @ucode_markup_token_property_identifier
+
+ucode_markup_pair_def(
+  unique int id: @ucode_markup_pair,
+  int key__: @ucode_markup_pair_key_type ref,
+  int value: @ucode_markup_expression ref
+);
+
+@ucode_markup_parenthesized_expression_child_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_parenthesized_expression_def(
+  unique int id: @ucode_markup_parenthesized_expression,
+  int child: @ucode_markup_parenthesized_expression_child_type ref
+);
+
+@ucode_markup_primary_expression = @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_call_expression | @ucode_markup_function_expression | @ucode_markup_member_expression | @ucode_markup_object | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_template_string | @ucode_markup_token_false | @ucode_markup_token_identifier | @ucode_markup_token_null | @ucode_markup_token_number | @ucode_markup_token_this | @ucode_markup_token_true
+
+ucode_markup_regex_flags(
+  unique int ucode_markup_regex: @ucode_markup_regex ref,
+  unique int flags: @ucode_markup_token_regex_flags ref
+);
+
+ucode_markup_regex_def(
+  unique int id: @ucode_markup_regex,
+  int pattern: @ucode_markup_token_regex_pattern ref
+);
+
+ucode_markup_rest_element_def(
+  unique int id: @ucode_markup_rest_element,
+  int child: @ucode_markup_token_identifier ref
+);
+
+@ucode_markup_return_statement_child_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_return_statement_child(
+  unique int ucode_markup_return_statement: @ucode_markup_return_statement ref,
+  unique int child: @ucode_markup_return_statement_child_type ref
+);
+
+ucode_markup_return_statement_def(
+  unique int id: @ucode_markup_return_statement
+);
+
+#keyset[ucode_markup_sequence_expression, index]
+ucode_markup_sequence_expression_child(
+  int ucode_markup_sequence_expression: @ucode_markup_sequence_expression ref,
+  int index: int ref,
+  unique int child: @ucode_markup_expression ref
+);
+
+ucode_markup_sequence_expression_def(
+  unique int id: @ucode_markup_sequence_expression
+);
+
+ucode_markup_spread_element_def(
+  unique int id: @ucode_markup_spread_element,
+  int child: @ucode_markup_expression ref
+);
+
+@ucode_markup_statement = @ucode_markup_declaration | @ucode_markup_export_statement | @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_import_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_text_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+#keyset[ucode_markup_statement_block, index]
+ucode_markup_statement_block_child(
+  int ucode_markup_statement_block: @ucode_markup_statement_block ref,
+  int index: int ref,
+  unique int child: @ucode_markup_statement ref
+);
+
+ucode_markup_statement_block_def(
+  unique int id: @ucode_markup_statement_block
+);
+
+#keyset[ucode_markup_statement_list, index]
+ucode_markup_statement_list_child(
+  int ucode_markup_statement_list: @ucode_markup_statement_list ref,
+  int index: int ref,
+  unique int child: @ucode_markup_statement ref
+);
+
+ucode_markup_statement_list_def(
+  unique int id: @ucode_markup_statement_list
+);
+
+@ucode_markup_string_child_type = @ucode_markup_token_escape_sequence | @ucode_markup_token_string_fragment
+
+#keyset[ucode_markup_string__, index]
+ucode_markup_string_child(
+  int ucode_markup_string__: @ucode_markup_string__ ref,
+  int index: int ref,
+  unique int child: @ucode_markup_string_child_type ref
+);
+
+ucode_markup_string_def(
+  unique int id: @ucode_markup_string__
+);
+
+@ucode_markup_subscript_expression_index_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_subscript_expression_optional_chain(
+  unique int ucode_markup_subscript_expression: @ucode_markup_subscript_expression ref,
+  unique int optional_chain: @ucode_markup_token_optional_chain ref
+);
+
+ucode_markup_subscript_expression_def(
+  unique int id: @ucode_markup_subscript_expression,
+  int index: @ucode_markup_subscript_expression_index_type ref,
+  int object: @ucode_markup_expression ref
+);
+
+@ucode_markup_switch_body_child_type = @ucode_markup_switch_case | @ucode_markup_switch_default
+
+#keyset[ucode_markup_switch_body, index]
+ucode_markup_switch_body_child(
+  int ucode_markup_switch_body: @ucode_markup_switch_body ref,
+  int index: int ref,
+  unique int child: @ucode_markup_switch_body_child_type ref
+);
+
+ucode_markup_switch_body_def(
+  unique int id: @ucode_markup_switch_body
+);
+
+#keyset[ucode_markup_switch_case, index]
+ucode_markup_switch_case_body(
+  int ucode_markup_switch_case: @ucode_markup_switch_case ref,
+  int index: int ref,
+  unique int body: @ucode_markup_statement ref
+);
+
+@ucode_markup_switch_case_value_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_switch_case_def(
+  unique int id: @ucode_markup_switch_case,
+  int value: @ucode_markup_switch_case_value_type ref
+);
+
+#keyset[ucode_markup_switch_default, index]
+ucode_markup_switch_default_body(
+  int ucode_markup_switch_default: @ucode_markup_switch_default ref,
+  int index: int ref,
+  unique int body: @ucode_markup_statement ref
+);
+
+ucode_markup_switch_default_def(
+  unique int id: @ucode_markup_switch_default
+);
+
+ucode_markup_switch_statement_def(
+  unique int id: @ucode_markup_switch_statement,
+  int body: @ucode_markup_switch_body ref,
+  int value: @ucode_markup_parenthesized_expression ref
+);
+
+@ucode_markup_template_string_child_type = @ucode_markup_template_substitution | @ucode_markup_token_escape_sequence | @ucode_markup_token_string_fragment
+
+#keyset[ucode_markup_template_string, index]
+ucode_markup_template_string_child(
+  int ucode_markup_template_string: @ucode_markup_template_string ref,
+  int index: int ref,
+  unique int child: @ucode_markup_template_string_child_type ref
+);
+
+ucode_markup_template_string_def(
+  unique int id: @ucode_markup_template_string
+);
+
+@ucode_markup_template_substitution_child_type = @ucode_markup_expression | @ucode_markup_sequence_expression
+
+ucode_markup_template_substitution_def(
+  unique int id: @ucode_markup_template_substitution,
+  int child: @ucode_markup_template_substitution_child_type ref
+);
+
+ucode_markup_ternary_expression_def(
+  unique int id: @ucode_markup_ternary_expression,
+  int alternative: @ucode_markup_expression ref,
+  int condition: @ucode_markup_expression ref,
+  int consequence: @ucode_markup_expression ref
+);
+
+@ucode_markup_text_statement_child_type = @ucode_markup_comment_tag | @ucode_markup_expression_tag | @ucode_markup_token_raw_text | @ucode_markup_token_statement_tag_close | @ucode_markup_token_statement_tag_lstrip_open | @ucode_markup_token_statement_tag_open | @ucode_markup_token_statement_tag_trim_close | @ucode_markup_token_statement_tag_trim_open
+
+#keyset[ucode_markup_text_statement, index]
+ucode_markup_text_statement_child(
+  int ucode_markup_text_statement: @ucode_markup_text_statement ref,
+  int index: int ref,
+  unique int child: @ucode_markup_text_statement_child_type ref
+);
+
+ucode_markup_text_statement_def(
+  unique int id: @ucode_markup_text_statement
+);
+
+ucode_markup_try_statement_def(
+  unique int id: @ucode_markup_try_statement,
+  int body: @ucode_markup_statement_block ref,
+  int handler: @ucode_markup_catch_clause ref
+);
+
+case @ucode_markup_unary_expression.operator of
+  0 = @ucode_markup_unary_expression_bang
+| 1 = @ucode_markup_unary_expression_plus
+| 2 = @ucode_markup_unary_expression_minus
+| 3 = @ucode_markup_unary_expression_tilde
+;
+
+
+ucode_markup_unary_expression_def(
+  unique int id: @ucode_markup_unary_expression,
+  int argument: @ucode_markup_expression ref,
+  int operator: int ref
+);
+
+@ucode_markup_update_expression_argument_type = @ucode_markup_member_expression | @ucode_markup_subscript_expression | @ucode_markup_token_identifier
+
+case @ucode_markup_update_expression.operator of
+  0 = @ucode_markup_update_expression_plusplus
+| 1 = @ucode_markup_update_expression_minusminus
+;
+
+
+ucode_markup_update_expression_def(
+  unique int id: @ucode_markup_update_expression,
+  int argument: @ucode_markup_update_expression_argument_type ref,
+  int operator: int ref
+);
+
+ucode_markup_variable_declarator_value(
+  unique int ucode_markup_variable_declarator: @ucode_markup_variable_declarator ref,
+  unique int value: @ucode_markup_expression ref
+);
+
+ucode_markup_variable_declarator_def(
+  unique int id: @ucode_markup_variable_declarator,
+  int name: @ucode_markup_token_identifier ref
+);
+
+ucode_markup_while_alt_statement_body(
+  unique int ucode_markup_while_alt_statement: @ucode_markup_while_alt_statement ref,
+  unique int body: @ucode_markup_statement_list ref
+);
+
+ucode_markup_while_alt_statement_def(
+  unique int id: @ucode_markup_while_alt_statement,
+  int condition: @ucode_markup_parenthesized_expression ref
+);
+
+@ucode_markup_while_statement_body_type = @ucode_markup_expression_statement | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_function_declaration | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_return_statement | @ucode_markup_statement_block | @ucode_markup_switch_statement | @ucode_markup_token_break_statement | @ucode_markup_token_continue_statement | @ucode_markup_token_empty_statement | @ucode_markup_try_statement | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+ucode_markup_while_statement_def(
+  unique int id: @ucode_markup_while_statement,
+  int body: @ucode_markup_while_statement_body_type ref,
+  int condition: @ucode_markup_parenthesized_expression ref
+);
+
+ucode_markup_tokeninfo(
+  unique int id: @ucode_markup_token,
+  int kind: int ref,
+  string value: string ref
+);
+
+case @ucode_markup_token.kind of
+  0 = @ucode_markup_reserved_word
+| 1 = @ucode_markup_token_break_statement
+| 2 = @ucode_markup_token_comment
+| 3 = @ucode_markup_token_comment_content
+| 4 = @ucode_markup_token_comment_tag_close
+| 5 = @ucode_markup_token_comment_tag_open
+| 6 = @ucode_markup_token_comment_tag_trim_close
+| 7 = @ucode_markup_token_comment_tag_trim_open
+| 8 = @ucode_markup_token_continue_statement
+| 9 = @ucode_markup_token_default
+| 10 = @ucode_markup_token_doc_comment
+| 11 = @ucode_markup_token_empty_statement
+| 12 = @ucode_markup_token_escape_sequence
+| 13 = @ucode_markup_token_expression_tag_close
+| 14 = @ucode_markup_token_expression_tag_open
+| 15 = @ucode_markup_token_expression_tag_trim_close
+| 16 = @ucode_markup_token_expression_tag_trim_open
+| 17 = @ucode_markup_token_false
+| 18 = @ucode_markup_token_hash_bang_line
+| 19 = @ucode_markup_token_identifier
+| 20 = @ucode_markup_token_null
+| 21 = @ucode_markup_token_number
+| 22 = @ucode_markup_token_optional_chain
+| 23 = @ucode_markup_token_property_identifier
+| 24 = @ucode_markup_token_raw_text
+| 25 = @ucode_markup_token_regex_flags
+| 26 = @ucode_markup_token_regex_pattern
+| 27 = @ucode_markup_token_shorthand_property_identifier
+| 28 = @ucode_markup_token_statement_tag_close
+| 29 = @ucode_markup_token_statement_tag_lstrip_open
+| 30 = @ucode_markup_token_statement_tag_open
+| 31 = @ucode_markup_token_statement_tag_trim_close
+| 32 = @ucode_markup_token_statement_tag_trim_open
+| 33 = @ucode_markup_token_string_fragment
+| 34 = @ucode_markup_token_this
+| 35 = @ucode_markup_token_true
+;
+
+
+@ucode_markup_ast_node = @ucode_markup_arguments | @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_assignment_expression | @ucode_markup_augmented_assignment_expression | @ucode_markup_binary_expression | @ucode_markup_call_expression | @ucode_markup_catch_clause | @ucode_markup_comment_tag | @ucode_markup_computed_property_name | @ucode_markup_delete_expression | @ucode_markup_elif_clause | @ucode_markup_else_alt_clause | @ucode_markup_else_clause | @ucode_markup_export_clause | @ucode_markup_export_specifier | @ucode_markup_export_statement | @ucode_markup_expression_statement | @ucode_markup_expression_tag | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_formal_parameters | @ucode_markup_function_declaration | @ucode_markup_function_expression | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_import_clause | @ucode_markup_import_specifier | @ucode_markup_import_statement | @ucode_markup_lexical_declaration | @ucode_markup_markup | @ucode_markup_member_expression | @ucode_markup_named_imports | @ucode_markup_namespace_import | @ucode_markup_object | @ucode_markup_pair | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_rest_element | @ucode_markup_return_statement | @ucode_markup_sequence_expression | @ucode_markup_spread_element | @ucode_markup_statement_block | @ucode_markup_statement_list | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_switch_body | @ucode_markup_switch_case | @ucode_markup_switch_default | @ucode_markup_switch_statement | @ucode_markup_template_string | @ucode_markup_template_substitution | @ucode_markup_ternary_expression | @ucode_markup_text_statement | @ucode_markup_token | @ucode_markup_try_statement | @ucode_markup_unary_expression | @ucode_markup_update_expression | @ucode_markup_variable_declarator | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+
+ucode_markup_ast_node_location(
+  unique int node: @ucode_markup_ast_node ref,
+  int loc: @location_default ref
+);
+
+#keyset[parent, parent_index]
+ucode_markup_ast_node_parent(
+  unique int node: @ucode_markup_ast_node ref,
+  int parent: @ucode_markup_ast_node ref,
+  int parent_index: int ref
+);
+

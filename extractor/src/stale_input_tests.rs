@@ -25,6 +25,11 @@ fn unresolved_input_is_reported_and_later_input_is_extracted() {
     let report = process_inputs(
         &lines,
         &schema,
+        &node_types::read_node_types_str(
+            "ucode_markup",
+            tree_sitter_ucode::UCODE_MARKUP_NODE_TYPES,
+        )
+        .unwrap(),
         &diagnostics,
         &output,
         &archive,
@@ -66,6 +71,11 @@ fn output_directory_errors_are_not_skipped() {
     let result = process_inputs(
         &root.join("missing.uc").display().to_string(),
         &schema,
+        &node_types::read_node_types_str(
+            "ucode_markup",
+            tree_sitter_ucode::UCODE_MARKUP_NODE_TYPES,
+        )
+        .unwrap(),
         &diagnostics,
         &output,
         &root.join("archive"),

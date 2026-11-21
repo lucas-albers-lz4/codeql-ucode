@@ -22,6 +22,10 @@ pub fn run(options: Options) -> std::io::Result<()> {
             name: "UCODE".to_owned(),
             node_types: tree_sitter_ucode::UCODE_NODE_TYPES,
         },
+        Language {
+            name: "UcodeMarkup".to_owned(),
+            node_types: tree_sitter_ucode::UCODE_MARKUP_NODE_TYPES,
+        },
     ];
 
     generate(languages, options.dbscheme, options.library)
