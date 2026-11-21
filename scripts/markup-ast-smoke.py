@@ -48,6 +48,7 @@ def main():
         assert not errors, errors
         rows = list(csv.reader(io.StringIO(query(db, 'markup-issue56-test.ql', valid / 'ast.bqrs', 'csv'))))[1:]
         expected = {
+            ('Markup', 'Markup', '1', '1', '2', '30', '<root>', '-1'),
             ('RawText', 'Hello ', '1', '1', '1', '6', 'Markup', '0'),
             ('RawText', '!\n', '1', '17', '1', '18', 'Markup', '2'),
             ('RawText', 'Value ', '2', '17', '2', '22', 'TextStatement', '1'),

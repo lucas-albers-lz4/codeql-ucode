@@ -1,4 +1,13 @@
 import codeql.ucode.Markup
+string parentKind(UcodeMarkup::AstNode n) {
+  result = n.getParent().getAPrimaryQlClass() or
+  not exists(n.getParent()) and result = "<root>"
+}
+
+int parentIndex(UcodeMarkup::AstNode n) {
+  result = n.getParentIndex() or not exists(n.getParent()) and result = -1
+}
+
 from UcodeMarkup::AstNode n
 where
   n.getLocation().getFile().getBaseName() = "mixed.ut" and
@@ -7,4 +16,4 @@ where
    n instanceof UcodeMarkup::LexicalDeclaration or n instanceof UcodeMarkup::RawText)
 select n.getAPrimaryQlClass(), n.toString(), n.getLocation().getStartLine(),
   n.getLocation().getStartColumn(), n.getLocation().getEndLine(), n.getLocation().getEndColumn(),
-  n.getParent().getAPrimaryQlClass(), n.getParentIndex()
+  parentKind(n), parentIndex(n)
