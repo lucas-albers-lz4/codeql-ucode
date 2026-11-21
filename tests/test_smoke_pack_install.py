@@ -25,6 +25,13 @@ source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 printf '%s\\n' "$(basename "$0")" >> "$SMOKE_LOG"
 '''
+        (scripts / "markup-ast-smoke.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("markup-ast-smoke.py\\n")
+if os.environ.get("FAIL_MARKUP"):
+    raise SystemExit(43)
+""")
         (scripts / "m3-smoke.sh").write_text(child)
         # A nested M3 invocation must inherit aggregate readiness.
         (scripts / "m4-block-device-smoke.sh").write_text(
@@ -44,6 +51,7 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
                         SMOKE_LOG=str(self.root / "smokes"))
         self.env.pop("CODEQL_UCODE_SMOKE_PACKS_READY", None)
         self.env.pop("FAIL_PACK", None)
+        self.env.pop("FAIL_MARKUP", None)
 
     def run_script(self, name, **env):
         return subprocess.run(["bash", f"scripts/{name}"], cwd=self.root,
@@ -59,13 +67,13 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.lines("installs"),
                          [str(self.root / "ql/lib"), str(self.root / "ql/src")])
-        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "m4-smoke.sh",
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "m4-smoke.sh",
                                                "m4-block-device-smoke.sh", "m3-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
             ("m3-smoke.sh", 37, ["m3-smoke.sh"]),
-            ("m4-smoke.sh", 41, ["m3-smoke.sh", "m4-smoke.sh"]),
+            ("m4-smoke.sh", 41, ["m3-smoke.sh", "markup-ast-smoke.py", "m4-smoke.sh"]),
         ):
             with self.subTest(child=child):
                 for log in ("installs", "smokes"):
@@ -87,6 +95,11 @@ fi
                                      [str(self.root / "ql/lib"), str(self.root / "ql/src")])
                 finally:
                     script.write_text(original)
+
+    def test_markup_failure_stops_before_m4(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP="1")
+        self.assertEqual(result.returncode, 43, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py"])
 
     def test_both_install_failures_stop_before_smokes(self):
         for pack, count in (("lib", 1), ("src", 2)):
