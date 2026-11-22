@@ -5,9 +5,9 @@ import pathlib
 import sys
 from collections import Counter
 
-if len(sys.argv) != 3:
-    sys.exit('usage: check.py OUTPUT_DIRECTORY STAGE')
-out, stage = map(pathlib.Path, sys.argv[1:])
+if len(sys.argv) != 4:
+    sys.exit('usage: check.py OUTPUT_DIRECTORY STAGE CONTROLS_ROOT')
+out, stage, controls_root = map(lambda p: pathlib.Path(p).resolve(), sys.argv[1:])
 prefix = 'usr/share/ucode/luci/'
 # Relative path, unsupported AST kind, inclusive location, parent and index, source bytes.
 witnesses = [
@@ -24,9 +24,26 @@ witnesses = [
 ('template/view.ut','CallExpression',1,4,1,20,'ExpressionStatement',0,"include('header')"),
 ('uhttpd.uc','CallExpression',7,12,7,49,'VariableDeclarator',2,'request(env, uhttpd.recv, uhttpd.send)'),
 ]
+headers = {
+    'markup-measure-witness.csv': ['col0','col1','col2','col3','col4','col5','col6','col7'],
+    'markup-measure-measurement.csv': ['col0','ordinary','creation','col3'],
+    'markup-measure-measurement-callable.csv': ['col0','col1','col2','col3','col4','coverage'],
+    'markup-measure-markup-creation-nodes-test.csv': ['col0','col1','col2','col3'],
+    'markup-measure-markup-creation-edges-test.csv': ['col0','col1','col2','col3','col4','col5'],
+    'markup-measure-controls2-measurement.csv': ['col0','ordinary','creation','col3'],
+    'markup-measure-controls2-measurement-callable.csv': ['col0','col1','col2','col3','col4','coverage'],
+    'markup-measure-controls2-ExtractionErrors.csv': ['error','col1','col2'],
+    'markup-measure-controls2-SuccessfullyExtractedFiles.csv': ['f','col1'],
+}
 def rows(name):
     with (out / name).open(newline='') as f:
-        r = csv.reader(f); next(r); return Counter(tuple(x) for x in r)
+        r = csv.reader(f)
+        if next(r, None) != headers[name]:
+            raise ValueError(f'incorrect header: {name}')
+        result = list(r)
+        if any(len(row) != len(headers[name]) for row in result):
+            raise ValueError(f'incorrect row arity: {name}')
+        return Counter(tuple(x) for x in result)
 def require(ok, message):
     if not ok: raise ValueError(message)
 actual = rows('markup-measure-witness.csv')
@@ -63,5 +80,5 @@ controls = Counter([('ordinary-positive.ut','covered','unsupported','6'),('ordin
 require(rows('markup-measure-controls2-measurement.csv') == controls,'control roots mismatch')
 require(rows('markup-measure-controls2-measurement-callable.csv') == Counter([('creation-positive.ut','1','34','1','58','covered'),('creation-negative.ut','1','34','1','55','unsupported')]),'control callable mismatch')
 require(not rows('markup-measure-controls2-ExtractionErrors.csv'),'control diagnostics nonempty')
-require({pathlib.Path(r[0]).name for r in rows('markup-measure-controls2-SuccessfullyExtractedFiles.csv')} == {'ordinary-positive.ut','ordinary-negative.ut','creation-positive.ut','creation-negative.ut'} and sum(rows('markup-measure-controls2-SuccessfullyExtractedFiles.csv').values()) == 4,'control identity mismatch')
+require(rows('markup-measure-controls2-SuccessfullyExtractedFiles.csv') == Counter((str(controls_root / name), '') for name in ['ordinary-positive.ut','ordinary-negative.ut','creation-positive.ut','creation-negative.ut']),'control identity mismatch')
 print('Expected root, callable, witnesses, source bytes, nodes, edges and control rows matched.')

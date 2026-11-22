@@ -22,7 +22,11 @@ run_db() {
 query() {
   local db=$1 q=$2 name=$3 format=$4
   "$CODEQL" query run "ql/src/$q.ql" --database="$db" --search-path="$PWD/extractor-pack" --output="$OUT/$name.bqrs" --threads=1 --ram=2048
-  "$CODEQL" bqrs decode --format="$format" --entities=url,string "$OUT/$name.bqrs" > "$OUT/$name.$format"
+  if [ "$format" = json ]; then
+    "$CODEQL" bqrs decode --format=json --entities=url,string "$OUT/$name.bqrs" > "$OUT/$name.json"
+  else
+    "$CODEQL" bqrs decode --format=csv "$OUT/$name.bqrs" > "$OUT/$name.csv"
+  fi
 }
 run_db "$STAGE" "$OUT/real-db"
 cp "$OUT/real-db-routing.json" "$OUT/markup-measure-routing.json"
@@ -33,4 +37,4 @@ python3 "$CONSUMER/evidence/markup-profile-0a6612f/validate.py" --source "$LUCI"
 run_db "$EVIDENCE/controls" "$OUT/controls-db"
 for q in measurement measurement-callable; do query "$OUT/controls-db" "$q" "markup-measure-controls2-$q" csv; done
 for q in SuccessfullyExtractedFiles ExtractionErrors; do query "$OUT/controls-db" "diagnostics/$q" "markup-measure-controls2-$q" csv; done
-python3 "$EVIDENCE/check.py" "$OUT" "$STAGE"
+python3 "$EVIDENCE/check.py" "$OUT" "$STAGE" "$EVIDENCE/controls"
