@@ -1,0 +1,32 @@
+{
+  "input_count": 3,
+  "plain_count": 3,
+  "markup_count": 0,
+  "markup_inconclusive_count": 0,
+  "uncertain_count": 0,
+  "excluded_count": 0,
+  "duplicate_input_count": 0,
+  "decisions": [
+    {
+      "path": "/STAGED_SOURCE/controls/direct-copy-controls.uc",
+      "installed_path": "controls/direct-copy-controls.uc",
+      "classification": "plain",
+      "reason": "ucode_extension",
+      "status": "plain_route_selected"
+    },
+    {
+      "path": "/STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+      "installed_path": "usr/share/rpcd/ucode/luci",
+      "classification": "plain",
+      "reason": "rpcd_raw_mode_full_path",
+      "status": "plain_route_selected"
+    },
+    {
+      "path": "/STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+      "installed_path": "usr/share/ucode/luci/sys.uc",
+      "classification": "plain",
+      "reason": "ucode_extension",
+      "status": "plain_route_selected"
+    }
+  ]
+}

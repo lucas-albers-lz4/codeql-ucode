@@ -1,0 +1,54 @@
+{
+  "#select": {
+    "columns": [
+      {
+        "name": "f",
+        "kind": "Entity"
+      },
+      {
+        "kind": "String"
+      }
+    ],
+    "tuples": [
+      [
+        {
+          "label": "/STAGED_SOURCE/controls/direct-copy-controls.uc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 0,
+            "startColumn": 0,
+            "endLine": 0,
+            "endColumn": 0
+          }
+        },
+        ""
+      ],
+      [
+        {
+          "label": "/STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 0,
+            "startColumn": 0,
+            "endLine": 0,
+            "endColumn": 0
+          }
+        },
+        ""
+      ],
+      [
+        {
+          "label": "/STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 0,
+            "startColumn": 0,
+            "endLine": 0,
+            "endColumn": 0
+          }
+        },
+        ""
+      ]
+    ]
+  }
+}

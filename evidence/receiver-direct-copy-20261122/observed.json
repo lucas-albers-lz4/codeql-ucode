@@ -1,0 +1,297 @@
+{
+  "#select": {
+    "columns": [
+      {
+        "name": "sourceDecl",
+        "kind": "Entity"
+      },
+      {
+        "name": "initializer",
+        "kind": "Entity"
+      },
+      {
+        "name": "copyDecl",
+        "kind": "Entity"
+      },
+      {
+        "name": "receiver",
+        "kind": "Entity"
+      },
+      {
+        "name": "call",
+        "kind": "Entity"
+      },
+      {
+        "name": "relation",
+        "kind": "String"
+      }
+    ],
+    "tuples": [
+      [
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 4,
+            "startColumn": 7,
+            "endLine": 4,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 4,
+            "startColumn": 12,
+            "endLine": 4,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 5,
+            "startColumn": 7,
+            "endLine": 5,
+            "endColumn": 16
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 22
+          }
+        },
+        "one direct copy may reach direct receiver"
+      ],
+      [
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 19,
+            "startColumn": 7,
+            "endLine": 19,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 19,
+            "startColumn": 12,
+            "endLine": 19,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 20,
+            "startColumn": 7,
+            "endLine": 20,
+            "endColumn": 16
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 15
+          }
+        },
+        "one direct copy may reach direct receiver"
+      ],
+      [
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 25,
+            "startColumn": 7,
+            "endLine": 25,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 25,
+            "startColumn": 12,
+            "endLine": 25,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 26,
+            "startColumn": 7,
+            "endLine": 26,
+            "endColumn": 16
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 28
+          }
+        },
+        "one direct copy may reach direct receiver"
+      ],
+      [
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 52,
+            "startColumn": 7,
+            "endLine": 52,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 52,
+            "startColumn": 12,
+            "endLine": 52,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 53,
+            "startColumn": 7,
+            "endLine": 53,
+            "endColumn": 16
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 26
+          }
+        },
+        "one direct copy may reach direct receiver"
+      ],
+      [
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 66,
+            "startColumn": 7,
+            "endLine": 66,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 66,
+            "startColumn": 12,
+            "endLine": 66,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 67,
+            "startColumn": 7,
+            "endLine": 67,
+            "endColumn": 16
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 70,
+            "startColumn": 3,
+            "endLine": 70,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 70,
+            "startColumn": 3,
+            "endLine": 70,
+            "endColumn": 31
+          }
+        },
+        "one direct copy may reach direct receiver"
+      ]
+    ]
+  }
+}
