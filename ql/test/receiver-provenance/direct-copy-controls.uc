@@ -15,6 +15,34 @@ function reassigned_before_use(other) {
   alias.read('after');
 }
 
+function copied_close() {
+  let fd = popen('printf harmless');
+  let alias = fd;
+  alias.close();
+}
+
+function conditional_reassignment(other, replace) {
+  let fd = popen('printf harmless');
+  let alias = fd;
+  if (replace)
+    alias = other;
+  alias.read('merged state');
+}
+
+function overwritten_before_copy(other) {
+  let fd = popen('printf harmless');
+  fd = other;
+  let alias = fd;
+  alias.read('replacement');
+}
+
+function multi_step_copy() {
+  let fd = popen('printf harmless');
+  let alias = fd;
+  let second = alias;
+  second.read('second copy');
+}
+
 function direct_use() {
   let fd = popen('printf harmless');
   fd.close();

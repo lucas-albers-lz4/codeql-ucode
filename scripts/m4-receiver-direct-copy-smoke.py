@@ -13,14 +13,15 @@ ROOT = Path(__file__).resolve().parent.parent
 FIXTURE = ROOT / "ql/test/receiver-provenance/direct-copy-controls.uc"
 QUERY = ROOT / "ql/src/m4/ReceiverDirectCopy.ql"
 CALL_INVENTORY = ROOT / "ql/src/m4/ReceiverDirectCopyCallInventory.ql"
-EXPECTED_FILES = ["direct-copy-controls.uc"]
 
 # Complete source declaration, direct-copy declaration, receiver, and call
 # spans. Every expected row is enumerated from this checked-in fixture.
 EXPECTED = [
-    ((4, 7, 4, 35), (4, 12, 4, 35), (5, 7, 5, 16), (6, 3, 6, 7), (6, 3, 6, 22), "one direct copy to direct receiver"),
-    ((24, 7, 24, 35), (24, 12, 24, 35), (25, 7, 25, 16), (28, 3, 28, 7), (28, 3, 28, 26), "one direct copy to direct receiver"),
-    ((38, 7, 38, 35), (38, 12, 38, 35), (39, 7, 39, 16), (42, 3, 42, 7), (42, 3, 42, 31), "one direct copy to direct receiver"),
+    ((4, 7, 4, 35), (4, 12, 4, 35), (5, 7, 5, 16), (6, 3, 6, 7), (6, 3, 6, 22), "one direct copy may reach direct receiver"),
+    ((19, 7, 19, 35), (19, 12, 19, 35), (20, 7, 20, 16), (21, 3, 21, 7), (21, 3, 21, 15), "one direct copy may reach direct receiver"),
+    ((25, 7, 25, 35), (25, 12, 25, 35), (26, 7, 26, 16), (29, 3, 29, 7), (29, 3, 29, 28), "one direct copy may reach direct receiver"),
+    ((52, 7, 52, 35), (52, 12, 52, 35), (53, 7, 53, 16), (56, 3, 56, 7), (56, 3, 56, 26), "one direct copy may reach direct receiver"),
+    ((66, 7, 66, 35), (66, 12, 66, 35), (67, 7, 67, 16), (70, 3, 70, 7), (70, 3, 70, 31), "one direct copy may reach direct receiver"),
 ]
 EXPECTED_CALLS = [
     ((4, 12, 4, 35), "popen"),
@@ -29,17 +30,25 @@ EXPECTED_CALLS = [
     ((12, 12, 12, 35), "popen"),
     ((15, 3, 15, 21), "MemberExpression"),
     ((19, 12, 19, 35), "popen"),
-    ((20, 3, 20, 12), "MemberExpression"),
-    ((24, 12, 24, 35), "popen"),
-    ((26, 27, 26, 46), "MemberExpression"),
-    ((27, 3, 27, 14), "inner"),
-    ((28, 3, 28, 26), "MemberExpression"),
-    ((32, 3, 32, 25), "MemberExpression"),
-    ((34, 3, 34, 15), "MemberExpression"),
-    ((38, 12, 38, 35), "popen"),
-    ((40, 3, 40, 35), "SubscriptExpression"),
-    ((41, 3, 41, 33), "SubscriptExpression"),
-    ((42, 3, 42, 31), "MemberExpression"),
+    ((21, 3, 21, 15), "MemberExpression"),
+    ((25, 12, 25, 35), "popen"),
+    ((29, 3, 29, 28), "MemberExpression"),
+    ((33, 12, 33, 35), "popen"),
+    ((36, 3, 36, 27), "MemberExpression"),
+    ((40, 12, 40, 35), "popen"),
+    ((43, 3, 43, 28), "MemberExpression"),
+    ((47, 12, 47, 35), "popen"),
+    ((48, 3, 48, 12), "MemberExpression"),
+    ((52, 12, 52, 35), "popen"),
+    ((54, 27, 54, 46), "MemberExpression"),
+    ((55, 3, 55, 14), "inner"),
+    ((56, 3, 56, 26), "MemberExpression"),
+    ((60, 3, 60, 25), "MemberExpression"),
+    ((62, 3, 62, 15), "MemberExpression"),
+    ((66, 12, 66, 35), "popen"),
+    ((68, 3, 68, 35), "SubscriptExpression"),
+    ((69, 3, 69, 33), "SubscriptExpression"),
+    ((70, 3, 70, 31), "MemberExpression"),
 ]
 
 
@@ -70,6 +79,39 @@ def query(codeql, db, search, work, path, label):
     return json.loads(raw)["#select"]["tuples"]
 
 
+def check_diagnostics(codeql, db, search, work, source_file):
+    selected_path = source_file.resolve()
+    expected_success = [{"label": str(selected_path), "url": {
+        "uri": selected_path.as_uri(), "startLine": 0, "startColumn": 0,
+        "endLine": 0, "endColumn": 0}}, ""]
+    expected_columns = {
+        "files": [{"name": "f", "kind": "Entity"}, {"kind": "String"}],
+        "errors": [{"name": "error", "kind": "Entity"},
+                   {"kind": "String"}, {"kind": "Integer"}],
+    }
+    decoded = {}
+    for label, query_path in (
+        ("files", ROOT / "ql/src/diagnostics/SuccessfullyExtractedFiles.ql"),
+        ("errors", ROOT / "ql/src/diagnostics/ExtractionErrors.ql"),
+    ):
+        bqrs = work / f"diagnostics-{label}.bqrs"
+        run(codeql, ["query", "run", query_path, f"--database={db}",
+                     f"--search-path={search}", f"--output={bqrs}",
+                     "--threads=1", "--ram=2048"])
+        raw = run(codeql, ["bqrs", "decode", "--format=json", "--entities=url,string", bqrs])
+        document = json.loads(raw)
+        require(isinstance(document, dict) and set(document) == {"#select"},
+                f"unexpected {label} diagnostic document: {document}")
+        table = document["#select"]
+        require(isinstance(table, dict) and set(table) == {"columns", "tuples"} and
+                table["columns"] == expected_columns[label] and isinstance(table["tuples"], list),
+                f"unexpected {label} diagnostic schema: {table}")
+        decoded[label] = table["tuples"]
+    require(decoded["files"] == [expected_success],
+            f"exact successful-file identity mismatch: {decoded['files']}")
+    require(not decoded["errors"], f"extraction errors: {decoded['errors']}")
+
+
 def main():
     codeql = os.environ.get("CODEQL_CLI") or shutil.which("codeql")
     require(codeql, "CodeQL CLI missing; set CODEQL_CLI")
@@ -92,19 +134,22 @@ def main():
     require(receipt.is_file(), "missing pre-finalization routing receipt")
     routing = json.loads(receipt.read_text())
     (work / "routing.json").write_text(json.dumps(routing, indent=2) + "\n")
-    require(routing["input_count"] == 1 and routing["plain_count"] == 1 and
-            routing["markup_count"] == 0 and routing["uncertain_count"] == 0 and
-            len(routing["decisions"]) == 1 and
-            routing["decisions"][0]["status"] == "plain_route_selected" and
-            Path(routing["decisions"][0]["path"]).name == FIXTURE.name,
-            f"unexpected routing receipt: {routing}")
+    expected_path = str((source / FIXTURE.name).resolve())
+    expected_decision = {
+        "path": expected_path,
+        "installed_path": expected_path,
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected",
+    }
+    require(routing == {
+        "input_count": 1, "plain_count": 1, "markup_count": 0,
+        "markup_inconclusive_count": 0, "uncertain_count": 0,
+        "excluded_count": 0, "duplicate_input_count": 0,
+        "decisions": [expected_decision],
+    }, f"unexpected exact routing receipt: {routing}")
     run(codeql, ["database", "finalize", db])
-    files = query(codeql, db, search, work, ROOT / "ql/src/diagnostics/SuccessfullyExtractedFiles.ql", "files")
-    actual_files = [decode_entity(row[0], source)[0] for row in files]
-    require(collections.Counter(actual_files) == collections.Counter(EXPECTED_FILES),
-            f"successful-file identity mismatch: {actual_files}")
-    errors = query(codeql, db, search, work, ROOT / "ql/src/diagnostics/ExtractionErrors.ql", "errors")
-    require(not errors, f"extraction errors: {errors}")
+    check_diagnostics(codeql, db, search, work, source / FIXTURE.name)
     call_rows = query(codeql, db, search, work, CALL_INVENTORY, "call-inventory")
     actual_calls = []
     for row in call_rows:
@@ -124,8 +169,8 @@ def main():
     require(collections.Counter(actual) == collections.Counter(expected),
             f"exact receiver witnesses mismatch: missing={collections.Counter(expected)-collections.Counter(actual)} "
             f"extra={collections.Counter(actual)-collections.Counter(expected)}")
-    print(f"PASS exact selected files={len(actual_files)}, extraction errors=0, "
-          f"extracted call controls={len(actual_calls)}, exact direct-copy rows={len(actual)}")
+    print(f"PASS exact selected files=1, extraction errors=0, "
+          f"extracted call controls={len(actual_calls)}, exact may-reach rows={len(actual)}")
 
 
 if __name__ == "__main__":
