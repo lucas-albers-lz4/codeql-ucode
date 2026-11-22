@@ -28,9 +28,10 @@ class RoutingRetentionTests(unittest.TestCase):
             tmp = Path(tmp)
             evidence = tmp / 'evidence'
             pack = tmp / 'pack'
-            extractor = pack / 'tools/linux64/extractor'
-            extractor.parent.mkdir(parents=True)
-            extractor.touch()
+            for platform in ('linux64', 'osx64'):
+                extractor = pack / 'tools' / platform / 'extractor'
+                extractor.parent.mkdir(parents=True)
+                extractor.touch()
             captured = {}
             stdout = io.StringIO()
 
