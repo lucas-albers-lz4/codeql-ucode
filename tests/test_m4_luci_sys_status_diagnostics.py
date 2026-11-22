@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class StatusSmokeDiagnostics(unittest.TestCase):
-    def run_smoke(self, leg='', fault='', helper_edit=None):
+    def run_smoke(self, leg='', fault='', helper_edit=None, system=None):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
         temp = Path(directory.name)
@@ -28,9 +28,10 @@ class StatusSmokeDiagnostics(unittest.TestCase):
             rewritten = helper_edit(original)
             self.assertNotEqual(rewritten, original, 'helper edit did not apply')
             helper.write_text(rewritten)
-        extractor = root / 'extractor-pack/tools/linux64/extractor'
-        extractor.parent.mkdir(parents=True)
-        extractor.touch(mode=0o755)
+        for platform in ('linux64', 'osx64'):
+            extractor = root / 'extractor-pack/tools' / platform / 'extractor'
+            extractor.parent.mkdir(parents=True)
+            extractor.touch(mode=0o755)
         binary = temp / 'bin'
         binary.mkdir()
         shutil.copy(ROOT / 'tests/m4_status_fake_codeql.py', binary / 'codeql')
@@ -42,13 +43,19 @@ class StatusSmokeDiagnostics(unittest.TestCase):
                    CODEQL_UCODE_SMOKE_PACKS_READY=str(root), STATUS_TEST_ROOT=str(root),
                    STATUS_TEST_LEG=leg, STATUS_TEST_FAULT=fault,
                    PYTHONDONTWRITEBYTECODE='1', PYTHONOPTIMIZE=str(sys.flags.optimize))
+        if system:
+            bash_env = temp / 'bash-env'
+            bash_env.write_text(f'OSTYPE={system}\n')
+            env['BASH_ENV'] = str(bash_env)
         return subprocess.run(['bash', str(root / 'scripts/m4-luci-sys-status-exec-smoke.sh')],
                               cwd=root, env=env, text=True, capture_output=True)
 
     def test_pristine_all_three_databases_have_receipts(self):
-        result = self.run_smoke()
-        self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual(result.stdout.count('M4 extraction accepted'), 3, result.stdout)
+        for system in (None, 'linux-gnu'):
+            with self.subTest(system=system):
+                result = self.run_smoke(system=system)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout.count('M4 extraction accepted'), 3, result.stdout)
 
     def test_malformed_source_rejected_in_each_leg(self):
         for leg in ('main', 'dispatch', 'evidence'):

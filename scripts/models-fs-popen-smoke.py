@@ -11,6 +11,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import platform
 import sys
 import tempfile
 from typing import Any
@@ -464,7 +465,9 @@ def main() -> None:
 
     require(CODEQL is not None, "codeql CLI must be on PATH")
     require(hashlib.sha256(BASELINE_BYTES).hexdigest() == BASELINE_DIGEST, "pinned consumer baseline digest mismatch")
-    require((PACK / "tools/linux64/extractor").is_file(), "extractor-pack is missing; run scripts/create-extractor-pack.sh first")
+    system = {"Linux": "linux64", "Darwin": "osx64"}.get(platform.system())
+    require(system is not None, f"unsupported OS: {platform.system()}")
+    require((PACK / "tools" / system / "extractor").is_file(), "extractor-pack is missing; run scripts/create-extractor-pack.sh first")
     temp_parent = Path(os.environ.get("CODEQL_UCODE_SMOKE_TMPDIR", tempfile.gettempdir())).resolve()
     temp_parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="models-fs-popen-", dir=temp_parent) as temp:

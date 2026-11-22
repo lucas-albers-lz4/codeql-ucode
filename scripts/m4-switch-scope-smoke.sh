@@ -7,7 +7,12 @@ PACK="$ROOT/extractor-pack"
 OUT="$ROOT/.codeql-database/m4-switch-scope"
 SRC="$OUT/src"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
-[[ -x "$PACK/tools/linux64/extractor" ]] || { echo 'build extractor pack first' >&2; exit 1; }
+case "$OSTYPE" in
+  linux-gnu*) platform=linux64 ;;
+  darwin*) platform=osx64 ;;
+  *) echo "Unsupported OS: $OSTYPE" >&2; exit 1 ;;
+esac
+[[ -x "$PACK/tools/$platform/extractor" ]] || { echo 'build extractor pack first' >&2; exit 1; }
 command -v codeql >/dev/null || { echo 'codeql CLI not on PATH' >&2; exit 1; }
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs

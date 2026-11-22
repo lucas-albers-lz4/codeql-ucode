@@ -6,6 +6,7 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-backend-declarations"
 QUERY="$ROOT/ql/src/m4/LuciBackendDeclarations.ql"
 TMP_ROOT="$(mktemp -d)"
+TMP_ROOT="$(cd "$TMP_ROOT" && pwd -P)"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 SRC="$TMP_ROOT/ql/test/extractor-smoke"
 mkdir -p "$SRC/usr/share/rpcd/ucode"
@@ -15,7 +16,12 @@ import hashlib, sys
 if hashlib.sha256(open(sys.argv[1], 'rb').read()).hexdigest() != '6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e':
     raise SystemExit('pinned luci source hash mismatch')
 PY
-if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
+case "$OSTYPE" in
+  linux-gnu*) platform=linux64 ;;
+  darwin*) platform=osx64 ;;
+  *) echo "Unsupported OS: $OSTYPE" >&2; exit 1 ;;
+esac
+if [[ ! -x "$PACK/tools/$platform/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 rm -rf "$DB"

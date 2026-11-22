@@ -4,18 +4,22 @@ import os
 
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-EXTRACTOR = ROOT / 'extractor-pack/tools/linux64/extractor'
+PLATFORM = {'linux': 'linux64', 'darwin': 'osx64'}.get(sys.platform)
+if PLATFORM is None:
+    raise SystemExit(f'unsupported extractor platform: {sys.platform}')
+EXTRACTOR = ROOT / 'extractor-pack/tools' / PLATFORM / 'extractor'
 FIXTURE = ROOT / 'ql/test/extractor-smoke/usr/share/rpcd/ucode/luci'
 
 
 class StagedRouting(unittest.TestCase):
     def test_explicit_staged_root_extracts_selected_plugin(self):
         with tempfile.TemporaryDirectory() as temp:
-            temp = Path(temp)
+            temp = Path(temp).resolve()
             root = temp / 'ordinary-root'
             plugin = root / 'usr/share/rpcd/ucode/luci'
             plugin.parent.mkdir(parents=True)
@@ -38,7 +42,7 @@ class StagedRouting(unittest.TestCase):
 
     def test_explicit_root_excludes_markers_and_canonical_escapes(self):
         with tempfile.TemporaryDirectory() as temp:
-            temp = Path(temp)
+            temp = Path(temp).resolve()
             root = temp / 'root'
             root.mkdir()
             outside = temp / 'outside/modules/pkg/root/usr/share/rpcd/ucode/luci'
@@ -78,7 +82,7 @@ class StagedRouting(unittest.TestCase):
 
     def test_env_transport_is_opt_in_and_direct_cli_is_unchanged(self):
         with tempfile.TemporaryDirectory() as temp:
-            temp = Path(temp)
+            temp = Path(temp).resolve()
             root = temp / 'stagé & (x) ! % ^'
             plugin = root / 'usr/share/rpcd/ucode/luci'
             marker = root / 'ql/test/extractor-smoke/luci'
@@ -113,7 +117,7 @@ class StagedRouting(unittest.TestCase):
 
     def test_env_transport_errors_fail_closed_before_output(self):
         with tempfile.TemporaryDirectory() as temp:
-            temp = Path(temp)
+            temp = Path(temp).resolve()
             marker = temp / 'stage/ql/test/extractor-smoke/luci'
             marker.parent.mkdir(parents=True)
             marker.write_text('let x = 1;\n')
@@ -151,7 +155,7 @@ class StagedRouting(unittest.TestCase):
 
     def test_staged_root_must_exist_and_be_a_directory(self):
         with tempfile.TemporaryDirectory() as temp:
-            temp = Path(temp)
+            temp = Path(temp).resolve()
             inputs = temp / 'inputs'
             inputs.write_text('')
             for root in (temp / 'missing', inputs):

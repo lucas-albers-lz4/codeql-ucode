@@ -17,7 +17,7 @@ class VariableOrderRunnerTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         (self.root / "scripts").mkdir()
         for name in (
             "m4-variable-order-smoke.sh",
@@ -41,10 +41,11 @@ class VariableOrderRunnerTests(unittest.TestCase):
             REPO / "ql/test/variable-order-controls.json",
             self.root / "ql/test/variable-order-controls.json",
         )
-        extractor = self.root / "extractor-pack/tools/linux64/extractor"
-        extractor.parent.mkdir(parents=True)
-        extractor.write_text("#!/bin/sh\nexit 0\n")
-        extractor.chmod(0o755)
+        for platform in ("linux64", "osx64"):
+            extractor = self.root / "extractor-pack/tools" / platform / "extractor"
+            extractor.parent.mkdir(parents=True)
+            extractor.write_text("#!/bin/sh\nexit 0\n")
+            extractor.chmod(0o755)
         bindir = self.root / "bin"
         bindir.mkdir()
         codeql = bindir / "codeql"
@@ -76,7 +77,7 @@ else:
             PATH=f"{bindir}:{os.environ['PATH']}",
             CODEQL_UCODE_SMOKE_PACKS_READY=str(self.root),
             CALL_LOG=str(self.root / "calls"),
-            CP_LOG=str(self.root / "routing-copy-calls"),
+            CP_LOG=str(self.root / "routing-copy-calls"), REAL_CP=shutil.which("cp"),
         )
         for key in ("INDEX_STATUS", "EMIT_RECEIPT", "CP_MODE"):
             self.env.pop(key, None)
@@ -91,7 +92,7 @@ if args[0].endswith("/trap/ucode/routing.json"):
     if os.environ.get("CP_MODE") == "fail-route":
         print("cp shim: injected routing-copy failure", file=sys.stderr)
         sys.exit(73)
-result = subprocess.run(["/usr/bin/cp", *args])
+result = subprocess.run([os.environ["REAL_CP"], *args])
 if result.returncode:
     sys.exit(result.returncode)
 if os.environ.get("CP_MODE") == "tamper-stage" and args[0] == "ql/test/variable-order/order.uc":
