@@ -20,6 +20,7 @@ def candidates(source):
 
 
 def main(repo):
+    repo = git(repo, 'rev-parse', '--show-toplevel').strip()
     # git grep's object argument reads the pin even if the checkout is dirty.
     paths = [x.split(':', 1)[1] for x in git(repo, 'grep', '-l', '-I', 'popen', REV, '--').splitlines()]
     for path in paths:
