@@ -1,0 +1,340 @@
+{
+  "#select": {
+    "columns": [
+      {
+        "name": "call",
+        "kind": "Entity"
+      },
+      {
+        "kind": "String"
+      }
+    ],
+    "tuples": [
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 4,
+            "startColumn": 12,
+            "endLine": 4,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 22
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 8,
+            "startColumn": 3,
+            "endLine": 8,
+            "endColumn": 15
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 12,
+            "startColumn": 12,
+            "endLine": 12,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 15,
+            "startColumn": 3,
+            "endLine": 15,
+            "endColumn": 21
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 19,
+            "startColumn": 12,
+            "endLine": 19,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 15
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 25,
+            "startColumn": 12,
+            "endLine": 25,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 28
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 33,
+            "startColumn": 12,
+            "endLine": 33,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 36,
+            "startColumn": 3,
+            "endLine": 36,
+            "endColumn": 27
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 40,
+            "startColumn": 12,
+            "endLine": 40,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 43,
+            "startColumn": 3,
+            "endLine": 43,
+            "endColumn": 28
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 47,
+            "startColumn": 12,
+            "endLine": 47,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 12
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 52,
+            "startColumn": 12,
+            "endLine": 52,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 54,
+            "startColumn": 27,
+            "endLine": 54,
+            "endColumn": 46
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 55,
+            "startColumn": 3,
+            "endLine": 55,
+            "endColumn": 14
+          }
+        },
+        "inner"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 26
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 60,
+            "startColumn": 3,
+            "endLine": 60,
+            "endColumn": 25
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 62,
+            "startColumn": 3,
+            "endLine": 62,
+            "endColumn": 15
+          }
+        },
+        "MemberExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 66,
+            "startColumn": 12,
+            "endLine": 66,
+            "endColumn": 35
+          }
+        },
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 68,
+            "startColumn": 3,
+            "endLine": 68,
+            "endColumn": 35
+          }
+        },
+        "SubscriptExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 69,
+            "startColumn": 3,
+            "endLine": 69,
+            "endColumn": 33
+          }
+        },
+        "SubscriptExpression"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 70,
+            "startColumn": 3,
+            "endLine": 70,
+            "endColumn": 31
+          }
+        },
+        "MemberExpression"
+      ]
+    ]
+  }
+}

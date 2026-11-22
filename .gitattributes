@@ -1,0 +1,2 @@
+# Preserve the exact measured query bytes, including historical whitespace.
+evidence/receiver-direct-copy-20261122/ReceiverMeasureUnion.ql -whitespace

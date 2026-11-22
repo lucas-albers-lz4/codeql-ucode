@@ -1,0 +1,1044 @@
+{
+  "#select": {
+    "columns": [
+      {
+        "name": "call",
+        "kind": "Entity"
+      },
+      {
+        "name": "receiver",
+        "kind": "Entity"
+      },
+      {
+        "name": "decl",
+        "kind": "Entity"
+      },
+      {
+        "name": "initializer",
+        "kind": "Entity"
+      },
+      {
+        "name": "method",
+        "kind": "String"
+      },
+      {
+        "name": "factory",
+        "kind": "String"
+      }
+    ],
+    "tuples": [
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 22
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 6,
+            "startColumn": 3,
+            "endLine": 6,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 4,
+            "startColumn": 7,
+            "endLine": 4,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 4,
+            "startColumn": 12,
+            "endLine": 4,
+            "endColumn": 35
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 15
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 21,
+            "startColumn": 3,
+            "endLine": 21,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 19,
+            "startColumn": 7,
+            "endLine": 19,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 19,
+            "startColumn": 12,
+            "endLine": 19,
+            "endColumn": 35
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 28
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 29,
+            "startColumn": 3,
+            "endLine": 29,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 25,
+            "startColumn": 7,
+            "endLine": 25,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 25,
+            "startColumn": 12,
+            "endLine": 25,
+            "endColumn": 35
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 12
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 48,
+            "startColumn": 3,
+            "endLine": 48,
+            "endColumn": 4
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 47,
+            "startColumn": 7,
+            "endLine": 47,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 47,
+            "startColumn": 12,
+            "endLine": 47,
+            "endColumn": 35
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 26
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 56,
+            "startColumn": 3,
+            "endLine": 56,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 52,
+            "startColumn": 7,
+            "endLine": 52,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 52,
+            "startColumn": 12,
+            "endLine": 52,
+            "endColumn": 35
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 70,
+            "startColumn": 3,
+            "endLine": 70,
+            "endColumn": 31
+          }
+        },
+        {
+          "label": "alias",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 70,
+            "startColumn": 3,
+            "endLine": 70,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 66,
+            "startColumn": 7,
+            "endLine": 66,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/controls/direct-copy-controls.uc",
+            "startLine": 66,
+            "startColumn": 12,
+            "endLine": 66,
+            "endColumn": 35
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 29,
+            "startColumn": 20,
+            "endLine": 29,
+            "endColumn": 33
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 29,
+            "startColumn": 20,
+            "endLine": 29,
+            "endColumn": 21
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 26,
+            "startColumn": 7,
+            "endLine": 26,
+            "endColumn": 75
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 26,
+            "startColumn": 12,
+            "endLine": 26,
+            "endColumn": 75
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 32,
+            "startColumn": 4,
+            "endLine": 32,
+            "endColumn": 13
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 32,
+            "startColumn": 4,
+            "endLine": 32,
+            "endColumn": 5
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 26,
+            "startColumn": 7,
+            "endLine": 26,
+            "endColumn": 75
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 26,
+            "startColumn": 12,
+            "endLine": 26,
+            "endColumn": 75
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 40,
+            "startColumn": 20,
+            "endLine": 40,
+            "endColumn": 33
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 40,
+            "startColumn": 20,
+            "endLine": 40,
+            "endColumn": 21
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 37,
+            "startColumn": 7,
+            "endLine": 37,
+            "endColumn": 67
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 37,
+            "startColumn": 12,
+            "endLine": 37,
+            "endColumn": 67
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 43,
+            "startColumn": 4,
+            "endLine": 43,
+            "endColumn": 13
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 43,
+            "startColumn": 4,
+            "endLine": 43,
+            "endColumn": 5
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 37,
+            "startColumn": 7,
+            "endLine": 37,
+            "endColumn": 67
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 37,
+            "startColumn": 12,
+            "endLine": 37,
+            "endColumn": 67
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 350,
+            "startColumn": 21,
+            "endLine": 350,
+            "endColumn": 36
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 350,
+            "startColumn": 21,
+            "endLine": 350,
+            "endColumn": 23
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 10,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 16,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 350,
+            "startColumn": 60,
+            "endLine": 350,
+            "endColumn": 75
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 350,
+            "startColumn": 60,
+            "endLine": 350,
+            "endColumn": 62
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 10,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 16,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 384,
+            "startColumn": 5,
+            "endLine": 384,
+            "endColumn": 15
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 384,
+            "startColumn": 5,
+            "endLine": 384,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 10,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 343,
+            "startColumn": 16,
+            "endLine": 343,
+            "endColumn": 88
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 405,
+            "startColumn": 21,
+            "endLine": 405,
+            "endColumn": 36
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 405,
+            "startColumn": 21,
+            "endLine": 405,
+            "endColumn": 23
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 10,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 16,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 405,
+            "startColumn": 60,
+            "endLine": 405,
+            "endColumn": 75
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 405,
+            "startColumn": 60,
+            "endLine": 405,
+            "endColumn": 62
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 10,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 16,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 454,
+            "startColumn": 5,
+            "endLine": 454,
+            "endColumn": 15
+          }
+        },
+        {
+          "label": "swc",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 454,
+            "startColumn": 5,
+            "endLine": 454,
+            "endColumn": 7
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 10,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 400,
+            "startColumn": 16,
+            "endLine": 400,
+            "endColumn": 88
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 486,
+            "startColumn": 21,
+            "endLine": 486,
+            "endColumn": 38
+          }
+        },
+        {
+          "label": "block",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 486,
+            "startColumn": 21,
+            "endLine": 486,
+            "endColumn": 25
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 10,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 18,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 486,
+            "startColumn": 62,
+            "endLine": 486,
+            "endColumn": 79
+          }
+        },
+        {
+          "label": "block",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 486,
+            "startColumn": 62,
+            "endLine": 486,
+            "endColumn": 66
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 10,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 18,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 500,
+            "startColumn": 5,
+            "endLine": 500,
+            "endColumn": 17
+          }
+        },
+        {
+          "label": "block",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 500,
+            "startColumn": 5,
+            "endLine": 500,
+            "endColumn": 9
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 10,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 481,
+            "startColumn": 18,
+            "endLine": 481,
+            "endColumn": 54
+          }
+        },
+        "close",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 591,
+            "startColumn": 34,
+            "endLine": 591,
+            "endColumn": 47
+          }
+        },
+        {
+          "label": "fd",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 591,
+            "startColumn": 34,
+            "endLine": 591,
+            "endColumn": 35
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 585,
+            "startColumn": 10,
+            "endLine": 585,
+            "endColumn": 45
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/rpcd/ucode/luci",
+            "startLine": 585,
+            "startColumn": 15,
+            "endLine": 585,
+            "endColumn": 45
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 10,
+            "startColumn": 18,
+            "endLine": 10,
+            "endColumn": 33
+          }
+        },
+        {
+          "label": "top",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 10,
+            "startColumn": 18,
+            "endLine": 10,
+            "endColumn": 20
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 8,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 14,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 10,
+            "startColumn": 57,
+            "endLine": 10,
+            "endColumn": 72
+          }
+        },
+        {
+          "label": "top",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 10,
+            "startColumn": 57,
+            "endLine": 10,
+            "endColumn": 59
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 8,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 14,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        "read",
+        "popen"
+      ],
+      [
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 12
+          }
+        },
+        {
+          "label": "top",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 27,
+            "startColumn": 2,
+            "endLine": 27,
+            "endColumn": 4
+          }
+        },
+        {
+          "label": "VariableDeclarator",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 8,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        {
+          "label": "CallExpression",
+          "url": {
+            "uri": "file:///STAGED_SOURCE/usr/share/ucode/luci/sys.uc",
+            "startLine": 7,
+            "startColumn": 14,
+            "endLine": 7,
+            "endColumn": 43
+          }
+        },
+        "close",
+        "popen"
+      ]
+    ]
+  }
+}
