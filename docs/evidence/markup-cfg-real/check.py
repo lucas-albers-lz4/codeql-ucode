@@ -37,7 +37,7 @@ headers = {
 }
 def rows(name):
     with (out / name).open(newline='') as f:
-        r = csv.reader(f)
+        r = csv.reader(f, strict=True)
         if next(r, None) != headers[name]:
             raise ValueError(f'incorrect header: {name}')
         result = list(r)
