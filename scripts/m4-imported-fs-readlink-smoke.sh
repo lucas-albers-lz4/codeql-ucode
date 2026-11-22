@@ -19,7 +19,9 @@ src = Path(sys.argv[1])
 for name, digest in [('usr/share/rpcd/ucode/luci', '6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e'), ('usr/share/ucode/luci/sys.uc', '0380fba5d843a8950bab0ef70982cb40ab8f475e8d267c873e4199a736b55656')]:
     assert hashlib.sha256((src / name).read_bytes()).hexdigest() == digest, name
 PY
-if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
+source "$ROOT/scripts/smoke-extractor-platform.sh"
+platform="$(smoke_extractor_platform "$OSTYPE")"
+if [[ ! -x "$PACK/tools/$platform/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 rm -rf "$DB"
