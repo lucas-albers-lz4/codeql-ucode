@@ -15,6 +15,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import platform
 import tempfile
 from contextlib import nullcontext
 from typing import Any
@@ -190,7 +191,9 @@ def identity_faults(codeql, db, source, out, mutant, search, queries):
 def main():
     codeql = shutil.which('codeql')
     require(codeql is not None, 'codeql CLI must be on PATH')
-    require((PACK / 'tools/linux64/extractor').is_file(), 'build extractor-pack first')
+    system = {'Linux': 'linux64', 'Darwin': 'osx64'}.get(platform.system())
+    require(system is not None, f'unsupported OS: {platform.system()}')
+    require((PACK / 'tools' / system / 'extractor').is_file(), 'build extractor-pack first')
     retained = os.environ.get('CODEQL_UCODE_HELPER_EVIDENCE_DIR')
     if retained:
         evidence = Path(retained).expanduser().resolve()
