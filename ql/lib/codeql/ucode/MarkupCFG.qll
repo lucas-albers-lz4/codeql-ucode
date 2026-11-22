@@ -56,6 +56,11 @@ module MarkupCFG {
       t.getParent() = root and t.getParentIndex() = 0 and t.getValue().matches("#!%")
     ) and
     not exists(Diagnostic d | d.getLocation().getFile() = root.getLocation().getFile()) and
+    // Tree-sitter extras need not have a parent relation, so inspect the file.
+    not exists(UcodeMarkup::AstNode comment |
+      comment.getLocation().getFile() = root.getLocation().getFile() and
+      (comment instanceof UcodeMarkup::Comment or comment instanceof UcodeMarkup::DocComment)
+    ) and
     not exists(UcodeMarkup::AstNode n | n.getParent+() = root and not allowedChild(n)) and
     not exists(UcodeMarkup::ExpressionTag t | t.getParent+() = root |
       not t.getChild() instanceof UcodeMarkup::Identifier or

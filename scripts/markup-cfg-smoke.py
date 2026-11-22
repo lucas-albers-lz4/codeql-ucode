@@ -1,6 +1,7 @@
 """Fresh extraction and complete bounded markup CFG node and edge checks."""
 import csv
 import io
+import gzip
 import json
 from pathlib import Path
 import tempfile
@@ -45,6 +46,12 @@ def main():
         assert len(diagnostics) == 2 and all(r[0] == 'malformed.ut' for r in diagnostics), diagnostics
         extracted = json.loads(smoke.query(fixture_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'files.bqrs'))['#select']['tuples']
         assert {r[0]['url']['uri'] for r in extracted} == {p.resolve().as_uri() for p in SOURCE.glob('*.ut') if p.name != 'malformed.ut'}, extracted
+        comments = rows(fixture_db, 'markup-cfg-comments-test.ql', base / 'comments.bqrs')
+        assert {tuple(r) for r in comments} == {
+            ('code-comment.ut', 'Comment', 'no-parent'),
+            ('doc-comment.ut', 'DocComment', 'no-parent'),
+            ('expression-comment.ut', 'Comment', 'no-parent'),
+        } and len(comments) == 3, comments
         ast = rows(fixture_db, 'markup-cfg-ast-test.ql', base / 'ast.bqrs')
         expected_ast = {
             ('Markup', 'Markup', '1', '1', '1', '40', '<root>', '-1'),
@@ -64,6 +71,29 @@ def main():
         }
         assert len(ast) == len(expected_ast) and {tuple(r) for r in ast} == expected_ast, ast
         check_graph(fixture_db, base, set(PATHS) - {'mixed.ut'})
+        # Inject a warning into an otherwise unchanged, successfully extracted
+        # supported file. This isolates the diagnostic veto from syntax checks.
+        diagnostic_db = base / 'diagnostic-veto'
+        smoke.run('codeql', 'database', 'init', diagnostic_db, '--language=ucode',
+                  f'--search-path={smoke.PACK}', f'--source-root={SOURCE}')
+        smoke.run('codeql', 'database', 'index-files', diagnostic_db, '--language=ucode',
+                  '--include=**/adjacent.ut', f'--working-dir={SOURCE}')
+        source_id = json.dumps(str((SOURCE / 'adjacent.ut').resolve()) + ';sourcefile')
+        trap = (f'#1=@{source_id}\n#2=*\nlocations_default(#2,#1,1,1,1,1)\n'
+                '#3=*\ndiagnostics(#3,30,"test_warning","injected warning",'
+                '"injected warning",#2)\n')
+        with gzip.open(diagnostic_db / 'trap/ucode/injected-warning.trap.gz', 'wt') as out:
+            out.write(trap)
+        smoke.run('codeql', 'database', 'finalize', diagnostic_db)
+        clean_ast = rows(fixture_db, 'markup-cfg-adjacent-ast-test.ql', base / 'clean-ast.bqrs')
+        warned_ast = rows(diagnostic_db, 'markup-cfg-adjacent-ast-test.ql', base / 'warned-ast.bqrs')
+        assert clean_ast and sorted(clean_ast) == sorted(warned_ast), (clean_ast, warned_ast)
+        warnings = rows(diagnostic_db, 'markup-cfg-diagnostics-test.ql', base / 'warning.bqrs')
+        assert warnings == [['adjacent.ut', 'test_warning', 'injected warning']], warnings
+        files = json.loads(smoke.query(diagnostic_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'warned-files.bqrs'))['#select']['tuples']
+        assert {r[0]['url']['uri'] for r in files} == {(SOURCE / 'adjacent.ut').resolve().as_uri()}, files
+        assert not rows(diagnostic_db, 'markup-cfg-nodes-test.ql', base / 'warned-nodes.bqrs')
+        assert not rows(diagnostic_db, 'markup-cfg-test.ql', base / 'warned-edges.bqrs')
         mixed = base / 'mixed'
         mixed.mkdir()
         db, receipt = smoke.database(mixed, ['mixed.ut'])
