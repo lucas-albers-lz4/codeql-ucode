@@ -39,6 +39,19 @@ PATHS = {
   ('function-creation', 'FunctionExpression:1:10:1:31:AssignmentExpression:2'),
   ('assignment-completion', 'AssignmentExpression:1:4:1:31:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:1:4:1:32:Markup:1')],
+ ('two-callables.ut', 'top'): [
+  ('object-identifier', 'Identifier:1:4:1:4:MemberExpression:0'),
+  ('member-reference', 'MemberExpression:1:4:1:6:AssignmentExpression:0'),
+  ('function-creation', 'FunctionExpression:1:10:1:22:AssignmentExpression:2'),
+  ('assignment-completion', 'AssignmentExpression:1:4:1:22:ExpressionStatement:0'),
+  ('statement-completion', 'ExpressionStatement:1:4:1:23:Markup:1'),
+  ('object-identifier', 'Identifier:1:25:1:25:MemberExpression:0'),
+  ('member-reference', 'MemberExpression:1:25:1:27:AssignmentExpression:0'),
+  ('function-creation', 'FunctionExpression:1:31:1:43:AssignmentExpression:2'),
+  ('assignment-completion', 'AssignmentExpression:1:25:1:43:ExpressionStatement:0'),
+  ('statement-completion', 'ExpressionStatement:1:25:1:44:Markup:2')],
+ ('two-callables.ut', 'callable:1:10'): [('entry', 'entry'), ('exit', 'exit')],
+ ('two-callables.ut', 'callable:1:31'): [('entry', 'entry'), ('exit', 'exit')],
  ('uhttpd.uc', 'top'): [
   ('import-completion', 'ImportStatement:3:1:3:39:Markup:1'),
   ('import-completion', 'ImportStatement:4:1:4:32:Markup:2'),
@@ -97,7 +110,7 @@ def rows(db, name, output):
 
 def graph(db, base, keys):
     nodes = {(f, scope, role, identity) for (f, scope) in keys for role, identity in PATHS[f, scope]}
-    edges = {(f, scope, a[1], b[1]) for f, scope in keys for a, b in zip(PATHS[f, scope], PATHS[f, scope][1:])}
+    edges = {(f, scope, a[1], f, scope, b[1]) for f, scope in keys for a, b in zip(PATHS[f, scope], PATHS[f, scope][1:])}
     actual_nodes = rows(db, 'markup-creation-nodes-test.ql', base / 'nodes.bqrs')
     actual_edges = rows(db, 'markup-creation-edges-test.ql', base / 'edges.bqrs')
     assert len(actual_nodes) == len(nodes) and {tuple(r) for r in actual_nodes} == nodes, actual_nodes
@@ -116,9 +129,9 @@ def main():
         assert len(ast) == len(SUPPORTED_AST) and {tuple(r[1:]) for r in ast if r[0] == 'supported.ut'} == SUPPORTED_AST, ast
         graph(db, base, set(PATHS) - {('uhttpd.uc','top')})
         scopes = rows(db, 'markup-creation-scopes-test.ql', base / 'scopes.bqrs')
-        assert {tuple(r) for r in scopes} == {('supported.ut','1','29','1','54','covered'), ('empty-body.ut','1','10','1','22','covered'), ('body-call.ut','1','10','1','31','unsupported')} and len(scopes) == 3, scopes
+        assert {tuple(r) for r in scopes} == {('supported.ut','1','29','1','54','covered'), ('empty-body.ut','1','10','1','22','covered'), ('body-call.ut','1','10','1','31','unsupported'), ('two-callables.ut','1','10','1','22','covered'), ('two-callables.ut','1','31','1','43','covered')} and len(scopes) == 5, scopes
         roots = rows(db, 'markup-creation-root-test.ql', base / 'roots.bqrs')
-        assert {tuple(r) for r in roots} == {(name,'top-observed') for name in ['supported.ut','empty-body.ut','body-call.ut']} and len(roots) == 3, roots
+        assert {tuple(r) for r in roots} == {(name,'top-observed') for name in ['supported.ut','empty-body.ut','body-call.ut','two-callables.ut']} and len(roots) == 4, roots
         # Inject a warning into an unchanged supported AST to isolate the
         # file-diagnostic veto from all syntax and shape checks.
         warning_db = base / 'warning-db'

@@ -1,7 +1,8 @@
 # Bounded import and function creation ordering
 
 This contract adds a separate, partial top-level observation graph for clean
-markup roots consisting only of default imports and expression statements of
+markup roots consisting only of default imports whose module strings contain only unescaped
+string fragments, and expression statements of
 the form `identifier.property = function(simple_parameters) { body };`.
 Imports are represented by one completion node; imported bindings and string
 fragments are not evaluated as nodes. The assignment path visits the object
@@ -22,6 +23,6 @@ coverage is claimed. The partial graph has no edge into the callable scope.
 
 This is an explicitly bounded ordering contract based on extracted syntax; it
 is not a claim about full ucode runtime semantics, import effects, identifier
-resolution, data flow, output escaping, or security analysis. Calls, branches,
+resolution, data flow, output escaping, or security analysis. Escaped import strings, calls, branches,
 loops, computed or optional member references, other import/assignment forms,
 and recovery remain outside this contract.
