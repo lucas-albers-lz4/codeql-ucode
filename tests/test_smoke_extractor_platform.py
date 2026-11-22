@@ -31,5 +31,43 @@ class SmokeExtractorPlatform(unittest.TestCase):
             self.assertIn('Unsupported OS: unsupported', result.stderr)
 
 
+def linux_only_hard_failure(text):
+    """Detect direct Linux-only pack checks that reject instead of rebuilding."""
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        if 'tools/linux64/extractor' not in line or 'tools/osx64/extractor' in line:
+            continue
+        if 'create-extractor-pack.sh' in line:
+            continue
+        block = []
+        for following in lines[index + 1:]:
+            if following.strip() == 'fi':
+                break
+            block.append(following)
+        if 'create-extractor-pack.sh' not in '\n'.join(block):
+            return True
+    return False
+
+
+class AggregatePreflightContract(unittest.TestCase):
+    def test_no_linux_only_hard_failure(self):
+        scripts = [ROOT / 'scripts/m3-smoke.sh', *sorted((ROOT / 'scripts').glob('m4-*-smoke.sh'))]
+        for script in scripts:
+            with self.subTest(script=script.name):
+                self.assertFalse(linux_only_hard_failure(script.read_text()), script.name)
+        for name in ('models-fs-popen-smoke.py', 'models-local-helper-smoke.py',
+                     'staged-routing-controls.py'):
+            with self.subTest(script=name):
+                self.assertNotIn('tools/linux64/extractor', (ROOT / 'scripts' / name).read_text())
+
+    def test_rejects_linux_only_failure_control(self):
+        mutant = '''if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
+  echo "missing" >&2
+  exit 1
+fi'''
+        self.assertTrue(linux_only_hard_failure(mutant))
+        self.assertFalse(linux_only_hard_failure(mutant.replace('  exit 1', '  bash scripts/create-extractor-pack.sh')))
+
+
 if __name__ == '__main__':
     unittest.main()
