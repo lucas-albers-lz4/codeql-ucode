@@ -1,0 +1,13 @@
+"col0","ordinary","creation","col3"
+"usr/share/ucode/luci/template/admin_status/index.ut","unsupported","unsupported",117
+"usr/share/ucode/luci/template/csrftoken.ut","unsupported","unsupported",72
+"usr/share/ucode/luci/template/error404.ut","unsupported","unsupported",95
+"usr/share/ucode/luci/template/error500.ut","unsupported","unsupported",55
+"usr/share/ucode/luci/template/footer.ut","unsupported","unsupported",182
+"usr/share/ucode/luci/template/header.ut","unsupported","unsupported",293
+"usr/share/ucode/luci/template/sysauth.ut","unsupported","unsupported",276
+"usr/share/ucode/luci/template/themes/bootstrap/footer.ut","unsupported","unsupported",111
+"usr/share/ucode/luci/template/themes/bootstrap/header.ut","unsupported","unsupported",663
+"usr/share/ucode/luci/template/themes/bootstrap/sysauth.ut","unsupported","unsupported",143
+"usr/share/ucode/luci/template/view.ut","unsupported","unsupported",46
+"usr/share/ucode/luci/uhttpd.uc","unsupported","covered",78
