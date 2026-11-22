@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import io
 import json
+import runpy
 from pathlib import Path
 import tempfile
 
@@ -40,7 +41,7 @@ PATHS = {
   ('assignment-completion', 'AssignmentExpression:1:4:1:31:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:1:4:1:32:Markup:1')],
  ('body-call.ut', 'callable:1:10'): [
-  ('entry', 'entry'), ('object-identifier', 'Identifier:1:23:1:26:CallExpression:0'),
+  ('entry', 'entry'), ('identifier', 'Identifier:1:23:1:26:CallExpression:0'),
   ('call-completion', 'CallExpression:1:23:1:28:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:1:23:1:29:StatementBlock:1'), ('exit', 'exit')],
  ('two-callables.ut', 'top'): [
@@ -58,19 +59,19 @@ PATHS = {
  ('two-callables.ut', 'callable:1:31'): [('entry', 'entry'), ('exit', 'exit')],
  ('uhttpd.uc', 'callable:6:25'): [
   ('entry', 'entry'),
-  ('object-identifier', 'Identifier:7:12:7:18:CallExpression:0'),
-  ('object-identifier', 'Identifier:7:20:7:22:Arguments:1'),
-  ('object-identifier', 'Identifier:7:25:7:30:MemberExpression:0'),
+  ('identifier', 'Identifier:7:12:7:18:CallExpression:0'),
+  ('identifier', 'Identifier:7:20:7:22:Arguments:1'),
+  ('identifier', 'Identifier:7:25:7:30:MemberExpression:0'),
   ('member-reference', 'MemberExpression:7:25:7:35:Arguments:3'),
-  ('object-identifier', 'Identifier:7:38:7:43:MemberExpression:0'),
+  ('identifier', 'Identifier:7:38:7:43:MemberExpression:0'),
   ('member-reference', 'MemberExpression:7:38:7:48:Arguments:5'),
   ('call-completion', 'CallExpression:7:12:7:49:VariableDeclarator:2'),
   ('declaration-completion', 'LexicalDeclaration:7:2:7:50:StatementBlock:1'),
-  ('object-identifier', 'Identifier:9:2:9:9:CallExpression:0'),
-  ('object-identifier', 'Identifier:9:11:9:13:Arguments:1'),
+  ('identifier', 'Identifier:9:2:9:9:CallExpression:0'),
+  ('identifier', 'Identifier:9:11:9:13:Arguments:1'),
   ('call-completion', 'CallExpression:9:2:9:14:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:9:2:9:15:StatementBlock:2'),
-  ('object-identifier', 'Identifier:11:2:11:4:MemberExpression:0'),
+  ('identifier', 'Identifier:11:2:11:4:MemberExpression:0'),
   ('member-reference', 'MemberExpression:11:2:11:10:CallExpression:0'),
   ('call-completion', 'CallExpression:11:2:11:12:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:11:2:11:13:StatementBlock:3'), ('exit', 'exit')],
@@ -195,6 +196,7 @@ def main():
         assert rows(db, 'markup-creation-scopes-test.ql', real / 'scopes.bqrs') == [['uhttpd.uc','6','25','12','1','covered']]
         assert rows(db, 'markup-creation-root-test.ql', real / 'roots.bqrs') == [['uhttpd.uc','top-observed']]
         print('Exact import/function paths, scopes, source identities and diagnostics verified')
+    runpy.run_path(str(ROOT / 'scripts/markup-call-controls-smoke.py'))
 
 if __name__ == '__main__':
     main()

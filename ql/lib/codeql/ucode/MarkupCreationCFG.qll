@@ -264,7 +264,11 @@ module MarkupCreationCFG {
       or
       this.getAstNode() instanceof UcodeMarkup::ImportStatement and result = "import-completion"
       or
-      this.getAstNode() instanceof UcodeMarkup::Identifier and result = "object-identifier"
+      this.getAstNode() instanceof UcodeMarkup::Identifier and exists(this.getTopScope()) and
+      result = "object-identifier"
+      or
+      this.getAstNode() instanceof UcodeMarkup::Identifier and exists(this.getCallableScope()) and
+      result = "identifier"
       or
       this.getAstNode() instanceof UcodeMarkup::MemberExpression and result = "member-reference"
       or
