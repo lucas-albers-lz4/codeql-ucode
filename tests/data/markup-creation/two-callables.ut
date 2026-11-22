@@ -1,0 +1,1 @@
+{% x.y = function() {}; a.b = function() {};
