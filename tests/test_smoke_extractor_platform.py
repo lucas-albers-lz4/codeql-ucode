@@ -32,26 +32,29 @@ class SmokeExtractorPlatform(unittest.TestCase):
 
 
 def linux_only_hard_failure(text):
-    """Detect direct Linux-only pack checks that reject instead of rebuilding."""
-    lines = text.splitlines()
+    """Reject Linux-only checks unless the same preflight rebuilds first."""
+    lines = [line.split('#', 1)[0].strip() for line in text.splitlines()]
     for index, line in enumerate(lines):
         if 'tools/linux64/extractor' not in line or 'tools/osx64/extractor' in line:
             continue
-        if 'create-extractor-pack.sh' in line:
-            continue
-        block = []
-        for following in lines[index + 1:]:
-            if following.strip() == 'fi':
-                break
-            block.append(following)
-        if 'create-extractor-pack.sh' not in '\n'.join(block):
+        block = [line]
+        if line.startswith('if ') and 'fi' not in line.split():
+            for following in lines[index + 1:]:
+                if following == 'fi':
+                    break
+                block.append(following)
+        joined = '\n'.join(block)
+        rebuild = joined.find('bash scripts/create-extractor-pack.sh')
+        fail = joined.find('exit ')
+        if rebuild < 0 or (fail >= 0 and fail < rebuild):
             return True
     return False
 
 
 class AggregatePreflightContract(unittest.TestCase):
     def test_no_linux_only_hard_failure(self):
-        scripts = [ROOT / 'scripts/m3-smoke.sh', *sorted((ROOT / 'scripts').glob('m4-*-smoke.sh'))]
+        scripts = [ROOT / 'scripts/m3-smoke.sh', ROOT / 'scripts/m4-smoke.sh',
+                   *sorted((ROOT / 'scripts').glob('m4-*-smoke.sh'))]
         for script in scripts:
             with self.subTest(script=script.name):
                 self.assertFalse(linux_only_hard_failure(script.read_text()), script.name)
@@ -66,6 +69,11 @@ class AggregatePreflightContract(unittest.TestCase):
   exit 1
 fi'''
         self.assertTrue(linux_only_hard_failure(mutant))
+        self.assertTrue(linux_only_hard_failure(mutant + '\nbash scripts/create-extractor-pack.sh'))
+        self.assertTrue(linux_only_hard_failure(mutant.replace('  exit 1',
+                        '  # bash scripts/create-extractor-pack.sh\n  exit 1')))
+        self.assertTrue(linux_only_hard_failure(mutant.replace('  exit 1',
+                        '  exit 1\n  bash scripts/create-extractor-pack.sh')))
         self.assertFalse(linux_only_hard_failure(mutant.replace('  exit 1', '  bash scripts/create-extractor-pack.sh')))
 
 
