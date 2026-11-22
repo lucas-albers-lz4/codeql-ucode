@@ -34,11 +34,49 @@ pins={
 for path,digest in pins.items():
  if hashlib.sha256((R/path).read_bytes()).hexdigest()!=digest: raise ValueError('input hash mismatch: '+path)
 selected={'controls/direct-copy-controls.uc','usr/share/rpcd/ucode/luci','usr/share/ucode/luci/sys.uc'}
-files=raw('files'); errors=raw('errors')
-if len(files)!=3 or {ent(row[0])[0] for row in files}!=selected or errors: raise ValueError('invalid extraction diagnostics')
-route=json.loads((W/'routing.json').read_text())
-if (route['input_count'],route['plain_count'],route['excluded_count'],route['markup_count'],route['uncertain_count'],route['markup_inconclusive_count'],route['duplicate_input_count'])!=(3,3,0,0,0,0,0): raise ValueError('routing counts')
-if {d['installed_path'] for d in route['decisions']}!=selected or any(d['status']!='plain_route_selected' for d in route['decisions']): raise ValueError('routing identities')
+def document(name): return json.loads((W/(name+'.json')).read_text())
+files_doc=document('files'); errors_doc=document('errors'); route=document('routing'); observed_doc=document('observed')
+def check_evidence(files_doc,errors_doc,route,observed_doc):
+ def table(doc,columns):
+  if set(doc)!={'#select'} or set(doc['#select'])!={'columns','tuples'} or doc['#select']['columns']!=columns or not isinstance(doc['#select']['tuples'],list): raise ValueError('diagnostic or observed schema')
+  return doc['#select']['tuples']
+ files=table(files_doc,[{'name':'f','kind':'Entity'},{'kind':'String'}])
+ errors=table(errors_doc,[{'name':'error','kind':'Entity'},{'kind':'String'},{'kind':'Integer'}])
+ expected_files=[]
+ for name in sorted(selected):
+  path='/STAGED_SOURCE/'+name
+  expected_files.append([{'label':path,'url':{'uri':'file://'+path,'startLine':0,'startColumn':0,'endLine':0,'endColumn':0}},''])
+ if collections.Counter(map(serialized,files))!=collections.Counter(map(serialized,expected_files)) or errors: raise ValueError('invalid diagnostics')
+ expected_route={'input_count':3,'plain_count':3,'markup_count':0,'markup_inconclusive_count':0,'uncertain_count':0,'excluded_count':0,'duplicate_input_count':0}
+ if set(route)!=set(expected_route)|{'decisions'} or any(type(route[k]) is not int or route[k]!=v for k,v in expected_route.items()): raise ValueError('routing counts or schema')
+ decisions=[]
+ for name in sorted(selected):
+  reason='rpcd_raw_mode_full_path' if name=='usr/share/rpcd/ucode/luci' else 'ucode_extension'
+  decisions.append({'path':'/STAGED_SOURCE/'+name,'installed_path':name,'classification':'plain','reason':reason,'status':'plain_route_selected'})
+ if collections.Counter(map(serialized,route['decisions']))!=collections.Counter(map(serialized,decisions)): raise ValueError('routing decisions')
+ columns=[{'name':n,'kind':k} for n,k in [('sourceDecl','Entity'),('initializer','Entity'),('copyDecl','Entity'),('receiver','Entity'),('call','Entity'),('relation','String')]]
+ observations=table(observed_doc,columns)
+ expected_observed=collections.Counter(tuple(coords for coords in row[:5])+(row[5],) for row in m.EXPECTED)
+ actual_observed=collections.Counter()
+ for row in observations:
+  if len(row)!=6: raise ValueError('standalone row length')
+  entities=[ent(e) for e in row[:5]]
+  if any(name!='controls/direct-copy-controls.uc' for name,_ in entities): raise ValueError('unexpected standalone file')
+  actual_observed[tuple(coords for _,coords in entities)+(row[5],)]+=1
+ if actual_observed!=expected_observed: raise ValueError('standalone witness mismatch')
+check_evidence(files_doc,errors_doc,route,observed_doc)
+for mutation in ('route_path','route_duplicate','success_message','file_coordinate','error_schema','empty_witness'):
+ f,e,r,o=map(copy.deepcopy,(files_doc,errors_doc,route,observed_doc))
+ if mutation=='route_path': r['decisions'][0]['path']='/STAGED_SOURCE/wrong.uc'
+ elif mutation=='route_duplicate': r['decisions'].append(copy.deepcopy(r['decisions'][0]))
+ elif mutation=='success_message': f['#select']['tuples'][0][1]='changed'
+ elif mutation=='file_coordinate': f['#select']['tuples'][0][0]['url']['startLine']=1
+ elif mutation=='error_schema': e['#select']['columns']=[]
+ else: o['#select']['tuples']=[]
+ try: check_evidence(f,e,r,o)
+ except (ValueError,KeyError): pass
+ else: raise RuntimeError('evidence mutation survived: '+mutation)
+print('PASS evidence mutations: route path, duplicate decision, success message, file coordinate, error schema, empty standalone witnesses')
 controls=collections.Counter((ent(row[0])[1],row[1]) for row in raw('calls') if ent(row[0])[0]=='controls/direct-copy-controls.uc')
 if controls!=collections.Counter(m.EXPECTED_CALLS): raise ValueError('control call inventory')
 if len(raw('request-args'))!=7: raise ValueError('request-args baseline count')
