@@ -1,0 +1,1 @@
+{% import a from 'a\x62'; x.y = function() {};

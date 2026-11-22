@@ -33,6 +33,20 @@ with Path(os.environ["SMOKE_LOG"]).open("a") as log:
 if os.environ.get("FAIL_MARKUP"):
     raise SystemExit(43)
 """)
+        (scripts / "markup-cfg-smoke.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("markup-cfg-smoke.py\\n")
+if os.environ.get("FAIL_MARKUP_CFG"):
+    raise SystemExit(44)
+""")
+        (scripts / "markup-creation-smoke.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("markup-creation-smoke.py\\n")
+if os.environ.get("FAIL_MARKUP_CREATION"):
+    raise SystemExit(45)
+""")
         (scripts / "uci-helper-observation-smoke.py").write_text("""import os
 from pathlib import Path
 with Path(os.environ["SMOKE_LOG"]).open("a") as log:
@@ -65,6 +79,8 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.env.pop("CODEQL_UCODE_SMOKE_PACKS_READY", None)
         self.env.pop("FAIL_PACK", None)
         self.env.pop("FAIL_MARKUP", None)
+        self.env.pop("FAIL_MARKUP_CFG", None)
+        self.env.pop("FAIL_MARKUP_CREATION", None)
         self.env.pop("FAIL_UCI", None)
 
     def run_script(self, name, **env):
@@ -81,14 +97,15 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.lines("installs"),
                          [str(self.root / "ql/lib"), str(self.root / "ql/src")])
-        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "m4-smoke.sh",
-                                               "m4-block-device-smoke.sh", "m3-smoke.sh",
-                                               "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh",
+                         "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
             ("m3-smoke.sh", 37, ["m3-smoke.sh"]),
-            ("m4-smoke.sh", 41, ["m3-smoke.sh", "markup-ast-smoke.py", "m4-smoke.sh"]),
+            ("m4-smoke.sh", 41, ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh"]),
         ):
             with self.subTest(child=child):
                 for log in ("installs", "smokes"):
@@ -115,13 +132,24 @@ fi
         result = self.run_script("ci-ql-smoke.sh", FAIL_UCI="1")
         self.assertEqual(result.returncode, 47, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "m4-smoke.sh", "m4-block-device-smoke.sh", "m3-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "uci-helper-observation-smoke.py"])
 
     def test_markup_failure_stops_before_m4(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP="1")
         self.assertEqual(result.returncode, 43, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py"])
+
+    def test_markup_cfg_failure_stops_before_m4(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP_CFG="1")
+        self.assertEqual(result.returncode, 44, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py"])
+
+    def test_markup_creation_failure_stops_before_m4(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP_CREATION="1")
+        self.assertEqual(result.returncode, 45, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py"])
 
     def test_both_install_failures_stop_before_smokes(self):
         for pack, count in (("lib", 1), ("src", 2)):
