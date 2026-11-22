@@ -41,6 +41,8 @@ def main():
         assert len(errors) == 2 and all(r[0]['url']['uri'] == (SOURCE / 'malformed.ut').resolve().as_uri() for r in errors), errors
         messages = {r[0]['label'] for r in errors}
         assert any('expected identifier symbol' in m for m in messages) and 'Missing value for field: expression_tag::child' in messages, messages
+        diagnostics = rows(fixture_db, 'markup-cfg-diagnostics-test.ql', base / 'diagnostics.bqrs')
+        assert len(diagnostics) == 2 and all(r[0] == 'malformed.ut' for r in diagnostics), diagnostics
         extracted = json.loads(smoke.query(fixture_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'files.bqrs'))['#select']['tuples']
         assert {r[0]['url']['uri'] for r in extracted} == {p.resolve().as_uri() for p in SOURCE.glob('*.ut') if p.name != 'malformed.ut'}, extracted
         ast = rows(fixture_db, 'markup-cfg-ast-test.ql', base / 'ast.bqrs')
@@ -70,6 +72,7 @@ def main():
         assert not errors, errors
         files = json.loads(smoke.query(db, 'diagnostics/SuccessfullyExtractedFiles.ql', mixed / 'files.bqrs'))['#select']['tuples']
         assert {r[0]['url']['uri'] for r in files} == {(smoke.SOURCE / 'usr/share/ucode/controls/mixed.ut').resolve().as_uri()}, files
+        assert not rows(db, 'markup-cfg-diagnostics-test.ql', mixed / 'diagnostics.bqrs')
         check_graph(db, mixed, {'mixed.ut'})
         print('Exact covered node and edge sets and extraction diagnostics verified')
 
