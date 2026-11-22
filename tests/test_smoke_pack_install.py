@@ -16,7 +16,8 @@ class SmokePackInstallTests(unittest.TestCase):
         self.root = Path(self.tmp.name).resolve()
         scripts = self.root / "scripts"
         scripts.mkdir()
-        for name in ("ci-ql-smoke.sh", "ql-smoke-pack-install.sh"):
+        for name in ("ci-ql-smoke.sh", "ql-smoke-pack-install.sh",
+                     "m4-uci-helper-observation-smoke.sh"):
             shutil.copy(REPO / "scripts" / name, scripts / name)
         child = '''#!/usr/bin/env bash
 set -euo pipefail
@@ -46,6 +47,18 @@ with Path(os.environ["SMOKE_LOG"]).open("a") as log:
 if os.environ.get("FAIL_MARKUP_CREATION"):
     raise SystemExit(45)
 """)
+        (scripts / "uci-helper-observation-smoke.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("uci-helper-observation-smoke.py\\n")
+if os.environ.get("FAIL_UCI"):
+    raise SystemExit(47)
+""")
+        for platform in ("linux64", "osx64"):
+            extractor = self.root / "extractor-pack" / "tools" / platform / "extractor"
+            extractor.parent.mkdir(parents=True)
+            extractor.touch(mode=0o755)
+        (scripts / "m4-z-after-smoke.sh").write_text(child)
         (scripts / "m3-smoke.sh").write_text(child)
         # A nested M3 invocation must inherit aggregate readiness.
         (scripts / "m4-block-device-smoke.sh").write_text(
@@ -68,6 +81,7 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.env.pop("FAIL_MARKUP", None)
         self.env.pop("FAIL_MARKUP_CFG", None)
         self.env.pop("FAIL_MARKUP_CREATION", None)
+        self.env.pop("FAIL_UCI", None)
 
     def run_script(self, name, **env):
         return subprocess.run(["bash", f"scripts/{name}"], cwd=self.root,
@@ -83,8 +97,10 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.lines("installs"),
                          [str(self.root / "ql/lib"), str(self.root / "ql/src")])
-        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
-                                               "m4-block-device-smoke.sh", "m3-smoke.sh"])
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh",
+                         "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
@@ -111,6 +127,14 @@ fi
                                      [str(self.root / "ql/lib"), str(self.root / "ql/src")])
                 finally:
                     script.write_text(original)
+
+    def test_uci_observer_failure_stops_later_smokes(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_UCI="1")
+        self.assertEqual(result.returncode, 47, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh",
+                         "uci-helper-observation-smoke.py"])
 
     def test_markup_failure_stops_before_m4(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP="1")
