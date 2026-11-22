@@ -3,6 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 PACK="$(realpath "$ROOT/extractor-pack")"
 TMP="$(mktemp -d)"
+TMP="$(cd "$TMP" && pwd -P)"
 trap 'rm -rf -- "$TMP"' EXIT
 FIXTURE_DIR="$TMP/src/ql/test/extractor-smoke"
 mkdir -p "$FIXTURE_DIR"

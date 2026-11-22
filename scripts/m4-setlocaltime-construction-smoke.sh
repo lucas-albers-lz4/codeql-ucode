@@ -8,6 +8,7 @@ if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then bash scripts/create-extracto
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/setlocaltime-smoke-XXXXXXXX")"
+TMP="$(cd "$TMP" && pwd -P)"
 trap 'rm -rf "$TMP"' EXIT
 SRC="$TMP/ql/test/extractor-smoke"
 mkdir -p "$SRC/usr/share/rpcd/ucode"

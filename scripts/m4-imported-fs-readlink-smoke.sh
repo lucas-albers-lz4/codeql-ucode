@@ -5,6 +5,7 @@ cd "$ROOT"
 PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-imported-fs-readlink"
 TMP_ROOT="$(mktemp -d)"
+TMP_ROOT="$(cd "$TMP_ROOT" && pwd -P)"
 trap 'rm -rf "$TMP_ROOT"' EXIT
 SRC="$TMP_ROOT/ql/test/extractor-smoke"
 mkdir -p "$SRC/usr/share/rpcd/ucode" "$SRC/usr/share/ucode/luci"
@@ -37,3 +38,18 @@ for entry in "diagnostics/SuccessfullyExtractedFiles.ql extracted csv" "diagnost
   fi
 done
 python3 scripts/readlink-targets-verify.py "$SRC" "$DB" ql/test/readlink-controls/expected.json
+# Mutate one real receipt identity and require the unchanged path check to reject it.
+python3 - "$SRC" "$DB" ql/test/readlink-controls/expected.json "$TMP_ROOT" <<'PYCONTROL'
+import json, pathlib, subprocess, sys
+src, db, manifest, temp = map(pathlib.Path, sys.argv[1:])
+mutated = temp / 'mutated-db'
+mutated.mkdir()
+route = json.loads((db / 'routing.json').read_text())
+route['decisions'][0]['path'] += '.wrong'
+(mutated / 'routing.json').write_text(json.dumps(route))
+result = subprocess.run([sys.executable, 'scripts/readlink-targets-verify.py',
+                         str(src), str(mutated), str(manifest)], capture_output=True, text=True)
+if result.returncode == 0 or "assert {d['path']" not in result.stderr:
+    raise SystemExit(f'routing path mutation was not rejected by the path assertion: {result.stderr}')
+print('routing path mutation rejected by exact identity assertion')
+PYCONTROL

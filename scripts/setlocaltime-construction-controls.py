@@ -122,7 +122,7 @@ def main():
     sources = cases(original.decode('utf-8'))
     positive = {'positive', 'comment-whitespace', 'reflection-conditional'}
     with tempfile.TemporaryDirectory(prefix='setlocaltime-controls-') as tmp:
-        base = Path(tmp)
+        base = Path(tmp).resolve()
         src = base / 'source'
         paths = {}
         for name, text in sources.items():
