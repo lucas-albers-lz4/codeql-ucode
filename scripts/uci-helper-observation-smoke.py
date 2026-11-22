@@ -11,7 +11,8 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT / 'ql/test/uci-helper-observation'
 PACK = ROOT / 'extractor-pack'
-NAMES = ('uci.uc', 'positive.uc', 'shadow.uc', 'unrelated.uc', 'reordered.uc', 'unknown.uc', 'formal-shadow.uc')
+NAMES = ('uci.uc', 'positive.uc', 'shadow.uc', 'unrelated.uc', 'reordered.uc', 'unknown.uc', 'formal-shadow.uc', 'block-shadow.uc', 'forward-unknown.uc',
+         'forward-computed.uc', 'forward-property.uc')
 
 def run(*args, env=None):
     return subprocess.run([str(a) for a in args], check=True, text=True, env=env, stdout=subprocess.PIPE).stdout
