@@ -157,7 +157,7 @@ def decode(name):
         return list(csv.DictReader(f))
 
 with tempfile.TemporaryDirectory() as tmp:
-    src = Path(tmp) / 'ql/test/extractor-smoke'
+    src = Path(tmp).resolve() / 'ql/test/extractor-smoke'
     for name, (source, expected) in CASES.items():
         if os.environ.get('BACKEND_CONTROL_CASE', name) != name:
             continue

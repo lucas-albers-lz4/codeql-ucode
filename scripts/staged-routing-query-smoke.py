@@ -74,7 +74,7 @@ def execute(base, layout, staged):
 
 def main():
     with tempfile.TemporaryDirectory(prefix='ucode-staged-routing-') as directory:
-        root = Path(directory)
+        root = Path(directory).resolve()
         for name, layout, staged in [('ordinary', 'src', True),
                                      ('recognized', 'ql/test/extractor-smoke', False)]:
             data = execute(root / name, layout, staged)

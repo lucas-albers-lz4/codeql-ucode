@@ -11,7 +11,9 @@ QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
-if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
+source "$ROOT/scripts/smoke-extractor-platform.sh"
+platform="$(smoke_extractor_platform "$OSTYPE")"
+if [[ ! -x "$PACK/tools/$platform/extractor" ]]; then
   echo "extractor-pack is missing; run scripts/create-extractor-pack.sh first" >&2
   exit 1
 fi

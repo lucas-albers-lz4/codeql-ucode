@@ -11,7 +11,9 @@ PACK="$ROOT/extractor-pack"
 DB="$ROOT/.codeql-database/m4-luci-sys-status"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
 
-if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then
+source "$ROOT/scripts/smoke-extractor-platform.sh"
+platform="$(smoke_extractor_platform "$OSTYPE")"
+if [[ ! -x "$PACK/tools/$platform/extractor" ]]; then
 	echo "== create-extractor-pack =="
 	bash scripts/create-extractor-pack.sh
 fi
@@ -58,6 +60,7 @@ PY
 # second changes both the fixed command and the fallback guard. Neither can
 # produce an inventory row, despite preserving helper and wrapper names.
 NEG_ROOT="$(mktemp -d)"
+NEG_ROOT="$(cd "$NEG_ROOT" && pwd -P)"
 trap 'rm -rf "$NEG_ROOT"' EXIT
 for variant in dispatch evidence; do
     variant_src="$NEG_ROOT/$variant/ql/test/extractor-smoke"

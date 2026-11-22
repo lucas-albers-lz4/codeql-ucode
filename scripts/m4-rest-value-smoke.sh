@@ -8,7 +8,12 @@ OUT="$ROOT/.codeql-database/m4-rest-value"
 SRC="$OUT/src/ql/test/extractor-smoke"
 DB="$OUT/db"
 QLPATH="$PACK:$ROOT/ql/lib:$ROOT/ql/src"
-[[ -x "$PACK/tools/linux64/extractor" ]] || { echo 'build extractor pack first' >&2; exit 1; }
+case "$OSTYPE" in
+  linux-gnu*) platform=linux64 ;;
+  darwin*) platform=osx64 ;;
+  *) echo "Unsupported OS: $OSTYPE" >&2; exit 1 ;;
+esac
+[[ -x "$PACK/tools/$platform/extractor" ]] || { echo 'build extractor pack first' >&2; exit 1; }
 python3 scripts/rest-value-verify.py inputs "$ROOT/ql/test/rest-value"
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs

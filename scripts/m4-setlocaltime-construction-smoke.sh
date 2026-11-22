@@ -4,10 +4,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 PACK="$ROOT/extractor-pack"
-if [[ ! -x "$PACK/tools/linux64/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
+source "$ROOT/scripts/smoke-extractor-platform.sh"
+platform="$(smoke_extractor_platform "$OSTYPE")"
+if [[ ! -x "$PACK/tools/$platform/extractor" ]]; then bash scripts/create-extractor-pack.sh; fi
 source "$ROOT/scripts/ql-smoke-pack-install.sh"
 install_smoke_packs
 TMP="$(mktemp -d "${TMPDIR:-/tmp}/setlocaltime-smoke-XXXXXXXX")"
+TMP="$(cd "$TMP" && pwd -P)"
 trap 'rm -rf "$TMP"' EXIT
 SRC="$TMP/ql/test/extractor-smoke"
 mkdir -p "$SRC/usr/share/rpcd/ucode"
