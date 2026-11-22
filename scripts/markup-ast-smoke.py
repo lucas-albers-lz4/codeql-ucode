@@ -60,6 +60,8 @@ def main():
             ('ExpressionTag', 'ExpressionTag', '1', '7', '1', '16', 'Markup', '1'),
             ('ExpressionTag', 'ExpressionTag', '2', '23', '2', '29', 'TextStatement', '2'),
             ('LexicalDeclaration', 'LexicalDeclaration', '2', '4', '2', '13', 'Markup', '4'),
+            ('VariableDeclarator', 'VariableDeclarator', '2', '8', '2', '12', 'LexicalDeclaration', '1'),
+            ('Number', '1', '2', '12', '2', '12', 'VariableDeclarator', '2'),
         }
         assert len(rows) == len(expected) and {tuple(row) for row in rows} == expected, rows
         rows = list(csv.reader(io.StringIO(query(db, 'markup-real-issue56-test.ql', valid / 'real.bqrs', 'csv'))))[1:]
