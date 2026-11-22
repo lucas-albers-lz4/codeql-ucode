@@ -1,0 +1,1 @@
+{% import a from 'a'; x.y = function(p) { let z = 1; };

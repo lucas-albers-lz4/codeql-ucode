@@ -25,6 +25,9 @@ python3 scripts/markup-ast-smoke.py
 echo "== Markup CFG smoke =="
 python3 scripts/markup-cfg-smoke.py
 
+echo "== Markup creation smoke =="
+python3 scripts/markup-creation-smoke.py
+
 shopt -s nullglob
 m4_scripts=()
 for s in scripts/m4-smoke.sh scripts/m4-*-smoke.sh; do
