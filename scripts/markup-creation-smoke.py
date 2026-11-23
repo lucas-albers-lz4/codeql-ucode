@@ -1,4 +1,4 @@
-"""Fresh extraction and exact bounded import/function creation graph checks."""
+"""Fresh extraction and projected bounded import/function graph checks."""
 import csv
 import gzip
 import hashlib
@@ -86,7 +86,7 @@ PATHS = {
 }
 
 # Independent AST oracle for the source-pinned real file, including parameter,
-# property, import binding and body identities, regardless of CFG membership.
+# property, import binding and body witnesses, regardless of CFG membership.
 REAL_AST = {
  ('Identifier','dispatch','3','8','3','15','ImportClause','0'),
  ('Identifier','request','4','8','4','14','ImportClause','0'),
@@ -195,7 +195,7 @@ def main():
         graph(db, real, {('uhttpd.uc','top'), ('uhttpd.uc','callable:6:25')})
         assert rows(db, 'markup-creation-scopes-test.ql', real / 'scopes.bqrs') == [['uhttpd.uc','6','25','12','1','covered']]
         assert rows(db, 'markup-creation-root-test.ql', real / 'roots.bqrs') == [['uhttpd.uc','top-observed']]
-        print('Exact import/function paths, scopes, source identities and diagnostics verified')
+        print('Projected import/function paths, scopes, source witnesses and diagnostics verified')
     runpy.run_path(str(ROOT / 'scripts/markup-call-controls-smoke.py'))
 
 if __name__ == '__main__':
