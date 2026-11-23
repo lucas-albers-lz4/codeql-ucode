@@ -1,0 +1,1038 @@
+[2026-11-23 16:24:37] This is codeql execute queries -J-Xmx1254M --verbosity=progress --logdir=/private/tmp/issue54-template-test/database2/log --common-caches=/private/tmp/issue54-query-comparison/runtime/common --evaluator-log-level=5 --threads=1 --warnings=show --compilation-cache=/private/tmp/issue54-query-comparison/runtime/cache --no-default-compilation-cache --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --dynamic-join-order-mode=none --output=/private/tmp/issue54-template-test/Issue54DependencyMutation2.bqrs -- /private/tmp/issue54-template-test/database2/db-ucode path:/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:37] Calling plumbing command: codeql resolve queries --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --format=json -- path:/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:37] [PROGRESS] resolve queries> Recording pack reference lucas-albers-lz4/ucode-queries at /private/tmp/ucode-issue54-template-dependency/ql/src.
+[2026-11-23 16:24:37] Plumbing command codeql resolve queries completed:
+                      [
+                        "/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql"
+                      ]
+[2026-11-23 16:24:37] Refusing fancy output: The terminal is not an xterm: dumb
+[2026-11-23 16:24:37] Creating executor with 1 threads.
+[2026-11-23 16:24:37] [PROGRESS] execute queries> Resolving data extensions.
+[2026-11-23 16:24:37] Calling plumbing command: codeql resolve extensions --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --include-extension-row-locations path:/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:37] Calling plumbing command: codeql resolve queries --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --allow-library-packs --format startingpacks -- path:/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:37] [PROGRESS] resolve queries> Recording pack reference lucas-albers-lz4/ucode-queries at /private/tmp/ucode-issue54-template-dependency/ql/src.
+[2026-11-23 16:24:37] Plumbing command codeql resolve queries completed:
+                      [
+                        "/private/tmp/ucode-issue54-template-dependency/ql/src"
+                      ]
+[2026-11-23 16:24:37] Calling plumbing command: codeql resolve extensions-by-pack --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --include-extension-row-locations -- /private/tmp/ucode-issue54-template-dependency/ql/src
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-queries: not 0.1.0 {root: lucas-albers-lz4/ucode-queries@0.1.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] lucas-albers-lz4/ucode-queries: 0.1.0 {lucas-albers-lz4/ucode-queries: not 0.1.0 {root: lucas-albers-lz4/ucode-queries@0.1.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-queries: * [*], lucas-albers-lz4/ucode-all: not * [*] {dependency: lucas-albers-lz4/ucode-queries@* [*] requires lucas-albers-lz4/ucode-all@0.1.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 1] lucas-albers-lz4/ucode-queries: 0.1.0
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] lucas-albers-lz4/ucode-all: * [*] {lucas-albers-lz4/ucode-queries: * [*], lucas-albers-lz4/ucode-all: not * [*] {dependency: lucas-albers-lz4/ucode-queries@* [*] requires lucas-albers-lz4/ucode-all@0.1.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/controlflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/controlflow@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/dataflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/dataflow@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/regex: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/regex@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/ssa: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/ssa@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/threat-models: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/threat-models@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/util: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/util@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/yaml: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/yaml@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 2] lucas-albers-lz4/ucode-all: 0.1.0
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/yaml: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/yaml: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/yaml@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/util: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/util: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/util@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/threat-models: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/threat-models: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/threat-models@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/ssa: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/ssa: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/ssa@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/regex: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/regex: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/regex@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/dataflow: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/dataflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/dataflow@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/controlflow: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/controlflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/controlflow@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/controlflow: * [*], codeql/util: not * [*] {dependency: codeql/controlflow@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 3] codeql/controlflow: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/ssa: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/ssa@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/typetracking: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/typetracking@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/util: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 4] codeql/dataflow: 1.1.6
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DERIVATION] codeql/typetracking: * [*] {codeql/dataflow: * [*], codeql/typetracking: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/typetracking@1.0.12}}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/regex: * [*], codeql/util: not * [*] {dependency: codeql/regex@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 5] codeql/regex: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/ssa: * [*], codeql/util: not * [*] {dependency: codeql/ssa@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 6] codeql/ssa: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 7] codeql/threat-models: 1.1.1
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [INCOMPATIBILITY] codeql/typetracking: * [*], codeql/util: not * [*] {dependency: codeql/typetracking@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 8] codeql/typetracking: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 9] codeql/util: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve extensions-by-pack> [DECISION 10] codeql/yaml: 1.0.61
+[2026-11-23 16:24:37] [PROGRESS] resolve extensions-by-pack> Loading data extensions in /private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/supported-threat-models.model.yml.
+[2026-11-23 16:24:37] [DETAILS] resolve extensions-by-pack>   Found extension targeting codeql/threat-models:threatModelConfiguration: 1 tuples.
+[2026-11-23 16:24:37] [PROGRESS] resolve extensions-by-pack> Loading data extensions in /private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/threat-model-grouping.model.yml.
+[2026-11-23 16:24:37] [DETAILS] resolve extensions-by-pack>   Found extension targeting codeql/threat-models:threatModelGrouping: 16 tuples.
+[2026-11-23 16:24:37] [PROGRESS] resolve extensions-by-pack> Loading data extensions in /private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12/ext/default-alert-filter.yml.
+[2026-11-23 16:24:37] [DETAILS] resolve extensions-by-pack>   Found extension targeting codeql/util:restrictAlertsTo: 0 tuples.
+[2026-11-23 16:24:37] Plumbing command codeql resolve extensions-by-pack completed:
+                      {
+                        "models" : [ ],
+                        "data" : {
+                          "/private/tmp/ucode-issue54-template-dependency/ql/src" : [
+                            {
+                              "predicate" : "threatModelConfiguration",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/supported-threat-models.model.yml",
+                              "index" : 0,
+                              "firstRowId" : 0,
+                              "rowCount" : 1,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A=6",
+                                "columnNumbers" : "A=9"
+                              }
+                            },
+                            {
+                              "predicate" : "threatModelGrouping",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/threat-model-grouping.model.yml",
+                              "index" : 0,
+                              "firstRowId" : 1,
+                              "rowCount" : 16,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A=8+3+1+3+1*5+3+1+5+1*3+2",
+                                "columnNumbers" : "A=9*16"
+                              }
+                            },
+                            {
+                              "predicate" : "restrictAlertsTo",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12/ext/default-alert-filter.yml",
+                              "index" : 0,
+                              "firstRowId" : 17,
+                              "rowCount" : 0,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A",
+                                "columnNumbers" : "A"
+                              }
+                            }
+                          ]
+                        },
+                        "threatModels" : {
+                          "/private/tmp/ucode-issue54-template-dependency/ql/src" : {
+                            "extensions" : [
+                              {
+                                "data" : [ ],
+                                "addsTo" : {
+                                  "extensible" : "threatModelConfiguration",
+                                  "checkPresence" : true,
+                                  "packName" : "codeql/threat-models"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "extensionPacks" : [ ]
+                      }
+[2026-11-23 16:24:37] Plumbing command codeql resolve extensions completed:
+                      {
+                        "models" : [ ],
+                        "data" : {
+                          "/private/tmp/ucode-issue54-template-dependency/ql/src" : [
+                            {
+                              "predicate" : "threatModelConfiguration",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/supported-threat-models.model.yml",
+                              "index" : 0,
+                              "firstRowId" : 0,
+                              "rowCount" : 1,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A=6",
+                                "columnNumbers" : "A=9"
+                              }
+                            },
+                            {
+                              "predicate" : "threatModelGrouping",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1/ext/threat-model-grouping.model.yml",
+                              "index" : 0,
+                              "firstRowId" : 1,
+                              "rowCount" : 16,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A=8+3+1+3+1*5+3+1+5+1*3+2",
+                                "columnNumbers" : "A=9*16"
+                              }
+                            },
+                            {
+                              "predicate" : "restrictAlertsTo",
+                              "file" : "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12/ext/default-alert-filter.yml",
+                              "index" : 0,
+                              "firstRowId" : 17,
+                              "rowCount" : 0,
+                              "predicateHasOrigin" : false,
+                              "locations" : {
+                                "lineNumbers" : "A",
+                                "columnNumbers" : "A"
+                              }
+                            }
+                          ]
+                        },
+                        "threatModels" : {
+                          "/private/tmp/ucode-issue54-template-dependency/ql/src" : {
+                            "extensions" : [
+                              {
+                                "data" : [ ],
+                                "addsTo" : {
+                                  "extensible" : "threatModelConfiguration",
+                                  "checkPresence" : true,
+                                  "packName" : "codeql/threat-models"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        "extensionPacks" : [ ]
+                      }
+[2026-11-23 16:24:37] [PROGRESS] execute queries> Finished resolving data extensions.
+[2026-11-23 16:24:37] [SPAMMY] execute queries> Selected JGit Git client for /private/tmp/ucode-issue54-template-dependency/ql/src because the repository uses SHA-1 object format.
+[2026-11-23 16:24:37] [WARN] execute queries> Failed to retrieve qlpack commit hash from Git repository
+                             org.eclipse.jgit.errors.RepositoryNotFoundException: repository not found: /Users/lalbers/gitroot/ucode/codeql-ucode/.git/worktrees/ucode-issue54-template-dependency
+                             	at org.eclipse.jgit.storage.file.FileRepositoryBuilder.build(FileRepositoryBuilder.java:57)
+                             	at com.semmle.util.git.JGitClient.discoverEnclosingRepository(JGitClient.java:60)
+                             	at com.semmle.util.git.GitClientFactory$AutoGitClient.discoverEnclosingRepository(GitClientFactory.java:98)
+                             	at com.semmle.cli2.pack.PackUtil.queryGitForHeadVersion(PackUtil.java:31)
+                             	at com.semmle.cli2.bqrs.InterpretCommand.getQlPackSha(InterpretCommand.java:434)
+                             	at com.semmle.cli2.bqrs.InterpretCommand.getQlPackSha(InterpretCommand.java:424)
+                             	at com.semmle.cli2.execute.RunResultBuilder.lambda$addPack$0(RunResultBuilder.java:85)
+                             	at java.base/java.util.TreeMap.callMappingFunctionWithCheck(Unknown Source)
+                             	at java.base/java.util.TreeMap.computeIfAbsent(Unknown Source)
+                             	at com.semmle.cli2.execute.RunResultBuilder.addPack(RunResultBuilder.java:82)
+                             	at com.semmle.cli2.execute.RunResultBuilder.lambda$recordDataExtensions$4(RunResultBuilder.java:115)
+                             	at java.base/java.util.LinkedHashMap.forEach(Unknown Source)
+                             	at java.base/java.util.Collections$UnmodifiableMap.forEach(Unknown Source)
+                             	at com.semmle.cli2.execute.RunResultBuilder.recordDataExtensions(RunResultBuilder.java:105)
+                             	at com.semmle.cli2.execute.ExecuteQueriesCommand.executeSubcommand(ExecuteQueriesCommand.java:511)
+                             	at com.semmle.cli2.picocli.SubcommandCommon.lambda$executeSubcommandWithMessages$5(SubcommandCommon.java:890)
+                             	at com.semmle.cli2.picocli.SubcommandCommon.withCompilationMessages(SubcommandCommon.java:447)
+                             	at com.semmle.cli2.picocli.SubcommandCommon.executeSubcommandWithMessages(SubcommandCommon.java:888)
+                             	at com.semmle.cli2.picocli.SubcommandCommon.toplevelMain(SubcommandCommon.java:781)
+                             	at com.semmle.cli2.picocli.SubcommandCommon.call(SubcommandCommon.java:760)
+                             	at com.semmle.cli2.picocli.SubcommandMaker.runMain(SubcommandMaker.java:238)
+                             	at com.semmle.cli2.picocli.SubcommandMaker.runMain(SubcommandMaker.java:259)
+                             	at com.semmle.cli2.CodeQL.main(CodeQL.java:113)
+[2026-11-23 16:24:37] [PROGRESS] execute queries> Merging data extensions.
+[2026-11-23 16:24:37] [PROGRESS] execute queries> Finished merging data extensions.
+[2026-11-23 16:24:37] Calling plumbing command: codeql resolve library-paths --compilation-cache=/private/tmp/issue54-query-comparison/runtime/cache --no-default-compilation-cache --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml -- /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:37] [DETAILS] resolve library-paths> Resolving query at normalized path /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:37] [DETAILS] resolve library-paths> Found enclosing pack 'lucas-albers-lz4/ucode-queries' at /private/tmp/ucode-issue54-template-dependency/ql/src.
+[2026-11-23 16:24:37] [DETAILS] resolve library-paths> Resolving library dependencies from /private/tmp/ucode-issue54-template-dependency/ql/src/qlpack.yml.
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-queries: not 0.1.0 {root: lucas-albers-lz4/ucode-queries@0.1.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] lucas-albers-lz4/ucode-queries: 0.1.0 {lucas-albers-lz4/ucode-queries: not 0.1.0 {root: lucas-albers-lz4/ucode-queries@0.1.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-queries: * [*], lucas-albers-lz4/ucode-all: not * [*] {dependency: lucas-albers-lz4/ucode-queries@* [*] requires lucas-albers-lz4/ucode-all@0.1.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 1] lucas-albers-lz4/ucode-queries: 0.1.0
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] lucas-albers-lz4/ucode-all: * [*] {lucas-albers-lz4/ucode-queries: * [*], lucas-albers-lz4/ucode-all: not * [*] {dependency: lucas-albers-lz4/ucode-queries@* [*] requires lucas-albers-lz4/ucode-all@0.1.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/controlflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/controlflow@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/dataflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/dataflow@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/regex: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/regex@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/ssa: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/ssa@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/threat-models: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/threat-models@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/util: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/util@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] lucas-albers-lz4/ucode-all: * [*], codeql/yaml: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/yaml@^1.0.0}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 2] lucas-albers-lz4/ucode-all: 0.1.0
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/yaml: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/yaml: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/yaml@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/util: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/util: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/util@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/threat-models: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/threat-models: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/threat-models@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/ssa: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/ssa: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/ssa@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/regex: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/regex: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/regex@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/dataflow: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/dataflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/dataflow@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/controlflow: * [*] {lucas-albers-lz4/ucode-all: * [*], codeql/controlflow: not * [*] {dependency: lucas-albers-lz4/ucode-all@* [*] requires codeql/controlflow@^1.0.0}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/controlflow: * [*], codeql/util: not * [*] {dependency: codeql/controlflow@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 3] codeql/controlflow: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/ssa: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/ssa@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/typetracking: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/typetracking@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/dataflow: * [*], codeql/util: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 4] codeql/dataflow: 1.1.6
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DERIVATION] codeql/typetracking: * [*] {codeql/dataflow: * [*], codeql/typetracking: not * [*] {dependency: codeql/dataflow@* [*] requires codeql/typetracking@1.0.12}}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/regex: * [*], codeql/util: not * [*] {dependency: codeql/regex@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 5] codeql/regex: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/ssa: * [*], codeql/util: not * [*] {dependency: codeql/ssa@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 6] codeql/ssa: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 7] codeql/threat-models: 1.1.1
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [INCOMPATIBILITY] codeql/typetracking: * [*], codeql/util: not * [*] {dependency: codeql/typetracking@* [*] requires codeql/util@1.0.12}
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 8] codeql/typetracking: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 9] codeql/util: 1.0.12
+[2026-11-23 16:24:37] [SPAMMY] resolve library-paths> [DECISION 10] codeql/yaml: 1.0.61
+[2026-11-23 16:24:37] [DETAILS] resolve library-paths> QL pack dependencies for /private/tmp/ucode-issue54-template-dependency/ql/src resolved OK.
+[2026-11-23 16:24:37] [DETAILS] resolve library-paths> Found dbscheme through QL packs: /private/tmp/ucode-issue54-template-dependency/ql/lib/ucode.dbscheme.
+[2026-11-23 16:24:37] Plumbing command codeql resolve library-paths completed:
+                      {
+                        "/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql" : {
+                          "libraryPath" : [
+                            "/private/tmp/ucode-issue54-template-dependency/ql/src",
+                            "/private/tmp/ucode-issue54-template-dependency/ql/lib",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12",
+                            "/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61"
+                          ],
+                          "dbscheme" : "/private/tmp/ucode-issue54-template-dependency/ql/lib/ucode.dbscheme",
+                          "compilationCache" : [
+                            "/private/tmp/issue54-query-comparison/runtime/cache"
+                          ],
+                          "relativeName" : "lucas-albers-lz4/ucode-queries/extractor-smoke/Issue54DependencyMutation.ql",
+                          "qlPackName" : "lucas-albers-lz4/ucode-queries"
+                        }
+                      }
+[2026-11-23 16:24:37] [WARN] execute queries> Not caching stages during query-loading, since max heap size is only 1256 MB.
+[2026-11-23 16:24:37] [PROGRESS] execute queries> Compiling query plan for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:37] [DETAILS] execute queries> Resolving imports for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:37] Resolved file set for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql hashes to b148c626ce59fc4a05184e78b6064bad.
+[2026-11-23 16:24:37] [DETAILS] execute queries> Checking QL for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:37] Stale frontend caches are invalidated based on import graph reachability.
+[2026-11-23 16:24:37] ExternalModuleBindingPass ...
+[2026-11-23 16:24:38] ExternalModuleBindingPass time: 00:00.150
+[2026-11-23 16:24:38] CollectInstantiationsPass ...
+[2026-11-23 16:24:38] CollectInstantiationsPass time: 00:00.053
+[2026-11-23 16:24:38] Ql checks ...
+[2026-11-23 16:24:38] Ql checks time: 00:00.465
+[2026-11-23 16:24:39] Compilation pipeline
+[2026-11-23 16:24:39] Type Inference ...
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: Best number of iterations,Maximum number of runs,Number of BDD variables,Size of BDD for typefacts
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,0,0
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,0,0
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,0,0
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,9,9
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,0,0
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,276,276
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,0,0
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,180,245
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,4,4
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,11,14
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,9,14
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,4,4
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,8,12
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,7,8
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,24,30
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,6,6
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,4,5
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,4
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,4
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,4,4
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,1,1
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,9,9
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,2,2
+[2026-11-23 16:24:39] CSV_TYPE_HIERARCHY: 0,0,3,3
+[2026-11-23 16:24:39] Type Inference time: 00:00.170
+[2026-11-23 16:24:39] [DETAILS] execute queries> Optimizing /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:39] Processing compilation pipeline
+[2026-11-23 16:24:39] Started compiling a query
+[2026-11-23 16:24:39] Initialising compiler...
+[2026-11-23 16:24:39] 	 ... compiler initialised
+[2026-11-23 16:24:39] About to start query optimisation
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:39] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache hit - skipping compilation.
+[2026-11-23 16:24:40] Compilation cache miss for 784784a5d60e4ed21416cdf29820b6ee.
+[2026-11-23 16:24:41] Stored compiled program for 784784a5d60e4ed21416cdf29820b6ee.
+[2026-11-23 16:24:41] CSV_COMPILATION: NONE,MISC,RA_TRANSLATION,OPTIMISATIONS
+[2026-11-23 16:24:41] CSV_COMPILATION: 146,159,143,1121
+[2026-11-23 16:24:41] [SPAMMY] execute queries> No database upgrade/downgrade needed for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:41] Inferred that cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TSplitsCons#ae113e85/3@f3fd132t is empty, due to Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TSplitsCons#ae113e85/3@f8d7786g.
+[2026-11-23 16:24:41] [PROGRESS] execute queries> [1/1 comp 3.7s] Compiled /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:41] [PROGRESS] execute queries> Starting evaluation of lucas-albers-lz4/ucode-queries/extractor-smoke/Issue54DependencyMutation.ql.
+[2026-11-23 16:24:41] Starting evaluation of /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:41] (0s) Start query execution
+[2026-11-23 16:24:41] (0s) Beginning execution of /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TAugmentedAssignmentExpression#1a2a18e3/2@816f09bd with 3 rows and digest 28d781enbv3q9smd6a3gmip6665.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TShorthandPropertyIdentifier#fc9c48c7/2@9013f5ek with 9 rows and digest 7e64959bhgqgmb6dbdsrili6480.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TParenthesizedExpression#c17134c4/2@7d4d40sc with 71 rows and digest 3f055flcikkfr04472hnc3m5243.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TTemplateSubstitution#bd65a9df/2@2b3763kh with 32 rows and digest aa8051q9e016fudk1ssqi5o7pse.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TComputedPropertyName#dc8f0333/2@8dcbf1rr with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TComputedPropertyName#dc8f0333_1#antijoin_rhs/1@51d664el is empty, due to cached_AstNodes::TComputedPropertyName#dc8f0333/2@8dcbf1rr.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TAssignmentExpression#972b0031/2@0d89a7mm with 67 rows and digest 36797eh31l7oshetlrich84eba0.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TSubscriptExpression#94839a24/2@a8f273pu with 52 rows and digest 35efbd6se1psr268gs6ceg2ffma.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TFunctionDeclaration#770b17b5/2@373405n3 with 2 rows and digest 92d51fhbtb82vqqn2em7i87mbbb.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TExpressionStatement#b2085cf2/2@b00f3fja with 94 rows and digest 82627ajjcscnn4f3hq26f1q618a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TVariableDeclarator#4a7bd758/2@f66973d4 with 81 rows and digest 8b8b91sl66ifm531ffoavgdv2r0.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TSequenceExpression#ac7e5a9b/2@4bb0aebe with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TSequenceExpression#ac7e5a9b_1#antijoin_rhs/1@18303d7p is empty, due to cached_AstNodes::TSequenceExpression#ac7e5a9b/2@4bb0aebe.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TPropertyIdentifier#6fe7396d/2@a115221s with 297 rows and digest 65de951kklgr78b5ekqkq4imdf8.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TLexicalDeclaration#dae3f8c7/2@0f35d3up with 79 rows and digest d788143i7plfqi36n9digdm9a69.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TFunctionExpression#4d5324b6/2@5ba7e2mm with 28 rows and digest ba160brp42soj5gf2dushuvtqaa.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TWhileAltStatement#120f3c49/2@58991f0n with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::WhileStatementTree.alt/0#dispred#0aa90618/2@6a02aefp is empty, due to cached_AstNodes::TWhileAltStatement#120f3c49/2@58991f0n.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileAltStatement#120f3c49_1#antijoin_rhs/1@e7f197ji is empty, due to cached_AstNodes::TWhileAltStatement#120f3c49/2@58991f0n.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TTernaryExpression#f1d98bec/2@7d4d66im with 2 rows and digest 65038bd847s3ph6l2cnpvkeo5d5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TPrimaryExpression#fcb11972/2@a99d9344 with 1643 rows and digest 9c4bd1igufep1pfgf2vlp032mua.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TForInAltStatement#a9760da7/2@f093edg9 with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::ForInStatementTree.alt/0#dispred#bd468490/2@bbe0cbth is empty, due to cached_AstNodes::TForInAltStatement#a9760da7/2@f093edg9.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForInAltStatement#a9760da7_1#antijoin_rhs/1@9224afn3 is empty, due to cached_AstNodes::TForInAltStatement#a9760da7/2@f093edg9.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TContinueStatement#3a8c8aeb/2@8808d1p5 with 5 rows and digest 8e44e8s5trfrfi1pn485skjo675.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TUpdateExpression#99844de0/2@01e9fc71 with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TUpdateExpression#99844de0_1#antijoin_rhs/1@9a5068sk is empty, due to cached_AstNodes::TUpdateExpression#99844de0/2@01e9fc71.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TMemberExpression#76828b68/2@8c962age with 139 rows and digest ac1c46fffmausgejh1g0u4pu3qb.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TFormalParameters#2b00ec9b/2@831084ms with 34 rows and digest 1e1d013cgakba9mnv8ag0c8ifea.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TDeleteExpression#58612425/2@5e75e8ik with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TDeleteExpression#58612425_1#antijoin_rhs/1@19b6caor is empty, due to cached_AstNodes::TDeleteExpression#58612425/2@5e75e8ik.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TBinaryExpression#5314d2d1/2@0a51598v with 65 rows and digest b3c9a1jnliem2ia97esgcu7k859.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TUnaryExpression#8edee728/2@aa1c31np with 21 rows and digest bf0f46pthf2h5fhg77ngvmtoctd.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TSwitchStatement#931fa752/2@dac5c1o5 with 1 rows and digest 0c5dd4f3v9vocbihtk3ntvjs7b4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TReturnStatement#8b82cabd/2@f72551g1 with 36 rows and digest c288402mh8qes3cd84s6kk041k6.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TNamespaceImport#abe36f27/2@53d61bal with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TNamespaceImport#abe36f27_1#antijoin_rhs/1@6a6e731d is empty, due to cached_AstNodes::TNamespaceImport#abe36f27/2@53d61bal.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TImportStatement#0d637337/2@5c99941c with 8 rows and digest 8323b2fc0u9svtkvd3vpp094ll9.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TImportSpecifier#364eb48c/2@240b7bij with 25 rows and digest 44a103b11509g0rdci18sfkjsl4.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TForAltStatement#e3321250/2@c189582a with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::ForStatementTree.alt/0#dispred#6c98e2b8/2@6e0ecaq6 is empty, due to cached_AstNodes::TForAltStatement#e3321250/2@c189582a.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForAltStatement#e3321250_1#antijoin_rhs/1@3a7b1chq is empty, due to cached_AstNodes::TForAltStatement#e3321250/2@c189582a.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::ForStatementTree.alt/0#dispred#6c98e2b8_10#join_rhs/2@232e79k6 is empty, due to ControlFlowGraphImpl::ForStatementTree.alt/0#dispred#6c98e2b8/2@6e0ecaq6.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TExportStatement#4c15ce0a/2@adac1faq with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::ExportStatementTree.value/0#dispred#79f4f3ae/2@9ac35drj is empty, due to cached_AstNodes::TExportStatement#4c15ce0a/2@adac1faq.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportStatement#4c15ce0a_1#antijoin_rhs/1@5f33b8ls is empty, due to cached_AstNodes::TExportStatement#4c15ce0a/2@adac1faq.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TExportSpecifier#4649f732/2@8b040981 with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportSpecifier#4649f732_1#antijoin_rhs/1@3846885u is empty, due to cached_AstNodes::TExportSpecifier#4649f732/2@8b040981.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TWhileStatement#6714f312/2@7058562r with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::WhileStatementTree.raw/0#dispred#38af78a2/2@2a44dc3f is empty, due to cached_AstNodes::TWhileStatement#6714f312/2@7058562r.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileStatement#6714f312_1#antijoin_rhs/1@475ca3h2 is empty, due to cached_AstNodes::TWhileStatement#6714f312/2@7058562r.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::WhileStatementTree.raw/0#dispred#38af78a2_10#join_rhs/2@39cde2j6 is empty, due to ControlFlowGraphImpl::WhileStatementTree.raw/0#dispred#38af78a2/2@2a44dc3f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TTemplateString#09da0c52/2@5d49ccnt with 31 rows and digest 3b9b379s2chl769ncmaheab0fq0.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TStringFragment#7d8f7f8f/2@e8147crf with 211 rows and digest 9e6e415una248k60i37aamtn8o1.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TStatementBlock#7dcfb195/2@2a28a5cc with 95 rows and digest 4d7aaau46cs19tcqf4ghki2oma7.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that _AstNodes::TIfAltStatement#59a16850_ucode_if_alt_statement_elif_clause#rank_range/3@16974f5v is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that _AstNodes::TIfAltStatement#59a16850_ucode_if_alt_statement_elif_clause#rank_term/5@b9548ebh is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.alternative/0#dispred#00828eba/2@4a85f62c is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e/3@05df1cqi is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363 is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TIfAltStatement#59a16850_1#antijoin_rhs/1@ba01a32d is empty, due to cached_AstNodes::TIfAltStatement#59a16850/2@903ccbea.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.elifAt/1#dispred#165b695b/3@6be782f9 is empty, due to _AstNodes::TIfAltStatement#59a16850_ucode_if_alt_statement_elif_clause#rank_range/3@16974f5v.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.alternative/0#dispred#00828eba_10#join_rhs/2@426638af is empty, due to ControlFlowGraphImpl::IfAltStatementTree.alternative/0#dispred#00828eba/2@4a85f62c.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.alternative/0#dispred#00828eba_0#antijoin_rhs/1@2aed50sk is empty, due to ControlFlowGraphImpl::IfAltStatementTree.alternative/0#dispred#00828eba/2@4a85f62c.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e/2@78c9e4c2 is empty, due to ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e/3@05df1cqi.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e#2/2@8fe2299c is empty, due to ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e/3@05df1cqi.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/1@10227fdj is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804#2/2@a5a3b1v1 is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804#3/2@3e9b1ftd is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804_120#join_rhs/3@ed94f52h is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363.
+[2026-11-23 16:24:41] (0s) Inferred that ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804_201#join_rhs/3@f4fc50d5 is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804/3@23313363.
+[2026-11-23 16:24:41] (0s) Inferred that project#ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e_10#join_rhs/2@011475dv is empty, due to project#ControlFlowGraphImpl::IfAltStatementTree.bodyAt/1#dispred#4928d06e/2@78c9e4c2.
+[2026-11-23 16:24:41] (0s) Inferred that _ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804_201#join_rhs__Cfg::MakeWith__#antijoin_rhs/4@dbaadej0 is empty, due to ControlFlowGraphImpl::IfAltStatementTree.conditionAt/1#dispred#4c9e3804_201#join_rhs/3@f4fc50d5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TForInStatement#94964954/2@50c4cado with 15 rows and digest f5a1a9jeshqjonph0fanf2cun1f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TEscapeSequence#fb9c6f86/2@e86f2cmj with 2 rows and digest 0797d6kj1vsmjh8sr80iu6h5m3e.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TEmptyStatement#3aeb362b/2@ecdacatm with 1 rows and digest 45b691m7g5vsjsd1930j7rt84b4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TCallExpression#68f75344/2@71ae277v with 228 rows and digest ef59d6k11hj1ai4tjtrca3sg7ld.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TBreakStatement#474bb0fd/2@88aa9e6l with 1 rows and digest c074589hvv0orjhvvhjb3gk1ea3.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TSwitchDefault#82139541/2@2ba31cg7 with 1 rows and digest 2ca7c77r61m8hvg3i0kaq2veih9.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TStatementList#44af8e2e/2@282180vd with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TStatementList#44af8e2e_1#antijoin_rhs/1@e3e1edt0 is empty, due to cached_AstNodes::TStatementList#44af8e2e/2@282180vd.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TSpreadElement#47189c30/2@63886fn3 with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TSpreadElement#47189c30_1#antijoin_rhs/1@bf73ee4e is empty, due to cached_AstNodes::TSpreadElement#47189c30/2@63886fn3.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TOptionalChain#aa4073c2/2@0b960889 with 18 rows and digest c5b51ef9oa8kq5jhvtggh6ffp03.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TElseAltClause#ddfe62db/2@ed07a88g with empty relation.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TArrowFunction#223ae81c/2@1402060p with 6 rows and digest 9b4e2c3t2jfso8lc299o5j5r158.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TTryStatement#ebd70b6d/2@737c7f58 with 1 rows and digest f1ff21shiml99tm17q5dr0j38a0.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TRegexPattern#1a980eb2/2@a73e89kn with 34 rows and digest a7dff245a8dimgeksq5ivpiaeib.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TNamedImports#bf04aadb/2@bc015dlr with 7 rows and digest 47418bnmjcr5blk5aj83kh60e6d.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TImportClause#f9dc5c43/2@670b188f with 8 rows and digest 80cb01mtb4e7mhsu8g78p19ficc.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::THashBangLine#fd21be91/2@1a9d3bus with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::THashBangLine#fd21be91_1#antijoin_rhs/1@c3744cbl is empty, due to cached_AstNodes::THashBangLine#fd21be91/2@1a9d3bus.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TForStatement#f928c924/2@d1f480ot with 6 rows and digest 0c8bfdq42233uh2bl4k5hmtrpv9.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TExportClause#4a35411f/2@04c056ai with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportClause#4a35411f_1#antijoin_rhs/1@8811a07u is empty, due to cached_AstNodes::TExportClause#4a35411f/2@04c056ai.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TRestElement#b56cb321/2@c2ff1b9l with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TRestElement#b56cb321_1#antijoin_rhs/1@424120ip is empty, due to cached_AstNodes::TRestElement#b56cb321/2@c2ff1b9l.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TIfStatement#1e5e3e49/2@f776c70e with 65 rows and digest 578c0aah4i46bv23rtbg3ki5td1.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TDeclaration#d49ef96f/2@896814su with 81 rows and digest b832f1g7f7a6ucd4u1554mdfl72.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TCatchClause#91897205/2@6040f407 with 1 rows and digest 119933tuujldbkpufouprclilta.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TSwitchCase#64bfa1d5/2@9e06a2qg with 6 rows and digest 83d0df5283ce407015mesqq7vne.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TSwitchBody#27c421aa/2@168bbcb6 with 1 rows and digest 4e7003a3l4p6ivnemql9mbl1btf.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TRegexFlags#6b8d9aa3/2@474f32u7 with 7 rows and digest 17a9008e9faldc18j97rer1f9hd.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TIdentifier#7fa6996b/2@a6f4d64f with 700 rows and digest 16e9f4u8d375tm015aam85fdoba.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TExpression#c8eaee77/2@b067f0vh with 1801 rows and digest f51276sptknr8qsi55fk9q44455.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TElseClause#18ce58a5/2@5fbce27j with 21 rows and digest 98cd51hmkltskbeqgltmv28nf91.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TElifClause#3af8ae7e/2@40c343do with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TElifClause#3af8ae7e_1#antijoin_rhs/1@b95a6crd is empty, due to cached_AstNodes::TElifClause#3af8ae7e/2@40c343do.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TDocComment#d2eced6c/2@4d7aafgo with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TDocComment#d2eced6c_1#antijoin_rhs/1@a00e57vs is empty, due to cached_AstNodes::TDocComment#d2eced6c/2@4d7aafgo.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TStatement#ba8a45d2/2@a4b3c9rr with 409 rows and digest f000715bm32ukfjfhd85v52cqnd.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TArguments#d81c70de/2@c6f796tk with 228 rows and digest 6bc43fj6vm55c4c3focnqqkcl54.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TProgram#59c3b3c9/2@d14021d5 with 2 rows and digest 3b7d44kt4ebq2ks1bmmlh84h2kd.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TDefault#d9b839f1/2@72fe74gn with empty relation.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TComment#503720d9/2@c00f46ff with 10 rows and digest 88762302161nghh84915genkae7.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TString#552ceaf5/2@0c67d8nr with 163 rows and digest c136a9bd5dovni0sqdsosukee84.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TObject#c2b7c4e2/2@fa39e3cn with 91 rows and digest 51d4189p71dlr0pgfsrv6cnvsh2.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TNumber#f931ba04/2@0aaaactb with 46 rows and digest 9b649ah75hn0f8sl9o682ap3mk7.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TRegex#da9376f4/2@c02f48kr with 34 rows and digest b98bbe500qflsjs7m64nshoae03.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TFalse#8c18ba87/2@d5a0654s with 13 rows and digest 48f8864f35jbdu29k57t5a1fesb.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TArray#930c9c85/2@052f530g with 10 rows and digest 6e812duj9vq78dtudfbs56bd35a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TTrue#935cb815/2@dd6b55vl with 27 rows and digest 8670dctf60ncsqs21qjjpc3f3k5.
+[2026-11-23 16:24:41] (0s)  >>> First-level cache hit cached_AstNodes::TThis#52833607/2@19ad783j with empty relation.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TThis#52833607_1#antijoin_rhs/1@4f35f0dg is empty, due to cached_AstNodes::TThis#52833607/2@19ad783j.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TPair#bcc35c28/2@efc3fbjc with 158 rows and digest 6228bfllfsgkuf1tb3ifrifo75a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TNull#5b92c0dc/2@ee3137hl with 4 rows and digest 2fca8f7gn7rnic42u8ja8srm978.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::toTreeSitter/1#814506d3/2@f106fajl with 7337 rows and digest 144582febugsl7ml6e3d9hj5fr3.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::AstNode.getAChild/1#dispred#d297a61e/3@2c5ebeot with 14048 rows and digest c76edft3edqmtnqdfpaitvr34ib.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::AstNode.getParent/0#dispred#bdf6d1fb/2@01c881l4 with 14048 rows and digest 4dfde5va19b7fq0dl98rp4r48qe.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TSuccessorSuccessor#ac88cde3/1@e910d49h with 1 rows and digest 19f2cevarof1fbaqkctt3t43if4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::TAstNode#a1f02056/1@7da47cd9 with 7337 rows and digest 1812edbd37gdbvoqdh3rh4padpf.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TAstNode#d06097ed/4@ef7313v5 with 3161 rows and digest d4debedru81jdakabrkj2ahsjre.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TExprNode#634d02ad/2@36fe0bj1 with 2227 rows and digest 834e635h8nldpugpvu0av1bb943.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::AstNode.getFullLocation/0#dispred#e968d153/2@70df5b3j with 7337 rows and digest 4f1454otu50m02shnmblnt7st0a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_AstNodes::AstNode.getLocation/0#dispred#e9b54682/2@07b231bt with 7337 rows and digest 4f1454otu50m02shnmblnt7st0a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TSuccessorType#bf66cf54/1@4c52a1o5 with 6 rows and digest ae9acd4qfa35i65ck0grjmghsn7.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TBooleanSuccessor#d26697e5/2@b5ab1bkh with 2 rows and digest cad59d1f424i34evjnuchesu99c.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TContinueSuccessor#15d267e1/1@082d38lh with 1 rows and digest 14dae325fn1rrk4g27omfsv8kma.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TBreakSuccessor#6ea8531b/1@627a37rk with 1 rows and digest f764b1d21a1fgcg2kpnbqhd65k7.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SuccessorType::TReturnSuccessor#7bb78297/1@d9ff9efd with 1 rows and digest 10952drg6dialitmaeap0ujtdf7.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TAnnotatedExitNode#20dd4fe4/3@06d73btk with 38 rows and digest 252855598isvjhu7qlqvcijmum5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TEntryNode#76c115b1/2@e437d7ii with 38 rows and digest dea68frkqvk32n1nga648rmmgm8.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TExitNode#5148ee67/2@ef3d1a6p with 38 rows and digest 9435a16e2e81h705ld551mc7899.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::getASuccessor/2#cc907989/3@18e09e6u with 3806 rows and digest 1a33fcemtqsqq9kthtqq6rmdmia.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_shortestDistances@BasicBlocks::Cached::startsBB/1#1aaa6110#1@BasicBlocks::Cached::intraBBSucc/2#fbd4a058#2/3@c2df11j2 with 3275 rows and digest b71925k5nn5frdd3he6m488jupf.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_BasicBlocks::Cached::TBasicBlockStart#9ef4cd8e/2@e24bb9jr with 462 rows and digest 66d519iv9rblv3ctsc2l4mb23qe.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Variables::Cached::MkVariableAccess#7c1a7d27/4@631753e2 with 357 rows and digest de64e4c04q1dkobgf3pg91cnf7f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Variables::Cached::MkVariable#10fc8410/3@f36e7017 with 126 rows and digest 37ceadjhalvodqkslqninathgf3.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::Impl::TWriteDef#388f5e3c/4@8d103254 with 134 rows and digest 4def463ucnnssqjgnqmqku8e17f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_BasicBlocks::Cached::bbIDominates/2#d731316e/2@cdb6e54c with 424 rows and digest 639bdb4f0gtnfg2689pslu9da79.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::Impl::TPhiNode#37eb04d5/3@85fb9b7t with 30 rows and digest c6d7bdh144aqpb74rd1lv16bsse.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::Impl::TPhiReadNode#278f148e/3@8e8eeaoa with 229 rows and digest b2fe1c7mjes93ap7dd7irn0ter2.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::getARead/1#308a1f61/2@e1b0ddeh with 323 rows and digest 32179735jfv6iemei4a6pv1bgb1.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TCfgScope#79d44588/2@b497c57c with 38 rows and digest dea68frkqvk32n1nga648rmmgm8.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::Public::getNodeCfgScope/1#1a98f1bb/2@153d020s with 3275 rows and digest 2c8b60fla3joithvfipdamooavd.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TPositionalParameterPosition#30d3f5fa/2@9c88f11p with 2 rows and digest 030d7cdg03tr3lun4h7fd73uc5d.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Ssa::Ssa::WriteDefinition.getLocation/0#dispred#e49775cc/2@bf4f6dk3 with 134 rows and digest 847a56glmgjotlqo0mcvpq4k0a2.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::getLocation/1#a0ea39f0/2@c8bcb3qj with 2950 rows and digest b97ce2f39f1mru9clplbhud3279.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TSplitsNil#77bb5e24/1@ac6caa3s with 1 rows and digest 19f2cevarof1fbaqkctt3t43if4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::splitsToString/1#65c02c3e/2@cb15e1i1 with 1 rows and digest 476087gn5glklbfr2fpufb8i9pf.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::toString/1#4e4a4117/2@529b374r with 2950 rows and digest 795db3g6t0jjerjfs5619rc8l88.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::simpleLocalFlowStep/3#189d53a0/3@42e69e43 with 1229 rows and digest 050d5544ihku3v7t29lkofhpote.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::SsaFlow::localFlowStep/2#84981f01/2@f71e4fr7 with 1229 rows and digest d13aa52t255nantpn8nqnvtivma.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TUnknownDataFlowType#bc833d8a/1@477dad0k with 1 rows and digest 19f2cevarof1fbaqkctt3t43if4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TSsaReadNode#fdb71b3c/3@9601admr with 387 rows and digest b9ef48bformoao7heasc42e9uk5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TSsaDefNode#1e067423/2@7fa0d4vm with 134 rows and digest 492574s0h9kpgo1n1ht98itmr46.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TSourceParameterNode#b03c3158/2@4b35feic with 28 rows and digest 97d496nn6ckk4a8kns0jni1a600.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TSingletonContent#5503ddec/2@6b53588q with 130 rows and digest 3c3c3f668rc8dok38o08e56c5me.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TReturnNode#65bb87db/2@70673bmq with 36 rows and digest 77315cpp24ham82tpeaoutch4p4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TNonElementContentApprox#44034836/2@408d408j with 130 rows and digest 3c3c3f668rc8dok38o08e56c5me.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TNode#5f860806/1@d79207gj with 2950 rows and digest 9a5b8djb9lfs1atbavgpbki34k4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TFieldContent#b1fa4193/2@077116pi with 129 rows and digest 0376269mg2uhq6erg1dhd0liso2.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TExprPostUpdateNode#2c78eb2c/2@b005130s with 37 rows and digest 5904eb8ek2n0ae87shg46i5o7i3.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TElementContent#d2cc966f/1@0197aenq with 1 rows and digest 19f2cevarof1fbaqkctt3t43if4.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TContentSet#b1345871/1@3ce4bf63 with 130 rows and digest 92bc6dbo3j6o38sb0rpiqpvev7f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TContentContainerNode#65de86e1/2@3d964flk with 101 rows and digest fec04crdrumq3bd4vs8pmk3ukle.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TContentApprox#16931400/1@d7e75bs0 with 130 rows and digest 92bc6dbo3j6o38sb0rpiqpvev7f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowPrivate::TContent#42cbdcce/1@df2e4938 with 130 rows and digest 92bc6dbo3j6o38sb0rpiqpvev7f.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::viableCallable/1#95713fc0/2@400d0e73 with 74 rows and digest f4362bkl9dpeghljm8hlolakq2c.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TPositionalArgumentPosition#fedf7354/2@54950e2u with 7 rows and digest 29a4b7026sv7tpr4uodvau3ti94.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TParameterPosition#88d68596/1@1181000m with 2 rows and digest 8077edibunvleb7g75bfbjhteec.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TNormalCall#82410184/2@e8dd75gh with 228 rows and digest edc3cesd3t725p290voo65prbu1.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TLibraryCallable#a0e9bd5f/2@8e204f8g with 7 rows and digest 49ea64uuehg222fepjf5baqg752.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TDataFlowCallable#968029f2/1@1a8f56j2 with 45 rows and digest 3a656b8qfuq43gjiisieqntgfa6.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TDataFlowCall#d793f611/1@643bdd7e with 228 rows and digest bcc1eegm8u643h8366l42ln6649.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_DataFlowDispatch::TArgumentPosition#7b2f4cc6/1@5d7d0004 with 7 rows and digest 2681fe98brgn6oaonf7raenuo1a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::variableWriteActual/4#472de978/4@61a2fad7 with 141 rows and digest 964340u0ev1pi4skklfja0ckov8.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::firstRead/2#357c26c4/2@d2328cfp with 194 rows and digest 65782en98lt45lsa387361gsgp0.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_SsaImpl::Impl::TDefinitionExt#0590f2f8/1@32f11bdo with 393 rows and digest d19c5eobbvl84f8vdsj8biqu3m2.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_BasicBlocks::Cached::bbIPostDominates/2#9e9f6f67/2@e60a8345 with 424 rows and digest bc4ca38mb54efv20mhigmqt9u2a.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_BasicBlocks::Cached::TBasicBlock#53a55740/1@09a182n8 with 462 rows and digest 4fafcd197bl0e1u8mfqtfie4av5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TNode#ac4c3488/1@b21ea92l with 3275 rows and digest 7424ea0fpra6g7vrpoat58bdj7e.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::Public::getAControlFlowExitNode/1#1c0901dd/2@2c5fef8u with 7627 rows and digest b83c062lg6h42fd62f4ik0j24sb.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::ControlFlowTree.first/1#dispred#b4944a5e/2@10644866 with 7417 rows and digest fd94baeeiu0t99b39357cfmggg5.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::Public::forceCachingInSameStage/0#79396c9c/0@a80d27a0 with 1 rows and digest ac90f0ei322hhreshlvdl215c38.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Variables::Cached::TVariableAccess#78b85b71/1@58da8b2b with 357 rows and digest 4adcb4pbqggbp4pirk6f7ekcrac.
+[2026-11-23 16:24:41] (0s)  >>> Full cache hit cached_Variables::Cached::TVariable#aee61b2a/1@c671e3nn with 126 rows and digest 886938ckvnggoklble733hqc8da.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Models::NamedFsPopenCall#882d07b2#cpe#nullary/0@76b8789g
+[2026-11-23 16:24:41] (0s)  >>> Created relation Models::NamedFsPopenCall#882d07b2#cpe#nullary/0@76b8789g with 1 rows and digest ac90f0ei322hhreshlvdl215c38.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_call_expression_def/3@85e03ahs with 228 rows and digest 4dcf4393cgefnqofuvj2gq2fpt1.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_ast_node_parent/3@97523eq6 with 6429 rows and digest 56abd9at6slm302naae7tb3gc9e.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_program_def/1@4c17a6vp with 2 rows and digest d7d348pqje31tlkjaolo5c25u35.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_statement_clause/2@3fdc3d1f with 8 rows and digest 4a4a82n5glfc63n94ffmqtbcuca.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_clause_named/2@0b711b2o with 7 rows and digest a64a6fedvl8ad7ksvl4gfdbugvf.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_named_imports_child/3@029c06ap with 25 rows and digest 05a3d21kq54a17ig6sv2dq6mica.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_specifier_def/2@700f65hf with 25 rows and digest 5e27cdulvp4alusphr64e5md89f.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_tokeninfo/3@b7eaf202 with 4423 rows and digest f26d444a9hu5c1plhndnde55qj9.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_tokeninfo_102#join_rhs/3@2b311fci
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_tokeninfo_102#join_rhs/3@2b311fci with 4423 rows and digest ad79b07vibmetsh2ramm5l9c3rc.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_string_child/3@16bc3859 with 163 rows and digest 738dadotvqhcb449cmqd11olt12.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_string_child_120#join_rhs/3@a76aeaac
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_string_child_120#join_rhs/3@a76aeaac with 163 rows and digest c086f8c65kpftr6b9mcdjrsf3r5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_statement_def/2@a604440a with 8 rows and digest e40213f43hr5h9m9fjhckipf1t0.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_import_statement_def_10#join_rhs/2@f39c43s5
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_statement_def_10#join_rhs/2@f39c43s5 with 8 rows and digest fbdedd02onep9p7n7ire0c6evgf.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate _ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_tokeni__#shared/1@63e6395t
+[2026-11-23 16:24:41] (0s)  >>> Created relation _ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_tokeni__#shared/1@63e6395t with 2 rows and digest 7273357frsfomo99dctr966nl70.
+[2026-11-23 16:24:41] (0s)  >>> Created relation locations_default/6@2b5cc3pr with 6402 rows and digest a32c27bfdbf38vackb7d8d12i2a.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate locations_default_10#join_rhs/2@285daatj
+[2026-11-23 16:24:41] (0s)  >>> Created relation locations_default_10#join_rhs/2@285daatj with 6402 rows and digest 84dbf2euh3eeunm2prh3uaqipo8.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_ast_node_location/2@e7bd28fi with 6441 rows and digest 93a394fdtdbdquukabrjv1m7ita.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_ast_node_location_10#join_rhs/2@e76f6cmh
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_ast_node_location_10#join_rhs/2@e76f6cmh with 6441 rows and digest 30ff0b12ggl51dcqb712rqsc158.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_call_expression_optional_chain/2@ae4ac65s with 1 rows and digest f553d6cnkc0s7qs353pvovmmfdf.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_specifier_alias/2@5404dbgg with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_import_specifier_alias_0#antijoin_rhs/1@5743eeue is empty, due to ucode_import_specifier_alias/2@5404dbgg.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_call_expression_optional_chain_0#antijoin_rhs/1@9e7680hc
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_call_expression_optional_chain_0#antijoin_rhs/1@9e7680hc with 1 rows and digest 37f9aaqrk71nedbngo491cme1m8.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate locations_default_401235#join_rhs/6@ed6cf8s7
+[2026-11-23 16:24:41] (0s)  >>> Created relation locations_default_401235#join_rhs/6@ed6cf8s7 with 6402 rows and digest b2e0e27it8ts2aeh5ckpsag8235.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate __ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_token__#antijoin_rhs/1@a80b717p
+[2026-11-23 16:24:41] (0s)  >>> Created relation __ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_token__#antijoin_rhs/1@a80b717p with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ___ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_toke__#shared/1@c7353dbc
+[2026-11-23 16:24:41] (0s)  >>> Created relation ___ucode_import_statement_def_10#join_rhs_ucode_string_child_120#join_rhs_ucode_tokeninfo_ucode_toke__#shared/1@c7353dbc with 6363 rows and digest 01a76at60r5ilro0i6oh4t9gk54.
+[2026-11-23 16:24:41] (0s)  >>> Created relation diagnostics/6@788bc33t with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that Diagnostics::ExtractionError#751a2853/6@c04b4dmj is empty, due to diagnostics/6@788bc33t.
+[2026-11-23 16:24:41] (0s) Inferred that diagnostics_50#join_rhs/2@0c32a3po is empty, due to diagnostics/6@788bc33t.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs/2@765ffajq is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs#1/2@01038abq is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs#2/2@4157ed0b is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs#3/2@f4fe74t0 is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs#4/2@9979312a is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853___SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658____S__#antijoin_rhs#5/2@924769da is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Inferred that _Diagnostics::ExtractionError#751a2853____ucode_import_statement_def_10#join_rhs_ucode_string_child___#antijoin_rhs/1@b52877bo is empty, due to diagnostics_50#join_rhs/2@0c32a3po.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate __Diagnostics::ExtractionError#751a2853____ucode_import_statement_def_10#join_rhs_ucode_string_child__#shared/1@4059a3k9
+[2026-11-23 16:24:41] (0s)  >>> Created relation __Diagnostics::ExtractionError#751a2853____ucode_import_statement_def_10#join_rhs_ucode_string_child__#shared/1@4059a3k9 with 6363 rows and digest 01a76at60r5ilro0i6oh4t9gk54.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_augmented_assignment_expression_def/4@d305af66 with 3 rows and digest 86eccet8cdkppqa76rodlioobid.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_assignment_expression_def/3@8ca0efp0 with 67 rows and digest 23069dqo4ng4o5h2co85p2d2ph5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_function_declaration_def/3@71990dgp with 2 rows and digest 78035f6nrg80q7km7tmkrla0109.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_variable_declarator_def/2@99f4d3fl with 81 rows and digest 74b250acoaok6m17e7vf4j8lfn5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_update_expression_def/3@56cc4fp7 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TUpdateExpression#dom#4f15d52a/1@d9a8feja is empty, due to ucode_update_expression_def/3@56cc4fp7.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TUpdateExpression#99844de0/2@ce7275np is empty, due to AstNodes::TUpdateExpression#dom#4f15d52a/1@d9a8feja.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_rest_element_def/2@09a16d0t with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TRestElement#dom#d5b93a53/1@c7f04ftg is empty, due to ucode_rest_element_def/2@09a16d0t.
+[2026-11-23 16:24:41] (0s) Inferred that _ucode_rest_element_def_ucode_tokeninfo#shared/2@56e55612 is empty, due to ucode_rest_element_def/2@09a16d0t.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TRestElement#b56cb321/2@aafd61lp is empty, due to AstNodes::TRestElement#dom#d5b93a53/1@c7f04ftg.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_formal_parameters_child/3@d91e18j6 with 26 rows and digest 01887ei243be5hrccd7k1rul343.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_alt_statement_variable/2@af09328l with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_for_in_alt_statement_variable_10#join_rhs/2@5b71c50l is empty, due to ucode_for_in_alt_statement_variable/2@af09328l.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_alt_statement_value/2@80bd982k with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_for_in_alt_statement_value_10#join_rhs/2@41cdd0go is empty, due to ucode_for_in_alt_statement_value/2@80bd982k.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_statement_variable/2@721095da with 14 rows and digest e9339bn3f7fuk4c8jp2or1n5t17.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_function_expression_name/2@170286u5 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_function_expression_name_1#antijoin_rhs/1@9939e64q is empty, due to ucode_function_expression_name/2@170286u5.
+[2026-11-23 16:24:41] (0s) Inferred that #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#9#2#3/1@c853b4v6 is empty, due to ucode_function_expression_name/2@170286u5.
+[2026-11-23 16:24:41] (0s) Inferred that #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#9#3/1@edf522qu is empty, due to #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#9#2#3/1@c853b4v6.
+[2026-11-23 16:24:41] (0s) Inferred that #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#bounded#2/2@b0514f2u is empty, due to #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#9#3/1@edf522qu.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_alt_statement_key/2@405d5d7l with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_for_in_alt_statement_key_10#join_rhs/2@cf66c0tt is empty, due to ucode_for_in_alt_statement_key/2@405d5d7l.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_arrow_function_parameter/2@daf948mq with 2 rows and digest eb662bq2d9lnnheqs2aulg87ij3.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_statement_value/2@c5f59elh with 1 rows and digest f10c2840n6kq628jipcairmo1q2.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_catch_clause_parameter/2@149b11pk with 1 rows and digest 433cebo1kul30vftgubojdn8o51.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_statement_key/2@221704no with 1 rows and digest e6795dprkkghi9spm6m9br2sh7b.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_formal_parameters_child_2#join_rhs/1@a6c34e09
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_formal_parameters_child_2#join_rhs/1@a6c34e09 with 26 rows and digest 7b9b0co4eh7uej0r58mbe1rlbp2.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658/1@c589551k
+[2026-11-23 16:24:41] (0s)  >>> Created relation SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658/1@c589551k with 158 rows and digest ae5631mestc9q4eqvi3iilvrjm6.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_tokeninfo_02#join_rhs/2@b81bf6hv
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_tokeninfo_02#join_rhs/2@b81bf6hv with 4423 rows and digest 9529714h0fa37g9g7oa6eo7df47.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate _SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658___Diagnostics::ExtractionError#751a2853____u__#antijoin_rhs/1@861e20mq
+[2026-11-23 16:24:41] (0s)  >>> Created relation _SourceDeclaredFs::fsCompetingBindingOrWrite/1#fc822658___Diagnostics::ExtractionError#751a2853____u__#antijoin_rhs/1@861e20mq with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s)  >>> Created relation let0/1@022e63gp with 6363 rows and digest 01a76at60r5ilro0i6oh4t9gk54.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_import_statement_clause_10#join_rhs/2@a8067bu5
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_statement_clause_10#join_rhs/2@a8067bu5 with 8 rows and digest 6bb5ferrq10sm1evv9sn0bfqsf6.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_namespace_import_def/2@f54a98gr with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TNamespaceImport#dom#1b4f2ab0/1@59b47d0f is empty, due to ucode_namespace_import_def/2@f54a98gr.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TNamespaceImport#abe36f27/2@8d1335gd is empty, due to AstNodes::TNamespaceImport#dom#1b4f2ab0/1@59b47d0f.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_clause_namespace/2@3b23effb with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_import_clause_namespace_10#join_rhs/2@a58070nc is empty, due to ucode_import_clause_namespace/2@3b23effb.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_clause_default/2@1150e686 with 1 rows and digest 825f7eeeo3q7tjj6ria8c7a0861.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_import_clause_named_10#join_rhs/2@bca106s7
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_clause_named_10#join_rhs/2@bca106s7 with 7 rows and digest 04809ef3a0qoi7dduoblb8av44e.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_named_imports_child_20#join_rhs/2@e769b825
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_named_imports_child_20#join_rhs/2@e769b825 with 25 rows and digest 1372b8sq18e8tr1dss6caubivm3.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate SourceDeclaredFs::fsImportBinding/1#aff57d77/2@a5d11ap5
+[2026-11-23 16:24:41] (0s)  >>> Created relation SourceDeclaredFs::fsImportBinding/1#aff57d77/2@a5d11ap5 with 26 rows and digest fe7e075pl2n7go027qmbmokc9qc.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate _SourceDeclaredFs::fsImportBinding/1#aff57d77_let0_locations_default_locations_default_10#join_rhs_u__#count_range/4@00ed4e3p
+[2026-11-23 16:24:41] (0s)  >>> Created relation _SourceDeclaredFs::fsImportBinding/1#aff57d77_let0_locations_default_locations_default_10#join_rhs_u__#count_range/4@00ed4e3p with 6363 rows and digest fc9701s1tlpliu260r418k76dkd.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Models::NamedFsPopenCall#882d07b2#cpe#1/1@753896c0
+[2026-11-23 16:24:41] (0s)  >>> Created relation Models::NamedFsPopenCall#882d07b2#cpe#1/1@753896c0 with 16 rows and digest 25bdbbdsctbiv57t6sf8pk0os2d.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate AstNodes::TCallExpression#68f75344_1#join_rhs/1@48529cfk
+[2026-11-23 16:24:41] (0s)  >>> Created relation AstNodes::TCallExpression#68f75344_1#join_rhs/1@48529cfk with 228 rows and digest e52c44somtk72fjkups6et98ti2.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate AstNodes::TTemplateString#09da0c52_1#antijoin_rhs/1@34d634tv
+[2026-11-23 16:24:41] (0s)  >>> Created relation AstNodes::TTemplateString#09da0c52_1#antijoin_rhs/1@34d634tv with 31 rows and digest 5b77aeo7665jh1pivmdc27n4i67.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_arguments_child/3@58a134l4 with 285 rows and digest 9d01eer41cd8fd7sn4gv4dlssbc.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_arguments_child_201#join_rhs/3@78d41cv7
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_arguments_child_201#join_rhs/3@78d41cv7 with 285 rows and digest 8681d37rr73ttg9ribjml51n15a.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate ucode_call_expression_def_10#join_rhs/2@e2b39bek
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_call_expression_def_10#join_rhs/2@e2b39bek with 228 rows and digest 603c744ls07hb4374l15qtrg5f5.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Calls::CallsImpl.getTemplateArgument/1#dispred#639916f7/3@2df02710
+[2026-11-23 16:24:41] (0s)  >>> Created relation Calls::CallsImpl.getTemplateArgument/1#dispred#639916f7/3@2df02710 with 26 rows and digest 61b1f8k0hal5mes6dketm1vmfl9.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#5/1@7a16042s
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#5/1@7a16042s with 1 rows and digest a7a7c00oofmfu2but23q8mpkdm0.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_template_substitution_def/2@000dc03h with 32 rows and digest 2ce929grrkp8kpe81g3orhrii29.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_parenthesized_expression_def/2@272cf5bu with 71 rows and digest 2534c3b6iv5raq5jbifnthan8o2.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_computed_property_name_def/2@914d4cpo with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TComputedPropertyName#dom#fb02de72/1@0370799g is empty, due to ucode_computed_property_name_def/2@914d4cpo.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TComputedPropertyName#dc8f0333/2@3e7ff6gd is empty, due to AstNodes::TComputedPropertyName#dom#fb02de72/1@0370799g.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_subscript_expression_def/3@25082abp with 52 rows and digest 2f842adc77vq7119q4t2p99l0e4.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_expression_statement_def/2@304623ps with 94 rows and digest e7ccdcedpt1csvj9rbkcvk1b938.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_sequence_expression_def/1@8638d4j8 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TSequenceExpression#ac7e5a9b/2@9b659c5r is empty, due to ucode_sequence_expression_def/1@8638d4j8.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_lexical_declaration_def/1@e1f022vv with 79 rows and digest 22d034ndruhl7csfojoiq7hp21a.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_function_expression_def/3@b939868k with 28 rows and digest 5c683bmdcm7rgnegemrm1nk49s5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_while_alt_statement_def/2@297bf484 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileAltStatement#dom#55e1a624/1@99555d4v is empty, due to ucode_while_alt_statement_def/2@297bf484.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileAltStatement#120f3c49/2@d983d4dk is empty, due to AstNodes::TWhileAltStatement#dom#55e1a624/1@99555d4v.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_ternary_expression_def/4@ad2862hq with 2 rows and digest 061bcdbbevuqavmdli8c4pvsi35.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_template_string_def/1@abd667lp with 31 rows and digest 6ff62a0r39sftdttqk2duv6e8e8.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_string_def/1@3607236o with 163 rows and digest 0d2f06184cbqn8lji2lc1jsgv4e.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_object_def/1@c99078vh with 91 rows and digest f087fcdvq52nk56a55mt7ekn5o0.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_array_def/1@b79dbbiu with 10 rows and digest fbd66dfbtdg2d62g0uulfegl3m7.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_member_expression_def/3@96fe7cft with 139 rows and digest 5e0012geud0chsk81oimalo0i6e.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_arrow_function_def/2@9fe8d5hs with 6 rows and digest 9816e7am481kcj688e5n3qtrogb.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_regex_def/2@1ba6b8hv with 34 rows and digest b3f5660p399931nosph1ub8j9h1.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_alt_statement_def/2@ba3786cu with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForInAltStatement#dom#f8d0ed53/1@47a3edso is empty, due to ucode_for_in_alt_statement_def/2@ba3786cu.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForInAltStatement#a9760da7/2@4bd987ae is empty, due to AstNodes::TForInAltStatement#dom#f8d0ed53/1@47a3edso.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_formal_parameters_def/1@3c812ald with 34 rows and digest e1e46b36e2qphdha1cnkvq2nhmb.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_delete_expression_def/3@c6a293un with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TDeleteExpression#dom#f178e4c8/1@6a2234ho is empty, due to ucode_delete_expression_def/3@c6a293un.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TDeleteExpression#58612425/2@08dfa1m6 is empty, due to AstNodes::TDeleteExpression#dom#f178e4c8/1@6a2234ho.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_binary_expression_def/4@b0524fmm with 65 rows and digest cc279bge17aoji48md20vcor9g6.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_unary_expression_def/3@ec1e67ed with 21 rows and digest 4a00caj6k5j801d74q0j35m87g1.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_switch_statement_def/3@635eabu9 with 1 rows and digest cf31bckv0a6mio59f9b2upgebq7.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_return_statement_def/1@6bc2a19v with 36 rows and digest 221d5cgkevkuaqos72rrgb3l73c.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_alt_statement_def/3@961ce0ts with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForAltStatement#dom#c7229180/1@7649e8p6 is empty, due to ucode_for_alt_statement_def/3@961ce0ts.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_for_alt_statement_def_20#join_rhs/2@c61567cq is empty, due to ucode_for_alt_statement_def/3@961ce0ts.
+[2026-11-23 16:24:41] (0s) Inferred that ucode_for_alt_statement_def_2#join_rhs/1@8f25eag2 is empty, due to ucode_for_alt_statement_def/3@961ce0ts.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TForAltStatement#e3321250/2@c93fc4r7 is empty, due to AstNodes::TForAltStatement#dom#c7229180/1@7649e8p6.
+[2026-11-23 16:24:41] (0s) Inferred that ___ucode_ast_node_parent_ucode_for_statement_def_3#join_rhs_ucode_variable_declarator_def#antijoin_r__#antijoin_rhs/1@0c0e2d8q is empty, due to ucode_for_alt_statement_def_2#join_rhs/1@8f25eag2.
+[2026-11-23 16:24:41] (0s) Inferred that ___Models::systemDeclarationScope/1#ce3895b2#bf__Models::systemDeclaredBefore/2#c2a79942#fb_ucode_to__#antijoin_rhs/3@e7569e7v is empty, due to ucode_for_alt_statement_def_2#join_rhs/1@8f25eag2.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_export_statement_def/1@784e486p with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportStatement#4c15ce0a/2@7d9998gl is empty, due to ucode_export_statement_def/1@784e486p.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_export_specifier_def/2@a1a86au9 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportSpecifier#dom#98a2ec2d/1@dce92bs2 is empty, due to ucode_export_specifier_def/2@a1a86au9.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportSpecifier#4649f732/2@4caf02kp is empty, due to AstNodes::TExportSpecifier#dom#98a2ec2d/1@dce92bs2.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_while_statement_def/3@373b1aff with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileStatement#dom#db2da5d6/1@7bc5a564 is empty, due to ucode_while_statement_def/3@373b1aff.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TWhileStatement#6714f312/2@31687b3o is empty, due to AstNodes::TWhileStatement#dom#db2da5d6/1@7bc5a564.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_statement_block_def/1@6dc821hs with 95 rows and digest 693a0bt8tpins7fvpfu30nmqs37.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_if_alt_statement_def/2@a0b983g4 with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TIfAltStatement#dom#66bfda09/1@e6a2ceq5 is empty, due to ucode_if_alt_statement_def/2@a0b983g4.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TIfAltStatement#59a16850/2@cb6136eo is empty, due to AstNodes::TIfAltStatement#dom#66bfda09/1@e6a2ceq5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_in_statement_def/3@f0580bmn with 15 rows and digest 231f5akaqi754q5h33ker3sc304.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_switch_default_def/1@6dd0b7el with 1 rows and digest b6476d73jfedtrp79m0faer0a9d.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_statement_list_def/1@755e5e4f with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TStatementList#44af8e2e/2@f513c49h is empty, due to ucode_statement_list_def/1@755e5e4f.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_spread_element_def/2@a0e370nv with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TSpreadElement#dom#9e71048c/1@3a4f30uf is empty, due to ucode_spread_element_def/2@a0e370nv.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TSpreadElement#47189c30/2@303d48qr is empty, due to AstNodes::TSpreadElement#dom#9e71048c/1@3a4f30uf.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_else_alt_clause_def/1@8471a72r with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TElseAltClause#ddfe62db/2@806a4a9s is empty, due to ucode_else_alt_clause_def/1@8471a72r.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_try_statement_def/3@805bd78q with 1 rows and digest b334ad6j7fvol9hc2qg9c6q3t16.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_named_imports_def/1@016e38i0 with 7 rows and digest b8fdb8okr8141p92vo3fj4f3hl9.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_import_clause_def/1@873a0cp2 with 8 rows and digest 78da40pm3fpf5fuce6367gt9ng5.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_for_statement_def/4@2940119o with 6 rows and digest c8e7f8t76hqck8i5d4au4spccn8.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_export_clause_def/1@6e703cuh with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TExportClause#4a35411f/2@83eb40b6 is empty, due to ucode_export_clause_def/1@6e703cuh.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_if_statement_def/3@e7e8f7ie with 65 rows and digest e78c10pegp9a1j1nrujacjsiep6.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_catch_clause_def/2@7db6adc9 with 1 rows and digest 4badd2jfpgndkpll9gemp56rot9.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_switch_case_def/2@3bf9b1bh with 6 rows and digest 2391admqjfpbgbncf3pjdt16m86.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_switch_body_def/1@c33bf81a with 1 rows and digest 9a4ebfef0k8ffo3enc9oikl4uce.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_else_clause_def/2@633322dd with 21 rows and digest 061085g6ksc5fcgp4545nu22oa8.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_elif_clause_def/2@1b215ams with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TElifClause#dom#9c869200/1@35ecab6f is empty, due to ucode_elif_clause_def/2@1b215ams.
+[2026-11-23 16:24:41] (0s) Inferred that AstNodes::TElifClause#3af8ae7e/2@eab407aa is empty, due to AstNodes::TElifClause#dom#9c869200/1@35ecab6f.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_arguments_def/1@e81fd7vn with 228 rows and digest a746c0jnsneb4sdpgkcbd23d7se.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_pair_def/3@4f4568pj with 158 rows and digest 4f644euc5rgcp2i7th2mk1vghv9.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Misc::TTemplateSubstitutionExpressionNode#dom#2af61418/1@0a9a57pa
+[2026-11-23 16:24:41] (0s)  >>> Created relation Misc::TTemplateSubstitutionExpressionNode#dom#2af61418/1@0a9a57pa with 6441 rows and digest ee63055me4seshprs4esi6dag3c.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate num#Misc::TTemplateSubstitutionExpressionNode#8d4eab3b/2@6c5ec43m
+[2026-11-23 16:24:41] Evaluating HOP construct<Misc#f2cd4550::TTemplateSubstitutionExpression,0> with inputs:
+                        6441 tuples in Misc::TTemplateSubstitutionExpressionNode#dom#2af61418/1@0a9a57pa
+[2026-11-23 16:24:41] (0s)  >>> Created relation num#Misc::TTemplateSubstitutionExpressionNode#8d4eab3b/2@6c5ec43m with 6441 rows and digest 296996te50l97186h59c4ck7lhb.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Misc::TTemplateSubstitutionExpressionNode#8d4eab3b#bf/2@74059fhf
+[2026-11-23 16:24:41] (0s)  >>> Created relation Misc::TTemplateSubstitutionExpressionNode#8d4eab3b#bf/2@74059fhf with 32 rows and digest a6a55esrvarjrkjhgocvf25r1s0.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Misc::TemplateSubstitutionExpression#3a96f8c3/2@2d3a5c10
+[2026-11-23 16:24:41] (0s)  >>> Created relation Misc::TemplateSubstitutionExpression#3a96f8c3/2@2d3a5c10 with 32 rows and digest 7a09a4goi9b8eg8nlvdo00c5ct6.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate num#Misc::TTemplateSubstitutionExpressionNode#8d4eab3b_10#join_rhs/2@eb7419jv
+[2026-11-23 16:24:41] (0s)  >>> Created relation num#Misc::TTemplateSubstitutionExpressionNode#8d4eab3b_10#join_rhs/2@eb7419jv with 6441 rows and digest c739b95f4uhf0avvmrkoob11eh8.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Misc::TTemplateSubstitutionExpressionNode#8d4eab3b#fb/2@7a3828rq
+[2026-11-23 16:24:41] (0s)  >>> Created relation Misc::TTemplateSubstitutionExpressionNode#8d4eab3b#fb/2@7a3828rq with 32 rows and digest a6a55esrvarjrkjhgocvf25r1s0.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Misc::TemplateSubstitution.getExpression/0#dispred#6f39226e/2@288a1f8l
+[2026-11-23 16:24:41] (0s)  >>> Created relation Misc::TemplateSubstitution.getExpression/0#dispred#6f39226e/2@288a1f8l with 32 rows and digest be9bb6695dbpg9s4pmpn3fbiu67.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#2#2#3/1@4a8dd33k
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#2#2#3/1@4a8dd33k with 2227 rows and digest 7fd3aafi7lqaumdk4t72ja2fa31.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#2#3/1@13f170n5
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#2#3/1@13f170n5 with 2227 rows and digest 1fe37djj1ioaqpg60kc4k2gvtne.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#3/1@238e53go
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#2#3/1@238e53go with 2094 rows and digest adfb7bqrpkfjill53f8ipo35ioe.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#3/1@4f35bask
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#2#3/1@4f35bask with 32 rows and digest d4b4e6dn7pmrh9f4q3ehsvfcu9b.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#3/1@698d9fam
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#2#3/1@698d9fam with 32 rows and digest fc21cb2ut2imk4h1jjdp14ktd4a.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#4/1@1a67f7um
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#2#4/1@1a67f7um with 90 rows and digest 4b333ejsauk7me0nit8vl4dnok6.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#4/1@990e41p7
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#4/1@990e41p7 with 25 rows and digest 4542e1l5nvmob5gmlars3lufr5d.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#5/1@cd4f79sh
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#3#5/1@cd4f79sh with 25 rows and digest 4542e1l5nvmob5gmlars3lufr5d.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#4/1@01b84du0
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#4/1@01b84du0 with 25 rows and digest a31caelo40ndj5emr1v1vnsg1d4.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/1@e4a107fi
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/1@e4a107fi with 9 rows and digest 1d3856g61igl6ahe6jkjq31ojt8.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578/2@8f1666jq
+[2026-11-23 16:24:41] (0s)  >>> Created relation TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578/2@8f1666jq with 6429 rows and digest 6dd15d32kuerq0ol9l8c19jbmn2.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body/2@35ee914n
+[2026-11-23 16:24:41] (0s)  >>> Created relation TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body/2@35ee914n with 6429 rows and digest 16cb8fmkraqefosi1lfpuhkne4b.
+[2026-11-23 16:24:41] (0s)  >>> Created relation ucode_object_child/3@4f0e88ed with 167 rows and digest f2245cech8mrcnlna8dcpc2ncm3.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Models::propertyName/1#0f41594d/2@d21ec4ft
+[2026-11-23 16:24:41] (0s)  >>> Created relation Models::propertyName/1#0f41594d/2@d21ec4ft with 297 rows and digest a691824h5has46srn6233h3on74.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Models::rpcCallFn/1#01421b3a/2@3ac79c4c
+[2026-11-23 16:24:41] (0s)  >>> Created relation Models::rpcCallFn/1#01421b3a/2@3ac79c4c with 28 rows and digest 3a8969aqdboic77kk7v3ua1j1nb.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3/1@646ffb3t
+[2026-11-23 16:24:41] (0s)  >>> Created relation #TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3/1@646ffb3t with 28 rows and digest 39a872rsd31851ctv3qiifqbat6.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate boundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3/2@cb456384 = HOP boundedFastTC(6429,28)
+[2026-11-23 16:24:41] (0s)  >>> Relation boundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3: 45361 rows using 0 MB
+[2026-11-23 16:24:41] (0s)  >>> Created relation boundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3/2@cb456384 with 45361 rows and digest 91c39cc98kd5gl4d860jk6mi7t1.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_boundedFastTC:TreeSit__#higher_order_body/1@0b0679gf
+[2026-11-23 16:24:41] (0s)  >>> Created relation _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_boundedFastTC:TreeSit__#higher_order_body/1@0b0679gf with 28 rows and digest 39a872rsd31851ctv3qiifqbat6.
+[2026-11-23 16:24:41] (0s)  >>> Created relation boundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_boundedFastTC:TreeSit__#higher_order_body/2@544afch7 with 45361 rows and digest 91c39cc98kd5gl4d860jk6mi7t1.
+[2026-11-23 16:24:41] (0s) Starting to evaluate predicate Models::sameRpcMethod/2#818dff4a#bb/2@89ddfbd6
+[2026-11-23 16:24:42] (0s)  >>> Created relation Models::sameRpcMethod/2#818dff4a#bb/2@89ddfbd6 with 2649226 rows and digest 266e26e5hpcculrhkir9r7i4tm2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Models::sameRpcMethod/2#818dff4a#bb_10#join_rhs/2@4925631g
+[2026-11-23 16:24:42] (0s)  >>> Created relation Models::sameRpcMethod/2#818dff4a#bb_10#join_rhs/2@4925631g with 2649226 rows and digest 266e26e5hpcculrhkir9r7i4tm2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::toTreeSitter/1#814506d3_10#join_rhs/2@cc7a5fit
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::toTreeSitter/1#814506d3_10#join_rhs/2@cc7a5fit with 7337 rows and digest f50b4ds2hdb4rrckigtghim1o5f.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode.getParent/0#dispred#bdf6d1fb_10#higher_order_body/2@65656d54
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode.getParent/0#dispred#bdf6d1fb_10#higher_order_body/2@65656d54 with 14048 rows and digest 254875c7hla207lho839orftfgd.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TAstNode#d06097ed_13#join_rhs/2@9b67c2tv
+[2026-11-23 16:24:42] (0s)  >>> Created relation Cfg::MakeWithSplitting<Locations::Location,ControlFlowGraphImpl::Implementation,NoSplittingInput<Locations::Location,ControlFlowGraphImpl::Implementation>,ControlFlowGraphImpl::CfgImpl::ConditionalCompletionSplittingInput>::Cached::TAstNode#d06097ed_13#join_rhs/2@9b67c2tv with 3161 rows and digest 937218iahdm13v4q8vgq4qhpnr9.
+[2026-11-23 16:24:42] (0s)  >>> Created relation files/2@ec93749g with 3 rows and digest 5c4130feqqn98u0q1624voltqqe.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate FileSystem::Container.getBaseName/0#dispred#7ff34ee1/2@a18474c3
+[2026-11-23 16:24:42] (0s)  >>> Created relation FileSystem::Container.getBaseName/0#dispred#7ff34ee1/2@a18474c3 with 2 rows and digest 03b7c3qplb2r3aif7g5vh6a9j79.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_Models::NamedFsPopenC__#higher_order_body/1@db226d3v
+[2026-11-23 16:24:42] (0s)  >>> Created relation _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_Models::NamedFsPopenC__#higher_order_body/1@db226d3v with 28 rows and digest 39a872rsd31851ctv3qiifqbat6.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_Models::NamedFsPopenC__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/2@36a641m2 = HOP doublyBoundedFastTC(6429,28,9)
+[2026-11-23 16:24:42] (0s)  >>> Relation doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_Models::NamedFsPopenC__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5: 9 rows using 0 MB
+[2026-11-23 16:24:42] (0s)  >>> Created relation doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3_Models::NamedFsPopenC__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/2@36a641m2 with 9 rows and digest d031eaeahiqvke6g588sn8tork8.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _Models::NamedFsPopenCall#882d07b2#cpe#nullary_Models::rpcCallFn/1#01421b3a#shared/2@2bba6fmk
+[2026-11-23 16:24:42] (0s)  >>> Created relation _Models::NamedFsPopenCall#882d07b2#cpe#nullary_Models::rpcCallFn/1#01421b3a#shared/2@2bba6fmk with 2 rows and digest 6f919akd461o361g9p8dbt7pt15.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3__Models::NamedFsPopen__#higher_order_body/1@b511003h
+[2026-11-23 16:24:42] (0s)  >>> Created relation _#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3__Models::NamedFsPopen__#higher_order_body/1@b511003h with 2 rows and digest b5dbf6psratvcmemiv74q92b6l2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3__Models::NamedFsPopen__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/2@751561vo = HOP doublyBoundedFastTC(6429,2,9)
+[2026-11-23 16:24:42] (0s)  >>> Relation doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3__Models::NamedFsPopen__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5: 2 rows using 0 MB
+[2026-11-23 16:24:42] (0s)  >>> Created relation doublyBoundedFastTC:TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578_10#higher_order_body:_#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sinkBound#4#3__Models::NamedFsPopen__#higher_order_body:#TreeSitter::UCODE::AstNode.getParent/0#dispred#99b4a578Plus#bf#sourceBound#3#5/2@751561vo with 2 rows and digest 4bafbfute8epedirtt7qgt3o6q7.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate #select/5@241e2enh
+[2026-11-23 16:24:42] (0s)  >>> Created relation #select/5@241e2enh with 8 rows and digest 28ec8d9qlh5ocvmlm2bulsoofua.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate TreeSitter::UCODE::AstNode.toString/0#dispred#cfbfca96/2@efb59arg
+[2026-11-23 16:24:42] (0s)  >>> Created relation TreeSitter::UCODE::AstNode.toString/0#dispred#cfbfca96/2@efb59arg with 6441 rows and digest c20733k76c5ehf3ukgf8rlh66aa.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate TreeSitter::UCODE::AstNode.toString/0#dispred#cfbfca96_0#antijoin_rhs/1@cd9646ck
+[2026-11-23 16:24:42] (0s)  >>> Created relation TreeSitter::UCODE::AstNode.toString/0#dispred#cfbfca96_0#antijoin_rhs/1@cd9646ck with 6441 rows and digest ee63055me4seshprs4esi6dag3c.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Locations::Location.hasLocationInfo/5#dispred#f4b9395f/6@3c93727s
+[2026-11-23 16:24:42] (0s)  >>> Created relation Locations::Location.hasLocationInfo/5#dispred#f4b9395f/6@3c93727s with 6402 rows and digest 2ff0974uc4loj91klil20mk9bt2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _#select_ucode_ast_node_location#shared/6@91750drb
+[2026-11-23 16:24:42] (0s)  >>> Created relation _#select_ucode_ast_node_location#shared/6@91750drb with 8 rows and digest f61140sdia4qqsfteo56ql24f15.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__#select_ucode_ast_node_location#shared#antijoin_rhs/5@3be3e2r1
+[2026-11-23 16:24:42] (0s)  >>> Created relation _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__#select_ucode_ast_node_location#shared#antijoin_rhs/5@3be3e2r1 with 8 rows and digest 28ec8d9qlh5ocvmlm2bulsoofua.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _#select_Locations::Location.hasLocationInfo/5#dispred#f4b9395f_TreeSitter::UCODE::AstNode.toString/__#shared/11@2686d17d
+[2026-11-23 16:24:42] (0s)  >>> Created relation _#select_Locations::Location.hasLocationInfo/5#dispred#f4b9395f_TreeSitter::UCODE::AstNode.toString/__#shared/11@2686d17d with 8 rows and digest 0d94bdk925mj60ak6tj18f1kea2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode.getLocation/0#dispred#e9b54682_0#antijoin_rhs/1@0be15dad
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode.getLocation/0#dispred#e9b54682_0#antijoin_rhs/1@0be15dad with 7337 rows and digest 1812edbd37gdbvoqdh3rh4padpf.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode.hasLocationInfo/5#dispred#bfe7592b/6@437bd2io
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode.hasLocationInfo/5#dispred#bfe7592b/6@437bd2io with 7337 rows and digest 355983h9cf4d87d348ond8uj4i7.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate project#AstNodes::AstNode.hasLocationInfo/5#dispred#bfe7592b/1@2da0436h
+[2026-11-23 16:24:42] (0s)  >>> Created relation project#AstNodes::AstNode.hasLocationInfo/5#dispred#bfe7592b/1@2da0436h with 7337 rows and digest 1812edbd37gdbvoqdh3rh4padpf.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _DataFlowPrivate::getLocation/1#a0ea39f0__#select_Locations::Location.hasLocationInfo/5#dispred#f4b9__#shared/12@986f19v3
+[2026-11-23 16:24:42] (0s)  >>> Created relation _DataFlowPrivate::getLocation/1#a0ea39f0__#select_Locations::Location.hasLocationInfo/5#dispred#f4b9__#shared/12@986f19v3 with 8 rows and digest 65b2c4oto3j39i4i8ekbm7skvt6.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__DataFlowPrivate::getLocation/1#a0ea39f0__#s__#antijoin_rhs/11@950054ba
+[2026-11-23 16:24:42] (0s)  >>> Created relation _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__DataFlowPrivate::getLocation/1#a0ea39f0__#s__#antijoin_rhs/11@950054ba with 8 rows and digest 0d94bdk925mj60ak6tj18f1kea2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate __#select_Locations::Location.hasLocationInfo/5#dispred#f4b9395f_TreeSitter::UCODE::AstNode.toString__#shared/11@cdf007af
+[2026-11-23 16:24:42] (0s)  >>> Created relation __#select_Locations::Location.hasLocationInfo/5#dispred#f4b9395f_TreeSitter::UCODE::AstNode.toString__#shared/11@cdf007af with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _DataFlowPrivate::getLocation/1#a0ea39f0_Locations::Location.hasLocationInfo/5#dispred#f4b9395f__Dat__#shared/17@1a7fa53d
+[2026-11-23 16:24:42] (0s)  >>> Created relation _DataFlowPrivate::getLocation/1#a0ea39f0_Locations::Location.hasLocationInfo/5#dispred#f4b9395f__Dat__#shared/17@1a7fa53d with 8 rows and digest 48e3bc70o6f4i7cj5ce8792l657.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__DataFlowPrivate::getLocation/1#a0ea39f0_Loc__#antijoin_rhs/16@a1c76a1g
+[2026-11-23 16:24:42] (0s)  >>> Created relation _Locations::Location.hasLocationInfo/5#dispred#f4b9395f__DataFlowPrivate::getLocation/1#a0ea39f0_Loc__#antijoin_rhs/16@a1c76a1g with 8 rows and digest 28bb1b1o7lr790gdp3lcf9hohb1.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate let0/26@999732mh
+[2026-11-23 16:24:42] (0s)  >>> Created relation let0/26@999732mh with 8 rows and digest c495eb1g22jr5gj6hqkc2cgon40.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TDeclaration#d49ef96f_1#antijoin_rhs/1@fd9645ni
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TDeclaration#d49ef96f_1#antijoin_rhs/1@fd9645ni with 81 rows and digest 89471cedgu8vnkjet3uvho3obs8.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TStatement#ba8a45d2_1#antijoin_rhs/1@27a12et5
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TStatement#ba8a45d2_1#antijoin_rhs/1@27a12et5 with 409 rows and digest 0800a63u76irs4s7t9oqfk0ues3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TPrimaryExpression#fcb11972_1#antijoin_rhs/1@6113e4g6
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TPrimaryExpression#fcb11972_1#antijoin_rhs/1@6113e4g6 with 1643 rows and digest 6929a366e59rpkem81g2jkgn997.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TExpression#c8eaee77_1#antijoin_rhs/1@3fca99la
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TExpression#c8eaee77_1#antijoin_rhs/1@3fca99la with 1801 rows and digest 043fd5vn0029spqmpd1eesml367.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TArrowFunction#223ae81c_1#join_rhs/1@c39eddsv
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TArrowFunction#223ae81c_1#join_rhs/1@c39eddsv with 6 rows and digest b4fd7erod8h149ol9aquj3kvsua.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TFunctionExpression#4d5324b6_1#join_rhs/1@88d091o1
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TFunctionExpression#4d5324b6_1#join_rhs/1@88d091o1 with 28 rows and digest b48ab4ji3cuh2lfhahf87ud6pu6.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TFunctionDeclaration#770b17b5_1#join_rhs/1@87e7ba3b
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TFunctionDeclaration#770b17b5_1#join_rhs/1@87e7ba3b with 2 rows and digest a75f05e130j12prthn2153ch8bd.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TIfStatement#1e5e3e49_1#join_rhs/1@528965i8
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TIfStatement#1e5e3e49_1#join_rhs/1@528965i8 with 65 rows and digest efa5c550ek4cmc2ffamph9v1up1.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TExpressionStatement#b2085cf2_1#antijoin_rhs/1@1a5bd1th
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TExpressionStatement#b2085cf2_1#antijoin_rhs/1@1a5bd1th with 94 rows and digest b786e0f90kl86b9fvvu7jnihff3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TLexicalDeclaration#dae3f8c7_1#antijoin_rhs/1@ecadd570
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TLexicalDeclaration#dae3f8c7_1#antijoin_rhs/1@ecadd570 with 79 rows and digest b2aa78tgomhjq88ie6l1eh307n0.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TSwitchStatement#931fa752_1#antijoin_rhs/1@51c7eb2c
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TSwitchStatement#931fa752_1#antijoin_rhs/1@51c7eb2c with 1 rows and digest 24a0be5s189fotvf2s95gscrd1a.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TReturnStatement#8b82cabd_1#antijoin_rhs/1@9449d9lh
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TReturnStatement#8b82cabd_1#antijoin_rhs/1@9449d9lh with 36 rows and digest 6987ff4j6vb1u7fs6padcbsc91e.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TEmptyStatement#3aeb362b_1#join_rhs/1@51bd32qd
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TEmptyStatement#3aeb362b_1#join_rhs/1@51bd32qd with 1 rows and digest ecb5d9u6e2vkp66jmbdn29hdcl1.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TTryStatement#ebd70b6d_1#antijoin_rhs/1@5494dfcn
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TTryStatement#ebd70b6d_1#antijoin_rhs/1@5494dfcn with 1 rows and digest 24a1132e3s90gmm24gt9f1v2p00.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TAugmentedAssignmentExpression#1a2a18e3_1#antijoin_rhs/1@865f92un
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TAugmentedAssignmentExpression#1a2a18e3_1#antijoin_rhs/1@865f92un with 3 rows and digest 0f40109i94jn0urhlov2h357793.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TShorthandPropertyIdentifier#fc9c48c7_1#antijoin_rhs/1@5b4b41rr
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TShorthandPropertyIdentifier#fc9c48c7_1#antijoin_rhs/1@5b4b41rr with 9 rows and digest 28d623q58obf7v0aueqhr99vaq6.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TParenthesizedExpression#c17134c4_1#antijoin_rhs/1@50ed84i3
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TParenthesizedExpression#c17134c4_1#antijoin_rhs/1@50ed84i3 with 71 rows and digest a87a8cjqm1mp6evgjae05o1ofhc.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TAssignmentExpression#972b0031_1#antijoin_rhs/1@440b41mo
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TAssignmentExpression#972b0031_1#antijoin_rhs/1@440b41mo with 67 rows and digest daf772eg8ko72l5h6tntfmcj860.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TSubscriptExpression#94839a24_1#antijoin_rhs/1@29d33939
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TSubscriptExpression#94839a24_1#antijoin_rhs/1@29d33939 with 52 rows and digest 43c212jlv6og7h5cava4sbb0ep4.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TPropertyIdentifier#6fe7396d_1#antijoin_rhs/1@821f55ho
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TPropertyIdentifier#6fe7396d_1#antijoin_rhs/1@821f55ho with 297 rows and digest 7f9b4f2pasfnk2n0gjnmm6fknta.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TTernaryExpression#f1d98bec_1#antijoin_rhs/1@aedfedmi
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TTernaryExpression#f1d98bec_1#antijoin_rhs/1@aedfedmi with 2 rows and digest 7e957aepb5oo5hof4r7on2jqmt5.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TMemberExpression#76828b68_1#antijoin_rhs/1@05cbb7kd
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TMemberExpression#76828b68_1#antijoin_rhs/1@05cbb7kd with 139 rows and digest bde040pqumkh4j5qn78stgl61r7.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TBinaryExpression#5314d2d1_1#antijoin_rhs/1@9712dbs1
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TBinaryExpression#5314d2d1_1#antijoin_rhs/1@9712dbs1 with 65 rows and digest 8a696bdfu40grrslu5cs1k2st49.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TUnaryExpression#8edee728_1#antijoin_rhs/1@b0e623oe
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TUnaryExpression#8edee728_1#antijoin_rhs/1@b0e623oe with 21 rows and digest 3c457a2rtn93jb2e2s67i3vuev7.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TIdentifier#7fa6996b_1#antijoin_rhs/1@c062d9bq
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TIdentifier#7fa6996b_1#antijoin_rhs/1@c062d9bq with 700 rows and digest 26c3d0md7u25qeoibbs90f2550f.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TStringFragment#7d8f7f8f_1#antijoin_rhs/1@4e20c11i
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TStringFragment#7d8f7f8f_1#antijoin_rhs/1@4e20c11i with 211 rows and digest df197b4a4data8r344qihar0bf5.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TString#552ceaf5_1#antijoin_rhs/1@a81f43dd
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TString#552ceaf5_1#antijoin_rhs/1@a81f43dd with 163 rows and digest fe3d64gs8r1t3d0j1qn43e2d31f.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TFalse#8c18ba87_1#antijoin_rhs/1@84eaa3t6
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TFalse#8c18ba87_1#antijoin_rhs/1@84eaa3t6 with 13 rows and digest 33b6b2tj0rem8l31ldmj4d6pgv2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TTrue#935cb815_1#antijoin_rhs/1@55376ask
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TTrue#935cb815_1#antijoin_rhs/1@55376ask with 27 rows and digest f6e34fvcsek13rh07v7dvenbrp5.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TNull#5b92c0dc_1#antijoin_rhs/1@dcfa8e40
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TNull#5b92c0dc_1#antijoin_rhs/1@dcfa8e40 with 4 rows and digest d82857qsmndc9nnq6uh4gs282b8.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TLiterals#2e5660f1/1@4e020fqa
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TLiterals#2e5660f1/1@4e020fqa with 418 rows and digest da495aoq1p2l3pm385nkjcq6tnc.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TStatementBlock#7dcfb195_1#antijoin_rhs/1@6272fe9v
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TStatementBlock#7dcfb195_1#antijoin_rhs/1@6272fe9v with 95 rows and digest 7be978fesbkl3u79uluu2eo4sm3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TProgram#59c3b3c9_1#antijoin_rhs/1@796db23b
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TProgram#59c3b3c9_1#antijoin_rhs/1@796db23b with 2 rows and digest 4b1fb3jnv7032pe93ftgrfpvg85.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TStmtSeq#7b18c52d/1@cfab36r2
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TStmtSeq#7b18c52d/1@cfab36r2 with 97 rows and digest 972903cjrq3prjut1fcqj6la4hc.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Expr::ExprImpl#d7726892/1@14f545s2
+[2026-11-23 16:24:42] (0s)  >>> Created relation Expr::ExprImpl#d7726892/1@14f545s2 with 5830 rows and digest ce2be4ihkillcfpqf0bph9at9me.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TArray#930c9c85_1#antijoin_rhs/1@3ae52771
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TArray#930c9c85_1#antijoin_rhs/1@3ae52771 with 10 rows and digest d744a32nhl2vf47f155gccdm8u9.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TFormalParameters#2b00ec9b_1#antijoin_rhs/1@110632ib
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TFormalParameters#2b00ec9b_1#antijoin_rhs/1@110632ib with 34 rows and digest f535a2tevmc8c2g1nsuhosdbv60.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TForInStatement#94964954_1#antijoin_rhs/1@847a7epi
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TForInStatement#94964954_1#antijoin_rhs/1@847a7epi with 15 rows and digest 730692em8dm43p8dqih39esdp61.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TForStatement#f928c924_1#antijoin_rhs/1@9bd800ke
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TForStatement#f928c924_1#antijoin_rhs/1@9bd800ke with 6 rows and digest a753c7r06aovk67aq0jac76hf6a.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TLoops#6eb2952c/1@91107bf9
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TLoops#6eb2952c/1@91107bf9 with 55 rows and digest fc427boiveaten85ot84vti5ab3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Idents::IdentsImpl_not_Identifier::IdentifierImpl_PropertyIdentifier::PropertyIdentifierImpl_ShorthandPropertyIdentifier::ShorthandPropertyIdentifierImpl#a4a5eb4e/1@2162233t
+[2026-11-23 16:24:42] (0s)  >>> Created relation Idents::IdentsImpl_not_Identifier::IdentifierImpl_PropertyIdentifier::PropertyIdentifierImpl_ShorthandPropertyIdentifier::ShorthandPropertyIdentifierImpl#a4a5eb4e/1@2162233t with 4824 rows and digest d5575b8rum56bljrf30115h3c94.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Literals::LiteralsImpl_not_False::FalseImpl_Null::NullImpl_StringFragment::StringFragmentImpl_String::StringImpl_True::TrueImpl#37dd87e9/1@e8c0a1oq
+[2026-11-23 16:24:42] (0s)  >>> Created relation Literals::LiteralsImpl_not_False::FalseImpl_Null::NullImpl_StringFragment::StringFragmentImpl_String::StringImpl_True::TrueImpl#37dd87e9/1@e8c0a1oq with 0 rows and digest THIS-RELATION-HAS-NO-TUPLES.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TContinueStatement#3a8c8aeb_1#antijoin_rhs/1@414cb1bv
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TContinueStatement#3a8c8aeb_1#antijoin_rhs/1@414cb1bv with 5 rows and digest 30724aqrokn2vmkb8hkdfp7btpc.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TImportStatement#0d637337_1#antijoin_rhs/1@537a539m
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TImportStatement#0d637337_1#antijoin_rhs/1@537a539m with 8 rows and digest 51ae47bh5qug1c1b0n127i1huc1.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TBreakStatement#474bb0fd_1#antijoin_rhs/1@72f4b3sv
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TBreakStatement#474bb0fd_1#antijoin_rhs/1@72f4b3sv with 1 rows and digest 680ddavap4i4b7rlfjfr6smirh9.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Stmts::StmtsImpl#9bc7843f/1@a34246db
+[2026-11-23 16:24:42] (0s)  >>> Created relation Stmts::StmtsImpl#9bc7843f/1@a34246db with 933 rows and digest cb3ebearla2iq38ku1ns0aqsbp3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate Stmts::StmtsImpl_not_BreakStatement::BreakStatementImpl_ContinueStatement::ContinueStatementImpl_Declaration::DeclarationImpl_EmptyStatement::EmptyStatementImpl_ExportStatement::ExportStatementImpl_ExpressionStatement::ExpressionStatementImpl_ForAltStatement::ForAltStatementImpl_ForInAltStatement::ForInAltStatementImpl_ForInStatement::ForInStatementImpl_ForStatement::ForStatementImpl_FunctionDeclaration::FunctionDeclarationImpl_IfAltStatement::IfAltStatementImpl_IfStatement::IfStatementImpl_ImportStatement::ImportStatementImpl_LexicalDeclaration::LexicalDeclarationImpl_ReturnStatement::ReturnStatementImpl_Statement::StatementImpl_StatementList::StatementListImpl_SwitchStatement::SwitchStatementImpl_TryStatement::TryStatementImpl_WhileAltStatement::WhileAltStatementImpl_WhileStatement::WhileStatementImpl#238496bb/1@199713u2
+[2026-11-23 16:24:42] (0s)  >>> Created relation Stmts::StmtsImpl_not_BreakStatement::BreakStatementImpl_ContinueStatement::ContinueStatementImpl_Declaration::DeclarationImpl_EmptyStatement::EmptyStatementImpl_ExportStatement::ExportStatementImpl_ExpressionStatement::ExpressionStatementImpl_ForAltStatement::ForAltStatementImpl_ForInAltStatement::ForInAltStatementImpl_ForInStatement::ForInStatementImpl_ForStatement::ForStatementImpl_FunctionDeclaration::FunctionDeclarationImpl_IfAltStatement::IfAltStatementImpl_IfStatement::IfStatementImpl_ImportStatement::ImportStatementImpl_LexicalDeclaration::LexicalDeclarationImpl_ReturnStatement::ReturnStatementImpl_Statement::StatementImpl_StatementList::StatementListImpl_SwitchStatement::SwitchStatementImpl_TryStatement::TryStatementImpl_WhileAltStatement::WhileAltStatementImpl_WhileStatement::WhileStatementImpl#238496bb/1@199713u2 with 129 rows and digest c48a5choc47hbni63n04gigva69.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TArguments#d81c70de_1#antijoin_rhs/1@16c949bt
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TArguments#d81c70de_1#antijoin_rhs/1@16c949bt with 228 rows and digest ba920bagi380vkqhi3ckikstcd9.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate _AstNodes::TArguments#d81c70de_1#antijoin_rhs_AstNodes::TArray#930c9c85_1#antijoin_rhs_AstNodes::TAr__#shared/1@93471dd4
+[2026-11-23 16:24:42] (0s)  >>> Created relation _AstNodes::TArguments#d81c70de_1#antijoin_rhs_AstNodes::TArray#930c9c85_1#antijoin_rhs_AstNodes::TAr__#shared/1@93471dd4 with 7093 rows and digest fc830bm18psoqj97ps9h45pd024.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TVariableDeclarator#4a7bd758_1#join_rhs/1@6a54c9cc
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TVariableDeclarator#4a7bd758_1#join_rhs/1@6a54c9cc with 81 rows and digest fd9738bome4gh89bvdqtkm8pqr0.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TObject#c2b7c4e2_1#antijoin_rhs/1@4a57c26e
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TObject#c2b7c4e2_1#antijoin_rhs/1@4a57c26e with 91 rows and digest cef1b33vs7v06qpa3gs6ivo9hra.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TTemplateSubstitution#bd65a9df_1#antijoin_rhs/1@00bea9qg
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TTemplateSubstitution#bd65a9df_1#antijoin_rhs/1@00bea9qg with 32 rows and digest fc21cb2ut2imk4h1jjdp14ktd4a.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TRegexPattern#1a980eb2_1#antijoin_rhs/1@0d2b8b0n
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TRegexPattern#1a980eb2_1#antijoin_rhs/1@0d2b8b0n with 34 rows and digest ea300af4tfn6mod3478jngfoveb.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TRegex#da9376f4_1#antijoin_rhs/1@ebf7bcsb
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TRegex#da9376f4_1#antijoin_rhs/1@ebf7bcsb with 34 rows and digest 887c8b8latelmgfblss0aqbq733.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TRegexFlags#6b8d9aa3_1#antijoin_rhs/1@55b613pk
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TRegexFlags#6b8d9aa3_1#antijoin_rhs/1@55b613pk with 7 rows and digest 603f94l3ccap985qh5ftvp1ecc3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TPair#bcc35c28_1#antijoin_rhs/1@01febd9c
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TPair#bcc35c28_1#antijoin_rhs/1@01febd9c with 158 rows and digest 700452kk21s8ma1uhqolpi4c2od.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TOptionalChain#aa4073c2_1#antijoin_rhs/1@8316010h
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TOptionalChain#aa4073c2_1#antijoin_rhs/1@8316010h with 18 rows and digest c7c463vin1845dmjn8277j8qke8.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TNamedImports#bf04aadb_1#antijoin_rhs/1@17c96bld
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TNamedImports#bf04aadb_1#antijoin_rhs/1@17c96bld with 7 rows and digest 49cd5ehluirf9jgtore22nijf1e.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TImportSpecifier#364eb48c_1#antijoin_rhs/1@5db98bg2
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TImportSpecifier#364eb48c_1#antijoin_rhs/1@5db98bg2 with 25 rows and digest 7726362hh0cc61nl7odfk133v39.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TImportClause#f9dc5c43_1#antijoin_rhs/1@72eca69e
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TImportClause#f9dc5c43_1#antijoin_rhs/1@72eca69e with 8 rows and digest 56647e2d24c5jntcg0otrooade2.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TEscapeSequence#fb9c6f86_1#antijoin_rhs/1@6c93bf1s
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TEscapeSequence#fb9c6f86_1#antijoin_rhs/1@6c93bf1s with 2 rows and digest 5114b5trj8ef9beotf9s9e8rcp0.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TComment#503720d9_1#antijoin_rhs/1@637884q9
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TComment#503720d9_1#antijoin_rhs/1@637884q9 with 10 rows and digest 87f44dbc2o8dk3roq2e3uvctng3.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::TCatchClause#91897205_1#antijoin_rhs/1@6d187fcq
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::TCatchClause#91897205_1#antijoin_rhs/1@6d187fcq with 1 rows and digest ca5d9erl9g4lknidpgomhamcikb.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode_not_Arguments::ArgumentsImpl_Array::ArrayImpl_ArrowFunction::ArrowFunctionImpl_Calls::CallsImpl_CatchClause::CatchClauseImpl_AstNodes::Comment_ComputedPropertyName::ComputedPropertyNameImpl_ElifClause::ElifClauseImpl_EscapeSequence::EscapeSequenceImpl_ExportClause::ExportClauseImpl_ExportSpecifier::ExportSpecifierImpl_Expr::ExprImpl_HashBangLine::HashBangLineImpl_ImportClause::ImportClauseImpl_ImportSpecifier::ImportSpecifierImpl_Literals::LiteralsImpl_Loops::LoopsImpl_NamedImports::NamedImportsImpl_NamespaceImport::NamespaceImportImpl_Object::ObjectImpl_OptionalChain::OptionalChainImpl_Pair::PairImpl_RegexFlags::RegexFlagsImpl_Regex::RegexImpl_RegexPattern::RegexPatternImpl_RestElement::RestElementImpl_SpreadElement::SpreadElementImpl_StmtSequence::StmtSequenceImpl_Stmts::StmtsImpl_TemplateString::TemplateStringImpl_TemplateSubstitution::TemplateSubstitutionImpl_This::ThisImpl_VariableDeclarator::VariableDeclaratorImpl#62e9184b/1@14e775kq
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode_not_Arguments::ArgumentsImpl_Array::ArrayImpl_ArrowFunction::ArrowFunctionImpl_Calls::CallsImpl_CatchClause::CatchClauseImpl_AstNodes::Comment_ComputedPropertyName::ComputedPropertyNameImpl_ElifClause::ElifClauseImpl_EscapeSequence::EscapeSequenceImpl_ExportClause::ExportClauseImpl_ExportSpecifier::ExportSpecifierImpl_Expr::ExprImpl_HashBangLine::HashBangLineImpl_ImportClause::ImportClauseImpl_ImportSpecifier::ImportSpecifierImpl_Literals::LiteralsImpl_Loops::LoopsImpl_NamedImports::NamedImportsImpl_NamespaceImport::NamespaceImportImpl_Object::ObjectImpl_OptionalChain::OptionalChainImpl_Pair::PairImpl_RegexFlags::RegexFlagsImpl_Regex::RegexImpl_RegexPattern::RegexPatternImpl_RestElement::RestElementImpl_SpreadElement::SpreadElementImpl_StmtSequence::StmtSequenceImpl_Stmts::StmtsImpl_TemplateString::TemplateStringImpl_TemplateSubstitution::TemplateSubstitutionImpl_This::ThisImpl_VariableDeclarator::VariableDeclaratorImpl#62e9184b/1@14e775kq with 46 rows and digest a1b036elb6uhel76c4ofoui0h8a.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode_not_Arguments::ArgumentsImpl_Array::ArrayImpl_ArrowFunction::ArrowFunctionImpl_AssignmentExpression::AssignmentExpressionImpl_AugmentedAssignmentExpression::AugmentedAssignmentExpressionImpl_BinaryExpression::BinaryExpressionImpl_BreakStatement::BreakStatementImpl_CallExpression::CallExpressionImpl_CatchClause::CatchClauseImpl_ComputedPropertyName::ComputedPropertyNameImpl_ContinueStatement::ContinueStatementImpl_Declaration::DeclarationImpl_DeleteExpression::DeleteExpressionImpl_DocComment::DocCommentImpl_ElifClause::ElifClauseImpl_EmptyStatement::EmptyStatementImpl_EscapeSequence::EscapeSequenceImpl_ExportClause::ExportClauseImpl_ExportSpecifier::ExportSpecifierImpl_ExportStatement::ExportStatementImpl_Expression::ExpressionImpl_ExpressionStatement::ExpressionStatementImpl_False::FalseImpl_ForAltStatement::ForAltStatementImpl_ForInAltStatement::ForInAltStatementImpl_ForInStatement::ForInStatementImpl_ForStatement::ForStatementImpl_FormalParameters::FormalParametersImpl_FunctionDeclaration::FunctionDeclarationImpl_FunctionExpression::FunctionExpressionImpl_HashBangLine::HashBangLineImpl_Identifier::IdentifierImpl_IfAltStatement::IfAltStatementImpl_IfStatement::IfStatementImpl_ImportClause::ImportClauseImpl_ImportSpecifier::ImportSpecifierImpl_ImportStatement::ImportStatementImpl_LexicalDeclaration::LexicalDeclarationImpl_MemberExpression::MemberExpressionImpl_NamedImports::NamedImportsImpl_NamespaceImport::NamespaceImportImpl_Null::NullImpl_Object::ObjectImpl_OptionalChain::OptionalChainImpl_Pair::PairImpl_ParenthesizedExpression::ParenthesizedExpressionImpl_PrimaryExpression::PrimaryExpressionImpl_Program::ProgramImpl_PropertyIdentifier::PropertyIdentifierImpl_RegexFlags::RegexFlagsImpl_Regex::RegexImpl_RegexPattern::RegexPatternImpl_RestElement::RestElementImpl_ReturnStatement::ReturnStatementImpl_SequenceExpression::SequenceExpressionImpl_ShorthandPropertyIdentifier::ShorthandPropertyIdentifierImpl_SpreadElement::SpreadElementImpl_StatementBlock::StatementBlockImpl_Statement::StatementImpl_StatementList::StatementListImpl_StringFragment::StringFragmentImpl_String::StringImpl_SubscriptExpression::SubscriptExpressionImpl_SwitchStatement::SwitchStatementImpl_TemplateString::TemplateStringImpl_TemplateSubstitution::TemplateSubstitutionImpl_TernaryExpression::TernaryExpressionImpl_This::ThisImpl_True::TrueImpl_TryStatement::TryStatementImpl_UnaryExpression::UnaryExpressionImpl_UpdateExpression::UpdateExpressionImpl_VariableDeclarator::VariableDeclaratorImpl_WhileAltStatement::WhileAltStatementImpl_WhileStatement::WhileStatementImpl#9d0a10c9/1@6ba59bl5
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode_not_Arguments::ArgumentsImpl_Array::ArrayImpl_ArrowFunction::ArrowFunctionImpl_AssignmentExpression::AssignmentExpressionImpl_AugmentedAssignmentExpression::AugmentedAssignmentExpressionImpl_BinaryExpression::BinaryExpressionImpl_BreakStatement::BreakStatementImpl_CallExpression::CallExpressionImpl_CatchClause::CatchClauseImpl_ComputedPropertyName::ComputedPropertyNameImpl_ContinueStatement::ContinueStatementImpl_Declaration::DeclarationImpl_DeleteExpression::DeleteExpressionImpl_DocComment::DocCommentImpl_ElifClause::ElifClauseImpl_EmptyStatement::EmptyStatementImpl_EscapeSequence::EscapeSequenceImpl_ExportClause::ExportClauseImpl_ExportSpecifier::ExportSpecifierImpl_ExportStatement::ExportStatementImpl_Expression::ExpressionImpl_ExpressionStatement::ExpressionStatementImpl_False::FalseImpl_ForAltStatement::ForAltStatementImpl_ForInAltStatement::ForInAltStatementImpl_ForInStatement::ForInStatementImpl_ForStatement::ForStatementImpl_FormalParameters::FormalParametersImpl_FunctionDeclaration::FunctionDeclarationImpl_FunctionExpression::FunctionExpressionImpl_HashBangLine::HashBangLineImpl_Identifier::IdentifierImpl_IfAltStatement::IfAltStatementImpl_IfStatement::IfStatementImpl_ImportClause::ImportClauseImpl_ImportSpecifier::ImportSpecifierImpl_ImportStatement::ImportStatementImpl_LexicalDeclaration::LexicalDeclarationImpl_MemberExpression::MemberExpressionImpl_NamedImports::NamedImportsImpl_NamespaceImport::NamespaceImportImpl_Null::NullImpl_Object::ObjectImpl_OptionalChain::OptionalChainImpl_Pair::PairImpl_ParenthesizedExpression::ParenthesizedExpressionImpl_PrimaryExpression::PrimaryExpressionImpl_Program::ProgramImpl_PropertyIdentifier::PropertyIdentifierImpl_RegexFlags::RegexFlagsImpl_Regex::RegexImpl_RegexPattern::RegexPatternImpl_RestElement::RestElementImpl_ReturnStatement::ReturnStatementImpl_SequenceExpression::SequenceExpressionImpl_ShorthandPropertyIdentifier::ShorthandPropertyIdentifierImpl_SpreadElement::SpreadElementImpl_StatementBlock::StatementBlockImpl_Statement::StatementImpl_StatementList::StatementListImpl_StringFragment::StringFragmentImpl_String::StringImpl_SubscriptExpression::SubscriptExpressionImpl_SwitchStatement::SwitchStatementImpl_TemplateString::TemplateStringImpl_TemplateSubstitution::TemplateSubstitutionImpl_TernaryExpression::TernaryExpressionImpl_This::ThisImpl_True::TrueImpl_TryStatement::TryStatementImpl_UnaryExpression::UnaryExpressionImpl_UpdateExpression::UpdateExpressionImpl_VariableDeclarator::VariableDeclaratorImpl_WhileAltStatement::WhileAltStatementImpl_WhileStatement::WhileStatementImpl#9d0a10c9/1@6ba59bl5 with 85 rows and digest 64b96ehmc5aqa08mbeu5d43lgd8.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate project#DataFlowPrivate::toString/1#4e4a4117/1@ec002elo
+[2026-11-23 16:24:42] (0s)  >>> Created relation project#DataFlowPrivate::toString/1#4e4a4117/1@ec002elo with 2950 rows and digest 9a5b8djb9lfs1atbavgpbki34k4.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode.getAPrimaryQlClass/0#dispred#75eaf95d/2@96b263nq
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode.getAPrimaryQlClass/0#dispred#75eaf95d/2@96b263nq with 5030 rows and digest 68fd1642v7at4bm7ume4bedci12.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate AstNodes::AstNode.toString/0#dispred#9c315ff8/2@a0c9ecv4
+[2026-11-23 16:24:42] (0s)  >>> Created relation AstNodes::AstNode.toString/0#dispred#9c315ff8/2@a0c9ecv4 with 7337 rows and digest c0129cuh2bghrvbqenkbrlurr67.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate project#AstNodes::AstNode.toString/0#dispred#9c315ff8/1@50a8d0u3
+[2026-11-23 16:24:42] (0s)  >>> Created relation project#AstNodes::AstNode.toString/0#dispred#9c315ff8/1@50a8d0u3 with 7337 rows and digest 1812edbd37gdbvoqdh3rh4padpf.
+[2026-11-23 16:24:42] (0s) Starting to evaluate predicate #select#query/29@6b9d2462
+[2026-11-23 16:24:42] (0s)  >>> Created relation #select#query/29@6b9d2462 with 8 rows and digest 830ff2nfqn46857em30du65oue4.
+[2026-11-23 16:24:42] (0s) Query done
+[2026-11-23 16:24:42] (0s) Sequence stamp origin is -5842374101017213137
+[2026-11-23 16:24:42] (0s) Pausing evaluation to sync to disk at sequence stamp o+0
+[2026-11-23 16:24:42] (0s) Unpausing evaluation
+[2026-11-23 16:24:42] Evaluation of /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql produced BQRS results.
+[2026-11-23 16:24:42] [PROGRESS] execute queries> [1/1 eval 624ms] Evaluation done; writing results to /private/tmp/issue54-template-test/Issue54DependencyMutation2.bqrs.
+[2026-11-23 16:24:42] [PROGRESS] execute queries> Shutting down query evaluator.
+[2026-11-23 16:24:42] Pausing evaluation to close the cache at sequence stamp o+1
+[2026-11-23 16:24:42] The disk cache is freshly trimmed; leave it be.
+[2026-11-23 16:24:42] Unpausing evaluation
+[2026-11-23 16:24:42] Exiting with code 0
