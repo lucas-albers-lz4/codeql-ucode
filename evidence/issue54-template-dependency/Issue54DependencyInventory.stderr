@@ -1,0 +1,9 @@
+Resolving data extensions.
+Finished resolving data extensions.
+WARNING: Failed to retrieve qlpack commit hash from Git repository
+Merging data extensions.
+Finished merging data extensions.
+WARNING: Not caching stages during query-loading, since max heap size is only 1256 MB.
+Compiling query plan for /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyInventory.ql.
+ERROR: could not resolve type TemplateString (/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyInventory.ql:2,44-58)
+ERROR: getTemplateArgument(int) cannot be resolved for type Models::NamedFsPopenCall (/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyInventory.ql:3,56-75)

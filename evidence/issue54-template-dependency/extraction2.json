@@ -1,0 +1,45 @@
+[
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "database",
+      "init",
+      "/private/tmp/issue54-template-test/database2",
+      "--language=ucode",
+      "--search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack",
+      "--source-root=/private/tmp/issue54-template-test/source"
+    ],
+    "CODEQL_UCODE_STAGED_ROOT": "/private/tmp/issue54-template-test/source",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "Calculating baseline information in /private/tmp/issue54-template-test/source\nCalculated baseline information for languages:  (22ms).\nResolving extractor ucode.\nSuccessfully loaded extractor ucode (ucode) from /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack.\nCreated skeleton CodeQL database at /private/tmp/issue54-template-test/database2. This in-progress database is ready to be populated by an extractor.\n"
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "database",
+      "index-files",
+      "--language=ucode",
+      "--include=**/controls.uc",
+      "--include=**/rpcd/ucode/luci",
+      "--working-dir=/private/tmp/issue54-template-test/source",
+      "/private/tmp/issue54-template-test/database2"
+    ],
+    "CODEQL_UCODE_STAGED_ROOT": "/private/tmp/issue54-template-test/source",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "Scanning for files in /private/tmp/issue54-template-test/source...\n/private/tmp/issue54-template-test/database2: Indexing files in in /private/tmp/issue54-template-test/source...\nRunning command in /private/tmp/issue54-template-test/source: [/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/index-files.sh, /private/tmp/issue54-template-test/database2/working/files-to-index11954420101970341853.list]\n"
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "database",
+      "finalize",
+      "/private/tmp/issue54-template-test/database2"
+    ],
+    "CODEQL_UCODE_STAGED_ROOT": "/private/tmp/issue54-template-test/source",
+    "exit": 0,
+    "stdout": "[2026-11-23 16:23:42] [build-stderr] Scanning for files in /private/tmp/issue54-template-test/source...\n",
+    "stderr": "Running pre-finalize script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh in /private/tmp/issue54-template-test/source.\nRunning command in /private/tmp/issue54-template-test/source: [/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh]\nPre-finalize script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh completed in 494 ms.\nRunning TRAP import for CodeQL database at /private/tmp/issue54-template-test/database2...\nImporting TRAP files\nMerging relations\nFinished writing database (relations: 84.63 KiB; string pool: 2.05 MiB).\nTRAP import complete (442ms).\nFinished zipping source archive (5.24 KiB).\n"
+  }
+]

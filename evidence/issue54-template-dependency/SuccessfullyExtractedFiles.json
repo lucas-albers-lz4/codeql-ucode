@@ -1,0 +1,6 @@
+{"#select":{"columns":[
+   {"name":"f","kind":"Entity"}
+  ,{"kind":"String"}]
+ ,"tuples":[
+   [{"label":"/private/tmp/issue54-template-test/source/controls.uc","url":{"uri":"file:///private/tmp/issue54-template-test/source/controls.uc","startLine":0,"startColumn":0,"endLine":0,"endColumn":0}},""]]
+ }}

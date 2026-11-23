@@ -1,0 +1,8 @@
+{"#select":{"columns":[
+   {"name":"source","kind":"Entity"}
+  ,{"name":"substitution","kind":"Entity"}
+  ,{"name":"template","kind":"Entity"}
+  ,{"name":"sink","kind":"Entity"}
+  ,{"name":"method","kind":"String"}]
+ ,"tuples":[]
+ }}
