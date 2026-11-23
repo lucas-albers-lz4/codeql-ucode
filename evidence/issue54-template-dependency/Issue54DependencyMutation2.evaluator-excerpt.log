@@ -1,0 +1,13 @@
+[2026-11-23 16:24:37] This is codeql execute queries -J-Xmx1254M --verbosity=progress --logdir=/private/tmp/issue54-template-test/database2/log --common-caches=/private/tmp/issue54-query-comparison/runtime/common --evaluator-log-level=5 --threads=1 --warnings=show --compilation-cache=/private/tmp/issue54-query-comparison/runtime/cache --no-default-compilation-cache --search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-template-dependency/ql/lib:/private/tmp/ucode-issue54-template-dependency/ql/src --additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61 --qlconfig-file=/private/tmp/ucode-issue54-template-dependency/qlconfig.yml --dynamic-join-order-mode=none --output=/private/tmp/issue54-template-test/Issue54DependencyMutation2.bqrs -- /private/tmp/issue54-template-test/database2/db-ucode path:/private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql
+[2026-11-23 16:24:42] (0s)  >>> Created relation #select#query/29@6b9d2462 with 8 rows and digest 830ff2nfqn46857em30du65oue4.
+[2026-11-23 16:24:42] (0s) Query done
+[2026-11-23 16:24:42] (0s) Sequence stamp origin is -5842374101017213137
+[2026-11-23 16:24:42] (0s) Pausing evaluation to sync to disk at sequence stamp o+0
+[2026-11-23 16:24:42] (0s) Unpausing evaluation
+[2026-11-23 16:24:42] Evaluation of /private/tmp/ucode-issue54-template-dependency/ql/src/extractor-smoke/Issue54DependencyMutation.ql produced BQRS results.
+[2026-11-23 16:24:42] [PROGRESS] execute queries> [1/1 eval 624ms] Evaluation done; writing results to /private/tmp/issue54-template-test/Issue54DependencyMutation2.bqrs.
+[2026-11-23 16:24:42] [PROGRESS] execute queries> Shutting down query evaluator.
+[2026-11-23 16:24:42] Pausing evaluation to close the cache at sequence stamp o+1
+[2026-11-23 16:24:42] The disk cache is freshly trimmed; leave it be.
+[2026-11-23 16:24:42] Unpausing evaluation
+[2026-11-23 16:24:42] Exiting with code 0
