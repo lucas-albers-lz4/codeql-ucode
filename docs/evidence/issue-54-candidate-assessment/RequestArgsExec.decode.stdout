@@ -1,0 +1,8 @@
+"src","col1","sink","col3"
+"MemberExpression","setLocaltime request.args reaches system","CallExpression","system"
+"MemberExpression","getSwconfigFeatures request.args reaches popen via shellquote","CallExpression","popen"
+"MemberExpression","getSwconfigPortState request.args reaches popen via shellquote","CallExpression","popen"
+"MemberExpression","setPassword request.args reaches system via shellquote","CallExpression","system"
+"MemberExpression","setPassword request.args reaches system via shellquote","CallExpression","system"
+"MemberExpression","getRealtimeStats request.args reaches popen via shellquote","CallExpression","popen"
+"MemberExpression","getRealtimeStats request.args reaches popen via shellquote","CallExpression","popen"

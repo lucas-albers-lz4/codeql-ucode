@@ -1,0 +1,8 @@
+"src","col1","sink","col3","col4","col5","col6"
+"MemberExpression","shell-injection candidate via system in luci","CallExpression","system","setLocaltime","111","108"
+"MemberExpression","shell-injection candidate via popen in luci","CallExpression","popen","getSwconfigFeatures","343","343"
+"MemberExpression","shell-injection candidate via popen in luci","CallExpression","popen","getSwconfigPortState","400","400"
+"MemberExpression","shell-injection candidate via system in luci","CallExpression","system","setPassword","474","470"
+"MemberExpression","shell-injection candidate via system in luci","CallExpression","system","setPassword","474","471"
+"MemberExpression","shell-injection candidate via popen in luci","CallExpression","popen","getRealtimeStats","585","575"
+"MemberExpression","shell-injection candidate via popen in luci","CallExpression","popen","getRealtimeStats","585","577"
