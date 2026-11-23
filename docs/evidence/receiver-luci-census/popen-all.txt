@@ -1,0 +1,72 @@
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/root/usr/share/rpcd/ucode/luci.advanced-reboot:71:	return trim(fs.popen(cmd)?.read?.("all"));
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/01_error_handling/04_partition_not_found:7:-- File fs/popen~fw_printenv_-n_bootimage_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/01_linksys_e7350:8:-- File fs/popen~fw_printenv_-n_bootimage_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/01_linksys_e7350:12:-- File fs/popen~_etc_os-release_2_dev_null_echo_OPENWRT_RELEASE_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/01_linksys_e7350:20:-- File fs/popen~dd_if_dev_mtd3_bs_1_skip_192_count_64.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/01_linksys_e7350:24:-- File fs/popen~dd_if_dev_mtd6_bs_1_skip_192_count_64.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/02_zyxel_nbg6817:8:-- File fs/popen~_lib_functions_sh_find_mtd_part_0_dual_flag_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/02_zyxel_nbg6817:12:-- File fs/popen~dd_if_dev_mtdblock12_bs_1_count_1_skip_0_2_dev_null_hexdump_-n_1_-e_1_1_02x_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/02_zyxel_nbg6817:16:-- File fs/popen~_etc_os-release_2_dev_null_echo_OPENWRT_RELEASE_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/02_zyxel_nbg6817:24:-- File fs/popen~dd_if_dev_mmcblk0p4_bs_1_skip_32_count_64.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/02_zyxel_nbg6817:28:-- File fs/popen~dd_if_dev_mmcblk0p7_bs_1_skip_32_count_64.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/03_zyxel_wsm20:9:-- File fs/popen~_lib_functions_sh_find_mtd_part_persist_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/03_zyxel_wsm20:13:-- File fs/popen~dd_if_dev_mtdblock7_bs_1_count_1_skip_4_2_dev_null_hexdump_-n_1_-e_1_1_02x_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/03_zyxel_wsm20:17:-- File fs/popen~_etc_os-release_2_dev_null_echo_OPENWRT_RELEASE_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/02_obtain_device_info/03_zyxel_wsm20:25:-- File fs/popen~dd_if_dev_mtd6_bs_1_skip_32_count_64.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/01_linksys_e7350_switch:7:-- File fs/popen~fw_printenv_-n_bootimage_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/01_linksys_e7350_switch:11:-- File fs/popen~fw_setenv_bootimage_2_2_dev_null_echo_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/02_set_env_failure:7:-- File fs/popen~fw_printenv_-n_bootimage_2_dev_null.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/02_set_env_failure:11:-- File fs/popen~fw_setenv_bootimage_2_2_dev_null_echo_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/03_zyxel_wsm20_switch:8:-- File fs/popen~_lib_functions_sh_find_mtd_part_persist_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/03_boot_partition/03_zyxel_wsm20_switch:12:-- File fs/popen~printf_b_x02_dd_of_dev_mtdblock7_bs_1_seek_4_count_1_conv_notrunc_2_dev_null_echo_.txt --
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/lib/mocklib/fs.uc:32:	popen: (cmdline, mode) => {
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/lib/mocklib/fs.uc:34:		    path = sprintf("fs/popen~%s.txt", replace(cmdline, /[^A-Za-z0-9_-]+/g, '_')),
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-advanced-reboot/tests/lib/mocklib/fs.uc:47:		mocklib.trace_call("fs", "popen", { cmdline, mode });
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-commands/ucode/controller/commands.uc:6:import { basename, mkstemp, popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-commands/ucode/controller/commands.uc:203:			const fd = popen(`${join(' ', argv)} 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc:5:import { readfile, popen, stat, glob } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc:46:	return trimnonewline( popen(`date -d @${seconds} +${shellquote(format)} 2>/dev/null`, 'r')?.read?.('line') );
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-lldpd/root/usr/share/rpcd/ucode/luci.lldpd:3:import { popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-lldpd/root/usr/share/rpcd/ucode/luci.lldpd:6:	return json(popen(`lldpcli -f json0 show ${section}`, 'r')?.read?.('all'));
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-lxc/ucode/controller/lxc.uc:31:	let p = fs.popen('df -kP ' + path);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-lxc/ucode/controller/lxc.uc:54:		let content = fs.popen(`sh /usr/share/lxc/templates/lxc-download --list --server ${shellquote(LXC_URL)} 2>/dev/null`, 'r').read('all');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-lxc/ucode/controller/lxc.uc:177:		let target = split(fs.popen('uname -m', 'r').read('line'), '\n');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-rustdesk-server/root/usr/share/rpcd/ucode/rustdesk-server.uc:4:import { popen, access, readfile, unlink } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-rustdesk-server/root/usr/share/rpcd/ucode/rustdesk-server.uc:33:	let pp = popen(cmd, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc:5:import { access, popen, readfile, writefile, unlink } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc:12:	let p = popen(command, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc:174:		//	popen('/bin/sh -c ". ' + env_script_path + ' && /etc/init.d/tailscale restart" &');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc:207:		popen('/bin/sh -c ' + shell_quote(login_cmd + ' &'), 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp:6:import { access, open, popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp:45:			const ipt = popen('iptables --line-numbers -t nat -xnvL MINIUPNPD 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp:66:			const nft = popen('nft --handle list chain inet fw4 upnp_prerouting 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:4:import { access, lstat, readfile, unlink, rename, chmod, chown, mkdir, mkdtemp, open, popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:36:	let p = popen(px5g_bin + ' 2>&1', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:151:			let p = popen('/usr/bin/weechat-headless -v 2>/dev/null', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:157:				p = popen('/usr/bin/weechat -v 2>/dev/null', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-wol/root/usr/share/rpcd/ucode/luci.wol:5:import { access, stat, popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-wol/root/usr/share/rpcd/ucode/luci.wol:42:				const fd = popen(request.args.name + ' ' + join(' ', parts));
+b2e0be4b46ec0fd43394c081fa7c50657af14011:libs/luci-lib-base/luasrc/util.lua:580:	local pp   = io.popen(command)
+b2e0be4b46ec0fd43394c081fa7c50657af14011:libs/luci-lib-base/luasrc/util.lua:588:	local pp = io.popen(command)
+b2e0be4b46ec0fd43394c081fa7c50657af14011:libs/luci-lib-base/luasrc/util.lua:603:	local pp   = io.popen(command)
+b2e0be4b46ec0fd43394c081fa7c50657af14011:libs/luci-lib-ipkg/luasrc/model/ipkg.lua:133:	local fd = io.popen(table.concat(cmdline, " "))
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:6:import { stdin, access, dirname, basename, open, popen, glob, lsdir, readfile, readlink, realpath, error } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:26:		let fd = popen('opkg list-installed ' + shellquote(pkg) + ' 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:37:		let fd = popen('apk list -I ' + shellquote(pkg) + ' 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:278:			let fd = popen('dnsmasq --version 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:294:			fd = popen('odhcpd -h 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:315:			fd = popen('ipset --help 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:343:			const swc = popen(`swconfig dev ${shellquote(request.args.switch)} help 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:400:			const swc = popen(`swconfig dev ${shellquote(request.args.switch)} show 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:481:			const block = popen('/sbin/block info 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:585:			const fd = popen(`luci-bwc ${flags}`, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/ucode/sys.uc:4:import { basename, readlink, readfile, open, popen, stat, glob } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/ucode/sys.uc:7:	const top = popen('/bin/busybox top -bn1');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/ucode/sys.uc:49:		nfct = popen('/usr/sbin/conntrack -L -o extended', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-lua-runtime/luasrc/sys.lua:43:		local source = stream and io.popen or luci.util.exec
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-lua-runtime/luasrc/sys.lua:284:		ok, fd = pcall(io.popen, "/usr/sbin/conntrack -L -o extended", "r")
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-mod-status/src/luci-bwc.c:545:			(ipc_command && ((info = popen(ipc_command, "r")) != NULL)))
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:7:import { popen } from 'fs';
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:15:	return trim(popen(cmd)?.read?.('all'));
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:19:	const ips = popen(`resolveip ${shellquote(configHost)} 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:67:			const wg_dump = popen("wg show all dump 2>/dev/null");

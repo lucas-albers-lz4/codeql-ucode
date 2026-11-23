@@ -1,0 +1,23 @@
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-commands/ucode/controller/commands.uc:203:			const fd = popen(`${join(' ', argv)} 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-rustdesk-server/root/usr/share/rpcd/ucode/rustdesk-server.uc:33:	let pp = popen(cmd, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc:12:	let p = popen(command, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp:45:			const ipt = popen('iptables --line-numbers -t nat -xnvL MINIUPNPD 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp:66:			const nft = popen('nft --handle list chain inet fw4 upnp_prerouting 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:36:	let p = popen(px5g_bin + ' 2>&1', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:151:			let p = popen('/usr/bin/weechat-headless -v 2>/dev/null', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc:157:				p = popen('/usr/bin/weechat -v 2>/dev/null', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:applications/luci-app-wol/root/usr/share/rpcd/ucode/luci.wol:42:				const fd = popen(request.args.name + ' ' + join(' ', parts));
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:26:		let fd = popen('opkg list-installed ' + shellquote(pkg) + ' 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:37:		let fd = popen('apk list -I ' + shellquote(pkg) + ' 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:278:			let fd = popen('dnsmasq --version 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:294:			fd = popen('odhcpd -h 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:315:			fd = popen('ipset --help 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:343:			const swc = popen(`swconfig dev ${shellquote(request.args.switch)} help 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:400:			const swc = popen(`swconfig dev ${shellquote(request.args.switch)} show 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:481:			const block = popen('/sbin/block info 2>/dev/null');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/root/usr/share/rpcd/ucode/luci:585:			const fd = popen(`luci-bwc ${flags}`, 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/ucode/sys.uc:7:	const top = popen('/bin/busybox top -bn1');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-base/ucode/sys.uc:49:		nfct = popen('/usr/sbin/conntrack -L -o extended', 'r');
+b2e0be4b46ec0fd43394c081fa7c50657af14011:modules/luci-mod-status/src/luci-bwc.c:545:			(ipc_command && ((info = popen(ipc_command, "r")) != NULL)))
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:19:	const ips = popen(`resolveip ${shellquote(configHost)} 2>/dev/null`);
+b2e0be4b46ec0fd43394c081fa7c50657af14011:protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard:67:			const wg_dump = popen("wg show all dump 2>/dev/null");

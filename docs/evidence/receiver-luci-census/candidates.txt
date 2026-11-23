@@ -1,0 +1,109 @@
+
+applications/luci-app-commands/ucode/controller/commands.uc
+ initializer/assignment 203: fd
+  RHS candidate 207: let chunk = fd.read(4096) ?? '';
+  RHS candidate 221: chunk = fd.read(4096);
+
+applications/luci-app-rustdesk-server/root/usr/share/rpcd/ucode/rustdesk-server.uc
+ initializer/assignment 33: pp
+  RHS candidate 35: let output = pp.read('all');
+
+applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc
+ initializer/assignment 12: p
+  RHS candidate 17: for (let line = p.read('line'); length(line); line = p.read('line')) {
+  RHS candidate 17: for (let line = p.read('line'); length(line); line = p.read('line')) {
+  RHS candidate 23: let exit_code = p.close();
+
+applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp
+ initializer/assignment 45: ipt
+  RHS candidate 48: for (let line = ipt.read('line'); length(line); line = ipt.read('line')) {
+  RHS candidate 48: for (let line = ipt.read('line'); length(line); line = ipt.read('line')) {
+ initializer/assignment 66: nft
+  RHS candidate 69: for (let line = nft.read('line'), num = 1; length(line); line = nft.read('line')) {
+  RHS candidate 69: for (let line = nft.read('line'), num = 1; length(line); line = nft.read('line')) {
+
+applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc
+ initializer/assignment 36: p
+  RHS candidate 37: let out = p ? p.read('all') : '';
+ initializer/assignment 151: p
+  RHS candidate 37: let out = p ? p.read('all') : '';
+ initializer/assignment 157: p
+  RHS candidate 37: let out = p ? p.read('all') : '';
+
+applications/luci-app-wol/root/usr/share/rpcd/ucode/luci.wol
+ initializer/assignment 42: fd
+  RHS candidate 44: result.stdout = fd.read('all');
+  RHS candidate 46: result.code = fd.close();
+
+modules/luci-base/root/usr/share/rpcd/ucode/luci
+ initializer/assignment 26: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+ initializer/assignment 37: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+ initializer/assignment 278: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+ initializer/assignment 294: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+ initializer/assignment 315: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+ initializer/assignment 343: swc
+  RHS candidate 350: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 350: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 405: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 405: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+ initializer/assignment 400: swc
+  RHS candidate 350: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 350: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 405: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+  RHS candidate 405: for (let line = swc.read('line'); length(line); line = swc.read('line')) {
+ initializer/assignment 481: block
+  RHS candidate 486: for (let line = block.read('line'); length(line); line = block.read('line')) {
+  RHS candidate 486: for (let line = block.read('line'); length(line); line = block.read('line')) {
+ initializer/assignment 585: fd
+  RHS candidate 297: const output = fd.read('all');
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 318: for (let line = fd.read('line'), flag = false; length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 543: for (let line = fd.read('line'); length(line); line = fd.read('line')) {
+  RHS candidate 620: let board = fd ? json(fd) : {};
+
+modules/luci-base/ucode/sys.uc
+ initializer/assignment 7: top
+  RHS candidate 10: for (let line = top.read('line'); length(line); line = top.read('line')) {
+  RHS candidate 10: for (let line = top.read('line'); length(line); line = top.read('line')) {
+ initializer/assignment 49: nfct
+  RHS candidate 54: for (let line = nfct.read('line'); length(line); line = nfct.read('line')) {
+  RHS candidate 54: for (let line = nfct.read('line'); length(line); line = nfct.read('line')) {
+
+protocols/luci-proto-wireguard/root/usr/share/rpcd/ucode/luci.wireguard
+ initializer/assignment 19: ips
+  RHS candidate 22: for (let line = ips.read('line'); length(line); line = ips.read('line')) {
+  RHS candidate 22: for (let line = ips.read('line'); length(line); line = ips.read('line')) {
+ initializer/assignment 67: wg_dump
+  RHS candidate 72: for (let line = wg_dump.read('line'); length(line); line = wg_dump.read('line')) {
+  RHS candidate 72: for (let line = wg_dump.read('line'); length(line); line = wg_dump.read('line')) {
