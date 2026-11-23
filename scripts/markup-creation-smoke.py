@@ -1,10 +1,11 @@
-"""Fresh extraction and exact bounded import/function creation graph checks."""
+"""Fresh extraction and projected bounded import/function graph checks."""
 import csv
 import gzip
 import hashlib
 import importlib.util
 import io
 import json
+import runpy
 from pathlib import Path
 import tempfile
 
@@ -39,6 +40,10 @@ PATHS = {
   ('function-creation', 'FunctionExpression:1:10:1:31:AssignmentExpression:2'),
   ('assignment-completion', 'AssignmentExpression:1:4:1:31:ExpressionStatement:0'),
   ('statement-completion', 'ExpressionStatement:1:4:1:32:Markup:1')],
+ ('body-call.ut', 'callable:1:10'): [
+  ('entry', 'entry'), ('identifier', 'Identifier:1:23:1:26:CallExpression:0'),
+  ('call-completion', 'CallExpression:1:23:1:28:ExpressionStatement:0'),
+  ('statement-completion', 'ExpressionStatement:1:23:1:29:StatementBlock:1'), ('exit', 'exit')],
  ('two-callables.ut', 'top'): [
   ('object-identifier', 'Identifier:1:4:1:4:MemberExpression:0'),
   ('member-reference', 'MemberExpression:1:4:1:6:AssignmentExpression:0'),
@@ -52,6 +57,24 @@ PATHS = {
   ('statement-completion', 'ExpressionStatement:1:25:1:44:Markup:2')],
  ('two-callables.ut', 'callable:1:10'): [('entry', 'entry'), ('exit', 'exit')],
  ('two-callables.ut', 'callable:1:31'): [('entry', 'entry'), ('exit', 'exit')],
+ ('uhttpd.uc', 'callable:6:25'): [
+  ('entry', 'entry'),
+  ('identifier', 'Identifier:7:12:7:18:CallExpression:0'),
+  ('identifier', 'Identifier:7:20:7:22:Arguments:1'),
+  ('identifier', 'Identifier:7:25:7:30:MemberExpression:0'),
+  ('member-reference', 'MemberExpression:7:25:7:35:Arguments:3'),
+  ('identifier', 'Identifier:7:38:7:43:MemberExpression:0'),
+  ('member-reference', 'MemberExpression:7:38:7:48:Arguments:5'),
+  ('call-completion', 'CallExpression:7:12:7:49:VariableDeclarator:2'),
+  ('declaration-completion', 'LexicalDeclaration:7:2:7:50:StatementBlock:1'),
+  ('identifier', 'Identifier:9:2:9:9:CallExpression:0'),
+  ('identifier', 'Identifier:9:11:9:13:Arguments:1'),
+  ('call-completion', 'CallExpression:9:2:9:14:ExpressionStatement:0'),
+  ('statement-completion', 'ExpressionStatement:9:2:9:15:StatementBlock:2'),
+  ('identifier', 'Identifier:11:2:11:4:MemberExpression:0'),
+  ('member-reference', 'MemberExpression:11:2:11:10:CallExpression:0'),
+  ('call-completion', 'CallExpression:11:2:11:12:ExpressionStatement:0'),
+  ('statement-completion', 'ExpressionStatement:11:2:11:13:StatementBlock:3'), ('exit', 'exit')],
  ('uhttpd.uc', 'top'): [
   ('import-completion', 'ImportStatement:3:1:3:39:Markup:1'),
   ('import-completion', 'ImportStatement:4:1:4:32:Markup:2'),
@@ -63,7 +86,7 @@ PATHS = {
 }
 
 # Independent AST oracle for the source-pinned real file, including parameter,
-# property, import binding and body identities, regardless of CFG membership.
+# property, import binding and body witnesses, regardless of CFG membership.
 REAL_AST = {
  ('Identifier','dispatch','3','8','3','15','ImportClause','0'),
  ('Identifier','request','4','8','4','14','ImportClause','0'),
@@ -127,9 +150,9 @@ def main():
         assert {r[0]['url']['uri'] for r in files} == {p.resolve().as_uri() for p in SOURCE.glob('*.ut') if p.name != 'malformed.ut'}, files
         ast = rows(db, 'markup-creation-ast-test.ql', base / 'ast.bqrs')
         assert len(ast) == len(SUPPORTED_AST) and {tuple(r[1:]) for r in ast if r[0] == 'supported.ut'} == SUPPORTED_AST, ast
-        graph(db, base, set(PATHS) - {('uhttpd.uc','top')})
+        graph(db, base, {k for k in PATHS if k[0] != 'uhttpd.uc'})
         scopes = rows(db, 'markup-creation-scopes-test.ql', base / 'scopes.bqrs')
-        assert {tuple(r) for r in scopes} == {('supported.ut','1','29','1','54','covered'), ('empty-body.ut','1','10','1','22','covered'), ('body-call.ut','1','10','1','31','unsupported'), ('two-callables.ut','1','10','1','22','covered'), ('two-callables.ut','1','31','1','43','covered')} and len(scopes) == 5, scopes
+        assert {tuple(r) for r in scopes} == {('supported.ut','1','29','1','54','covered'), ('empty-body.ut','1','10','1','22','covered'), ('body-call.ut','1','10','1','31','covered'), ('two-callables.ut','1','10','1','22','covered'), ('two-callables.ut','1','31','1','43','covered')} and len(scopes) == 5, scopes
         roots = rows(db, 'markup-creation-root-test.ql', base / 'roots.bqrs')
         assert {tuple(r) for r in roots} == {(name,'top-observed') for name in ['supported.ut','empty-body.ut','body-call.ut','two-callables.ut']} and len(roots) == 4, roots
         # Inject a warning into an unchanged supported AST to isolate the
@@ -169,10 +192,11 @@ def main():
             ('CallExpression','11','2','11','12','ExpressionStatement','0'),
         }
         assert len(body) == len(expected_body) and {tuple(r) for r in body} == expected_body, body
-        graph(db, real, {('uhttpd.uc','top')})
-        assert rows(db, 'markup-creation-scopes-test.ql', real / 'scopes.bqrs') == [['uhttpd.uc','6','25','12','1','unsupported']]
+        graph(db, real, {('uhttpd.uc','top'), ('uhttpd.uc','callable:6:25')})
+        assert rows(db, 'markup-creation-scopes-test.ql', real / 'scopes.bqrs') == [['uhttpd.uc','6','25','12','1','covered']]
         assert rows(db, 'markup-creation-root-test.ql', real / 'roots.bqrs') == [['uhttpd.uc','top-observed']]
-        print('Exact import/function paths, scopes, source identities and diagnostics verified')
+        print('Projected import/function paths, scopes, source witnesses and diagnostics verified')
+    runpy.run_path(str(ROOT / 'scripts/markup-call-controls-smoke.py'))
 
 if __name__ == '__main__':
     main()

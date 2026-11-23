@@ -137,8 +137,13 @@ module MarkupCreationCFG {
     n.getParent() = f.getBody() and
     (
       n instanceof UcodeMarkup::LexicalDeclaration
+      or n instanceof UcodeMarkup::ExpressionStatement
       or
       n instanceof UcodeMarkup::ReservedWord and n.toString() = ["{", "}"]
+    )
+    or
+    exists(UcodeMarkup::ExpressionStatement s | n.getParent() = s and s.getParent() = f.getBody() |
+      n = s.getChild() or n instanceof UcodeMarkup::ReservedWord and n.toString() = ";"
     )
     or
     exists(UcodeMarkup::LexicalDeclaration d | n.getParent() = d and d.getParent() = f.getBody() |
@@ -156,15 +161,49 @@ module MarkupCreationCFG {
     )
   }
 
+  // Restrict calls to non-optional identifier or simple dotted references, and
+  // arguments to the same shapes. This is a source-order observation only.
+  private predicate simpleRef(UcodeMarkup::AstNode n) {
+    n instanceof UcodeMarkup::Identifier or
+    exists(UcodeMarkup::MemberExpression m | n = m |
+      m.getObject() instanceof UcodeMarkup::Identifier and
+      exists(m.getProperty()) and not exists(m.getOptionalChain())
+    )
+  }
+
+  private predicate callChild(UcodeMarkup::AstNode n, CallableScope f) {
+    exists(UcodeMarkup::CallExpression c | c.getParent+() = f.getBody() |
+      n.getParent() = c and (n = c.getFunction() or n = c.getArguments())
+      or
+      n.getParent() = c.getArguments() and
+        (simpleRef(n) or n instanceof UcodeMarkup::ReservedWord and n.toString() = ["(", ")", ","])
+      or
+      exists(UcodeMarkup::MemberExpression m | m.getParent*() = c |
+        n.getParent() = m and
+        (n = m.getObject() or n = m.getProperty() or
+         n instanceof UcodeMarkup::ReservedWord and n.toString() = ".")
+      )
+    )
+  }
+
   /** Whether this callable's body has a complete graph in this bounded contract. */
   predicate isCallableCovered(CallableScope f) {
-    not exists(UcodeMarkup::AstNode n | n.getParent+() = f.getBody() and not bodyAllowed(n, f)) and
+    not exists(UcodeMarkup::AstNode n | n.getParent+() = f.getBody() and not bodyAllowed(n, f) and not callChild(n, f)) and
     not exists(UcodeMarkup::LexicalDeclaration d | d.getParent() = f.getBody() |
       count(UcodeMarkup::VariableDeclarator v | v.getParent() = d) != 1
       or
       not exists(UcodeMarkup::VariableDeclarator v | v.getParent() = d |
-        exists(v.getName()) and v.getValue() instanceof UcodeMarkup::Number
+        exists(v.getName()) and
+        (v.getValue() instanceof UcodeMarkup::Number or v.getValue() instanceof UcodeMarkup::CallExpression)
       )
+    ) and
+    not exists(UcodeMarkup::ExpressionStatement s | s.getParent() = f.getBody() |
+      not s.getChild() instanceof UcodeMarkup::CallExpression
+    ) and
+    not exists(UcodeMarkup::CallExpression c | c.getParent+() = f.getBody() |
+      not simpleRef(c.getFunction()) or not exists(c.getArguments()) or exists(c.getOptionalChain()) or
+      not (c.getParent() instanceof UcodeMarkup::VariableDeclarator or
+           c.getParent() instanceof UcodeMarkup::ExpressionStatement)
     )
   }
 
@@ -191,7 +230,13 @@ module MarkupCreationCFG {
   private predicate callableAst(UcodeMarkup::AstNode n, CallableScope f) {
     isCallableCovered(f) and
     n.getParent+() = f.getBody() and
-    (n instanceof UcodeMarkup::LexicalDeclaration or n instanceof UcodeMarkup::Number)
+    (n instanceof UcodeMarkup::LexicalDeclaration or n instanceof UcodeMarkup::Number or
+     n instanceof UcodeMarkup::ExpressionStatement or n instanceof UcodeMarkup::CallExpression or
+     n instanceof UcodeMarkup::MemberExpression or
+     n instanceof UcodeMarkup::Identifier and
+       (n.getParent() instanceof UcodeMarkup::CallExpression or
+        n.getParent() instanceof UcodeMarkup::Arguments or
+        n.getParent() instanceof UcodeMarkup::MemberExpression))
   }
 
   private newtype TNode =
@@ -219,7 +264,11 @@ module MarkupCreationCFG {
       or
       this.getAstNode() instanceof UcodeMarkup::ImportStatement and result = "import-completion"
       or
-      this.getAstNode() instanceof UcodeMarkup::Identifier and result = "object-identifier"
+      this.getAstNode() instanceof UcodeMarkup::Identifier and exists(this.getTopScope()) and
+      result = "object-identifier"
+      or
+      this.getAstNode() instanceof UcodeMarkup::Identifier and exists(this.getCallableScope()) and
+      result = "identifier"
       or
       this.getAstNode() instanceof UcodeMarkup::MemberExpression and result = "member-reference"
       or
@@ -230,6 +279,8 @@ module MarkupCreationCFG {
       or
       this.getAstNode() instanceof UcodeMarkup::ExpressionStatement and
       result = "statement-completion"
+      or
+      this.getAstNode() instanceof UcodeMarkup::CallExpression and result = "call-completion"
       or
       this.getAstNode() instanceof UcodeMarkup::Number and result = "initializer"
       or

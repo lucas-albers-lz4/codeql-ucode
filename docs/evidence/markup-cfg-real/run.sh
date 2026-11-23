@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 # Run from producer root, after building its pack. Arguments are absolute paths.
-if [ "$#" -ne 5 ]; then echo 'usage: run.sh CODEQL STAGE LUCI CONSUMER OUT' >&2; exit 2; fi
+if [ "$#" -lt 5 ] || [ "$#" -gt 6 ] || { [ "$#" -eq 6 ] && [ "$6" != "--call-bundle" ]; }; then echo 'usage: run.sh CODEQL STAGE LUCI CONSUMER OUT [--call-bundle]' >&2; exit 2; fi
 CODEQL=$1 STAGE=$2 LUCI=$3 CONSUMER=$4 OUT=$5
 EVIDENCE="$PWD/docs/evidence/markup-cfg-real"
 [ ! -e "$OUT" ] || { echo 'output already exists' >&2; exit 1; }
@@ -37,4 +37,4 @@ python3 "$CONSUMER/evidence/markup-profile-0a6612f/validate.py" --source "$LUCI"
 run_db "$EVIDENCE/controls" "$OUT/controls-db"
 for q in measurement measurement-callable; do query "$OUT/controls-db" "$q" "markup-measure-controls2-$q" csv; done
 for q in SuccessfullyExtractedFiles ExtractionErrors; do query "$OUT/controls-db" "diagnostics/$q" "markup-measure-controls2-$q" csv; done
-python3 "$EVIDENCE/check.py" "$OUT" "$STAGE" "$EVIDENCE/controls"
+python3 "$EVIDENCE/check.py" "$OUT" "$STAGE" "$EVIDENCE/controls" "${@:6}"
