@@ -1,0 +1,9 @@
+{"#select":{"columns":[
+   {"name":"src","kind":"Entity"}
+  ,{"name":"helper","kind":"Entity"}
+  ,{"name":"sink","kind":"Entity"}
+  ,{"name":"method","kind":"String"}]
+ ,"tuples":[
+   [{"label":"MemberExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":343,"startColumn":49,"endLine":343,"endColumn":67}},{"label":"CallExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":343,"startColumn":38,"endLine":343,"endColumn":68}},{"label":"CallExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":343,"startColumn":16,"endLine":343,"endColumn":88}},"getSwconfigFeatures"]
+  ,[{"label":"MemberExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":400,"startColumn":49,"endLine":400,"endColumn":67}},{"label":"CallExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":400,"startColumn":38,"endLine":400,"endColumn":68}},{"label":"CallExpression","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":400,"startColumn":16,"endLine":400,"endColumn":88}},"getSwconfigPortState"]]
+ }}

@@ -1,0 +1,11 @@
+Resolving data extensions.
+Finished resolving data extensions.
+WARNING: Failed to retrieve qlpack commit hash from Git repository
+Merging data extensions.
+Finished merging data extensions.
+WARNING: Not caching stages during query-loading, since max heap size is only 1256 MB.
+Compiling query plan for /private/tmp/ucode-issue54-swconfig-probe/ql/src/extractor-smoke/Issue54TemplateNodeProbe.ql.
+[1/1 comp 6.3s] Compiled /private/tmp/ucode-issue54-swconfig-probe/ql/src/extractor-smoke/Issue54TemplateNodeProbe.ql.
+Starting evaluation of lucas-albers-lz4/ucode-queries/extractor-smoke/Issue54TemplateNodeProbe.ql.
+[1/1 eval 12.2s] Evaluation done; writing results to /private/tmp/issue54-query-comparison/Issue54TemplateNodeProbe.bqrs.
+Shutting down query evaluator.
