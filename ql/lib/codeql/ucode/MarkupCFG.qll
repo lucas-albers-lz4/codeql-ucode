@@ -8,6 +8,14 @@ module MarkupCFG {
     n instanceof UcodeMarkup::Markup or n instanceof UcodeMarkup::TextStatement
   }
 
+  private predicate expressionTagOpen(UcodeMarkup::AstNode n) {
+    n instanceof UcodeMarkup::ExpressionTagOpen or n instanceof UcodeMarkup::ExpressionTagTrimOpen
+  }
+
+  private predicate expressionTagClose(UcodeMarkup::AstNode n) {
+    n instanceof UcodeMarkup::ExpressionTagClose or n instanceof UcodeMarkup::ExpressionTagTrimClose
+  }
+
   private predicate allowedChild(UcodeMarkup::AstNode n) {
     exists(UcodeMarkup::AstNode p | p = n.getParent() |
       sequence(p) and
@@ -30,9 +38,9 @@ module MarkupCFG {
       exists(UcodeMarkup::ExpressionTag tag | p = tag |
         n = tag.getChild() and n instanceof UcodeMarkup::Identifier
         or
-        n = tag.getOpen() and n instanceof UcodeMarkup::ExpressionTagOpen
+        n = tag.getOpen() and expressionTagOpen(n)
         or
-        n = tag.getClose() and n instanceof UcodeMarkup::ExpressionTagClose
+        n = tag.getClose() and expressionTagClose(n)
       )
       or
       exists(UcodeMarkup::LexicalDeclaration decl | p = decl |
@@ -64,8 +72,8 @@ module MarkupCFG {
     not exists(UcodeMarkup::AstNode n | n.getParent+() = root and not allowedChild(n)) and
     not exists(UcodeMarkup::ExpressionTag t | t.getParent+() = root |
       not t.getChild() instanceof UcodeMarkup::Identifier or
-      not t.getOpen() instanceof UcodeMarkup::ExpressionTagOpen or
-      not t.getClose() instanceof UcodeMarkup::ExpressionTagClose or
+      not expressionTagOpen(t.getOpen()) or
+      not expressionTagClose(t.getClose()) or
       count(UcodeMarkup::AstNode c | c.getParent() = t) != 3
     ) and
     not exists(UcodeMarkup::LexicalDeclaration d | d.getParent+() = root |
