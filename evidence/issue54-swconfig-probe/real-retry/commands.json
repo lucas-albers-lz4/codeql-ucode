@@ -1,0 +1,134 @@
+[
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "query",
+      "run",
+      "/private/tmp/ucode-issue54-swconfig-probe/ql/src/extractor-smoke/Issue54AstWitness.ql",
+      "--database=/private/tmp/issue54-real-retry/database",
+      "--search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-swconfig-probe/ql/lib:/private/tmp/ucode-issue54-swconfig-probe/ql/src",
+      "--additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61",
+      "--no-default-compilation-cache",
+      "--compilation-cache=/private/tmp/issue54-real-retry/cache",
+      "--common-caches=/private/tmp/issue54-real-retry/common",
+      "--output=/private/tmp/issue54-real-retry/Issue54AstWitness.bqrs",
+      "--threads=1",
+      "--ram=2048"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "bqrs",
+      "decode",
+      "--format=csv",
+      "/private/tmp/issue54-real-retry/Issue54AstWitness.bqrs"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "query",
+      "run",
+      "/private/tmp/ucode-issue54-swconfig-probe/ql/src/extractor-smoke/Issue54TemplateInventory.ql",
+      "--database=/private/tmp/issue54-real-retry/database",
+      "--search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-swconfig-probe/ql/lib:/private/tmp/ucode-issue54-swconfig-probe/ql/src",
+      "--additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61",
+      "--no-default-compilation-cache",
+      "--compilation-cache=/private/tmp/issue54-real-retry/cache",
+      "--common-caches=/private/tmp/issue54-real-retry/common",
+      "--output=/private/tmp/issue54-real-retry/Issue54TemplateInventory.bqrs",
+      "--threads=1",
+      "--ram=2048"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "bqrs",
+      "decode",
+      "--format=csv",
+      "/private/tmp/issue54-real-retry/Issue54TemplateInventory.bqrs"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "query",
+      "run",
+      "/private/tmp/ucode-issue54-swconfig-probe/ql/src/extractor-smoke/Issue54TemplateNodeProbe.ql",
+      "--database=/private/tmp/issue54-real-retry/database",
+      "--search-path=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack:/private/tmp/ucode-issue54-swconfig-probe/ql/lib:/private/tmp/ucode-issue54-swconfig-probe/ql/src",
+      "--additional-packs=/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/controlflow/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/dataflow/1.1.6:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/regex/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/ssa/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/threat-models/1.1.1:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/typetracking/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/util/1.0.12:/private/tmp/openwrt-typed-handoff-live-20261123/packs/codeql/yaml/1.0.61",
+      "--no-default-compilation-cache",
+      "--compilation-cache=/private/tmp/issue54-real-retry/cache",
+      "--common-caches=/private/tmp/issue54-real-retry/common",
+      "--output=/private/tmp/issue54-real-retry/Issue54TemplateNodeProbe.bqrs",
+      "--threads=1",
+      "--ram=2048"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  },
+  {
+    "argv": [
+      "/Users/lalbers/gitroot/ucode/.tools/codeql-2.27.4/codeql/codeql",
+      "bqrs",
+      "decode",
+      "--format=csv",
+      "/private/tmp/issue54-real-retry/Issue54TemplateNodeProbe.bqrs"
+    ],
+    "cwd": "/private/tmp/ucode-issue54-swconfig-probe",
+    "env": {
+      "HOME": "/private/tmp/issue54-real-retry/home",
+      "TMPDIR": "/private/tmp/issue54-real-retry/tmp",
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "exit": 0
+  }
+]
