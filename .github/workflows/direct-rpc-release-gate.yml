@@ -80,7 +80,7 @@ jobs:
             curl --fail --location --retry 3 --output "$archive" \
             https://github.com/github/codeql-cli-binaries/releases/download/v2.27.4/codeql-linux64.zip
           printf '%s  %s\n' \
-            393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c67706047 \
+            393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c67706047d \
             "$archive" | sha256sum --check --strict
           /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/codeql-unzip.time" \
             unzip -q "$archive" -d "$DIRECT_RPC_TOOLS_DIR/codeql-cli"
