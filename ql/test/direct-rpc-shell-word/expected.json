@@ -2,30 +2,35 @@
   "expected_results": [
     {
       "endColumn": 55,
+      "endLine": 5,
       "startColumn": 33,
       "startLine": 5,
       "uri": "usr/share/rpcd/ucode/different_field_pos.uc"
     },
     {
       "endColumn": 46,
+      "endLine": 5,
       "startColumn": 28,
       "startLine": 5,
       "uri": "usr/share/rpcd/ucode/direct_pos.uc"
     },
     {
       "endColumn": 46,
+      "endLine": 5,
       "startColumn": 31,
       "startLine": 5,
       "uri": "usr/share/rpcd/ucode/initialized_local_pos.uc"
     },
     {
       "endColumn": 45,
+      "endLine": 5,
       "startColumn": 28,
       "startLine": 5,
       "uri": "usr/share/rpcd/ucode/multi_substitution_quote_context.uc"
     },
     {
       "endColumn": 77,
+      "endLine": 6,
       "startColumn": 61,
       "startLine": 6,
       "uri": "usr/share/rpcd/ucode/quoted_first_raw_second.uc"

@@ -28,7 +28,7 @@ DIRECT_QUERY_SHA256 = "a071facd947a65d3eb48906070cf17ad53d2bd62b54116991437f77fe
 DEFAULT_SUITE_SHA256 = "6d343f93e37c309b8461da9fafcf67d089737980d7ac42a5409e75df3bd442e5"
 TAILSCALE_MANIFEST_SHA256 = "b1a538d03d60e356ae94cf374a2bfdc9338d81068b9e0a7233ac3bcbf89ac114"
 TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c42b6e09bfc"
-DIRECT_CONTROLS_SHA256 = "e537b0509211ae69208c4a91ea2f431de6e5416bb70e319e0164df208f0eeefb"
+DIRECT_CONTROLS_SHA256 = "5ec2d74cb21732189a41558ec59671126310679c6725f802614ac3fa9c19caf0"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -282,10 +282,13 @@ def check_sarif(path: pathlib.Path, case: str, expected_count: int,
         require(expected_count == 1, "exact location check requires one result")
         result = results[0]
         require(result.get("ruleId") == expected_rule_id, f"{case}: unexpected result rule ID")
+        require(len(result.get("locations", [])) == 1, f"{case}: expected one physical location")
         phys = result["locations"][0]["physicalLocation"]
         loc = (phys["artifactLocation"]["uri"], phys["region"]["startLine"],
                phys["region"]["startColumn"], phys["region"]["endColumn"])
         require(loc == expected_location, f"{case}: exact SARIF location mismatch {loc}")
+        require(phys["region"].get("endLine", phys["region"]["startLine"]) ==
+                phys["region"]["startLine"], f"{case}: SARIF result crosses source lines")
     return {"rule_ids": [r["id"] for r in rules], "result_count": len(results),
             "results": results, "sha256": digest(path)}
 
@@ -414,12 +417,16 @@ def run_direct_controls(r: Runner, build: pathlib.Path, manifest: dict) -> dict:
     actual = []
     for result in summary["results"]:
         require(result.get("ruleId") == DIRECT_RULE_ID, "direct control rule ID mismatch")
+        require(len(result.get("locations", [])) == 1,
+                "direct control result has multiple physical locations")
         phys = result["locations"][0]["physicalLocation"]
         region = phys["region"]
         actual.append({"uri": phys["artifactLocation"]["uri"],
             "startLine": region["startLine"], "startColumn": region["startColumn"],
+            "endLine": region.get("endLine", region["startLine"]),
             "endColumn": region["endColumn"]})
-    key = lambda row: (row["uri"], row["startLine"], row["startColumn"], row["endColumn"])
+    key = lambda row: (row["uri"], row["startLine"], row["startColumn"],
+                       row["endLine"], row["endColumn"])
     require(sorted(actual, key=key) == sorted(manifest["expected_results"], key=key),
             f"direct control SARIF location multiset differs: {actual}")
     return {"selected": sorted(selected), "successful_multiset": dict.fromkeys(selected, 1),
