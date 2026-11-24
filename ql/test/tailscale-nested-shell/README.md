@@ -33,3 +33,6 @@ It is **not** a barrier for expansion by the outer shell when the complete
 shape. It does not prove the global `replace` binding, the helper's runtime
 behavior, or safe quotation in an arbitrary source file. Fixed-site absence
 describes the query's literal outer form, not a safety result.
+The query anchors its joins to a matching `popen` in one source file and
+requires the supported declarations, push and sink on distinct ordered lines.
+Same-line constructions are outside this bounded regression.
