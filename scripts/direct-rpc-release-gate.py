@@ -252,6 +252,14 @@ def make_database(r: Runner, build: pathlib.Path, case: str, stage: pathlib.Path
     pack = build / "extractor-pack"
     common = r.cache / "database-common" / case
     common.mkdir(parents=True, exist_ok=True)
+    # `codeql pack install` writes locked dependencies under HOME/.codeql/packages.
+    # Query calls use a separate --common-caches path per case, which must
+    # contain those packs too. Copy into each run-owned case cache before use.
+    installed_packs = r.home / ".codeql/packages"
+    require(installed_packs.is_dir(), "locked CodeQL packs were not installed")
+    case_packs = r.cache / "codeql-common" / case / "packages"
+    case_packs.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(installed_packs, case_packs)
     env = r.env(CODEQL_UCODE_STAGED_ROOT=str(stage))
     r.codeql_call(f"{case}-database-init", ["database", "init", db, "--language=ucode",
         f"--search-path={pack}", f"--common-caches={common}", f"--source-root={stage}"], env=env)

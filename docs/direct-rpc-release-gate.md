@@ -35,6 +35,10 @@ successful-file path multiset, zero extraction errors, default suite contents,
 rule descriptor, SARIF result count, and the OpenVPN parent's exact SARIF URI
 and region. The two diagnostic queries are also run explicitly so their exact
 file identities and errors are retained independently of SARIF notifications.
+After `codeql pack install` places locked dependencies in the run-owned HOME
+cache, the runner copies those pack bytes into each case's separate common
+cache. CodeQL query commands use `--common-caches` and otherwise cannot find
+the packages installed under HOME.
 
 The 21 direct-rule control fixtures have a pinned source-first manifest. They
 are freshly extracted in one owned database and analyzed with the default
