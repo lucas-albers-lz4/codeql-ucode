@@ -1,0 +1,67 @@
+{
+  "status": "source-first expectations before supplemental CodeQL control run",
+  "producer_pin": "18afe771568d373088edee7a790825ee46dec9e0",
+  "historical_parent": "46cd82328dfb7fbb15961c63f9e674a41cef2500",
+  "historical_fix": "507ab5e45c304543d4111af9a331db0f03be6bcb",
+  "exactly_one_successful_extraction_per_file": true,
+  "zero_extraction_errors": true,
+  "files": {
+    "parent/usr/share/rpcd/ucode/tailscale.uc": {
+      "sha256": "3029c32d7ccd18efb95355aa915841e2bf467b0de147ce1a65b68c55fec9d280",
+      "candidate_sinks": [
+        "164:3-48"
+      ],
+      "field_witnesses": [
+        "loginserver",
+        "loginserver_authkey"
+      ]
+    },
+    "fixed/usr/share/rpcd/ucode/tailscale.uc": {
+      "sha256": "12bffca1f06aae14363f12d98680c0ca3a07223babd26131cc7c1612baf8fc4e",
+      "candidate_sinks": [],
+      "field_witnesses": []
+    },
+    "controls/usr/share/rpcd/ucode/model_pos.uc": {
+      "sha256": "b406488ab29d7c63d4698896239afed0a55b584e8b892d9983567a646b3e67be",
+      "candidate_sinks": [],
+      "role": "Direct baseline ShellInjection positive; outside this nested rule"
+    },
+    "controls/usr/share/rpcd/ucode/nested_closure.uc": {
+      "sha256": "ddd8db07d721b4d8cb79c45995cb7662ea695c19f1b59983aa5e6ae2ad90153f",
+      "candidate_sinks": [],
+      "role": "Push resides in nested function; excluded, no cross-function claim"
+    },
+    "controls/usr/share/rpcd/ucode/nested_fixed.uc": {
+      "sha256": "8723f5da9d9d12f14fba1dd6ca35f3540d906d5679b7a68edaa7a5a09f88bf0c",
+      "candidate_sinks": [],
+      "role": "Whole outer shell argument quoted; syntactic negative"
+    },
+    "controls/usr/share/rpcd/ucode/nested_helper_constant.uc": {
+      "sha256": "54f212c0dbdba05f96cd8b390f9a882f727ffe487351de3bd472cf290fcebcb1",
+      "candidate_sinks": [],
+      "role": "Same helper name and call, helper body returns constant; negative"
+    },
+    "controls/usr/share/rpcd/ucode/nested_near_miss.uc": {
+      "sha256": "1d4abd74484a16973168aa3cf994540b0d462d01da48a86b5ecaf3e74bf44602",
+      "candidate_sinks": [],
+      "role": "Request read but only constant pushed; negative"
+    },
+    "controls/usr/share/rpcd/ucode/nested_pos.uc": {
+      "sha256": "f410af3bbbea20098e78e863c56967bf90af94f908c26f771c2f89c1cdb50592",
+      "candidate_sinks": [
+        "18:5-50"
+      ],
+      "role": "Nested vulnerable-form positive"
+    },
+    "controls/usr/share/rpcd/ucode/nested_reassigned.uc": {
+      "sha256": "d000925cbbdee53535652c91413c81c9829e230349dfef0707b0fd911187ae62",
+      "candidate_sinks": [],
+      "role": "Derived local overwritten with constant before push; conservative negative"
+    },
+    "controls/usr/share/rpcd/ucode/nested_shadow.uc": {
+      "sha256": "220edda6f27c547b04916b509b79c0c27170d001d0b1eb5a59269bcb31091a22",
+      "candidate_sinks": [],
+      "role": "Nested declaration shadows same name; conservative exclusion even though outer flow remains"
+    }
+  }
+}
