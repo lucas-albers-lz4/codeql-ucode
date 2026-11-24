@@ -58,6 +58,15 @@ def digest(path: pathlib.Path) -> str:
     return h.hexdigest()
 
 
+def tailscale_file_expectation(manifest: dict, case: str, rel: str) -> dict:
+    """Look up a case-relative file in the source-first manifest's files map."""
+    key = f"{case}/{rel}"
+    try:
+        return manifest["files"][key]
+    except KeyError as exc:
+        raise RuntimeError(f"Tailscale file expectation is missing: {key}") from exc
+
+
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
@@ -372,7 +381,7 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
             "Tailscale historical manifest pins changed")
     source_map = {"parent": sources["tailscale-parent"], "fixed": sources["tailscale-fixed"]}
     for name in ("parent", "fixed"):
-        item = expected["files"][f"{name}/usr/share/rpcd/ucode/tailscale.uc"]
+        item = tailscale_file_expectation(expected, name, "usr/share/rpcd/ucode/tailscale.uc")
         source_path = "applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc"
         require(digest(source_map[name] / source_path) == item["sha256"], f"Tailscale {name} source hash mismatch")
     cases = {}
@@ -414,7 +423,7 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
             "--no-default-compilation-cache", "--threads=1", "--ram=2048"])
         wanted = []
         for rel in selected:
-            info = expected[case + "/" + rel]
+            info = tailscale_file_expectation(expected, case, rel)
             for span in info.get("candidate_sinks", []):
                 m = re.fullmatch(r"(\d+):(\d+)-(\d+)", span)
                 require(m is not None, f"bad Tailscale candidate span {span}")
@@ -532,6 +541,62 @@ def main() -> int:
         "source_oracle_sha256": digest(run / "source-oracle.json"),
         "default_suite": default, "tailscale_explicit_regression": tailscale,
         "commands": runner.commands, "command_count": len(runner.commands)}
+    bundle_path = run / "artifact/codeql-ucode-linux.tar.gz"
+    runner.call("package-linux-release-candidate", ["python3", build / "scripts/package-linux-release.py",
+        f"--source={build}", f"--output={bundle_path}", f"--producer-commit={producer_sha}",
+        f"--codeql-version={version_line}", f"--rustc-version={build_info['rustc']}",
+        f"--cargo-version={build_info['cargo']}", f"--grammar-revision={GRAMMAR_REV}",
+        f"--codeql-archive-sha256={CODEQL_ZIP_SHA256}", "--source-clean"], cwd=build)
+    bundle_record = json.loads((run / "out/commands/package-linux-release-candidate.stdout").read_text())
+    extracted_parent = run / "verified-bundle"
+    verifier = build / "scripts/verify-linux-release-bundle.py"
+    runner.call("verify-and-extract-linux-release-candidate", ["python3", verifier,
+        f"--archive={bundle_path}", f"--expected-sha256={bundle_record['archive_sha256']}",
+        f"--output-dir={extracted_parent}"])
+    verifier_record = json.loads((run / "out/commands/verify-and-extract-linux-release-candidate.stdout").read_text())
+    extracted_bundle = extracted_parent / "codeql-ucode-linux"
+    extracted_lib = extracted_bundle / "ql/lib"
+    extracted_src = extracted_bundle / "ql/src"
+    runner.codeql_call("install-candidate-lib-dependencies", ["pack", "install", extracted_lib])
+    runner.codeql_call("install-candidate-query-dependencies", ["pack", "install", extracted_src])
+    require(digest(extracted_lib / "codeql-pack.lock.yml") == QL_LOCK_SHA256 and
+            digest(extracted_src / "codeql-pack.lock.yml") == QL_LOCK_SHA256,
+            "candidate dependency bootstrap changed a QL lock")
+    extracted_suite = extracted_src / "codeql-suites/code-scanning.qls"
+    extracted_search_path = ":".join(map(str, [extracted_bundle / "extractor-pack",
+        extracted_lib, extracted_src]))
+    runner.codeql_call("resolve-candidate-default-suite", ["resolve", "queries", "--format=json",
+        extracted_suite, f"--search-path={extracted_search_path}"])
+    extracted_resolved = json.loads((run / "out/commands/resolve-candidate-default-suite.stdout").read_text())
+    extracted_names = sorted(pathlib.Path(query).name for query in extracted_resolved)
+    require(extracted_names == ["DirectRpcShellWord.ql", "ExtractionErrors.ql",
+                                "SuccessfullyExtractedFiles.ql"],
+            f"candidate bundle default suite mismatch: {extracted_names}")
+    for query in extracted_resolved:
+        try:
+            pathlib.Path(query).resolve().relative_to(extracted_src.resolve())
+        except ValueError as exc:
+            raise RuntimeError(f"candidate suite resolved outside bundled query pack: {query}") from exc
+    summary["release_bundle_candidate"] = {
+        "path": "artifact/codeql-ucode-linux.tar.gz",
+        "archive_sha256": bundle_record["archive_sha256"],
+        "manifest": bundle_record["manifest"],
+        "verification": verifier_record,
+        "dependency_bootstrap": {
+            "commands": ["codeql pack install ql/lib", "codeql pack install ql/src"],
+            "cache_scope": "run-owned HOME and extracted candidate tree",
+            "lock_digests_after_install": {
+                "ql/lib/codeql-pack.lock.yml": digest(extracted_lib / "codeql-pack.lock.yml"),
+                "ql/src/codeql-pack.lock.yml": digest(extracted_src / "codeql-pack.lock.yml")},
+            "network_access": "not separately instrumented; missing locked dependencies may be downloaded"},
+        "resolved_default_suite": {"query_names": extracted_names,
+            "suite_sha256": digest(extracted_suite),
+            "query_pack_lock_sha256": digest(extracted_src / "codeql-pack.lock.yml"),
+            "library_pack_lock_sha256": digest(extracted_lib / "codeql-pack.lock.yml"),
+            "resolved_query_paths": [str(pathlib.Path(query).resolve().relative_to(extracted_src.resolve()))
+                                     for query in extracted_resolved]}}
+    summary["commands"] = runner.commands
+    summary["command_count"] = len(runner.commands)
     (run / "receipt.json").write_text(json.dumps(summary, indent=2) + "\n")
     return 0
 
