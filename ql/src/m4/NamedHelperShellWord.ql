@@ -61,6 +61,16 @@ private predicate stableFormal(UCODE::Identifier formal, UCODE::AstNode fn) {
   ) and
   not exists(UCODE::FunctionDeclaration d |
     d.getParent*() = fn and d.getName().getValue() = formal.getValue()
+  ) and
+  not exists(UCODE::ForInStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = formal.getValue()
+  ) and
+  not exists(UCODE::ForInAltStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = formal.getValue()
   )
 }
 
@@ -93,6 +103,14 @@ private predicate uniqueHelper(UCODE::FunctionDeclaration helper, UCODE::CallExp
     a.getLocation().getFile() = helper.getLocation().getFile() and
     a.getLeft().(UCODE::Identifier).getValue() = helper.getName().getValue()
   ) and
+  not exists(UCODE::AugmentedAssignmentExpression a |
+    a.getLocation().getFile() = helper.getLocation().getFile() and
+    a.getLeft().(UCODE::Identifier).getValue() = helper.getName().getValue()
+  ) and
+  not exists(UCODE::UpdateExpression u |
+    u.getLocation().getFile() = helper.getLocation().getFile() and
+    u.getArgument().(UCODE::Identifier).getValue() = helper.getName().getValue()
+  ) and
   not exists(UCODE::Identifier formal |
     formal = handler.getParameters().getChild(_) and
     formal.getValue() = helper.getName().getValue()
@@ -100,6 +118,19 @@ private predicate uniqueHelper(UCODE::FunctionDeclaration helper, UCODE::CallExp
   not exists(UCODE::VariableDeclarator shadow |
     shadow.getParent*() = handler and
     shadow.getName().getValue() = helper.getName().getValue()
+  ) and
+  not exists(UCODE::CatchClause c |
+    c.getParent*() = handler and c.getParameter().getValue() = helper.getName().getValue()
+  ) and
+  not exists(UCODE::ForInStatement loop, UCODE::Identifier id |
+    loop.getParent*() = handler and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = helper.getName().getValue()
+  ) and
+  not exists(UCODE::ForInAltStatement loop, UCODE::Identifier id |
+    loop.getParent*() = handler and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = helper.getName().getValue()
   )
 }
 

@@ -8,17 +8,23 @@ Expected location-bearing candidates, fixed before querying:
 | --- | --- | --- |
 | `luci.lldpd` | none | Four actuals at lines 13–16 are fixed strings. |
 | `helper-dynamic-positive.uc` | 12:23–43 | Returned handler passes `request.args.section` to the helper formal. |
-| `terminal_word_positive.uc` | 12:23–43 | Same source shape, retained to test a template ending at the substitution. |
+| `trailing_word_positive.uc` | 12:23–43 | Dynamic actual with a literal whitespace-delimited trailing word. The original dynamic fixture ends at the substitution. |
 | `helper-fixed-literal-nearmiss.uc` | none | Matching returned handler passes a fixed string. |
 | `duplicate_helper.uc` | none | Same-file helper target is ambiguous. |
 | `helper_shadow.uc` | none | A local binding shadows the helper in the handler. |
 | `helper_actual_shadow.uc` | none | A local binding shadows the request formal. |
+| `loop_request_formal.uc` | none | A loop binds the request formal name. |
+| `loop_helper_formal.uc` | none | A loop binds the helper formal name. |
+| `loop_helper_shadow.uc` | none | A loop binds the helper name in the handler. |
+| `catch_helper_shadow.uc` | none | A catch binds the helper name in the handler. |
+| `augmented_helper_write.uc` | none | An augmented assignment writes the helper name. |
+| `updated_helper_write.uc` | none | An update writes the helper name. |
 | `reassigned_formal.uc` | none | Helper formal is reassigned before the sink. |
 | `sink_shadow.uc` | none | A local binding shadows imported `popen`. |
 | `earlier_substitution.uc` | none | Earlier dynamic substitution can change quote context. |
 | `quoted_word.uc` | none | Interpolation occurs inside literal quotes. |
 | `word_fragment.uc` | none | Interpolation is part of a larger literal word. |
 
-A local isolated matrix in the ledger's ignored `work/helper-shell-run-b` directory extracted all 12 files once with zero diagnostics and produced exactly the two expected SARIF locations. The raw database and receipt are local run artifacts, not portable evidence in this branch. Query time was 2.674 seconds, peak RSS 415,891,456 bytes; explicit SARIF analyze took 1.826 seconds. `NamedHelperWitness` independently selected the two actual/formal/read/sink chains; `RealHelperAst` selected the four real fixed-string actuals and the imported sink. Both witness queries were run-local and are not part of this branch.
+The source-first expectation was the two distinct positive locations above and zero results for all other files. File SHA-256 values were recorded by the run preflight before extraction and query output inspection. The original two oracle fixtures retain their exact upstream ledger hashes. Fresh isolated run-c under the ledger's ignored `work/helper-shell-run-c` extracted all 18 files exactly once, with no extraction errors. Explicit query and SARIF emitted only the two expected locations. Ten matrix commands exited zero; the query took 2.879 seconds with peak RSS recorded in `commands.json`, and SARIF took 1.865 seconds. Run-local AST witnesses selected the two complete actual/formal/read/sink chains, the four real fixed-string call actuals, and all six new loop/catch/write control nodes. Raw run artifacts are local and are not portable evidence in this branch.
 
 The model requires one top-level same-file named helper, a direct first actual/first formal edge, an unchanged formal, direct raw template use in imported `fs.popen`, and a returned `methods.<name>.call` shape. It does not establish RPC registration, runtime invocation, source reachability, shell quoting beyond literal boundaries, or vulnerability. It intentionally omits aliasing, multi-step propagation and nested helper calls.
