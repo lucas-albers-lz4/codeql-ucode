@@ -3,8 +3,7 @@
 import { popen } from 'fs';
 
 function run_command(section) {
-	for (let section in ["safe"]) break;
-	return popen(`lldpcli -f json0 show ${section}`, 'r');
+	for (let section in ["safe"]) return popen(`lldpcli -f json0 show ${section}`, 'r');
 }
 
 const methods = {

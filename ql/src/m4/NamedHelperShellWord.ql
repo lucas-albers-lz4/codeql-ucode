@@ -16,6 +16,12 @@ private predicate directIn(UCODE::AstNode n, UCODE::AstNode fn) {
   not exists(UCODE::ArrowFunction inner | inner != fn and n.getParent*() = inner)
 }
 
+/** Exclude declarations or returns beneath a nested statement block. */
+private predicate directProgramItem(UCODE::AstNode n) {
+  n.getParent+() instanceof UCODE::Program and
+  not exists(UCODE::StatementBlock block | n.getParent*() = block)
+}
+
 private predicate returnedHandler(UCODE::FunctionExpression fn) {
   exists(UCODE::VariableDeclarator table, UCODE::Object handlers,
     UCODE::Pair method, UCODE::Object methodBody, UCODE::Pair callPair,
@@ -28,7 +34,7 @@ private predicate returnedHandler(UCODE::FunctionExpression fn) {
     returnedId = exported.getValue() and
     returnedId.getValue() = table.getName().getValue() and
     ret.getLocation().getFile() = fn.getLocation().getFile() and
-    ret.getParent+() instanceof UCODE::Program and
+    directProgramItem(table) and directProgramItem(ret) and
     not exists(UCODE::FunctionExpression outer | ret.getParent*() = outer) and
     not exists(UCODE::FunctionDeclaration outer | ret.getParent*() = outer) and
     not exists(UCODE::ArrowFunction outer | ret.getParent*() = outer) and
@@ -87,7 +93,7 @@ private predicate requestField(UCODE::MemberExpression field, UCODE::FunctionExp
 private predicate uniqueHelper(UCODE::FunctionDeclaration helper, UCODE::CallExpression call,
   UCODE::FunctionExpression handler) {
   helper.getLocation().getFile() = call.getLocation().getFile() and
-  helper.getParent+() instanceof UCODE::Program and
+  directProgramItem(helper) and
   call.getFunction().(UCODE::Identifier).getValue() = helper.getName().getValue() and
   directIn(call, handler) and
   helper.getLocation().getStartLine() < call.getLocation().getStartLine() and

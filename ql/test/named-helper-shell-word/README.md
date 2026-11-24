@@ -13,10 +13,13 @@ Expected location-bearing candidates, fixed before querying:
 | `duplicate_helper.uc` | none | Same-file helper target is ambiguous. |
 | `helper_shadow.uc` | none | A local binding shadows the helper in the handler. |
 | `helper_actual_shadow.uc` | none | A local binding shadows the request formal. |
-| `loop_request_formal.uc` | none | A loop binds the request formal name. |
-| `loop_helper_formal.uc` | none | A loop binds the helper formal name. |
-| `loop_helper_shadow.uc` | none | A loop binds the helper name in the handler. |
+| `loop_request_formal.uc` | none | A loop binds the request formal at the call inside the loop. |
+| `loop_helper_formal.uc` | none | A loop binds the helper formal at the sink inside the loop. |
+| `loop_helper_shadow.uc` | none | A loop binds the helper name at the call inside the loop. |
 | `catch_helper_shadow.uc` | none | A catch binds the helper name in the handler. |
+| `nested_helper_block.uc` | none | Helper declaration is nested in a top-level block. |
+| `nested_table_block.uc` | none | Returned methods table is declared in a top-level block. |
+| `nested_return_block.uc` | none | Return statement is nested in a top-level block. |
 | `augmented_helper_write.uc` | none | An augmented assignment writes the helper name. |
 | `updated_helper_write.uc` | none | An update writes the helper name. |
 | `reassigned_formal.uc` | none | Helper formal is reassigned before the sink. |
@@ -25,6 +28,6 @@ Expected location-bearing candidates, fixed before querying:
 | `quoted_word.uc` | none | Interpolation occurs inside literal quotes. |
 | `word_fragment.uc` | none | Interpolation is part of a larger literal word. |
 
-The source-first expectation was the two distinct positive locations above and zero results for all other files. File SHA-256 values were recorded by the run preflight before extraction and query output inspection. The original two oracle fixtures retain their exact upstream ledger hashes. Fresh isolated run-c under the ledger's ignored `work/helper-shell-run-c` extracted all 18 files exactly once, with no extraction errors. Explicit query and SARIF emitted only the two expected locations. Ten matrix commands exited zero; the query took 2.879 seconds with peak RSS recorded in `commands.json`, and SARIF took 1.865 seconds. Run-local AST witnesses selected the two complete actual/formal/read/sink chains, the four real fixed-string call actuals, and all six new loop/catch/write control nodes. Raw run artifacts are local and are not portable evidence in this branch.
+The source-first expectation was the two distinct positive locations above and zero results for all other files. File SHA-256 values were recorded by the run preflight before extraction and query output inspection. The original two oracle fixtures retain their exact upstream ledger hashes. The loop controls place the source read or call inside the loop, where the loop binding is active. Fresh isolated run-d under the ledger's ignored `work/helper-shell-run-d` extracted all 21 staged files exactly once, with no extraction errors. Its explicit query and SARIF emitted only the two expected locations. All 10 matrix commands exited zero; query time was 2.903 seconds, peak RSS 461,389,824 bytes, and SARIF time was 1.930 seconds. Run-local AST witnesses confirmed the two candidate chains, four real fixed-string actuals, nested-block declarations/return, and active in-loop uses. These raw artifacts are local and not portable evidence in this branch.
 
-The model requires one top-level same-file named helper, a direct first actual/first formal edge, an unchanged formal, direct raw template use in imported `fs.popen`, and a returned `methods.<name>.call` shape. It does not establish RPC registration, runtime invocation, source reachability, shell quoting beyond literal boundaries, or vulnerability. It intentionally omits aliasing, multi-step propagation and nested helper calls.
+The model requires one direct Program-level same-file named helper, a direct Program-level methods table and return, a direct first actual/first formal edge, an unchanged formal, direct raw template use in imported `fs.popen`, and a returned `methods.<name>.call` shape. It does not establish RPC registration, runtime invocation, source reachability, shell quoting beyond literal boundaries, or vulnerability. It intentionally omits aliasing, multi-step propagation and nested helper calls.

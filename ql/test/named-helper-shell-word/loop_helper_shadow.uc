@@ -9,8 +9,7 @@ function run_command(section) {
 const methods = {
 	getStatus: {
 		call: function(request) {
-			for (let run_command in [function(x) { return x; }]) break;
-			return run_command(request.args.section);
+			for (let run_command in [function(x) { return x; }]) return run_command(request.args.section);
 		}
 	}
 };
