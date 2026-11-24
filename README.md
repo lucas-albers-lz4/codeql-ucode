@@ -29,7 +29,7 @@ Templates also require mapping buckets named `StmtSequence`, `Calls`, and `Ident
 
 `printAst.ql` is generated at `ql/lib/ide-contextual-queries/printAst.ql`. The M1 AST gate query is `ql/src/extractor-smoke/PrintLuciAst.ql` (basename `luci`).
 
-Fresh checkouts: `./scripts/clone-grammar.sh` before `cargo test`. The grammar clone is gitignored.
+Fresh checkouts require Node.js, npm, `curl`, `gzip`, and `shasum` for `./scripts/clone-grammar.sh` before `cargo test`. The script checks the npm lock and the Tree-sitter CLI archive digest before generating the parsers on Linux or macOS (x64 and ARM64). The grammar clone is gitignored.
 
 ## Extracting an installed staging root
 

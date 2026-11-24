@@ -25,6 +25,7 @@ CODEQL_ZIP_SHA256 = "393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c6770
 GRAMMAR_REV = "4a243af329fae2f4ff01e0fc80133cbab8314600"
 GRAMMAR_PATCH_SHA256 = "6520260dba0f72437603f6aa977bbd5c8dd59d2f54c7df6cd41a1e642ef41ad5"
 GRAMMAR_NPM_LOCK_SHA256 = "57aad774d0d6cb3095d98986bf8425724347b475082604bfb1ab1d32eb7cae4f"
+GRAMMAR_CLI_LINUX_X64_SHA256 = "6de5f5c0f6d2e281ad2643d3874b66cf240fa77140c5346b670889483982b0c7"
 GRAMMAR_GENERATED_SHA256 = {
     "ucode/src/parser.c": "6002d96df3aa22e2f2e5fd27d4a64a2bb4c0126f2f6aff4dc1197a65b70b9fae",
     "ucode/src/node-types.json": "3c5a2ad8f83828495779f69ef650b37cf9f79a3a46c5f1354cf65bfe847ea5f3",
@@ -355,6 +356,8 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
     grammar_cli = grammar / "node_modules/tree-sitter-cli/tree-sitter"
     require(grammar_cli.is_file() and os.access(grammar_cli, os.X_OK),
             "locked Tree-sitter CLI was not installed")
+    require(digest(grammar_cli) == GRAMMAR_CLI_LINUX_X64_SHA256,
+            "pinned Linux x64 Tree-sitter CLI digest differs")
     r.call("grammar-cli-version", [grammar_cli, "--version"])
     grammar_cli_version = (r.out / "commands/grammar-cli-version.stdout").read_text().strip()
     require(grammar_cli_version == "tree-sitter 0.27.1",
