@@ -36,6 +36,13 @@ rule descriptor, SARIF result count, and the OpenVPN parent's exact SARIF URI
 and region. The two diagnostic queries are also run explicitly so their exact
 file identities and errors are retained independently of SARIF notifications.
 
+The 21 direct-rule control fixtures have a pinned source-first manifest. They
+are freshly extracted in one owned database and analyzed with the default
+suite; the gate requires five exact positive SARIF locations and no results
+at the remaining eligible near misses. Query/database/resolve warnings fail
+the gate unless they are the CLI's known low-heap query-cache performance
+warning. Zero command exit alone is insufficient.
+
 The Tailscale regression uses its committed `expected.json` manifest and
 separate databases for parent, fixed source, and controls. It runs
 `TailscaleNestedShell.ql` explicitly, verifies source hashes and extraction

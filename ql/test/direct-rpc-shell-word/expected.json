@@ -1,0 +1,122 @@
+{
+  "expected_results": [
+    {
+      "endColumn": 55,
+      "startColumn": 33,
+      "startLine": 5,
+      "uri": "usr/share/rpcd/ucode/different_field_pos.uc"
+    },
+    {
+      "endColumn": 46,
+      "startColumn": 28,
+      "startLine": 5,
+      "uri": "usr/share/rpcd/ucode/direct_pos.uc"
+    },
+    {
+      "endColumn": 46,
+      "startColumn": 31,
+      "startLine": 5,
+      "uri": "usr/share/rpcd/ucode/initialized_local_pos.uc"
+    },
+    {
+      "endColumn": 45,
+      "startColumn": 28,
+      "startLine": 5,
+      "uri": "usr/share/rpcd/ucode/multi_substitution_quote_context.uc"
+    },
+    {
+      "endColumn": 77,
+      "startColumn": 61,
+      "startLine": 6,
+      "uri": "usr/share/rpcd/ucode/quoted_first_raw_second.uc"
+    }
+  ],
+  "files": [
+    {
+      "path": "usr/share/rpcd/ucode/catch_formal_shadow.uc",
+      "sha256": "3adee04376ebbddf70c6b746091d0fc2b820efde630e22cd6fab1b257c865fbe"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/catch_local_shadow.uc",
+      "sha256": "75aee861cc6a04f7c7a41cd87bc3f33ed518860fd1fb9a18f22d2c5b76861acf"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/constant_sink.uc",
+      "sha256": "435432d86baca2be2cf20c134ec255383b7cc4ae49ae9750737627279c4b7854"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/different_field_pos.uc",
+      "sha256": "c8834db1a5580a3198d5887c33b5a9721728a6509b87b06c9d50990c654f8996"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/direct_pos.uc",
+      "sha256": "d288103a16e64d54eee2990d9f032e4b194f5916266c181d5e3bc099da991562"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/exclusive_branches.uc",
+      "sha256": "ec3cf0e2ec18bab903d84bc4055d1e188afc685c86da1dfd11160dc2560e8f30"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/for_formal_shadow.uc",
+      "sha256": "aa2a8a2860d9530660b33ed57a923e16cedcbb1d3ad8920950cd73fe4fafbbe3"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/for_local_shadow.uc",
+      "sha256": "47d3169e804dbe0032f025e5d4624d10d04fc89dd0120fdd92fb5b35712f2221"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/function_formal_shadow.uc",
+      "sha256": "d961c9dfb9d330ead678087aa144c53351442e93998d001dc90a7a6bd080d82e"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/function_local_shadow.uc",
+      "sha256": "9628ff484c6cf83a143a62954e22809fe88febd1ede028adc10e373c5aaf2a90"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/initialized_local_pos.uc",
+      "sha256": "56a4800a8d5fc5e5d5fd2f530641e129b5b4645e1bd00f2290db7b8914580c1c"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/multi_substitution_quote_context.uc",
+      "sha256": "b6f92489e562cd742daee0a2162162e35129ef6a2bac98a30a8bc02b48bca474"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/nested_callable.uc",
+      "sha256": "752fae7ead4c425212b1e9310e0ecd766f3a67007539ffcf9829fba12ffcfa1f"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/quoted_arg.uc",
+      "sha256": "4d41c72dc4a2ed78c75e2cb201ceb00fd96976a3ad157360cb470ead4b35cbff"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/quoted_context.uc",
+      "sha256": "a92b848ed4b76f5eb5417fbf8b6625c66c0864aa83933dfbb3bd9e6a731f3c60"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/quoted_first_raw_second.uc",
+      "sha256": "33e3941022583feef1825b95a68d8370df7d5869e77f7776c360b3199940c160"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/reassigned_formal.uc",
+      "sha256": "62735eb45820f19a348eb996cffffb9e8f8db7383cee6e5ef3a90ed5bbfa5ab3"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/shadowed_local.uc",
+      "sha256": "c9306a8e43e78b35372afb4ff6beb13d1399870dbe8ced2d7b2818cc64ed8613"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/unimported_popen.uc",
+      "sha256": "486fcfbdc63f57f23b1ea8bcb6ae0a34188f792476555c60ea03418bf23ca94e"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/unregistered_object.uc",
+      "sha256": "5cda4f2a884d3095a96cf9f58ae2addc82a919ac9c0e590b295c67df497036d7"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/word_fragment.uc",
+      "sha256": "6d830dade60f00926f0ea03b707e03f884bd64461e9101ba5ced6a51f15f9e53"
+    }
+  ],
+  "schema": "direct-rpc-shell-word-controls-v1",
+  "source": "Reviewed claim 080 source-first control matrix; SHA pins updated from current fixture bytes before Linux output"
+}

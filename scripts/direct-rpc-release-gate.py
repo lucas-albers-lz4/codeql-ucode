@@ -28,6 +28,7 @@ DIRECT_QUERY_SHA256 = "a071facd947a65d3eb48906070cf17ad53d2bd62b54116991437f77fe
 DEFAULT_SUITE_SHA256 = "6d343f93e37c309b8461da9fafcf67d089737980d7ac42a5409e75df3bd442e5"
 TAILSCALE_MANIFEST_SHA256 = "b1a538d03d60e356ae94cf374a2bfdc9338d81068b9e0a7233ac3bcbf89ac114"
 TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c42b6e09bfc"
+DIRECT_CONTROLS_SHA256 = "e537b0509211ae69208c4a91ea2f431de6e5416bb70e319e0164df208f0eeefb"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -384,6 +385,48 @@ def run_default_cases(r: Runner, build: pathlib.Path, sources: dict[str, pathlib
             "resolved_suite_sha256": digest(resolved_path)}
 
 
+def run_direct_controls(r: Runner, build: pathlib.Path, manifest: dict) -> dict:
+    base = build / "ql/test/direct-rpc-shell-word"
+    stage = r.run / "stage/direct-controls"
+    selected = []
+    for file in manifest["files"]:
+        rel = file["path"]
+        source = base / pathlib.PurePosixPath(rel).name
+        require(source.is_file() and digest(source) == file["sha256"],
+                f"direct control fixture differs from predeclared oracle: {rel}")
+        dest = stage / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, dest)
+        require(digest(dest) == file["sha256"], f"direct control stage mismatch: {rel}")
+        selected.append(rel)
+    require(len(selected) == 21 and len(set(selected)) == 21,
+            "direct control fixture selection differs from reviewed matrix")
+    db = make_database(r, build, "direct-controls", stage, sorted(selected))
+    suite = build / "ql/src/codeql-suites/code-scanning.qls"
+    sp = ":".join(map(str, [build / "extractor-pack", build / "ql/lib", build / "ql/src"]))
+    sarif_path = r.out / "direct-controls/default-suite.sarif"
+    r.codeql_call("direct-controls-default-suite-analyze", ["database", "analyze", db, suite,
+        "--format=sarifv2.1.0", f"--output={sarif_path}", f"--search-path={sp}",
+        f"--common-caches={r.cache / 'codeql-common/direct-controls'}",
+        f"--compilation-cache={r.cache / 'codeql-compile/direct-controls'}",
+        "--no-default-compilation-cache", "--threads=1", "--ram=2048"])
+    summary = check_sarif(sarif_path, "direct-controls", len(manifest["expected_results"]))
+    actual = []
+    for result in summary["results"]:
+        require(result.get("ruleId") == DIRECT_RULE_ID, "direct control rule ID mismatch")
+        phys = result["locations"][0]["physicalLocation"]
+        region = phys["region"]
+        actual.append({"uri": phys["artifactLocation"]["uri"],
+            "startLine": region["startLine"], "startColumn": region["startColumn"],
+            "endColumn": region["endColumn"]})
+    key = lambda row: (row["uri"], row["startLine"], row["startColumn"], row["endColumn"])
+    require(sorted(actual, key=key) == sorted(manifest["expected_results"], key=key),
+            f"direct control SARIF location multiset differs: {actual}")
+    return {"selected": sorted(selected), "successful_multiset": dict.fromkeys(selected, 1),
+            "extraction_errors": 0, "observed_results": actual,
+            "manifest_sha256": DIRECT_CONTROLS_SHA256, "sarif_sha256": summary["sha256"]}
+
+
 def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, pathlib.Path]) -> dict:
     base = build / "ql/test/tailscale-nested-shell"
     manifest_path = base / "expected.json"
@@ -530,6 +573,14 @@ def main() -> int:
     source_oracle["tailscale_explicit_regression"] = {
         "manifest_sha256": digest(tailscale_manifest),
         "expectations": json.loads(tailscale_manifest.read_text())}
+    direct_controls_manifest = build / "ql/test/direct-rpc-shell-word/expected.json"
+    require(digest(direct_controls_manifest) == DIRECT_CONTROLS_SHA256,
+            "direct controls manifest differs from reviewed source-first pin")
+    direct_controls_expected = json.loads(direct_controls_manifest.read_text())
+    require(direct_controls_expected.get("schema") == "direct-rpc-shell-word-controls-v1",
+            "direct controls manifest schema mismatch")
+    source_oracle["direct_controls"] = {
+        "manifest_sha256": DIRECT_CONTROLS_SHA256, "expectations": direct_controls_expected}
     (run / "source-oracle.json").write_text(json.dumps(source_oracle, indent=2) + "\n")
     preflight.update({"producer_commit": producer_sha, "producer_dirty_before_run": False,
         "producer_archive_sha256": digest(archive_path), "luci_repo_url": LUCI_URL,
@@ -552,10 +603,12 @@ def main() -> int:
     preflight["build"] = build_info
     (run / "preflight.json").write_text(json.dumps(preflight, indent=2) + "\n")
     default = run_default_cases(runner, build, upstream)
+    direct_controls = run_direct_controls(runner, build, direct_controls_expected)
     tailscale = run_tailscale_regression(runner, build, upstream)
     summary = {"producer_commit": producer_sha, "codeql_version": version_line,
         "source_oracle_sha256": digest(run / "source-oracle.json"),
-        "default_suite": default, "tailscale_explicit_regression": tailscale,
+        "default_suite": default, "direct_control_matrix": direct_controls,
+        "tailscale_explicit_regression": tailscale,
         "commands": runner.commands, "command_count": len(runner.commands)}
     bundle_path = run / "artifact/codeql-ucode-linux.tar.gz"
     runner.call("package-linux-release-candidate", ["python3", build / "scripts/package-linux-release.py",
