@@ -1,0 +1,102 @@
+diff --git a/common/define-grammar.js b/common/define-grammar.js
+index 05df78f..8e5441f 100644
+--- a/common/define-grammar.js
++++ b/common/define-grammar.js
+@@ -226,2 +226,2 @@ module.exports = function defineGrammar(name) {
+-        // ucode requires these `;` (optional only on ucode master); no ASI.
+-        seq(
++        // Accept the explicit terminator and the newer semicolon-free form.
++        prec.right(seq(
+@@ -230,2 +230,2 @@ module.exports = function defineGrammar(name) {
+-          ';',
+-        ),
++          optional(choice(';', $._automatic_semicolon)),
++        )),
+@@ -279,0 +280,7 @@ module.exports = function defineGrammar(name) {
++      dynamic_import_expression: $ => seq(
++        'import',
++        '(',
++        field('source', $.expression),
++        ')',
++      ),
++
+@@ -576,0 +584 @@ module.exports = function defineGrammar(name) {
++        $.dynamic_import_expression,
+diff --git a/ucode/test/corpus/js_differences.txt b/ucode/test/corpus/js_differences.txt
+index f4752ef..0fbcacb 100644
+--- a/ucode/test/corpus/js_differences.txt
++++ b/ucode/test/corpus/js_differences.txt
+@@ -357,2 +357 @@ export { z, };
+-export function requires a trailing semicolon — produces ERROR
+-:error
++export function without trailing semicolon
+@@ -364,0 +364,7 @@ export function f() {}
++(program
++  (export_statement
++    declaration: (function_declaration
++      name: (identifier)
++      parameters: (formal_parameters)
++      body: (statement_block))))
++
+diff --git a/ucode/test/corpus/modules.txt b/ucode/test/corpus/modules.txt
+index 38f7be6..dc9d8fd 100644
+--- a/ucode/test/corpus/modules.txt
++++ b/ucode/test/corpus/modules.txt
+@@ -83,2 +83 @@ import * as ns from "./mod.uc";
+-Dynamic import expression — not in the targeted release, produces ERROR
+-:error
++Dynamic import expression
+@@ -91,2 +90,25 @@ let mod = import("./mod.uc");
+-; `import(...)` as an expression came after the targeted ucode release
+-; (master 926f20b); only the static `import` statement is supported.
++(program
++  (lexical_declaration
++    (variable_declarator
++      name: (identifier)
++      value: (dynamic_import_expression
++        source: (string
++          (string_fragment))))))
++
++================================================================================
++Dynamic import expression with missing argument produces ERROR
++:error
++================================================================================
++
++let mod = import();
++
++--------------------------------------------------------------------------------
++
++================================================================================
++Dynamic import expression with extra argument produces ERROR
++:error
++================================================================================
++
++let mod = import("./mod.uc", "extra");
++
++--------------------------------------------------------------------------------
+@@ -110 +132 @@ export let x = 1;
+-Export named function (requires trailing semicolon)
++Export named function with trailing semicolon
+@@ -125,0 +148,22 @@ export function named() { return 1; };
++================================================================================
++Export named function without trailing semicolon followed by declaration
++================================================================================
++
++export function named() { return 1; }
++let after = 2;
++
++--------------------------------------------------------------------------------
++
++(program
++  (export_statement
++    declaration: (function_declaration
++      name: (identifier)
++      parameters: (formal_parameters)
++      body: (statement_block
++        (return_statement
++          (number)))))
++  (lexical_declaration
++    (variable_declarator
++      name: (identifier)
++      value: (number))))
++

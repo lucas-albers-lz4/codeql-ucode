@@ -262,6 +262,11 @@ ucode_delete_expression_def(
   int operator: int ref
 );
 
+ucode_dynamic_import_expression_def(
+  unique int id: @ucode_dynamic_import_expression,
+  int source: @ucode_expression ref
+);
+
 ucode_elif_clause_consequence(
   unique int ucode_elif_clause: @ucode_elif_clause ref,
   unique int consequence: @ucode_statement_list ref
@@ -633,7 +638,7 @@ ucode_parenthesized_expression_def(
   int child: @ucode_parenthesized_expression_child_type ref
 );
 
-@ucode_primary_expression = @ucode_array | @ucode_arrow_function | @ucode_call_expression | @ucode_function_expression | @ucode_member_expression | @ucode_object | @ucode_parenthesized_expression | @ucode_regex | @ucode_string__ | @ucode_subscript_expression | @ucode_template_string | @ucode_token_false | @ucode_token_identifier | @ucode_token_null | @ucode_token_number | @ucode_token_this | @ucode_token_true
+@ucode_primary_expression = @ucode_array | @ucode_arrow_function | @ucode_call_expression | @ucode_dynamic_import_expression | @ucode_function_expression | @ucode_member_expression | @ucode_object | @ucode_parenthesized_expression | @ucode_regex | @ucode_string__ | @ucode_subscript_expression | @ucode_template_string | @ucode_token_false | @ucode_token_identifier | @ucode_token_null | @ucode_token_number | @ucode_token_this | @ucode_token_true
 
 @ucode_program_child_type = @ucode_statement | @ucode_token_hash_bang_line
 
@@ -904,7 +909,7 @@ case @ucode_token.kind of
 ;
 
 
-@ucode_ast_node = @ucode_arguments | @ucode_array | @ucode_arrow_function | @ucode_assignment_expression | @ucode_augmented_assignment_expression | @ucode_binary_expression | @ucode_call_expression | @ucode_catch_clause | @ucode_computed_property_name | @ucode_delete_expression | @ucode_elif_clause | @ucode_else_alt_clause | @ucode_else_clause | @ucode_export_clause | @ucode_export_specifier | @ucode_export_statement | @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_formal_parameters | @ucode_function_declaration | @ucode_function_expression | @ucode_if_alt_statement | @ucode_if_statement | @ucode_import_clause | @ucode_import_specifier | @ucode_import_statement | @ucode_lexical_declaration | @ucode_member_expression | @ucode_named_imports | @ucode_namespace_import | @ucode_object | @ucode_pair | @ucode_parenthesized_expression | @ucode_program | @ucode_regex | @ucode_rest_element | @ucode_return_statement | @ucode_sequence_expression | @ucode_spread_element | @ucode_statement_block | @ucode_statement_list | @ucode_string__ | @ucode_subscript_expression | @ucode_switch_body | @ucode_switch_case | @ucode_switch_default | @ucode_switch_statement | @ucode_template_string | @ucode_template_substitution | @ucode_ternary_expression | @ucode_token | @ucode_try_statement | @ucode_unary_expression | @ucode_update_expression | @ucode_variable_declarator | @ucode_while_alt_statement | @ucode_while_statement
+@ucode_ast_node = @ucode_arguments | @ucode_array | @ucode_arrow_function | @ucode_assignment_expression | @ucode_augmented_assignment_expression | @ucode_binary_expression | @ucode_call_expression | @ucode_catch_clause | @ucode_computed_property_name | @ucode_delete_expression | @ucode_dynamic_import_expression | @ucode_elif_clause | @ucode_else_alt_clause | @ucode_else_clause | @ucode_export_clause | @ucode_export_specifier | @ucode_export_statement | @ucode_expression_statement | @ucode_for_alt_statement | @ucode_for_in_alt_statement | @ucode_for_in_statement | @ucode_for_statement | @ucode_formal_parameters | @ucode_function_declaration | @ucode_function_expression | @ucode_if_alt_statement | @ucode_if_statement | @ucode_import_clause | @ucode_import_specifier | @ucode_import_statement | @ucode_lexical_declaration | @ucode_member_expression | @ucode_named_imports | @ucode_namespace_import | @ucode_object | @ucode_pair | @ucode_parenthesized_expression | @ucode_program | @ucode_regex | @ucode_rest_element | @ucode_return_statement | @ucode_sequence_expression | @ucode_spread_element | @ucode_statement_block | @ucode_statement_list | @ucode_string__ | @ucode_subscript_expression | @ucode_switch_body | @ucode_switch_case | @ucode_switch_default | @ucode_switch_statement | @ucode_template_string | @ucode_template_substitution | @ucode_ternary_expression | @ucode_token | @ucode_try_statement | @ucode_unary_expression | @ucode_update_expression | @ucode_variable_declarator | @ucode_while_alt_statement | @ucode_while_statement
 
 ucode_ast_node_location(
   unique int node: @ucode_ast_node ref,
@@ -1085,6 +1090,11 @@ ucode_markup_delete_expression_def(
   unique int id: @ucode_markup_delete_expression,
   int argument: @ucode_markup_delete_expression_argument_type ref,
   int operator: int ref
+);
+
+ucode_markup_dynamic_import_expression_def(
+  unique int id: @ucode_markup_dynamic_import_expression,
+  int source: @ucode_markup_expression ref
 );
 
 ucode_markup_elif_clause_consequence(
@@ -1484,7 +1494,7 @@ ucode_markup_parenthesized_expression_def(
   int child: @ucode_markup_parenthesized_expression_child_type ref
 );
 
-@ucode_markup_primary_expression = @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_call_expression | @ucode_markup_function_expression | @ucode_markup_member_expression | @ucode_markup_object | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_template_string | @ucode_markup_token_false | @ucode_markup_token_identifier | @ucode_markup_token_null | @ucode_markup_token_number | @ucode_markup_token_this | @ucode_markup_token_true
+@ucode_markup_primary_expression = @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_call_expression | @ucode_markup_dynamic_import_expression | @ucode_markup_function_expression | @ucode_markup_member_expression | @ucode_markup_object | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_template_string | @ucode_markup_token_false | @ucode_markup_token_identifier | @ucode_markup_token_null | @ucode_markup_token_number | @ucode_markup_token_this | @ucode_markup_token_true
 
 ucode_markup_regex_flags(
   unique int ucode_markup_regex: @ucode_markup_regex ref,
@@ -1770,7 +1780,7 @@ case @ucode_markup_token.kind of
 ;
 
 
-@ucode_markup_ast_node = @ucode_markup_arguments | @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_assignment_expression | @ucode_markup_augmented_assignment_expression | @ucode_markup_binary_expression | @ucode_markup_call_expression | @ucode_markup_catch_clause | @ucode_markup_comment_tag | @ucode_markup_computed_property_name | @ucode_markup_delete_expression | @ucode_markup_elif_clause | @ucode_markup_else_alt_clause | @ucode_markup_else_clause | @ucode_markup_export_clause | @ucode_markup_export_specifier | @ucode_markup_export_statement | @ucode_markup_expression_statement | @ucode_markup_expression_tag | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_formal_parameters | @ucode_markup_function_declaration | @ucode_markup_function_expression | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_import_clause | @ucode_markup_import_specifier | @ucode_markup_import_statement | @ucode_markup_lexical_declaration | @ucode_markup_markup | @ucode_markup_member_expression | @ucode_markup_named_imports | @ucode_markup_namespace_import | @ucode_markup_object | @ucode_markup_pair | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_rest_element | @ucode_markup_return_statement | @ucode_markup_sequence_expression | @ucode_markup_spread_element | @ucode_markup_statement_block | @ucode_markup_statement_list | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_switch_body | @ucode_markup_switch_case | @ucode_markup_switch_default | @ucode_markup_switch_statement | @ucode_markup_template_string | @ucode_markup_template_substitution | @ucode_markup_ternary_expression | @ucode_markup_text_statement | @ucode_markup_token | @ucode_markup_try_statement | @ucode_markup_unary_expression | @ucode_markup_update_expression | @ucode_markup_variable_declarator | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
+@ucode_markup_ast_node = @ucode_markup_arguments | @ucode_markup_array | @ucode_markup_arrow_function | @ucode_markup_assignment_expression | @ucode_markup_augmented_assignment_expression | @ucode_markup_binary_expression | @ucode_markup_call_expression | @ucode_markup_catch_clause | @ucode_markup_comment_tag | @ucode_markup_computed_property_name | @ucode_markup_delete_expression | @ucode_markup_dynamic_import_expression | @ucode_markup_elif_clause | @ucode_markup_else_alt_clause | @ucode_markup_else_clause | @ucode_markup_export_clause | @ucode_markup_export_specifier | @ucode_markup_export_statement | @ucode_markup_expression_statement | @ucode_markup_expression_tag | @ucode_markup_for_alt_statement | @ucode_markup_for_in_alt_statement | @ucode_markup_for_in_statement | @ucode_markup_for_statement | @ucode_markup_formal_parameters | @ucode_markup_function_declaration | @ucode_markup_function_expression | @ucode_markup_if_alt_statement | @ucode_markup_if_statement | @ucode_markup_import_clause | @ucode_markup_import_specifier | @ucode_markup_import_statement | @ucode_markup_lexical_declaration | @ucode_markup_markup | @ucode_markup_member_expression | @ucode_markup_named_imports | @ucode_markup_namespace_import | @ucode_markup_object | @ucode_markup_pair | @ucode_markup_parenthesized_expression | @ucode_markup_regex | @ucode_markup_rest_element | @ucode_markup_return_statement | @ucode_markup_sequence_expression | @ucode_markup_spread_element | @ucode_markup_statement_block | @ucode_markup_statement_list | @ucode_markup_string__ | @ucode_markup_subscript_expression | @ucode_markup_switch_body | @ucode_markup_switch_case | @ucode_markup_switch_default | @ucode_markup_switch_statement | @ucode_markup_template_string | @ucode_markup_template_substitution | @ucode_markup_ternary_expression | @ucode_markup_text_statement | @ucode_markup_token | @ucode_markup_try_statement | @ucode_markup_unary_expression | @ucode_markup_update_expression | @ucode_markup_variable_declarator | @ucode_markup_while_alt_statement | @ucode_markup_while_statement
 
 ucode_markup_ast_node_location(
   unique int node: @ucode_markup_ast_node ref,

@@ -6,6 +6,8 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="$ROOT/extractor/tree-sitter"
 URL="https://github.com/m00qek/tree-sitter-ucode.git"
 REV="4a243af329fae2f4ff01e0fc80133cbab8314600"
+CLI_VERSION="0.27.1"
+NPM_LOCK_SHA256="57aad774d0d6cb3095d98986bf8425724347b475082604bfb1ab1d32eb7cae4f"
 
 if [[ -d "$DEST/.git" ]]; then
 	git -C "$DEST" fetch --depth=1 origin "$REV"
@@ -22,6 +24,35 @@ if [[ "$got" != "$REV" ]]; then
 	echo "grammar SHA mismatch: got $got want $REV" >&2
 	exit 1
 fi
+
+# Apply the reviewed source-only compatibility patch to the pinned grammar,
+# then regenerate its tracked parser and node-type outputs with the locked CLI.
+# The producer release gate verifies the patch and generated output hashes.
+patch -d "$DEST" -p1 < "$ROOT/patches/0005-newer-wifi-ucode-grammar.patch"
+(
+  cd "$DEST"
+  # The npm lock covers the CLI wrapper. Its install hook fetches a native
+  # binary separately, so disable hooks and verify the release asset ourselves.
+  case "$(uname -s):$(uname -m)" in
+    Linux:x86_64) asset=linux-x64; cli_sha256=d01042f94ba3d6827ddc9788e235f75d8366431be42bdf90ade534d960c98b7d ;;
+    Linux:aarch64) asset=linux-arm64; cli_sha256=404be5d54a4955571c4067c21d4699660eab3a534cefb0659341b207f7139ec5 ;;
+    Darwin:x86_64) asset=macos-x64; cli_sha256=b740262cb0f35be64e39b50ad68b020433924a7bcee5ae5c8e40e68d71215647 ;;
+    Darwin:arm64) asset=macos-arm64; cli_sha256=46cb97d9a2c52c94e22d9a76c2f1116156b8b61f98360e2a9cce05fcb197cd4d ;;
+    *) echo "Unsupported platform for the pinned Tree-sitter CLI" >&2; exit 1 ;;
+  esac
+  printf '%s  %s\n' "$NPM_LOCK_SHA256" package-lock.json | shasum -a 256 -c
+  archive="$(mktemp)"
+  trap 'rm -f "$archive"' EXIT
+  curl --fail --location --retry 3 --output "$archive" \
+    "https://github.com/tree-sitter/tree-sitter/releases/download/v$CLI_VERSION/tree-sitter-$asset.gz"
+  printf '%s  %s\n' "$cli_sha256" "$archive" | shasum -a 256 -c
+  npm ci --ignore-scripts
+  cli=node_modules/tree-sitter-cli/tree-sitter
+  gzip -dc "$archive" > "$cli"
+  chmod 755 "$cli"
+  npm run build
+  npm test
+)
 
 # The grammar crate's published tests want tree-sitter 0.27.1. Cargo cannot
 # link two runtimes (`links = "tree-sitter"`). Extractor runtime is 0.26.8
@@ -56,4 +87,4 @@ if [[ ! -f "$DEST/ucode/src/node-types.json" ]]; then
 	exit 1
 fi
 
-echo "grammar $REV ready at $DEST (ucode/src/node-types.json visible)"
+echo "grammar $REV plus reviewed compatibility patch ready at $DEST (ucode/src/node-types.json visible)"
