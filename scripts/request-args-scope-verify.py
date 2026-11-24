@@ -18,6 +18,16 @@ ALL = ALLOWED + EXCLUDED
 TEXT = 'let methods = { test: { call: function(request) { system(request.args.value); } } };\n'
 
 
+def load_json(path):
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            ownership.require(key not in result, f'duplicate JSON key in {path}: {key}')
+            result[key] = value
+        return result
+    return json.loads(path.read_text(), object_pairs_hook=unique_object)
+
+
 def preflight(source):
     ownership.require(not source.is_symlink(), f'symlink source root: {source}')
     source = source.resolve(strict=True)
@@ -33,7 +43,8 @@ def preflight(source):
 
 def verify_routing(source, receipt):
     source = preflight(source)
-    data = json.loads(receipt.read_text())
+    data = load_json(receipt)
+    ownership.require(isinstance(data, dict), 'routing receipt must be an object')
     expected = {
         str(source / path): {
             'path': str(source / path), 'installed_path': path,
@@ -45,7 +56,7 @@ def verify_routing(source, receipt):
     for key, value in {'input_count': 10, 'plain_count': 10, 'markup_count': 0,
                        'markup_inconclusive_count': 0, 'uncertain_count': 0,
                        'excluded_count': 0, 'duplicate_input_count': 0}.items():
-        ownership.require(data.get(key) == value, f'routing {key}: {data}')
+        ownership.require(type(data.get(key)) is int and data[key] == value, f'routing {key}: {data}')
     decisions = data.get('decisions')
     ownership.require(isinstance(decisions, list) and len(decisions) == len(expected), 'routing decision count')
     for row in decisions:
@@ -58,8 +69,8 @@ def verify(source, output, mutant=False, candidate=None):
     source = preflight(source)
     verify_routing(source, output / 'routing.json')
     def rows(name):
-        return ownership.tuples(json.loads((output / (name + '.json')).read_text()))
-    ownership.file_identities(json.loads((output / 'extracted.json').read_text()), source, ALL)
+        return ownership.tuples(load_json(output / (name + '.json')))
+    ownership.file_identities(load_json(output / 'extracted.json'), source, ALL)
     ownership.require(not rows('errors'), 'unexpected extraction diagnostics')
     def entity(path, label, start, end):
         return {'label': label, 'path': path, 'span': [1, start, 1, end]}

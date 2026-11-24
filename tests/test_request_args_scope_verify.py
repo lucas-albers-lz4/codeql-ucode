@@ -39,6 +39,24 @@ class ScopeOracleTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             scope.preflight(self.source)
 
+    def test_duplicate_json_keys_and_boolean_counters_are_rejected(self):
+        text = json.dumps(self.route)
+        for needle, replacement in [
+            ('"input_count": 10', '"input_count": 99, "input_count": 10'),
+            ('"reason": "rpcd_raw_mode_full_path"',
+             '"reason": "wrong", "reason": "rpcd_raw_mode_full_path"'),
+        ]:
+            with self.subTest(duplicate=needle):
+                self.receipt.write_text(text.replace(needle, replacement, 1))
+                with self.assertRaisesRegex(SystemExit, 'duplicate JSON key'):
+                    scope.verify_routing(self.source, self.receipt)
+        for key in ('markup_count', 'markup_inconclusive_count', 'uncertain_count',
+                    'excluded_count', 'duplicate_input_count'):
+            route = copy.deepcopy(self.route)
+            route[key] = False
+            with self.subTest(boolean_counter=key), self.assertRaisesRegex(SystemExit, f'routing {key}'):
+                self.check_route(route)
+
     def test_exact_route_and_negative_mutations(self):
         self.check_route(self.route)
         for field, value in [('path', '/other'), ('installed_path', 'wrong'),
