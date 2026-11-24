@@ -150,6 +150,35 @@ class BundleTests(unittest.TestCase):
         self.assertIn("unsafe archive member path", proc.stderr)
         self.assertFalse((Path(self.temp.name) / "escape").exists())
 
+    def test_release_tag_is_bound_to_manifest_and_verifier_pin(self):
+        tag = "v0.1.0-mvp.1"
+        archive = Path(self.temp.name) / "versioned.tar.gz"
+        result = package.create_bundle(self.root, archive, **self.kwargs, release_tag=tag)
+        with tarfile.open(archive, "r:gz") as contents:
+            manifest = json.load(contents.extractfile("codeql-ucode-linux/bundle-manifest.json"))
+        self.assertEqual(manifest["artifact_kind"], "versioned-release")
+        self.assertEqual(manifest["release_tag"], tag)
+        output = Path(self.temp.name) / "release-extracted"
+        proc = subprocess.run([sys.executable, str(MODULE_PATH.with_name("verify-linux-release-bundle.py")),
+                               "--archive", str(archive), "--expected-sha256", result["archive_sha256"],
+                               "--output-dir", str(output), "--expected-release-tag", tag],
+                              capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        verified = verify_bundle.verify(output / "codeql-ucode-linux", tag, self.kwargs["producer_commit"])
+        self.assertEqual(verified["artifact_kind"], "versioned-release")
+        self.assertEqual(verified["release_tag"], tag)
+        self.assertEqual(verified["manifest_sha256"], hashlib.sha256(
+            (output / "codeql-ucode-linux/bundle-manifest.json").read_bytes()).hexdigest())
+        with self.assertRaisesRegex(ValueError, "release tag differs"):
+            verify_bundle.verify(output / "codeql-ucode-linux", "v0.1.0-mvp.2")
+        with self.assertRaisesRegex(ValueError, "producer commit differs"):
+            verify_bundle.verify(output / "codeql-ucode-linux", tag, "0" * 40)
+        with self.assertRaisesRegex(ValueError, "manifest digest differs"):
+            verify_bundle.verify(output / "codeql-ucode-linux", tag, self.kwargs["producer_commit"], "0" * 64)
+        with self.assertRaisesRegex(ValueError, "release tag must be"):
+            package.create_bundle(self.root, Path(self.temp.name) / "bad-tag.tar.gz",
+                                  **self.kwargs, release_tag="latest")
+
     def test_rejects_empty_fake_manifest(self):
         root = Path(self.temp.name) / "fake"
         (root / "extractor-pack").mkdir(parents=True)

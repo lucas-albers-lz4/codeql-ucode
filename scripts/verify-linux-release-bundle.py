@@ -35,7 +35,9 @@ def parse_relative_path(rel: str, kind: str) -> PurePosixPath:
     return path
 
 
-def verify(root: Path) -> dict:
+def verify(root: Path, expected_release_tag: str | None = None,
+           expected_producer_commit: str | None = None,
+           expected_manifest_sha256: str | None = None) -> dict:
     root = Path(root)
     if root.is_symlink():
         raise ValueError("bundle root must not be a symlink")
@@ -44,12 +46,29 @@ def verify(root: Path) -> dict:
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise ValueError("bundle manifest must be a regular file")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest_sha256 = digest(manifest_path)
+    if expected_manifest_sha256 is not None and manifest_sha256 != expected_manifest_sha256:
+        raise ValueError("bundle manifest digest differs from expected pin")
     if manifest.get("schema_version") != 1 or manifest.get("platform") != "linux-x64":
         raise ValueError("unsupported release manifest schema or platform")
-    if manifest.get("artifact_kind") != "ci-candidate" or manifest.get("source_checkout_clean") is not True:
-        raise ValueError("bundle is not a clean-source CI candidate")
+    kind = manifest.get("artifact_kind")
+    tag = manifest.get("release_tag")
+    if kind == "ci-candidate":
+        if tag is not None or expected_release_tag is not None:
+            raise ValueError("CI candidate cannot satisfy a release tag pin")
+    elif kind == "versioned-release":
+        if not isinstance(tag, str) or not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", tag):
+            raise ValueError("versioned release has an invalid tag")
+        if expected_release_tag is not None and tag != expected_release_tag:
+            raise ValueError("release tag differs from expected pin")
+    else:
+        raise ValueError("unsupported bundle artifact kind")
+    if manifest.get("source_checkout_clean") is not True:
+        raise ValueError("bundle source checkout was not clean")
     if not re.fullmatch(r"[0-9a-f]{40}", manifest.get("producer_commit", "")):
         raise ValueError("manifest producer commit is not a full Git SHA")
+    if expected_producer_commit is not None and manifest["producer_commit"] != expected_producer_commit:
+        raise ValueError("producer commit differs from expected pin")
     build = manifest.get("build")
     if not isinstance(build, dict):
         raise ValueError("manifest build provenance is missing")
@@ -198,7 +217,8 @@ def verify(root: Path) -> dict:
                    if rel.startswith("ql/src/") and rel.endswith(".ql")}
     if query_files != suite.get("query_files"):
         raise ValueError("QL query digest map does not match bundled query files")
-    return {"status": "verified", "producer_commit": manifest["producer_commit"],
+    return {"status": "verified", "artifact_kind": kind, "release_tag": tag,
+            "manifest_sha256": manifest_sha256, "producer_commit": manifest["producer_commit"],
             "query_pack": manifest["packs"]["queries"],
             "library_pack": manifest["packs"]["library"], "file_count": len(observed)}
 
@@ -210,6 +230,9 @@ def main() -> int:
     parser.add_argument("--archive", type=Path, help="verify and safely extract a pinned tar.gz")
     parser.add_argument("--expected-sha256", help="required when --archive is used")
     parser.add_argument("--output-dir", type=Path, help="new extraction parent for --archive")
+    parser.add_argument("--expected-release-tag", help="require a versioned release with this exact tag")
+    parser.add_argument("--expected-producer-commit", help="require this exact 40-character producer commit")
+    parser.add_argument("--expected-manifest-sha256", help="require this exact bundle manifest digest")
     args = parser.parse_args()
     if args.archive:
         if args.bundle_root or not args.expected_sha256 or not args.output_dir:
@@ -287,11 +310,13 @@ def main() -> int:
                 with stream, target.open("xb") as destination:
                     destination.write(stream.read())
                 target.chmod(member.mode & 0o777)
-        result = verify(output / "codeql-ucode-linux")
+        result = verify(output / "codeql-ucode-linux", args.expected_release_tag,
+                        args.expected_producer_commit, args.expected_manifest_sha256)
     else:
         if args.expected_sha256 or args.output_dir or not args.bundle_root:
             parser.error("provide bundle_root, or use all three archive options")
-        result = verify(args.bundle_root)
+        result = verify(args.bundle_root, args.expected_release_tag,
+                        args.expected_producer_commit, args.expected_manifest_sha256)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
