@@ -7,6 +7,7 @@ It does not authenticate CodeQL execution or prove runtime shell behavior.
 import argparse
 import hashlib
 import json
+import re
 from collections import Counter
 from pathlib import Path
 
@@ -36,25 +37,38 @@ def main():
         assert all(row[0]['label'] == 'CallExpression' for row in candidates), case
         print(case, 'success_files', len(observed), 'errors', 0, 'candidates', len(candidates))
     field_expected = {
-        'parent': [('loginserver', 164, 3, 48), ('loginserver_authkey', 164, 3, 48)],
+        'parent': [('usr/share/rpcd/ucode/tailscale.uc', 'loginserver', 164, 3, 48),
+                   ('usr/share/rpcd/ucode/tailscale.uc', 'loginserver_authkey', 164, 3, 48)],
         'fixed': [],
-        'controls': [('loginserver', 18, 5, 50)],
+        'controls': [('usr/share/rpcd/ucode/nested_pos.uc', 'loginserver', 18, 5, 50)],
     }
     for case, want in field_expected.items():
         rows = tuples(run / 'out' / case / 'fields-decode.stdout')
-        actual = [(row[1], row[4], row[5], row[6]) for row in rows]
+        actual = [(row[1], row[2], row[5], row[6], row[7]) for row in rows]
         assert actual == want, (case, actual, want)
-    sarif = json.loads((run / 'out/sarif-parent/candidate.sarif').read_text())
-    sarif_run = sarif['runs'][0]
-    assert [rule['id'] for rule in sarif_run['tool']['driver']['rules']] == [
-        'ucode/m4/tailscale-nested-shell-candidate']
-    results = sarif_run['results']
-    assert len(results) == 1
-    result = results[0]
-    assert result['ruleId'] == 'ucode/m4/tailscale-nested-shell-candidate'
-    location = result['locations'][0]['physicalLocation']
-    assert location['artifactLocation']['uri'] == 'usr/share/rpcd/ucode/tailscale.uc'
-    assert location['region'] == {'startLine': 164, 'startColumn': 3, 'endColumn': 49}
+    for case in ('parent', 'fixed', 'controls'):
+        sarif = json.loads((run / 'out' / ('sarif-' + case) / 'candidate.sarif').read_text())
+        sarif_run = sarif['runs'][0]
+        assert [rule['id'] for rule in sarif_run['tool']['driver']['rules']] == [
+            'ucode/m4/tailscale-nested-shell-candidate']
+        observed = Counter()
+        for result in sarif_run.get('results', []):
+            assert result['ruleId'] == 'ucode/m4/tailscale-nested-shell-candidate'
+            location = result['locations'][0]['physicalLocation']
+            region = location['region']
+            observed[(location['artifactLocation']['uri'], region['startLine'],
+                      region['startColumn'], region['endColumn'])] += 1
+        wanted = Counter()
+        for rel, info in expected.items():
+            if not rel.startswith(case + '/'):
+                continue
+            uri = rel[len(case) + 1:]
+            for span in info['candidate_sinks']:
+                match = re.fullmatch(r'(\d+):(\d+)-(\d+)', span)
+                assert match, span
+                line, start, end = map(int, match.groups())
+                wanted[(uri, line, start, end + 1)] += 1
+        assert observed == wanted, (case, observed, wanted)
     print('source hashes and exact extraction/candidate counts match manifest')
 
 

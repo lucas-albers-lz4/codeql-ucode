@@ -16,6 +16,9 @@ fixed file, `nested_fixed.uc`, `nested_near_miss.uc`, or `model_pos.uc`.
 `model_pos.uc` is the separate direct-flow positive for `ShellInjection.ql`.
 The supplemental controls `nested_reassigned.uc`, `nested_shadow.uc`,
 `nested_helper_constant.uc`, and `nested_closure.uc` must also produce no row.
+Three constant-first `||` controls retain the source read, push, join and
+sink but select a constant value at the trim, push or command initializer;
+each must produce no row.
 The shadow control intentionally retains the outer tainted flow; its absence
 shows the rule's conservative ambiguity cutoff, not a safety conclusion.
 The two parent field paths (`loginserver` and `loginserver_authkey`) converge

@@ -31,6 +31,16 @@ private predicate concatenation(UCODE::AstNode n, UCODE::AstNode left, UCODE::As
   )
 }
 
+/** Direct `trim(field)` or `trim(field) || ''` initializer only. */
+private predicate trimmedInitializer(UCODE::VariableDeclarator d, NamedCall trimCall) {
+  d.getValue() = trimCall
+  or
+  exists(UCODE::BinaryExpression fallback |
+    fallback = d.getValue() and fallback.getOperator() = "||" and
+    fallback.getLeft() = trimCall and literal(fallback.getRight(), "")
+  )
+}
+
 /** The nearest function boundary for an expression is this function expression. */
 private predicate directlyInFunction(UCODE::AstNode n, UCODE::FunctionExpression fn) {
   n.getParent*() = fn and
@@ -114,21 +124,27 @@ private predicate trimmedField(string formName, string field, string valueName, 
     d.getName().getValue() = valueName and stableBinding(d) and
     trimCall.getName() = "trim" and read = trimCall.getArgument(0) and
     ident(read.getObject(), formName) and read.getProperty().getValue() = field and
-    trimCall.getParent*() = d.getValue() and
+    trimmedInitializer(d, trimCall) and
     sameFunction(d, sink) and before(d, sink)
   )
 }
 
 /** A direct push carries the quoted local value into the selected array. */
-private predicate pushedField(string arrayName, string valueName, string commandName,
+private predicate pushedField(string arrayName, string valueName, string field,
+                              string commandName,
                               NamedFsPopenCall sink) {
   exists(NamedCall pushCall, NamedCall quoteCall, UCODE::FunctionDeclaration quoteDef,
-         UCODE::VariableDeclarator commandDecl |
+         UCODE::VariableDeclarator commandDecl, UCODE::AstNode option |
     pushCall.getName() = "push" and
     ident(pushCall.getArgument(0), arrayName) and
     quoteCall.getName() = "shell_quote" and
     ident(quoteCall.getArgument(0), valueName) and
-    quoteCall.getParent*() = pushCall.getArgument(1) and
+    concatenation(pushCall.getArgument(1), option, quoteCall) and
+    (
+      field = "loginserver" and literal(option, "--login-server ")
+      or
+      field = "loginserver_authkey" and literal(option, "--auth-key ")
+    ) and
     sameFileCall(quoteCall, quoteDef) and quotedHelperBody(quoteDef) and
     commandDecl.getName().getValue() = commandName and
     sameFunction(pushCall, commandDecl) and before(pushCall, commandDecl) and
@@ -138,13 +154,14 @@ private predicate pushedField(string arrayName, string valueName, string command
 
 private predicate arrayJoinedIntoCommand(string arrayName, string commandName, NamedFsPopenCall sink) {
   exists(UCODE::VariableDeclarator arrayDecl, UCODE::VariableDeclarator commandDecl,
-         NamedCall joinCall |
+         NamedCall joinCall, UCODE::AstNode commandPrefix |
     arrayDecl.getName().getValue() = arrayName and stableBinding(arrayDecl) and
     arrayDecl.getValue() instanceof UCODE::Array and
     commandDecl.getName().getValue() = commandName and stableBinding(commandDecl) and
     joinCall.getName() = "join" and literal(joinCall.getArgument(0), " ") and
     ident(joinCall.getArgument(1), arrayName) and
-    joinCall.getParent*() = commandDecl.getValue() and
+    concatenation(commandDecl.getValue(), commandPrefix, joinCall) and
+    literal(commandPrefix, "tailscale login ") and
     sameFunction(arrayDecl, sink) and sameFunction(commandDecl, sink) and
     sameFunction(joinCall, sink) and before(arrayDecl, commandDecl) and
     before(commandDecl, sink)
@@ -171,12 +188,12 @@ where
   (
     exists(string valueName |
       trimmedField(formName, "loginserver", valueName, sink) and
-      pushedField(arrayName, valueName, commandName, sink)
+      pushedField(arrayName, valueName, "loginserver", commandName, sink)
     )
     or
     exists(string valueName |
       trimmedField(formName, "loginserver_authkey", valueName, sink) and
-      pushedField(arrayName, valueName, commandName, sink)
+      pushedField(arrayName, valueName, "loginserver_authkey", commandName, sink)
     )
   )
-select sink, "Request data enters a command passed as a double-quoted /bin/sh -c argument."
+select sink, "A request-derived value matches this bounded nested-shell command construction."

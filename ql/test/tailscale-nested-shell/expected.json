@@ -62,6 +62,21 @@
       "sha256": "220edda6f27c547b04916b509b79c0c27170d001d0b1eb5a59269bcb31091a22",
       "candidate_sinks": [],
       "role": "Nested declaration shadows same name; conservative exclusion even though outer flow remains"
+    },
+    "controls/usr/share/rpcd/ucode/nested_trim_fallback_constant.uc": {
+      "sha256": "a9d47da924e1fb718f4b1a1861ebd9198a875f7134a725501fdb6dcac92c1592",
+      "candidate_sinks": [],
+      "role": "Constant-first OR initializer, trim read is not the selected value; zero candidate"
+    },
+    "controls/usr/share/rpcd/ucode/nested_push_fallback_constant.uc": {
+      "sha256": "9ce453d8c77bea019f2c05fb8c8b478d49813f130bd5a2b7b7ee5a771de164f9",
+      "candidate_sinks": [],
+      "role": "Constant-first OR push argument, quote call is not the selected value; zero candidate"
+    },
+    "controls/usr/share/rpcd/ucode/nested_join_fallback_constant.uc": {
+      "sha256": "3c8e686fd0cc4b0b890d1a6c226027b59c0bfecb2d2f03b9aeb740eb8b458310",
+      "candidate_sinks": [],
+      "role": "Constant-first OR command initializer, join is not the selected value; zero candidate"
     }
   }
 }
