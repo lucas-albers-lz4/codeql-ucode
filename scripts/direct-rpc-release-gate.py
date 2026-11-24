@@ -311,7 +311,8 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
     grammar_head = git_output(r, "grammar-revision", grammar, "rev-parse", "HEAD")
     require(grammar_head == GRAMMAR_REV, f"grammar pin mismatch: {grammar_head}")
     grammar_status = git_output(r, "grammar-post-bootstrap-status", grammar, "status", "--porcelain=v1")
-    require(grammar_status.splitlines() == [" M Cargo.toml"],
+    # git_output strips the porcelain line's leading status-space.
+    require(grammar_status.splitlines() == ["M Cargo.toml"],
             f"unexpected pinned grammar working-tree transformation: {grammar_status!r}")
     grammar_manifest = grammar / "Cargo.toml"
     r.call("grammar-upstream-cargo-toml", ["git", "-C", grammar, "show", f"{GRAMMAR_REV}:Cargo.toml"])
