@@ -15,6 +15,6 @@ file_types:
   extensions:
   # CLI requires a leading period; empty extension is rejected. M1 still
   # extracts the extensionless `luci` plugin via index-files --include='**/luci'
-  # (qltest.sh uses --include-extension=). Extractor globs are literal basenames
-  # (`luci`, fixtures, M4 `sys.uc`).
+  # (qltest.sh uses --include-extension=). The extractor's routing rules also
+  # recognize installed rpcd paths; the caller still selects the input files.
   - .uc

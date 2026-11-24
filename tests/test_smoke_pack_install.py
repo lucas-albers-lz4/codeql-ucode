@@ -59,6 +59,7 @@ if os.environ.get("FAIL_UCI"):
             extractor.parent.mkdir(parents=True)
             extractor.touch(mode=0o755)
         (scripts / "m4-z-after-smoke.sh").write_text(child)
+        (scripts / "m4-request-args-scope-smoke.sh").write_text(child)
         (scripts / "m3-smoke.sh").write_text(child)
         # A nested M3 invocation must inherit aggregate readiness.
         (scripts / "m4-block-device-smoke.sh").write_text(
@@ -100,7 +101,7 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
                          "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
-                         "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
+                         "m4-request-args-scope-smoke.sh", "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
@@ -128,13 +129,39 @@ fi
                 finally:
                     script.write_text(original)
 
+    def test_scope_installer_uses_pinned_cli_override(self):
+        script = self.root / "scripts/m4-request-args-scope-smoke.sh"
+        shutil.copy(REPO / "scripts/m4-request-args-scope-smoke.sh", script)
+        selected = self.root / "selected" / "codeql"
+        selected.parent.mkdir()
+        selected.write_text('''#!/usr/bin/env bash
+printf '%s\\n' "$*" >> "$SELECTED_LOG"
+exit 29
+''')
+        selected.chmod(0o755)
+        result = self.run_script("m4-request-args-scope-smoke.sh", CODEQL=str(selected),
+                                 SELECTED_LOG=str(self.root / "selected-log"))
+        self.assertEqual(result.returncode, 29, result.stderr)
+        self.assertEqual(self.lines("selected-log"), [f"pack install {self.root}/ql/lib"])
+        self.assertEqual(self.lines("installs"), [])
+
+    def test_request_args_scope_failure_stops_later_smokes(self):
+        script = self.root / "scripts/m4-request-args-scope-smoke.sh"
+        script.write_text(script.read_text() + "exit 48\n")
+        result = self.run_script("ci-ql-smoke.sh")
+        self.assertEqual(result.returncode, 48, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh",
+                         "m4-request-args-scope-smoke.sh"])
+
     def test_uci_observer_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_UCI="1")
         self.assertEqual(result.returncode, 47, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
                          "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
-                         "uci-helper-observation-smoke.py"])
+                         "m4-request-args-scope-smoke.sh", "uci-helper-observation-smoke.py"])
 
     def test_markup_failure_stops_before_m4(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP="1")
