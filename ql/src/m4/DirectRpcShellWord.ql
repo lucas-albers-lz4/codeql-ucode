@@ -61,6 +61,19 @@ private predicate stableFormal(UCODE::Identifier formal, UCODE::FunctionExpressi
   ) and
   not exists(UCODE::CatchClause c |
     c.getParent*() = fn and c.getParameter().getValue() = formal.getValue()
+  ) and
+  not exists(UCODE::FunctionDeclaration d |
+    d.getParent*() = fn and d.getName().getValue() = formal.getValue()
+  ) and
+  not exists(UCODE::ForInStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = formal.getValue()
+  ) and
+  not exists(UCODE::ForInAltStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = formal.getValue()
   )
 }
 
@@ -76,7 +89,8 @@ private predicate handlerField(UCODE::MemberExpression field, UCODE::FunctionExp
 
 /** Literal boundaries; dynamic substitutions elsewhere still need human review. */
 private predicate rawLiteralBoundary(
-  UCODE::MemberExpression field, UCODE::TemplateString tmpl
+  UCODE::MemberExpression field, UCODE::TemplateString tmpl,
+  UCODE::FunctionExpression fn
 ) {
   exists(UCODE::TemplateSubstitution sub, UCODE::StringFragment before,
     UCODE::StringFragment after, int i |
@@ -87,6 +101,11 @@ private predicate rawLiteralBoundary(
     not exists(UCODE::StringFragment frag, int j |
       frag = tmpl.getChild(j) and j <= i + 1 and
       frag.getValue().regexpMatch(".*[\\\"'`\\\\].*")
+    ) and
+    not exists(UCODE::TemplateSubstitution earlier, UCODE::MemberExpression prior,
+      int j |
+      earlier = tmpl.getChild(j) and j < i and
+      earlier.getChild() = prior and handlerField(prior, fn)
     )
   )
 }
@@ -100,6 +119,19 @@ private predicate uniqueLocal(UCODE::VariableDeclarator declaration,
   ) and
   not exists(UCODE::FunctionDeclaration other |
     other.getParent*() = fn and other.getName().getValue() = declaration.getName().getValue()
+  ) and
+  not exists(UCODE::CatchClause c |
+    c.getParent*() = fn and c.getParameter().getValue() = declaration.getName().getValue()
+  ) and
+  not exists(UCODE::ForInStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = declaration.getName().getValue()
+  ) and
+  not exists(UCODE::ForInAltStatement loop, UCODE::Identifier id |
+    loop.getParent*() = fn and
+    (id = loop.getVariable() or id = loop.getKey() or id = loop.getValue()) and
+    id.getValue() = declaration.getName().getValue()
   )
 }
 
@@ -164,7 +196,7 @@ where
   sink.getLocation().getFile() = fn.getLocation().getFile() and
   reachesPopen(tmpl, fn, sink) and
   source.getLocation().getFile() = sink.getLocation().getFile() and
-  handlerField(source, fn) and rawLiteralBoundary(source, tmpl) and
+  handlerField(source, fn) and rawLiteralBoundary(source, tmpl, fn) and
   directBody(tmpl, fn)
 select source,
   "A returned call-handler argument is directly interpolated between literal whitespace into a command passed to imported fs.popen at line " +
