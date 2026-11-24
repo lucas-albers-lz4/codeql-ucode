@@ -6,7 +6,10 @@
   "source_path": "protocols/luci-proto-openvpn/root/usr/share/rpcd/ucode/luci.openvpn.uc",
   "staged_path": "usr/share/rpcd/ucode/luci.openvpn.uc",
   "controls": {
-    "constant-sink.uc": "Derived from parent; line 77 popen argument is a constant while request metadata and command assignment remain."
+    "constant-sink.uc": "Derived from parent; line 77 popen argument is a constant while request metadata and command assignment remain.",
+    "req-reassigned.uc": "In vulnerable source, assign req to a constant metadata object immediately before raw interpolation.",
+    "cmd-shadowed.uc": "In vulnerable source, execute popen(cmd) inside a block with a new constant cmd local.",
+    "nested-assignment.uc": "In vulnerable source, place the raw assignment in an uncalled nested function; assign constant cmd on the executed outer path."
   },
   "expected": {
     "parent.uc": {
@@ -60,6 +63,90 @@
         16,
         77,
         34
+      ],
+      "rule_rows": 0
+    },
+    "req-reassigned.uc": {
+      "sha256": "849d941590711f4f1e520165fade8d18d292ddb134dcca163afb1caf96715a82",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_occurrences": [
+        [
+          72,
+          115,
+          72,
+          131
+        ]
+      ],
+      "popen_cmd_occurrences": [
+        [
+          17,
+          14,
+          17,
+          23
+        ],
+        [
+          78,
+          16,
+          78,
+          25
+        ]
+      ],
+      "rule_rows": 0
+    },
+    "cmd-shadowed.uc": {
+      "sha256": "273638453f355fc6e33d6b9d58d66f1e61c62f6450e26b6ba503879b094de14a",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_occurrences": [
+        [
+          71,
+          115,
+          71,
+          131
+        ]
+      ],
+      "popen_cmd_occurrences": [
+        [
+          17,
+          14,
+          17,
+          23
+        ],
+        [
+          78,
+          36,
+          78,
+          45
+        ]
+      ],
+      "rule_rows": 0
+    },
+    "nested-assignment.uc": {
+      "sha256": "c04c486095b06910d5492763601410422500608b3591f86161bf480e9757ac50",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_occurrences": [
+        [
+          71,
+          133,
+          71,
+          149
+        ]
+      ],
+      "popen_cmd_occurrences": [
+        [
+          17,
+          14,
+          17,
+          23
+        ],
+        [
+          78,
+          16,
+          78,
+          25
+        ]
       ],
       "rule_rows": 0
     }
