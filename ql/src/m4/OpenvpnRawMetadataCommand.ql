@@ -22,7 +22,12 @@ private predicate inDirectRpcBody(UCODE::AstNode n, UCODE::FunctionExpression fn
     nested != fn and n.getParent*() = nested
   ) and
   not exists(UCODE::FunctionDeclaration nested | n.getParent*() = nested) and
-  not exists(UCODE::ArrowFunction nested | n.getParent*() = nested)
+  not exists(UCODE::ArrowFunction nested | n.getParent*() = nested) and
+  not exists(UCODE::CatchClause nested | n.getParent*() = nested) and
+  not exists(UCODE::ForStatement nested | n.getParent*() = nested) and
+  not exists(UCODE::ForAltStatement nested | n.getParent*() = nested) and
+  not exists(UCODE::ForInStatement nested | n.getParent*() = nested) and
+  not exists(UCODE::ForInAltStatement nested | n.getParent*() = nested)
 }
 
 /** Reject known local shadows and writes to the request formal. This is not SSA. */
@@ -38,6 +43,9 @@ private predicate stableRequestFormal(UCODE::Identifier formal, UCODE::FunctionE
   ) and
   not exists(UCODE::CatchClause c |
     c.getParameter().getValue() = formal.getValue() and c.getParent*() = fn
+  ) and
+  not exists(UCODE::FunctionDeclaration d |
+    d.getName().getValue() = formal.getValue() and d.getParent*() = fn
   )
 }
 
@@ -49,6 +57,9 @@ private predicate singleCommandLocal(UCODE::Identifier command, UCODE::FunctionE
     not exists(UCODE::VariableDeclarator other |
       other != d and other.getName().getValue() = command.getValue() and
       other.getParent*() = fn
+    ) and
+    not exists(UCODE::FunctionDeclaration other |
+      other.getName().getValue() = command.getValue() and other.getParent*() = fn
     )
   )
 }

@@ -28,7 +28,8 @@
         77,
         25
       ],
-      "rule_rows": 1
+      "rule_rows": 1,
+      "ast_source_sink_pairs": 1
     },
     "fixed.uc": {
       "sha256": "6593792678951fd500c2b090d17d9e500a05a642cfb996ee02c1649473152410",
@@ -46,7 +47,8 @@
         77,
         25
       ],
-      "rule_rows": 0
+      "rule_rows": 0,
+      "ast_source_sink_pairs": 1
     },
     "constant-sink.uc": {
       "sha256": "08f8ed832129d2e48be12facfeb304dffc7353b2be26873c08b6b233cfd6bb6e",
@@ -64,7 +66,8 @@
         77,
         34
       ],
-      "rule_rows": 0
+      "rule_rows": 0,
+      "ast_source_sink_pairs": 1
     },
     "req-reassigned.uc": {
       "sha256": "849d941590711f4f1e520165fade8d18d292ddb134dcca163afb1caf96715a82",
@@ -92,7 +95,20 @@
           25
         ]
       ],
-      "rule_rows": 0
+      "rule_rows": 0,
+      "source_span": [
+        72,
+        115,
+        72,
+        131
+      ],
+      "sink_span": [
+        78,
+        16,
+        78,
+        25
+      ],
+      "ast_source_sink_pairs": 1
     },
     "cmd-shadowed.uc": {
       "sha256": "273638453f355fc6e33d6b9d58d66f1e61c62f6450e26b6ba503879b094de14a",
@@ -120,7 +136,20 @@
           45
         ]
       ],
-      "rule_rows": 0
+      "rule_rows": 0,
+      "source_span": [
+        71,
+        115,
+        71,
+        131
+      ],
+      "sink_span": [
+        78,
+        36,
+        78,
+        45
+      ],
+      "ast_source_sink_pairs": 1
     },
     "nested-assignment.uc": {
       "sha256": "c04c486095b06910d5492763601410422500608b3591f86161bf480e9757ac50",
@@ -148,7 +177,20 @@
           25
         ]
       ],
-      "rule_rows": 0
+      "rule_rows": 0,
+      "source_span": [
+        71,
+        133,
+        71,
+        149
+      ],
+      "sink_span": [
+        78,
+        16,
+        78,
+        25
+      ],
+      "ast_source_sink_pairs": 1
     }
   }
 }
