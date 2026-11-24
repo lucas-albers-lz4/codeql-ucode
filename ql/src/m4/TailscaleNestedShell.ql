@@ -25,6 +25,12 @@ private predicate literal(UCODE::AstNode n, string value) {
   stringLiteralValue(n.(UCODE::String)) = value
 }
 
+/** The generated AST has no fragment for an empty quoted string. */
+private predicate emptyString(UCODE::AstNode n) {
+  n instanceof UCODE::String and
+  not exists(n.(UCODE::String).getChild(_))
+}
+
 private predicate concatenation(UCODE::AstNode n, UCODE::AstNode left, UCODE::AstNode right) {
   exists(UCODE::BinaryExpression b |
     b = n and b.getOperator() = "+" and left = b.getLeft() and right = b.getRight()
@@ -37,7 +43,7 @@ private predicate trimmedInitializer(UCODE::VariableDeclarator d, NamedCall trim
   or
   exists(UCODE::BinaryExpression fallback |
     fallback = d.getValue() and fallback.getOperator() = "||" and
-    fallback.getLeft() = trimCall and literal(fallback.getRight(), "")
+    fallback.getLeft() = trimCall and emptyString(fallback.getRight())
   )
 }
 
