@@ -522,7 +522,7 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
                     f"Tailscale {case} result rule or location multiplicity mismatch: {result}")
             phys = result["locations"][0]["physicalLocation"]
             region = phys["region"]
-            require(region.get("endLine") == region.get("startLine"),
+            require(region.get("endLine", region.get("startLine")) == region.get("startLine"),
                     f"Tailscale {case} result end line mismatch: {result}")
             actual.append((phys["artifactLocation"]["uri"], region["startLine"],
                            region["startColumn"], region["endColumn"]))
