@@ -3,8 +3,9 @@
  * @description A field of a returned call-handler formal appears as a raw template substitution between literal whitespace and the template is passed directly, or through one guarded local, to imported fs.popen. Review registration, quote context, and command behavior.
  * @kind problem
  * @problem.severity warning
+ * @precision medium
  * @id ucode/m4/direct-rpc-shell-word
- * @tags testing
+ * @tags security
  */
 
 import codeql.ucode.m3.Models
