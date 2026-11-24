@@ -21,19 +21,80 @@ PATHS = {
     'mixed.ut': ['entry', 'RawText:1:1:1:6:Markup:0', 'Identifier:1:10:1:13:ExpressionTag:1', 'ExpressionTag:1:7:1:16:Markup:1', 'RawText:1:17:1:18:Markup:2', 'Number:2:12:2:12:VariableDeclarator:2', 'LexicalDeclaration:2:4:2:13:Markup:4', 'RawText:2:17:2:22:TextStatement:1', 'Identifier:2:26:2:26:ExpressionTag:1', 'ExpressionTag:2:23:2:29:TextStatement:2', 'RawText:2:30:2:30:TextStatement:3', 'exit'],
 }
 
+# Exact source bytes and one-based inclusive spans for the delimiter fixtures.
+# Each tuple spells out the opener, expression, and closer independently.
+DELIMITERS = {
+    'plain.ut': ('{{', 'x', '}}'),
+    'trim-open.ut': ('{{-', 'x', '}}'),
+    'trim-close.ut': ('{{', 'x', '-}}'),
+    'trim-both.ut': ('{{-', 'x', '-}}'),
+    'ordinary-member.ut': ('{{', 'x.y', '}}'),
+    'trim-member.ut': ('{{-', 'x.y', '-}}'),
+}
+
+def delimiter_oracle(name):
+    opener, expression, closer = DELIMITERS[name]
+    source = f'A {opener} {expression} {closer} B'
+    assert (SOURCE / name).read_bytes() == source.encode('ascii'), name
+    expression_start = 4 + len(opener)
+    expression_end = expression_start + len(expression) - 1
+    close_start = expression_end + 2
+    close_end = close_start + len(closer) - 1
+    open_kind = 'ExpressionTagTrimOpen' if opener == '{{-' else 'ExpressionTagOpen'
+    close_kind = 'ExpressionTagTrimClose' if closer == '-}}' else 'ExpressionTagClose'
+    is_member = expression == 'x.y'
+    expression_kind = 'MemberExpression' if is_member else 'Identifier'
+    expression_label = 'MemberExpression' if is_member else expression
+    ast = [
+        ('Markup', 'Markup', 1, len(source), '<root>', -1, '<none>'),
+        ('RawText', 'A ', 1, 2, 'Markup', 0, '<none>'),
+        ('ExpressionTag', 'ExpressionTag', 3, close_end, 'Markup', 1, '<none>'),
+        (open_kind, opener, 3, 2 + len(opener), 'ExpressionTag', 0, 'open'),
+        (expression_kind, expression_label, expression_start, expression_end,
+         'ExpressionTag', 1, 'expression'),
+        (close_kind, closer, close_start, close_end, 'ExpressionTag', 2, 'close'),
+        ('RawText', ' B', close_end + 1, len(source), 'Markup', 2, '<none>'),
+    ]
+    if is_member:
+        ast.extend([
+            ('Identifier', 'x', expression_start, expression_start, 'MemberExpression', 0, 'object'),
+            ('ReservedWord', '.', expression_start + 1, expression_start + 1,
+             'MemberExpression', 1, '<none>'),
+            ('PropertyIdentifier', 'y', expression_end, expression_end, 'MemberExpression', 2,
+             'property'),
+        ])
+    expected_ast = [
+        (name, kind, label, '1', str(start), '1', str(end), parent, str(index), field, '1')
+        for kind, label, start, end, parent, index, field in ast
+    ]
+    graph_path = []
+    if not is_member:
+        graph_path = [
+            'entry',
+            'RawText:1:1:1:2:Markup:0',
+            f'Identifier:1:{expression_start}:1:{expression_end}:ExpressionTag:1',
+            f'ExpressionTag:1:3:1:{close_end}:Markup:1',
+            f'RawText:1:{close_end + 1}:1:{len(source)}:Markup:2',
+            'exit',
+        ]
+    return expected_ast, graph_path
+
+
 def rows(db, query, output):
     return list(csv.reader(io.StringIO(smoke.query(db, query, output, 'csv'))))[1:]
 
-def check_graph(db, directory, names):
-    expected_edges = {(f, a, b) for f in names for a, b in zip(PATHS[f], PATHS[f][1:])}
+def check_graph(db, directory, names, paths=PATHS):
+    expected_edges = {(f, a, b, '1') for f in names for a, b in zip(paths[f], paths[f][1:])}
     roles = {'RawText': 'raw-text', 'Identifier': 'identifier', 'Number': 'initializer', 'ExpressionTag': 'tag-completion', 'LexicalDeclaration': 'declaration-completion'}
-    expected_nodes = {(f, n if n in ('entry', 'exit') else roles[n.split(':')[0]], n) for f in names for n in PATHS[f]}
+    expected_nodes = {(f, n if n in ('entry', 'exit') else roles[n.split(':')[0]], n, '1') for f in names for n in paths[f]}
     actual_edges = rows(db, 'markup-cfg-test.ql', directory / 'edges.bqrs')
     actual_nodes = rows(db, 'markup-cfg-nodes-test.ql', directory / 'nodes.bqrs')
     assert len(actual_edges) == len(expected_edges) and {tuple(r) for r in actual_edges} == expected_edges, actual_edges
     assert len(actual_nodes) == len(expected_nodes) and {tuple(r) for r in actual_nodes} == expected_nodes, actual_nodes
 
 def main():
+    delimiter_expectations = {name: delimiter_oracle(name) for name in DELIMITERS}
+    delimiter_paths = {name: graph for name, (_, graph) in delimiter_expectations.items() if graph}
     with tempfile.TemporaryDirectory(prefix='ucode-markup-cfg-') as tmp:
         base = Path(tmp)
         fixture_db = base / 'fixtures'
@@ -45,7 +106,9 @@ def main():
         diagnostics = rows(fixture_db, 'markup-cfg-diagnostics-test.ql', base / 'diagnostics.bqrs')
         assert len(diagnostics) == 2 and all(r[0] == 'malformed.ut' for r in diagnostics), diagnostics
         extracted = json.loads(smoke.query(fixture_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'files.bqrs'))['#select']['tuples']
-        assert {r[0]['url']['uri'] for r in extracted} == {p.resolve().as_uri() for p in SOURCE.glob('*.ut') if p.name != 'malformed.ut'}, extracted
+        assert sorted(r[0]['url']['uri'] for r in extracted) == sorted(
+            p.resolve().as_uri() for p in SOURCE.glob('*.ut') if p.name != 'malformed.ut'
+        ), extracted
         comments = rows(fixture_db, 'markup-cfg-comments-test.ql', base / 'comments.bqrs')
         assert {tuple(r) for r in comments} == {
             ('code-comment.ut', 'Comment', 'no-parent'),
@@ -70,28 +133,49 @@ def main():
             ('ExpressionTag', 'ExpressionTag', '1', '18', '1', '24', 'TextStatement', '2'),
         }
         assert len(ast) == len(expected_ast) and {tuple(r) for r in ast} == expected_ast, ast
-        check_graph(fixture_db, base, set(PATHS) - {'mixed.ut'})
+        delimiter_ast = [
+            row for ast_rows, _ in delimiter_expectations.values() for row in ast_rows
+        ]
+        actual_ast = rows(fixture_db, 'markup-cfg-delimiters-ast-test.ql', base / 'delimiter-ast.bqrs')
+        assert sorted(map(tuple, actual_ast)) == sorted(delimiter_ast), actual_ast
+        coverage_query = 'markup-cfg-delimiters-coverage-test.ql'
+        coverage = rows(fixture_db, coverage_query, base / 'delimiter-coverage.bqrs')
+        assert sorted(coverage) == sorted(
+            [name, 'covered' if name in delimiter_paths else 'unsupported'] for name in DELIMITERS
+        ), coverage
+        paths = {**PATHS, **delimiter_paths}
+        check_graph(fixture_db, base, set(paths) - {'mixed.ut'}, paths)
         # Inject a warning into an otherwise unchanged, successfully extracted
-        # supported file. This isolates the diagnostic veto from syntax checks.
+        # supported ordinary or dual-trim file. This isolates the diagnostic veto from syntax checks.
         diagnostic_db = base / 'diagnostic-veto'
         smoke.run('codeql', 'database', 'init', diagnostic_db, '--language=ucode',
                   f'--search-path={smoke.PACK}', f'--source-root={SOURCE}')
         smoke.run('codeql', 'database', 'index-files', diagnostic_db, '--language=ucode',
-                  '--include=**/adjacent.ut', f'--working-dir={SOURCE}')
-        source_id = json.dumps(str((SOURCE / 'adjacent.ut').resolve()) + ';sourcefile')
-        trap = (f'#1=@{source_id}\n#2=*\nlocations_default(#2,#1,1,1,1,1)\n'
-                '#3=*\ndiagnostics(#3,30,"test_warning","injected warning",'
-                '"injected warning",#2)\n')
-        with gzip.open(diagnostic_db / 'trap/ucode/injected-warning.trap.gz', 'wt') as out:
-            out.write(trap)
+                  '--include=**/adjacent.ut', '--include=**/trim-both.ut',
+                  f'--working-dir={SOURCE}')
+        warned_files = ('adjacent.ut', 'trim-both.ut')
+        for name in warned_files:
+            source_id = json.dumps(str((SOURCE / name).resolve()) + ';sourcefile')
+            trap = (f'#1=@{source_id}\n#2=*\nlocations_default(#2,#1,1,1,1,1)\n'
+                    '#3=*\ndiagnostics(#3,30,"test_warning","injected warning",'
+                    '"injected warning",#2)\n')
+            with gzip.open(diagnostic_db / f'trap/ucode/{name}-warning.trap.gz', 'wt') as out:
+                out.write(trap)
         smoke.run('codeql', 'database', 'finalize', diagnostic_db)
         clean_ast = rows(fixture_db, 'markup-cfg-adjacent-ast-test.ql', base / 'clean-ast.bqrs')
         warned_ast = rows(diagnostic_db, 'markup-cfg-adjacent-ast-test.ql', base / 'warned-ast.bqrs')
         assert clean_ast and sorted(clean_ast) == sorted(warned_ast), (clean_ast, warned_ast)
         warnings = rows(diagnostic_db, 'markup-cfg-diagnostics-test.ql', base / 'warning.bqrs')
-        assert warnings == [['adjacent.ut', 'test_warning', 'injected warning']], warnings
+        assert sorted(warnings) == [[name, 'test_warning', 'injected warning'] for name in warned_files], warnings
+        warned_trim_ast = rows(diagnostic_db, 'markup-cfg-delimiters-ast-test.ql',
+                               base / 'warned-trim-ast.bqrs')
+        assert sorted(map(tuple, warned_trim_ast)) == sorted(delimiter_expectations['trim-both.ut'][0]), warned_trim_ast
+        warned_coverage = rows(diagnostic_db, coverage_query, base / 'warned-coverage.bqrs')
+        assert warned_coverage == [['trim-both.ut', 'unsupported']], warned_coverage
         files = json.loads(smoke.query(diagnostic_db, 'diagnostics/SuccessfullyExtractedFiles.ql', base / 'warned-files.bqrs'))['#select']['tuples']
-        assert {r[0]['url']['uri'] for r in files} == {(SOURCE / 'adjacent.ut').resolve().as_uri()}, files
+        assert sorted(r[0]['url']['uri'] for r in files) == [
+            (SOURCE / name).resolve().as_uri() for name in warned_files
+        ], files
         assert not rows(diagnostic_db, 'markup-cfg-nodes-test.ql', base / 'warned-nodes.bqrs')
         assert not rows(diagnostic_db, 'markup-cfg-test.ql', base / 'warned-edges.bqrs')
         mixed = base / 'mixed'

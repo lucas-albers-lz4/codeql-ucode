@@ -5,7 +5,8 @@
 roots in a selected file without extraction diagnostics whose syntax is limited
 to raw text, simple identifier expression tags, and single-variable lexical
 declarations with number initializers, including transitions through text
-statements. Comments, shebangs, recovered syntax, and other constructs are not
+statements. An identifier expression tag can independently use an ordinary or
+trim token at each delimiter. Comments, shebangs, recovered syntax, and other constructs are not
 covered. A shebang represented as the first raw text fragment is rejected as
 well. Unsupported roots have no nodes or edges in this API.
 
