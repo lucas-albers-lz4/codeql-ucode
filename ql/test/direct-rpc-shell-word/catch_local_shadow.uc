@@ -4,7 +4,7 @@ const methods = {
     call: function(input) {
       let command;
       command = `echo ${input.args.value} done`;
-      try { throw 'echo constant done'; }
+      try { fail(); }
       catch (command) { return popen(command); }
     }
   }
