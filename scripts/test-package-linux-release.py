@@ -62,6 +62,8 @@ class BundleTests(unittest.TestCase):
         self.kwargs = dict(producer_commit="1" * 40, codeql_version="2.27.4",
                            rustc="rustc 1.100.0", cargo="cargo 1.100.0",
                            grammar_revision="2" * 40,
+                           grammar_patch_sha256="4" * 64,
+                           grammar_generated_files_sha256="5" * 64,
                            codeql_archive_sha256="3" * 64, source_clean=True)
 
     def build(self, name):
@@ -97,6 +99,8 @@ class BundleTests(unittest.TestCase):
             self.assertEqual(manifest["source_checkout_clean"], True)
             self.assertEqual(manifest["build"]["built_extractor_sha256"],
                              listed["extractor-pack/tools/linux64/extractor"]["sha256"])
+            self.assertEqual(manifest["build"]["grammar_patch_sha256"], "4" * 64)
+            self.assertEqual(manifest["build"]["grammar_generated_files_sha256"], "5" * 64)
             self.assertEqual(manifest["packs"]["queries"]["default_suite_sha256"],
                              hashlib.sha256(b"- description: test\n").hexdigest())
             self.assertEqual(manifest["packs"]["queries"]["query_files"]["Sample.ql"],

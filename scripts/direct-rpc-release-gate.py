@@ -7,6 +7,7 @@ assert package installation or runtime behavior.
 from __future__ import annotations
 
 import collections
+import csv
 import hashlib
 import json
 import os
@@ -22,6 +23,18 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 CODEQL_VERSION = "2.27.4"
 CODEQL_ZIP_SHA256 = "393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c67706047d"
 GRAMMAR_REV = "4a243af329fae2f4ff01e0fc80133cbab8314600"
+GRAMMAR_PATCH_SHA256 = "6520260dba0f72437603f6aa977bbd5c8dd59d2f54c7df6cd41a1e642ef41ad5"
+GRAMMAR_NPM_LOCK_SHA256 = "57aad774d0d6cb3095d98986bf8425724347b475082604bfb1ab1d32eb7cae4f"
+GRAMMAR_GENERATED_SHA256 = {
+    "ucode/src/parser.c": "6002d96df3aa22e2f2e5fd27d4a64a2bb4c0126f2f6aff4dc1197a65b70b9fae",
+    "ucode/src/node-types.json": "3c5a2ad8f83828495779f69ef650b37cf9f79a3a46c5f1354cf65bfe847ea5f3",
+    "ucode/src/grammar.json": "c59703860b908a0e8ee7a5241258182c5bd51593997bd3e141e3017971993f3b",
+    "ucode_markup/src/parser.c": "1b2f6331daeef2232b8da2c0556f0ecd6566ecdb8d5cb865771558ae2c00916f",
+    "ucode_markup/src/node-types.json": "5b55bc4968a9600ff4e2f40b3709eb20afebdb240b5bf111ab8c6970a54c098c",
+    "ucode_markup/src/grammar.json": "476c5d98e35b7892c7be1433963071faf385e44c2b41ed93ed7cdb0cf8fc4838",
+}
+GENERATED_DBSCHEME_SHA256 = "d4a9ef5db2dd934c94ddf59141331ded3531d4ec79d86702d8f75afc361fc9fd"
+GENERATED_TREESITTER_QLL_SHA256 = "ea77ca72e96d493545798f5a83894f3e08e1df9f62f5928848692033b6182d4f"
 CARGO_LOCK_SHA256 = "20678c3cbb29632a9369bdb3c735af9ee63c9443879db38847fbda9813aa0a77"
 QL_LOCK_SHA256 = "bce2891940f09fcac3337b250707047ba9fd06d307abdbc7cb42c2ed193751a3"
 DIRECT_QUERY_SHA256 = "a071facd947a65d3eb48906070cf17ad53d2bd62b54116991437f77fef5e52d8"
@@ -29,6 +42,8 @@ DEFAULT_SUITE_SHA256 = "6d343f93e37c309b8461da9fafcf67d089737980d7ac42a5409e75df
 TAILSCALE_MANIFEST_SHA256 = "b1a538d03d60e356ae94cf374a2bfdc9338d81068b9e0a7233ac3bcbf89ac114"
 TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c42b6e09bfc"
 DIRECT_CONTROLS_SHA256 = "5ec2d74cb21732189a41558ec59671126310679c6725f802614ac3fa9c19caf0"
+NEWER_GRAMMAR_MANIFEST_SHA256 = "cccd4b4e8f716c31e730f140d416e37bedfd8d0257af41c126613237704a556d"
+NEWER_GRAMMAR_QUERY_SHA256 = "2a5faf46bb5d95c47553057bf5f576b23190bbf4c0b5d5791324f1ac5331a15a"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -312,6 +327,13 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
     require(digest(cargo_lock) == CARGO_LOCK_SHA256, "Cargo.lock pin changed")
     require(digest(lib_lock) == QL_LOCK_SHA256 and digest(src_lock) == QL_LOCK_SHA256,
             "CodeQL pack lock pin changed")
+    generated_files = {
+        "ql/lib/ucode.dbscheme": GENERATED_DBSCHEME_SHA256,
+        "ql/lib/codeql/ucode/ast/internal/TreeSitter.qll": GENERATED_TREESITTER_QLL_SHA256,
+    }
+    for rel, expected_sha in generated_files.items():
+        require(digest(producer_copy / rel) == expected_sha,
+                f"archived generated language model differs: {rel}")
     rustc_result = r.call("rustc-version", ["rustc", "--version"])
     require(rustc_result.returncode == 0, "rustc is unavailable")
     rustc_line = (r.out / "commands/rustc-version.stdout").read_text().strip()
@@ -319,13 +341,38 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
     r.call("cargo-version", ["cargo", "--version"])
     cargo_line = (r.out / "commands/cargo-version.stdout").read_text().strip()
     grammar = producer_copy / "extractor/tree-sitter"
+    grammar_patch = producer_copy / "patches/0005-newer-wifi-ucode-grammar.patch"
+    require(digest(grammar_patch) == GRAMMAR_PATCH_SHA256, "grammar compatibility patch differs")
+    r.call("node-version", ["node", "--version"])
+    r.call("npm-version", ["npm", "--version"])
+    node_version = (r.out / "commands/node-version.stdout").read_text().strip()
+    npm_version = (r.out / "commands/npm-version.stdout").read_text().strip()
     r.call("clone-pinned-grammar", ["bash", "scripts/clone-grammar.sh"], cwd=producer_copy)
     grammar_head = git_output(r, "grammar-revision", grammar, "rev-parse", "HEAD")
     require(grammar_head == GRAMMAR_REV, f"grammar pin mismatch: {grammar_head}")
+    require(digest(grammar / "package-lock.json") == GRAMMAR_NPM_LOCK_SHA256,
+            "pinned grammar npm lock differs")
+    grammar_cli = grammar / "node_modules/tree-sitter-cli/tree-sitter"
+    require(grammar_cli.is_file() and os.access(grammar_cli, os.X_OK),
+            "locked Tree-sitter CLI was not installed")
+    r.call("grammar-cli-version", [grammar_cli, "--version"])
+    grammar_cli_version = (r.out / "commands/grammar-cli-version.stdout").read_text().strip()
+    require(grammar_cli_version == "tree-sitter 0.27.1",
+            f"unexpected grammar CLI version: {grammar_cli_version}")
     grammar_status = git_output(r, "grammar-post-bootstrap-status", grammar, "status", "--porcelain=v1")
-    # git_output strips the porcelain line's leading status-space.
-    require(grammar_status.splitlines() == ["M Cargo.toml"],
+    # git_output strips the porcelain output's first leading status-space.
+    status_lines = [line.lstrip() for line in grammar_status.splitlines()]
+    expected_dirty_paths = {"Cargo.toml", "common/define-grammar.js",
+        "ucode/src/grammar.json", "ucode/src/node-types.json", "ucode/src/parser.c",
+        "ucode/test/corpus/js_differences.txt", "ucode/test/corpus/modules.txt",
+        "ucode_markup/src/grammar.json", "ucode_markup/src/node-types.json",
+        "ucode_markup/src/parser.c"}
+    require(set(status_lines) == {f"M {p}" for p in expected_dirty_paths} and
+            len(status_lines) == len(expected_dirty_paths),
             f"unexpected pinned grammar working-tree transformation: {grammar_status!r}")
+    for rel, expected_sha in GRAMMAR_GENERATED_SHA256.items():
+        require(digest(grammar / rel) == expected_sha,
+                f"generated grammar output differs from reviewed prototype: {rel}")
     grammar_manifest = grammar / "Cargo.toml"
     r.call("grammar-upstream-cargo-toml", ["git", "-C", grammar, "show", f"{GRAMMAR_REV}:Cargo.toml"])
     grammar_raw = (r.out / "commands/grammar-upstream-cargo-toml.stdout").read_bytes()
@@ -335,6 +382,9 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
             "pinned grammar dev-dependency transformation differs from clone-grammar.sh")
     grammar_build_sha = digest(grammar_manifest)
     r.call("create-extractor-pack", ["bash", "scripts/create-extractor-pack.sh"], cwd=producer_copy)
+    for rel, expected_sha in generated_files.items():
+        require(digest(producer_copy / rel) == expected_sha,
+                f"rebuilt language model differs from archived bytes: {rel}")
     require(digest(cargo_lock) == CARGO_LOCK_SHA256, "Cargo.lock changed during unlocked pack build")
     require(digest(lib_lock) == QL_LOCK_SHA256 and digest(src_lock) == QL_LOCK_SHA256,
             "CodeQL pack locks changed during pack build")
@@ -351,6 +401,13 @@ def build_extractor(r: Runner, producer_copy: pathlib.Path) -> dict:
             files.append({"path": p.relative_to(producer_copy).as_posix(), "sha256": digest(p), "bytes": p.stat().st_size})
     return {"rustc": rustc_line, "cargo": cargo_line, "cargo_lock_sha256_before_after": CARGO_LOCK_SHA256,
             "ql_lock_sha256_before_after": QL_LOCK_SHA256, "grammar_revision": grammar_head,
+            "grammar_patch_sha256": GRAMMAR_PATCH_SHA256,
+            "grammar_generated_sha256": GRAMMAR_GENERATED_SHA256,
+            "language_model_generated_sha256": generated_files,
+            "grammar_npm_lock_sha256": GRAMMAR_NPM_LOCK_SHA256,
+            "grammar_node_version": node_version, "grammar_npm_version": npm_version,
+            "grammar_cli_version": grammar_cli_version,
+            "grammar_cli_sha256": digest(grammar_cli),
             "grammar_worktree_status_after_pinned_dev_dependency_adjustment": grammar_status,
             "grammar_cargo_toml_upstream_sha256": hashlib.sha256(grammar_raw).hexdigest(),
             "grammar_cargo_toml_transformed_sha256": grammar_build_sha,
@@ -536,6 +593,78 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
             "cases": cases, "separate_from_default_suite": True}
 
 
+def run_newer_grammar_syntax(r: Runner, build: pathlib.Path, expected: dict) -> dict:
+    """Check plain and markup typed AST rows against a source-first syntax fixture."""
+    case = "newer-grammar-syntax"
+    base = build / "ql/test/newer-grammar-syntax"
+    stage = r.run / "stage" / case
+    selected = []
+    for item in expected["files"]:
+        rel = item["path"]
+        require(rel in ("plain.uc", "markup.ut"), f"unexpected syntax fixture: {rel}")
+        source = base / rel
+        require(source.is_file() and digest(source) == item["sha256"],
+                f"syntax fixture differs from source-first oracle: {rel}")
+        destination = stage / rel
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, destination)
+        require(digest(destination) == item["sha256"], f"syntax fixture staging changed: {rel}")
+        selected.append(rel)
+    require(sorted(selected) == ["markup.ut", "plain.uc"], "syntax fixture selection changed")
+    db = r.run / "db" / case
+    db.parent.mkdir(parents=True, exist_ok=True)
+    common = r.cache / "codeql-common" / case
+    common.mkdir(parents=True, exist_ok=True)
+    installed_packs = r.home / ".codeql/packages"
+    require(installed_packs.is_dir(), "locked CodeQL packs were not installed")
+    shutil.copytree(installed_packs, common / "packages")
+    search_path = ":".join(map(str, [build / "extractor-pack", build / "ql/lib", build / "ql/src"]))
+    env = r.env(CODEQL_UCODE_STAGED_ROOT=str(stage))
+    r.codeql_call(f"{case}-database-init", ["database", "init", db, "--language=ucode",
+        f"--search-path={search_path}", f"--common-caches={common}", f"--source-root={stage}"], env=env)
+    r.codeql_call(f"{case}-database-index", ["database", "index-files", "--language=ucode",
+        "--include=**/*", f"--working-dir={stage}", f"--common-caches={common}", db], env=env)
+    route_path = db / "trap/ucode/routing.json"
+    require(route_path.is_file(), "syntax fixture routing receipt missing")
+    routing = json.loads(route_path.read_text())
+    wanted_routes = [
+        {"path": str((stage / "markup.ut").resolve()), "installed_path": "markup.ut",
+         "classification": "markup", "reason": "ut_markup_extension", "status": "inconclusive",
+         "inconclusive_reason": "markup_not_modeled"},
+        {"path": str((stage / "plain.uc").resolve()), "installed_path": "plain.uc",
+         "classification": "plain", "reason": "ucode_extension", "status": "plain_route_selected"},
+    ]
+    require(routing.get("input_count") == 2 and routing.get("plain_count") == 1 and
+            routing.get("markup_count") == 1 and routing.get("duplicate_input_count") == 0 and
+            routing.get("excluded_count") == 0 and routing.get("uncertain_count") == 0 and
+            routing.get("decisions") == wanted_routes, f"syntax fixture routing mismatch: {routing}")
+    route_copy = r.out / case / "routing.json"
+    route_copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(route_path, route_copy)
+    r.codeql_call(f"{case}-database-finalize", ["database", "finalize", db,
+        f"--common-caches={common}"], env=env)
+    success = run_query(r, build, db, case, "success", build / "ql/src/diagnostics/SuccessfullyExtractedFiles.ql")
+    errors = run_query(r, build, db, case, "errors", build / "ql/src/diagnostics/ExtractionErrors.ql")
+    checked_file_identities(success, stage, selected, case)
+    require(errors == [], f"syntax fixture extraction errors: {errors}")
+    query = build / "ql/src/extractor-smoke/NewerGrammarSyntax.ql"
+    require(digest(query) == NEWER_GRAMMAR_QUERY_SHA256, "syntax AST query bytes changed")
+    run_query(r, build, db, case, "syntax", query, fmt="csv")
+    with (r.out / case / "syntax.csv").open(newline="") as stream:
+        rows = list(csv.DictReader(stream))
+    actual = collections.Counter((row["kind"], row["file"], int(row["line"]),
+                                  int(row["column"])) for row in rows)
+    wanted = collections.Counter(tuple(row) for row in expected["rows"])
+    require(actual == wanted, f"syntax typed AST row multiset differs: {actual} != {wanted}")
+    require(all(digest(stage / item["path"]) == item["sha256"] for item in expected["files"]),
+            "syntax fixture bytes changed after analysis")
+    return {"selected": sorted(selected), "successful_multiset": dict.fromkeys(selected, 1),
+            "extraction_errors": 0, "route_sha256": digest(route_copy),
+            "query_sha256": NEWER_GRAMMAR_QUERY_SHA256, "observed_ast_rows": sorted(map(list, actual.elements())),
+            "manifest_sha256": NEWER_GRAMMAR_MANIFEST_SHA256,
+            "note": "exact projected typed AST locations; entity uniqueness is not inferred from CSV rows"}
+
+
 def main() -> int:
     codeql_text = os.environ.get("CODEQL_BIN")
     run_text = os.environ.get("DIRECT_RPC_RUN_DIR")
@@ -608,6 +737,16 @@ def main() -> int:
             "direct controls manifest schema mismatch")
     source_oracle["direct_controls"] = {
         "manifest_sha256": DIRECT_CONTROLS_SHA256, "expectations": direct_controls_expected}
+    syntax_manifest = build / "ql/test/newer-grammar-syntax/expected.json"
+    require(digest(syntax_manifest) == NEWER_GRAMMAR_MANIFEST_SHA256,
+            "newer grammar syntax manifest differs from reviewed source-first pin")
+    syntax_expected = json.loads(syntax_manifest.read_text())
+    require(syntax_expected.get("schema") == "newer-grammar-syntax-v1",
+            "newer grammar syntax manifest schema mismatch")
+    require(digest(build / "ql/src/extractor-smoke/NewerGrammarSyntax.ql") == NEWER_GRAMMAR_QUERY_SHA256,
+            "newer grammar syntax query differs from reviewed pin")
+    source_oracle["newer_grammar_syntax"] = {
+        "manifest_sha256": NEWER_GRAMMAR_MANIFEST_SHA256, "expectations": syntax_expected}
     (run / "source-oracle.json").write_text(json.dumps(source_oracle, indent=2) + "\n")
     preflight.update({"producer_commit": producer_sha, "producer_dirty_before_run": False,
         "producer_archive_sha256": digest(archive_path), "luci_repo_url": LUCI_URL,
@@ -624,7 +763,9 @@ def main() -> int:
         "direct_query_sha256": digest(build / "ql/src/m4/DirectRpcShellWord.ql"),
         "default_suite_sha256": digest(build / "ql/src/codeql-suites/code-scanning.qls"),
         "tailscale_query_sha256": digest(build / "ql/src/m4/TailscaleNestedShell.ql"),
-        "tailscale_manifest_sha256": digest(build / "ql/test/tailscale-nested-shell/expected.json")})
+        "tailscale_manifest_sha256": digest(build / "ql/test/tailscale-nested-shell/expected.json"),
+        "newer_grammar_manifest_sha256": NEWER_GRAMMAR_MANIFEST_SHA256,
+        "newer_grammar_query_sha256": NEWER_GRAMMAR_QUERY_SHA256})
     (run / "preflight.json").write_text(json.dumps(preflight, indent=2) + "\n")
     build_info = build_extractor(runner, build)
     preflight["build"] = build_info
@@ -632,16 +773,22 @@ def main() -> int:
     default = run_default_cases(runner, build, upstream)
     direct_controls = run_direct_controls(runner, build, direct_controls_expected)
     tailscale = run_tailscale_regression(runner, build, upstream)
+    newer_grammar = run_newer_grammar_syntax(runner, build, syntax_expected)
     summary = {"producer_commit": producer_sha, "codeql_version": version_line,
         "source_oracle_sha256": digest(run / "source-oracle.json"),
         "default_suite": default, "direct_control_matrix": direct_controls,
         "tailscale_explicit_regression": tailscale,
+        "newer_grammar_syntax": newer_grammar,
         "commands": runner.commands, "command_count": len(runner.commands)}
     bundle_path = run / "artifact/codeql-ucode-linux.tar.gz"
+    grammar_generated_fingerprint = hashlib.sha256(json.dumps(
+        GRAMMAR_GENERATED_SHA256, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
     runner.call("package-linux-release-candidate", ["python3", build / "scripts/package-linux-release.py",
         f"--source={build}", f"--output={bundle_path}", f"--producer-commit={producer_sha}",
         f"--codeql-version={version_line}", f"--rustc-version={build_info['rustc']}",
         f"--cargo-version={build_info['cargo']}", f"--grammar-revision={GRAMMAR_REV}",
+        f"--grammar-patch-sha256={GRAMMAR_PATCH_SHA256}",
+        f"--grammar-generated-files-sha256={grammar_generated_fingerprint}",
         f"--codeql-archive-sha256={CODEQL_ZIP_SHA256}", "--source-clean"], cwd=build)
     bundle_record = json.loads((run / "out/commands/package-linux-release-candidate.stdout").read_text())
     extracted_parent = run / "verified-bundle"

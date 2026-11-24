@@ -17,6 +17,9 @@ class CloneGrammarTest(unittest.TestCase):
             scripts = root / "scripts"
             scripts.mkdir()
             shutil.copy(ROOT / "scripts/clone-grammar.sh", scripts)
+            patches = root / "patches"
+            patches.mkdir()
+            shutil.copy(ROOT / "patches/0005-newer-wifi-ucode-grammar.patch", patches)
             grammar = root / "extractor/tree-sitter"
             (grammar / ".git").mkdir(parents=True)
             (grammar / "ucode/src").mkdir(parents=True)
@@ -36,9 +39,17 @@ class CloneGrammarTest(unittest.TestCase):
             sed = bindir / "sed"
             sed.write_text('#!/bin/sh\ncase "$1" in -i*) exit 42 ;; esac\nexec "$SYSTEM_SED" "$@"\n')
             sed.chmod(0o755)
+            mock_log = root / "mock.log"
+            patch = bindir / "patch"
+            patch.write_text('#!/bin/sh\nprintf "patch\\n" >> "$MOCK_LOG"\n')
+            patch.chmod(0o755)
+            npm = bindir / "npm"
+            npm.write_text('#!/bin/sh\nprintf "npm %s\\n" "$*" >> "$MOCK_LOG"\n')
+            npm.chmod(0o755)
             env = os.environ.copy()
             env["PATH"] = str(bindir) + os.pathsep + env["PATH"]
             env["SYSTEM_SED"] = system_sed
+            env["MOCK_LOG"] = str(mock_log)
             env.pop("CODEQL_UCODE_HIDE_EXTRA_NODE_TYPES", None)
             for _ in range(2):
                 result = subprocess.run(["bash", str(scripts / "clone-grammar.sh")], env=env, text=True, capture_output=True)
@@ -46,6 +57,8 @@ class CloneGrammarTest(unittest.TestCase):
                 self.assertEqual(cargo.read_text(), expected)
                 self.assertEqual(cargo.stat().st_mode & 0o777, 0o644)
                 self.assertEqual(list(grammar.glob(".Cargo.toml.*")), [])
+            self.assertEqual(mock_log.read_text().splitlines(),
+                             ["patch", "npm ci", "npm run build", "npm test"] * 2)
 
             # Ensure the shim rejects the former GNU-only invocation on all hosts.
             cargo.write_text(original)

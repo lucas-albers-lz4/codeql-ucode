@@ -1,0 +1,4 @@
+Before
+{% let dynamic = import("provision"); %}
+{% export function board_wlan() { return dynamic; }; %}
+After

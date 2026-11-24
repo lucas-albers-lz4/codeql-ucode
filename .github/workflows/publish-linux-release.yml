@@ -119,6 +119,8 @@ jobs:
             --rustc-version "$(jq -r '.release_bundle_candidate.manifest.build.rustc_version' "$candidate")" \
             --cargo-version "$(jq -r '.release_bundle_candidate.manifest.build.cargo_version' "$candidate")" \
             --grammar-revision "$(jq -r '.release_bundle_candidate.manifest.build.grammar_revision' "$candidate")" \
+            --grammar-patch-sha256 "$(jq -r '.release_bundle_candidate.manifest.build.grammar_patch_sha256' "$candidate")" \
+            --grammar-generated-files-sha256 "$(jq -r '.release_bundle_candidate.manifest.build.grammar_generated_files_sha256' "$candidate")" \
             --codeql-archive-sha256 "$(jq -r '.release_bundle_candidate.manifest.build.codeql_cli_linux_zip_sha256' "$candidate")" \
             --source-clean --release-tag "$RELEASE_TAG" > "$payload/release-package.json"
           digest="$(sha256sum "$asset" | cut -d ' ' -f 1)"

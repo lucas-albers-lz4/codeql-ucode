@@ -1,0 +1,47 @@
+{
+  "schema": "newer-grammar-syntax-v1",
+  "files": [
+    {
+      "path": "plain.uc",
+      "route": "ucode_extension",
+      "sha256": "6702b745c6fb28296667a8420843fe9266c5a166619b8cc77c1c423a34cbecfb"
+    },
+    {
+      "path": "markup.ut",
+      "route": "ut_markup_extension",
+      "sha256": "86cfd6dfb6e496dc8d40f66ffffbbf3021ba3a58c7683c820623a75c3cd9e4b9"
+    }
+  ],
+  "rows": [
+    [
+      "plain-import",
+      "plain.uc",
+      2,
+      15
+    ],
+    [
+      "plain-export",
+      "plain.uc",
+      4,
+      1
+    ],
+    [
+      "plain-export",
+      "plain.uc",
+      5,
+      1
+    ],
+    [
+      "markup-import",
+      "markup.ut",
+      2,
+      18
+    ],
+    [
+      "markup-export",
+      "markup.ut",
+      3,
+      4
+    ]
+  ]
+}

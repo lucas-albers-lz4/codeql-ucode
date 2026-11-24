@@ -74,7 +74,9 @@ def verify(root: Path, expected_release_tag: str | None = None,
         raise ValueError("manifest build provenance is missing")
     for field, length in (("codeql_cli_linux_zip_sha256", 64), ("cargo_lock_sha256", 64),
                           ("ql_library_lock_sha256", 64), ("ql_query_lock_sha256", 64),
-                          ("built_extractor_sha256", 64), ("grammar_revision", 40)):
+                          ("built_extractor_sha256", 64), ("grammar_revision", 40),
+                          ("grammar_patch_sha256", 64),
+                          ("grammar_generated_files_sha256", 64)):
         if not re.fullmatch(rf"[0-9a-f]{{{length}}}", build.get(field, "")):
             raise ValueError(f"invalid build provenance digest/revision: {field}")
     for field in ("codeql_cli_version", "rustc_version", "cargo_version"):

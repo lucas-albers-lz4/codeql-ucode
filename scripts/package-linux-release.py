@@ -68,7 +68,9 @@ def copy_payload(source: Path, destination: Path) -> None:
 def create_bundle(source: Path, output: Path, producer_commit: str,
                   codeql_version: str, rustc: str, cargo: str,
                   grammar_revision: str, codeql_archive_sha256: str,
-                  source_clean: bool, release_tag: str | None = None) -> dict:
+                  source_clean: bool, release_tag: str | None = None,
+                  grammar_patch_sha256: str | None = None,
+                  grammar_generated_files_sha256: str | None = None) -> dict:
     source = source.resolve(strict=True)
     output = output.resolve()
     if not re.fullmatch(r"[0-9a-f]{40}", producer_commit):
@@ -77,6 +79,10 @@ def create_bundle(source: Path, output: Path, producer_commit: str,
         raise ValueError("CodeQL, Rust, Cargo and grammar versions are required")
     if not re.fullmatch(r"[0-9a-f]{64}", codeql_archive_sha256):
         raise ValueError("CodeQL CLI archive SHA-256 must be a full lowercase digest")
+    if not grammar_patch_sha256 or not re.fullmatch(r"[0-9a-f]{64}", grammar_patch_sha256):
+        raise ValueError("grammar patch SHA-256 must be a full lowercase digest")
+    if not grammar_generated_files_sha256 or not re.fullmatch(r"[0-9a-f]{64}", grammar_generated_files_sha256):
+        raise ValueError("generated grammar files SHA-256 must be a full lowercase digest")
     if not source_clean:
         raise ValueError("release bundle requires a clean producer source checkout")
     if release_tag is not None and not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", release_tag):
@@ -151,6 +157,8 @@ def create_bundle(source: Path, output: Path, producer_commit: str,
                 "rustc_version": rustc,
                 "cargo_version": cargo,
                 "grammar_revision": grammar_revision,
+                "grammar_patch_sha256": grammar_patch_sha256,
+                "grammar_generated_files_sha256": grammar_generated_files_sha256,
                 "cargo_lock_sha256": sha256(source / "Cargo.lock"),
                 "ql_library_lock_sha256": sha256(lib_pack / "codeql-pack.lock.yml"),
                 "ql_query_lock_sha256": sha256(src_pack / "codeql-pack.lock.yml"),
@@ -209,6 +217,8 @@ def main() -> int:
     parser.add_argument("--rustc-version", required=True)
     parser.add_argument("--cargo-version", required=True)
     parser.add_argument("--grammar-revision", required=True)
+    parser.add_argument("--grammar-patch-sha256", required=True)
+    parser.add_argument("--grammar-generated-files-sha256", required=True)
     parser.add_argument("--codeql-archive-sha256", required=True)
     parser.add_argument("--source-clean", action="store_true",
                         help="assert that the release gate verified a clean source checkout")
@@ -217,7 +227,8 @@ def main() -> int:
     result = create_bundle(args.source, args.output, args.producer_commit,
                            args.codeql_version, args.rustc_version,
                            args.cargo_version, args.grammar_revision,
-                           args.codeql_archive_sha256, args.source_clean, args.release_tag)
+                           args.codeql_archive_sha256, args.source_clean, args.release_tag,
+                           args.grammar_patch_sha256, args.grammar_generated_files_sha256)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 

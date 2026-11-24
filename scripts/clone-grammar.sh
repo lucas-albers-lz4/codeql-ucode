@@ -23,6 +23,17 @@ if [[ "$got" != "$REV" ]]; then
 	exit 1
 fi
 
+# Apply the reviewed source-only compatibility patch to the pinned grammar,
+# then regenerate its tracked parser and node-type outputs with the locked CLI.
+# The producer release gate verifies the patch and generated output hashes.
+patch -d "$DEST" -p1 < "$ROOT/patches/0005-newer-wifi-ucode-grammar.patch"
+(
+  cd "$DEST"
+  npm ci
+  npm run build
+  npm test
+)
+
 # The grammar crate's published tests want tree-sitter 0.27.1. Cargo cannot
 # link two runtimes (`links = "tree-sitter"`). Extractor runtime is 0.26.8
 # (ABI 15, compiles with codeql-extractor@ce29d8a). Lower the local clone's
@@ -56,4 +67,4 @@ if [[ ! -f "$DEST/ucode/src/node-types.json" ]]; then
 	exit 1
 fi
 
-echo "grammar $REV ready at $DEST (ucode/src/node-types.json visible)"
+echo "grammar $REV plus reviewed compatibility patch ready at $DEST (ucode/src/node-types.json visible)"

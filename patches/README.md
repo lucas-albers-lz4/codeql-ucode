@@ -8,6 +8,7 @@ Apply **after** generator `init` and **before** `cargo check` / `scripts/create-
 | `0002-tree-sitter-0.26.patch` | ABI 15 runtime `tree-sitter = "=0.26.8"` (0.27.1 does not compile with `codeql-extractor@ce29d8a`); edition 2024; rust-version 1.85 |
 | `0003-pack-names.patch` | `lucas-albers-lz4/ucode-{all,queries,tests}` |
 | `0004-remove-php-import.sh` | Drop leftover `codeql.php.ast.AstNodes` imports |
+| `0005-newer-wifi-ucode-grammar.patch` | Source-only grammar/corpus patch for dynamic `import()` and semicolon-free exported functions in newer OpenWrt wifi Ucode. `scripts/clone-grammar.sh` applies it to the pinned grammar, regenerates parser/node types with its locked CLI, and runs the grammar tests. The Linux release gate verifies the patch and generated hashes. |
 
 ```sh
 ./patches/apply.sh

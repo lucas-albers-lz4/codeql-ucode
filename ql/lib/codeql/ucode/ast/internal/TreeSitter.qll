@@ -334,6 +334,18 @@ module UCODE {
     final override string getAPrimaryQlClass() { result = "DocComment" }
   }
 
+  /** A class representing `dynamic_import_expression` nodes. */
+  class DynamicImportExpression extends @ucode_dynamic_import_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "DynamicImportExpression" }
+
+    /** Gets the node corresponding to the field `source`. */
+    final Expression getSource() { ucode_dynamic_import_expression_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() { ucode_dynamic_import_expression_def(this, result) }
+  }
+
   /** A class representing `elif_clause` nodes. */
   class ElifClause extends @ucode_elif_clause, AstNode {
     /** Gets the name of the primary QL class for this element. */
@@ -1664,6 +1676,20 @@ module UcodeMarkup {
   class DocComment extends @ucode_markup_token_doc_comment, Token {
     /** Gets the name of the primary QL class for this element. */
     final override string getAPrimaryQlClass() { result = "DocComment" }
+  }
+
+  /** A class representing `dynamic_import_expression` nodes. */
+  class DynamicImportExpression extends @ucode_markup_dynamic_import_expression, AstNode {
+    /** Gets the name of the primary QL class for this element. */
+    final override string getAPrimaryQlClass() { result = "DynamicImportExpression" }
+
+    /** Gets the node corresponding to the field `source`. */
+    final Expression getSource() { ucode_markup_dynamic_import_expression_def(this, result) }
+
+    /** Gets a field or child node of this node. */
+    final override AstNode getAFieldOrChild() {
+      ucode_markup_dynamic_import_expression_def(this, result)
+    }
   }
 
   /** A class representing `elif_clause` nodes. */
