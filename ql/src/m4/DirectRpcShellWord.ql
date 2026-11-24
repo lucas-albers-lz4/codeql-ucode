@@ -76,8 +76,7 @@ private predicate handlerField(UCODE::MemberExpression field, UCODE::FunctionExp
 
 /** Literal boundaries; dynamic substitutions elsewhere still need human review. */
 private predicate rawLiteralBoundary(
-  UCODE::MemberExpression field, UCODE::TemplateString tmpl,
-  UCODE::FunctionExpression fn
+  UCODE::MemberExpression field, UCODE::TemplateString tmpl
 ) {
   exists(UCODE::TemplateSubstitution sub, UCODE::StringFragment before,
     UCODE::StringFragment after, int i |
@@ -165,7 +164,7 @@ where
   sink.getLocation().getFile() = fn.getLocation().getFile() and
   reachesPopen(tmpl, fn, sink) and
   source.getLocation().getFile() = sink.getLocation().getFile() and
-  handlerField(source, fn) and rawLiteralBoundary(source, tmpl, fn) and
+  handlerField(source, fn) and rawLiteralBoundary(source, tmpl) and
   directBody(tmpl, fn)
 select source,
   "A returned call-handler argument is directly interpolated between literal whitespace into a command passed to imported fs.popen at line " +
