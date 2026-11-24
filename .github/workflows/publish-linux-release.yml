@@ -1,0 +1,220 @@
+name: Publish versioned Linux ucode release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ucode-linux-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Source-pinned Linux gate and release asset
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      asset_sha256: ${{ steps.package.outputs.asset_sha256 }}
+      manifest_sha256: ${{ steps.package.outputs.manifest_sha256 }}
+    env:
+      RUSTUP_TOOLCHAIN: 1.100.0
+      RELEASE_POLICY_CONFIRMED: ${{ vars.RELEASE_POLICY_CONFIRMED }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require clean version tag on merged main
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/}"
+          test "$RELEASE_POLICY_CONFIRMED" = true
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-list -n 1 "$tag")" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1)"
+          git fetch origin main
+          git merge-base --is-ancestor HEAD origin/main
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+
+      - name: Test bundle archiver and verifier
+        run: python3 scripts/test-package-linux-release.py
+
+      - name: Define run-owned paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_dir="$RUNNER_TEMP/direct-rpc-release-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          tools_dir="$RUNNER_TEMP/direct-rpc-tools-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          home_dir="$RUNNER_TEMP/direct-rpc-home-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          tmp_dir="$RUNNER_TEMP/direct-rpc-bootstrap-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$home_dir" "$tmp_dir"
+          {
+            echo "DIRECT_RPC_RUN_DIR=$run_dir"
+            echo "DIRECT_RPC_TOOLS_DIR=$tools_dir"
+            echo "DIRECT_RPC_BOOTSTRAP_TMP=$tmp_dir"
+            echo "RUSTUP_HOME=$run_dir-rustup"
+            echo "CARGO_HOME=$tools_dir/cargo-setup"
+            echo "CODEQL_BIN=$tools_dir/codeql-cli/codeql/codeql"
+            echo "HOME=$home_dir"
+            echo "TMPDIR=$tmp_dir"
+          } >> "$GITHUB_ENV"
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUSTUP_HOME" "$CARGO_HOME"
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/rustup-install.time" rustup toolchain install 1.100.0 --profile minimal
+          rustup default 1.100.0
+          rustc --version
+          cargo --version
+
+      - name: Download and verify CodeQL CLI 2.27.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DIRECT_RPC_TOOLS_DIR/codeql-cli" "$DIRECT_RPC_TOOLS_DIR/download"
+          archive="$DIRECT_RPC_TOOLS_DIR/download/codeql-linux64.zip"
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/codeql-download.time" \
+            curl --fail --location --retry 3 --output "$archive" \
+            https://github.com/github/codeql-cli-binaries/releases/download/v2.27.4/codeql-linux64.zip
+          printf '%s  %s\n' \
+            393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c67706047d \
+            "$archive" | sha256sum --check --strict
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/codeql-unzip.time" \
+            unzip -q "$archive" -d "$DIRECT_RPC_TOOLS_DIR/codeql-cli"
+          test -x "$CODEQL_BIN"
+          "$CODEQL_BIN" version
+
+      - name: Run source-pinned producer release gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DIRECT_RPC_BOOTSTRAP_TMP"
+          export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
+          python3 scripts/direct-rpc-release-gate.py
+
+      - name: Package and verify versioned asset
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          candidate="$DIRECT_RPC_RUN_DIR/receipt.json"
+          build="$DIRECT_RPC_RUN_DIR/producer-build"
+          payload="$DIRECT_RPC_RUN_DIR/release-payload"
+          mkdir -p "$payload"
+          asset="$payload/codeql-ucode-linux-x64.tar.gz"
+          python3 scripts/package-linux-release.py \
+            --source "$build" --output "$asset" \
+            --producer-commit "$GITHUB_SHA" \
+            --codeql-version "$(jq -r '.release_bundle_candidate.manifest.build.codeql_cli_version' "$candidate")" \
+            --rustc-version "$(jq -r '.release_bundle_candidate.manifest.build.rustc_version' "$candidate")" \
+            --cargo-version "$(jq -r '.release_bundle_candidate.manifest.build.cargo_version' "$candidate")" \
+            --grammar-revision "$(jq -r '.release_bundle_candidate.manifest.build.grammar_revision' "$candidate")" \
+            --codeql-archive-sha256 "$(jq -r '.release_bundle_candidate.manifest.build.codeql_cli_linux_zip_sha256' "$candidate")" \
+            --source-clean --release-tag "$RELEASE_TAG" > "$payload/release-package.json"
+          digest="$(sha256sum "$asset" | cut -d ' ' -f 1)"
+          test "$digest" = "$(jq -r '.archive_sha256' "$payload/release-package.json")"
+          python3 scripts/verify-linux-release-bundle.py \
+            --archive "$asset" --expected-sha256 "$digest" \
+            --expected-release-tag "$RELEASE_TAG" \
+            --expected-producer-commit "$GITHUB_SHA" \
+            --output-dir "$DIRECT_RPC_RUN_DIR/release-verified" > "$payload/release-verify.json"
+          manifest_sha="$(jq -r '.manifest_sha256' "$payload/release-verify.json")"
+          printf '%s  %s\n' "$digest" "codeql-ucode-linux-x64.tar.gz" > "$payload/SHA256SUMS"
+          printf 'asset_sha256=%s\nmanifest_sha256=%s\n' "$digest" "$manifest_sha" >> "$GITHUB_OUTPUT"
+          cp "$candidate" "$payload/r2-receipt.json"
+          cp "$DIRECT_RPC_RUN_DIR/preflight.json" "$payload/r2-preflight.json"
+          cp "$DIRECT_RPC_RUN_DIR/source-oracle.json" "$payload/r2-source-oracle.json"
+          cp "$DIRECT_RPC_RUN_DIR/commands.json" "$payload/r2-commands.json"
+
+      - name: Transfer verified release payload
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: versioned-linux-payload-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          path: ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/release-payload/*
+
+  publish:
+    name: Publish and refetch immutable asset
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Download verified build payload
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: versioned-linux-payload-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-payload-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Verify transfer, current remote tag, and publish once
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_POLICY_CONFIRMED: ${{ vars.RELEASE_POLICY_CONFIRMED }}
+          EXPECTED_ASSET_SHA256: ${{ needs.build.outputs.asset_sha256 }}
+          EXPECTED_MANIFEST_SHA256: ${{ needs.build.outputs.manifest_sha256 }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/}"
+          test "$RELEASE_POLICY_CONFIRMED" = true
+          payload="$RUNNER_TEMP/release-payload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          asset="$payload/codeql-ucode-linux-x64.tar.gz"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-list -n 1 "$tag")" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain=v1)"
+          test "$(sha256sum "$asset" | cut -d ' ' -f 1)" = "$EXPECTED_ASSET_SHA256"
+          (cd "$payload" && sha256sum --check --strict SHA256SUMS)
+          python3 scripts/verify-linux-release-bundle.py \
+            --archive "$asset" --expected-sha256 "$EXPECTED_ASSET_SHA256" \
+            --expected-release-tag "$tag" --expected-producer-commit "$GITHUB_SHA" \
+            --expected-manifest-sha256 "$EXPECTED_MANIFEST_SHA256" \
+            --output-dir "$RUNNER_TEMP/release-verified-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > "$payload/publish-verify.json"
+          git fetch origin main
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          gh api "repos/$GH_REPO/rulesets/28002678" > "$payload/tag-ruleset.json"
+          jq -e '.target == "tag" and .enforcement == "active" and
+            (.conditions.ref_name.include | index("refs/tags/v*") != null) and
+            ([.rules[].type] | index("deletion") != null) and
+            ([.rules[].type] | index("update") != null)' "$payload/tag-ruleset.json"
+          remote_commit="$(git ls-remote origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
+          test "$remote_commit" = "$GITHUB_SHA"
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release already exists: $tag" >&2
+            exit 1
+          fi
+          notes="$payload/release-notes.md"
+          {
+            echo "Linux x64 CodeQL ucode producer bundle."
+            echo
+            echo "Commit: $GITHUB_SHA"
+            echo "Asset SHA-256: $EXPECTED_ASSET_SHA256"
+            echo "Manifest SHA-256: $EXPECTED_MANIFEST_SHA256"
+            echo "Default suite and historical controls passed in workflow run $GITHUB_RUN_ID."
+            echo "Consumers must pin the full commit and asset digest independently."
+          } > "$notes"
+          gh release create "$tag" \
+            "$asset#codeql-ucode-linux-x64.tar.gz" "$payload/SHA256SUMS#SHA256SUMS" \
+            --verify-tag --target "$GITHUB_SHA" --title "$tag" --notes-file "$notes"
+          gh release download "$tag" --pattern 'codeql-ucode-linux-x64.tar.gz' \
+            --dir "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test "$(sha256sum "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/codeql-ucode-linux-x64.tar.gz" | cut -d ' ' -f 1)" = "$EXPECTED_ASSET_SHA256"
+          test "$(gh release view "$tag" --json isImmutable --jq '.isImmutable')" = true
+          remote_commit="$(git ls-remote origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
+          test "$remote_commit" = "$GITHUB_SHA"

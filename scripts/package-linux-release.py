@@ -68,7 +68,7 @@ def copy_payload(source: Path, destination: Path) -> None:
 def create_bundle(source: Path, output: Path, producer_commit: str,
                   codeql_version: str, rustc: str, cargo: str,
                   grammar_revision: str, codeql_archive_sha256: str,
-                  source_clean: bool) -> dict:
+                  source_clean: bool, release_tag: str | None = None) -> dict:
     source = source.resolve(strict=True)
     output = output.resolve()
     if not re.fullmatch(r"[0-9a-f]{40}", producer_commit):
@@ -79,6 +79,8 @@ def create_bundle(source: Path, output: Path, producer_commit: str,
         raise ValueError("CodeQL CLI archive SHA-256 must be a full lowercase digest")
     if not source_clean:
         raise ValueError("release bundle requires a clean producer source checkout")
+    if release_tag is not None and not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+(?:-[0-9A-Za-z.-]+)?", release_tag):
+        raise ValueError("release tag must be a versioned vMAJOR.MINOR.PATCH tag")
     for rel in PAYLOADS:
         p = source / rel
         if not p.is_dir():
@@ -136,11 +138,12 @@ def create_bundle(source: Path, output: Path, producer_commit: str,
                             "executable": bool(path.stat().st_mode & 0o111)})
         manifest = {
             "schema_version": SCHEMA_VERSION,
-            "artifact_kind": "ci-candidate",
+            "artifact_kind": "versioned-release" if release_tag else "ci-candidate",
             "platform": "linux-x64",
             "bundle_root_mode": 0o755,
             "manifest_file_mode": 0o644,
             "producer_commit": producer_commit,
+            "release_tag": release_tag,
             "source_checkout_clean": source_clean,
             "build": {
                 "codeql_cli_version": codeql_version,
@@ -209,11 +212,12 @@ def main() -> int:
     parser.add_argument("--codeql-archive-sha256", required=True)
     parser.add_argument("--source-clean", action="store_true",
                         help="assert that the release gate verified a clean source checkout")
+    parser.add_argument("--release-tag", help="versioned release tag; omit for a CI candidate")
     args = parser.parse_args()
     result = create_bundle(args.source, args.output, args.producer_commit,
                            args.codeql_version, args.rustc_version,
                            args.cargo_version, args.grammar_revision,
-                           args.codeql_archive_sha256, args.source_clean)
+                           args.codeql_archive_sha256, args.source_clean, args.release_tag)
     print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
