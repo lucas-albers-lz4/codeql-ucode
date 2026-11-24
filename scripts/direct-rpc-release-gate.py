@@ -72,6 +72,15 @@ def require(condition: bool, message: str) -> None:
         raise RuntimeError(message)
 
 
+def invalidating_codeql_warnings(stderr: str) -> list[str]:
+    warnings = [line for line in stderr.splitlines()
+                if re.search(r"\bWARNING:", line, re.IGNORECASE)]
+    # This CLI warning concerns performance, not interpretation of results.
+    return [line for line in warnings if not re.search(
+        r"WARNING: Not caching stages during query-loading, since max heap size is only \d+ MB\.",
+        line)]
+
+
 class Runner:
     def __init__(self, run: pathlib.Path, codeql: pathlib.Path):
         self.run = run
@@ -122,7 +131,14 @@ class Runner:
 
     def codeql_call(self, label: str, args: list[str | pathlib.Path], *,
                     env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
-        return self.call(label, [self.codeql, *args], env=env)
+        result = self.call(label, [self.codeql, *args], env=env)
+        if args and args[0] in ("query", "database", "resolve"):
+            safe = re.sub(r"[^A-Za-z0-9_.-]+", "-", label)
+            stderr_path = self.out / "commands" / f"{safe}.stderr"
+            invalidating = invalidating_codeql_warnings(stderr_path.read_text(errors="replace"))
+            require(not invalidating,
+                    f"{label} emitted CodeQL warnings requiring review: {invalidating}; see {stderr_path}")
+        return result
 
 
 def git_call(runner: Runner, label: str, repo: pathlib.Path, *args: str) -> str:
