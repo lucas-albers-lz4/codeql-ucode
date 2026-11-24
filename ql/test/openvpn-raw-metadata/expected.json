@@ -1,0 +1,67 @@
+{
+  "source_commits": {
+    "parent": "b45584b4e6068b9b096872dd02494a048d869c36",
+    "fixed": "e4ff45ecbc6ad212951815c8c99b2749fbd7de6b"
+  },
+  "source_path": "protocols/luci-proto-openvpn/root/usr/share/rpcd/ucode/luci.openvpn.uc",
+  "staged_path": "usr/share/rpcd/ucode/luci.openvpn.uc",
+  "controls": {
+    "constant-sink.uc": "Derived from parent; line 77 popen argument is a constant while request metadata and command assignment remain."
+  },
+  "expected": {
+    "parent.uc": {
+      "sha256": "051c8162f826683333e11264615806df5ab08415676c0bd098921cb1b05af991",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_span": [
+        71,
+        115,
+        71,
+        131
+      ],
+      "sink_span": [
+        77,
+        16,
+        77,
+        25
+      ],
+      "rule_rows": 1
+    },
+    "fixed.uc": {
+      "sha256": "6593792678951fd500c2b090d17d9e500a05a642cfb996ee02c1649473152410",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_span": [
+        71,
+        126,
+        71,
+        142
+      ],
+      "sink_span": [
+        77,
+        16,
+        77,
+        25
+      ],
+      "rule_rows": 0
+    },
+    "constant-sink.uc": {
+      "sha256": "08f8ed832129d2e48be12facfeb304dffc7353b2be26873c08b6b233cfd6bb6e",
+      "successful_files": 1,
+      "extraction_errors": 0,
+      "source_span": [
+        71,
+        115,
+        71,
+        131
+      ],
+      "sink_span": [
+        77,
+        16,
+        77,
+        34
+      ],
+      "rule_rows": 0
+    }
+  }
+}
