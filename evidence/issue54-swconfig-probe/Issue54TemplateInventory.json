@@ -1,0 +1,8 @@
+{"#select":{"columns":[
+   {"name":"template","kind":"Entity"}
+  ,{"kind":"Integer"}
+  ,{"name":"status","kind":"String"}]
+ ,"tuples":[
+   [{"label":"TemplateString","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":343,"startColumn":22,"endLine":343,"endColumn":87}},343,"no ExprNode"]
+  ,[{"label":"TemplateString","url":{"uri":"file:///private/tmp/openwrt-typed-handoff-live-20261123/source/usr/share/rpcd/ucode/luci","startLine":400,"startColumn":22,"endLine":400,"endColumn":87}},400,"no ExprNode"]]
+ }}

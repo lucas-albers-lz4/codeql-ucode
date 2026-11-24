@@ -1,0 +1,3 @@
+"src","helper","sink","method"
+"MemberExpression","CallExpression","CallExpression","getSwconfigFeatures"
+"MemberExpression","CallExpression","CallExpression","getSwconfigPortState"

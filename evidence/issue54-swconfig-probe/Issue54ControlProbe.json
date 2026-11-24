@@ -1,0 +1,10 @@
+{"#select":{"columns":[
+   {"name":"src","kind":"Entity"}
+  ,{"name":"method","kind":"String"}
+  ,{"name":"sink","kind":"Entity"}]
+ ,"tuples":[
+   [{"label":"MemberExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":4,"startColumn":44,"endLine":4,"endColumn":59}},"direct",{"label":"CallExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":4,"startColumn":38,"endLine":4,"endColumn":60}}]
+  ,[{"label":"MemberExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":6,"startColumn":54,"endLine":6,"endColumn":69}},"reassignment",{"label":"CallExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":6,"startColumn":87,"endLine":6,"endColumn":96}}]
+  ,[{"label":"MemberExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":7,"startColumn":48,"endLine":7,"endColumn":63}},"shadow",{"label":"CallExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":7,"startColumn":87,"endLine":7,"endColumn":96}}]
+  ,[{"label":"MemberExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":8,"startColumn":72,"endLine":8,"endColumn":87}},"unknown",{"label":"CallExpression","url":{"uri":"file:///private/tmp/issue54-control-probe/source/controls.uc","startLine":8,"startColumn":39,"endLine":8,"endColumn":96}}]]
+ }}

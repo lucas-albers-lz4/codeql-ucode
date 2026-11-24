@@ -1,0 +1,154 @@
+[2026-11-23 16:19:42] This is codeql database finalize /private/tmp/issue54-control-probe/database
+[2026-11-23 16:19:42] Log file was started late.
+[2026-11-23 16:19:42] Using pre-finalize script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh.
+[2026-11-23 16:19:42] [PROGRESS] database finalize> Running pre-finalize script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh in /private/tmp/issue54-control-probe/source.
+[2026-11-23 16:19:42] Running plumbing command: codeql database trace-command --working-dir=/private/tmp/issue54-control-probe/source --no-tracing -- /private/tmp/issue54-control-probe/database /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh
+[2026-11-23 16:19:42] [PROGRESS] database trace-command> Running command in /private/tmp/issue54-control-probe/source: [/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh]
+[2026-11-23 16:19:42] [build-stderr] Scanning for files in /private/tmp/issue54-control-probe/source...
+[2026-11-23 16:19:42] Plumbing command codeql database trace-command completed.
+[2026-11-23 16:19:42] [PROGRESS] database finalize> Pre-finalize script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/pre-finalize.sh completed in 391 ms.
+[2026-11-23 16:19:42] [PROGRESS] database finalize> Running TRAP import for CodeQL database at /private/tmp/issue54-control-probe/database...
+[2026-11-23 16:19:42] Running plumbing command: codeql dataset import --dbscheme=/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/ucode.dbscheme -- /private/tmp/issue54-control-probe/database/db-ucode /private/tmp/issue54-control-probe/database/trap/ucode
+[2026-11-23 16:19:42] Clearing disk cache since the version file /private/tmp/issue54-control-probe/database/db-ucode/default/cache/version does not exist
+[2026-11-23 16:19:42] Tuple pool not found. Clearing relations with cached strings
+[2026-11-23 16:19:42] Trimming disk cache at /private/tmp/issue54-control-probe/database/db-ucode/default/cache in mode clear.
+[2026-11-23 16:19:42] Sequence stamp origin is -5842375367529067840
+[2026-11-23 16:19:42] Pausing evaluation to hard-clear memory at sequence stamp o+0
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Pausing evaluation to quickly trim disk at sequence stamp o+1
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Pausing evaluation to zealously trim disk at sequence stamp o+2
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Trimming completed (2ms): Purged everything.
+[2026-11-23 16:19:42] Scanning for files in /private/tmp/issue54-control-probe/database/trap/ucode
+[2026-11-23 16:19:42] Found 3 TRAP files (10.96 KiB)
+[2026-11-23 16:19:42] [PROGRESS] dataset import> Importing TRAP files
+[2026-11-23 16:19:42] Importing extras.trap.gz (1 of 3)
+[2026-11-23 16:19:42] Importing metadata.trap.gz (2 of 3)
+[2026-11-23 16:19:42] Importing controls.uc.trap.gz (3 of 3)
+[2026-11-23 16:19:42] [PROGRESS] dataset import> Merging relations
+[2026-11-23 16:19:42] Merging 1 fragment for 'files'.
+[2026-11-23 16:19:42] Merged 30 bytes for 'files'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'locations_default'.
+[2026-11-23 16:19:42] Merged 954 bytes for 'locations_default'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'empty_location'.
+[2026-11-23 16:19:42] Merged 17 bytes for 'empty_location'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'sourceLocationPrefix'.
+[2026-11-23 16:19:42] Merged 17 bytes for 'sourceLocationPrefix'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'containerparent'.
+[2026-11-23 16:19:42] Merged 34 bytes for 'containerparent'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'folders'.
+[2026-11-23 16:19:42] Merged 34 bytes for 'folders'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_ast_node_location'.
+[2026-11-23 16:19:42] Merged 589 bytes for 'ucode_ast_node_location'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_ast_node_parent'.
+[2026-11-23 16:19:42] Merged 884 bytes for 'ucode_ast_node_parent'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_tokeninfo'.
+[2026-11-23 16:19:42] Merged 555 bytes for 'ucode_tokeninfo'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_string_child'.
+[2026-11-23 16:19:42] Merged 55 bytes for 'ucode_string_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_string_def'.
+[2026-11-23 16:19:42] Merged 26 bytes for 'ucode_string_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_expression_statement_def'.
+[2026-11-23 16:19:42] Merged 49 bytes for 'ucode_expression_statement_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_import_specifier_def'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_import_specifier_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_named_imports_child'.
+[2026-11-23 16:19:42] Merged 43 bytes for 'ucode_named_imports_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_named_imports_def'.
+[2026-11-23 16:19:42] Merged 21 bytes for 'ucode_named_imports_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_import_clause_named'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_import_clause_named'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_import_clause_def'.
+[2026-11-23 16:19:42] Merged 21 bytes for 'ucode_import_clause_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_import_statement_clause'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_import_statement_clause'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_import_statement_def'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_import_statement_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_formal_parameters_child'.
+[2026-11-23 16:19:42] Merged 55 bytes for 'ucode_formal_parameters_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_formal_parameters_def'.
+[2026-11-23 16:19:42] Merged 25 bytes for 'ucode_formal_parameters_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_member_expression_def'.
+[2026-11-23 16:19:42] Merged 80 bytes for 'ucode_member_expression_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_arguments_child'.
+[2026-11-23 16:19:42] Merged 56 bytes for 'ucode_arguments_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_arguments_def'.
+[2026-11-23 16:19:42] Merged 26 bytes for 'ucode_arguments_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_call_expression_def'.
+[2026-11-23 16:19:42] Merged 66 bytes for 'ucode_call_expression_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_statement_block_child'.
+[2026-11-23 16:19:42] Merged 76 bytes for 'ucode_statement_block_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_statement_block_def'.
+[2026-11-23 16:19:42] Merged 26 bytes for 'ucode_statement_block_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_function_expression_def'.
+[2026-11-23 16:19:42] Merged 65 bytes for 'ucode_function_expression_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_pair_def'.
+[2026-11-23 16:19:42] Merged 78 bytes for 'ucode_pair_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_object_child'.
+[2026-11-23 16:19:42] Merged 75 bytes for 'ucode_object_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_object_def'.
+[2026-11-23 16:19:42] Merged 26 bytes for 'ucode_object_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_variable_declarator_value'.
+[2026-11-23 16:19:42] Merged 44 bytes for 'ucode_variable_declarator_value'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_variable_declarator_def'.
+[2026-11-23 16:19:42] Merged 44 bytes for 'ucode_variable_declarator_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_lexical_declaration_kind'.
+[2026-11-23 16:19:42] Merged 44 bytes for 'ucode_lexical_declaration_kind'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_lexical_declaration_child'.
+[2026-11-23 16:19:42] Merged 54 bytes for 'ucode_lexical_declaration_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_lexical_declaration_def'.
+[2026-11-23 16:19:42] Merged 25 bytes for 'ucode_lexical_declaration_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_assignment_expression_def'.
+[2026-11-23 16:19:42] Merged 45 bytes for 'ucode_assignment_expression_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_template_substitution_def'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_template_substitution_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_template_string_child'.
+[2026-11-23 16:19:42] Merged 49 bytes for 'ucode_template_string_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_template_string_def'.
+[2026-11-23 16:19:42] Merged 21 bytes for 'ucode_template_string_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_return_statement_child'.
+[2026-11-23 16:19:42] Merged 33 bytes for 'ucode_return_statement_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_return_statement_def'.
+[2026-11-23 16:19:42] Merged 21 bytes for 'ucode_return_statement_def'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_program_child'.
+[2026-11-23 16:19:42] Merged 52 bytes for 'ucode_program_child'.
+[2026-11-23 16:19:42] Merging 1 fragment for 'ucode_program_def'.
+[2026-11-23 16:19:42] Merged 21 bytes for 'ucode_program_def'.
+[2026-11-23 16:19:42] Saving string and id pools to disk.
+[2026-11-23 16:19:42] Finished importing TRAP files.
+[2026-11-23 16:19:42] Read 40.23 KiB of uncompressed TRAP data.
+[2026-11-23 16:19:42] Uncompressed relation data size: 14.45 KiB
+[2026-11-23 16:19:42] Relation data size: 4.49 KiB (merge rate: 177.33 KiB/s)
+[2026-11-23 16:19:42] String pool size: 2.05 MiB
+[2026-11-23 16:19:42] ID pool size: 1.02 MiB
+[2026-11-23 16:19:42] [PROGRESS] dataset import> Finished writing database (relations: 4.49 KiB; string pool: 2.05 MiB).
+[2026-11-23 16:19:42] Pausing evaluation to close the cache at sequence stamp o+91
+[2026-11-23 16:19:42] The disk cache is freshly trimmed; leave it be.
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Plumbing command codeql dataset import completed.
+[2026-11-23 16:19:42] [PROGRESS] database finalize> TRAP import complete (259ms).
+[2026-11-23 16:19:42] Running plumbing command: codeql database cleanup -- /private/tmp/issue54-control-probe/database
+[2026-11-23 16:19:42] [PROGRESS] database cleanup> Cleaning up existing TRAP files after import...
+[2026-11-23 16:19:42] [PROGRESS] database cleanup> TRAP files cleaned up (1ms).
+[2026-11-23 16:19:42] [PROGRESS] database cleanup> Cleaning up scratch directory...
+[2026-11-23 16:19:42] [PROGRESS] database cleanup> Scratch directory cleaned up (0ms).
+[2026-11-23 16:19:42] Running plumbing command: codeql dataset cleanup -- /private/tmp/issue54-control-probe/database/db-ucode
+[2026-11-23 16:19:42] [PROGRESS] dataset cleanup> Cleaning up dataset in /private/tmp/issue54-control-probe/database/db-ucode.
+[2026-11-23 16:19:42] Trimming disk cache at /private/tmp/issue54-control-probe/database/db-ucode/default/cache in mode trim.
+[2026-11-23 16:19:42] Sequence stamp origin is -5842375366555029387
+[2026-11-23 16:19:42] Pausing evaluation to quickly trim memory at sequence stamp o+0
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Pausing evaluation to zealously trim disk at sequence stamp o+1
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] Trimming completed (1ms): Trimmed disposable data from cache.
+[2026-11-23 16:19:42] Pausing evaluation to close the cache at sequence stamp o+2
+[2026-11-23 16:19:42] The disk cache is freshly trimmed; leave it be.
+[2026-11-23 16:19:42] Unpausing evaluation
+[2026-11-23 16:19:42] [PROGRESS] dataset cleanup> Trimmed disposable data from cache.
+[2026-11-23 16:19:42] [PROGRESS] dataset cleanup> Finalizing dataset in /private/tmp/issue54-control-probe/database/db-ucode
+[2026-11-23 16:19:42] [DETAILS] dataset cleanup> Finished deleting ID pool from /private/tmp/issue54-control-probe/database/db-ucode (1ms).
+[2026-11-23 16:19:42] Plumbing command codeql dataset cleanup completed.
+[2026-11-23 16:19:42] Plumbing command codeql database cleanup completed with status 0.
+[2026-11-23 16:19:42] [PROGRESS] database finalize> Finished zipping source archive (432.00 B).
+[2026-11-23 16:19:42] Terminating normally.

@@ -1,0 +1,15 @@
+[2026-11-23 16:19:41] This is codeql database index-files --language=ucode --include=**/controls.uc --working-dir=/private/tmp/issue54-control-probe/source /private/tmp/issue54-control-probe/database
+[2026-11-23 16:19:41] Log file was started late.
+[2026-11-23 16:19:41] Using index-files script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/index-files.sh.
+[2026-11-23 16:19:41] [PROGRESS] database index-files> Scanning for files in /private/tmp/issue54-control-probe/source...
+[2026-11-23 16:19:41] Calling plumbing command: codeql resolve files --include=**/controls.uc /private/tmp/issue54-control-probe/source --format=json
+[2026-11-23 16:19:41] [PROGRESS] resolve files> Scanning /private/tmp/issue54-control-probe/source...
+[2026-11-23 16:19:41] Plumbing command codeql resolve files completed:
+                      [
+                        "/private/tmp/issue54-control-probe/source/controls.uc"
+                      ]
+[2026-11-23 16:19:41] [DETAILS] database index-files> Found 1 files.
+[2026-11-23 16:19:41] [PROGRESS] database index-files> /private/tmp/issue54-control-probe/database: Indexing files in in /private/tmp/issue54-control-probe/source...
+[2026-11-23 16:19:41] Using index-files script /private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/index-files.sh.
+[2026-11-23 16:19:41] [PROGRESS] database index-files> Running command in /private/tmp/issue54-control-probe/source: [/private/tmp/openwrt-typed-handoff-live-20261123/extractor-pack/tools/index-files.sh, /private/tmp/issue54-control-probe/database/working/files-to-index5172113493810590139.list]
+[2026-11-23 16:19:41] Terminating normally.

@@ -1,0 +1,12 @@
+Resolving data extensions.
+Finished resolving data extensions.
+WARNING: Failed to retrieve qlpack commit hash from Git repository
+Merging data extensions.
+Finished merging data extensions.
+WARNING: Not caching stages during query-loading, since max heap size is only 1256 MB.
+Compiling query plan for /private/tmp/ucode-issue54-swconfig-probe/ql/src/m4/ShellInjection.ql.
+WARNING: A problem query must select an even number of columns. (/private/tmp/ucode-issue54-swconfig-probe/ql/src/m4/ShellInjection.ql:24,1-33,46)
+[1/1] Found in cache: /private/tmp/ucode-issue54-swconfig-probe/ql/src/m4/ShellInjection.ql.
+Starting evaluation of lucas-albers-lz4/ucode-queries/m4/ShellInjection.ql.
+[1/1 eval 292ms] Evaluation done; writing results to /private/tmp/issue54-existing-comparison/ShellInjection-before.bqrs.
+Shutting down query evaluator.
