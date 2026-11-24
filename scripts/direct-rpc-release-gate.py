@@ -267,6 +267,10 @@ def make_database(r: Runner, build: pathlib.Path, case: str, stage: pathlib.Path
         "--include=**/rpcd/ucode/*", f"--working-dir={stage}",
         f"--common-caches={common}", db], env=env)
     route = check_route(db, stage, relative_files, case)
+    # Finalization may remove trap files, so retain the checked route receipt.
+    route_copy = r.out / case / "routing.json"
+    route_copy.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(db / "trap/ucode/routing.json", route_copy)
     r.codeql_call(f"{case}-database-finalize", ["database", "finalize", db,
         f"--common-caches={common}"], env=env)
     q_success = run_query(r, build, db, case, "success", build / "ql/src/diagnostics/SuccessfullyExtractedFiles.ql")
@@ -392,7 +396,7 @@ def run_default_cases(r: Runner, build: pathlib.Path, sources: dict[str, pathlib
         sarif_summary = check_sarif(sarif_path, case, info["rule_count"], expected_loc)
         cases[case] = {"source": source_records[case], "selected": [installed_rel],
             "successful_multiset": {installed_rel: 1}, "extraction_errors": 0,
-            "route_sha256": digest(db / "trap/ucode/routing.json"), "sarif": sarif_summary}
+            "route_sha256": digest(r.out / case / "routing.json"), "sarif": sarif_summary}
     return {"resolved_queries": names, "cases": cases,
             "resolved_suite_sha256": digest(resolved_path)}
 
