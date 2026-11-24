@@ -11,6 +11,7 @@ on:
       - 'extractor/**'
       - 'ql/lib/**'
       - 'ql/src/**'
+      - 'ql/test/direct-rpc-shell-word/**'
       - 'ql/test/tailscale-nested-shell/**'
       - 'scripts/clone-grammar.sh'
       - 'scripts/create-extractor-pack.sh'
