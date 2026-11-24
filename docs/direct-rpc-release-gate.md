@@ -66,8 +66,10 @@ outputs needed to review the R2 result.
 
 ## Limitations
 
-This workflow does not run or validate CodeQL locally during drafting. Its
-Linux release gate remains untested until the workflow runs on GitHub Actions.
+The source-pinned Linux gate passed in
+[run 45435176723](https://github.com/lucas-albers-lz4/codeql-ucode/actions/runs/45435176723)
+on the PR's synthetic merge commit. That run verifies a CI candidate bundle;
+it does not publish or test an immutable release asset.
 It does not build an OpenWrt image/IPK, inspect package-installed bytes, or
 run the downstream consumer. The pinned LuCI `swconfig` zero-result is a
 bounded query observation, not a security-negative or safety conclusion.

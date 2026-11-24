@@ -510,13 +510,20 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
                 wanted.append((rel, line, start_col, end_inclusive + 1))
         # SARIF for this explicit testing query is validated independently of the default suite.
         sarif = json.loads(sarif_path.read_text())
+        require(sarif.get("version") == "2.1.0" and len(sarif.get("runs", [])) == 1,
+                f"Tailscale {case} SARIF envelope mismatch")
         sr = sarif["runs"][0]
         require([x["id"] for x in sr["tool"]["driver"].get("rules", [])] ==
                 ["ucode/m4/tailscale-nested-shell-candidate"], "Tailscale rule ID mismatch")
         actual = []
         for result in sr.get("results", []):
+            require(result.get("ruleId") == "ucode/m4/tailscale-nested-shell-candidate" and
+                    result.get("ruleIndex") == 0 and len(result.get("locations", [])) == 1,
+                    f"Tailscale {case} result rule or location multiplicity mismatch: {result}")
             phys = result["locations"][0]["physicalLocation"]
             region = phys["region"]
+            require(region.get("endLine") == region.get("startLine"),
+                    f"Tailscale {case} result end line mismatch: {result}")
             actual.append((phys["artifactLocation"]["uri"], region["startLine"],
                            region["startColumn"], region["endColumn"]))
         require(collections.Counter(actual) == collections.Counter(wanted),
