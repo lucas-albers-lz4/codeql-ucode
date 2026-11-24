@@ -1,0 +1,106 @@
+name: Draft direct RPC release gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/direct-rpc-release-gate.yml'
+      - 'Cargo.lock'
+      - 'Cargo.toml'
+      - 'codeql-extractor.yml'
+      - 'extractor/**'
+      - 'ql/lib/**'
+      - 'ql/src/**'
+      - 'ql/test/tailscale-nested-shell/**'
+      - 'scripts/clone-grammar.sh'
+      - 'scripts/create-extractor-pack.sh'
+      - 'scripts/direct-rpc-release-gate.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: direct-rpc-release-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  producer-r2:
+    name: Linux R2 source and suite gate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      RUSTUP_TOOLCHAIN: 1.100.0
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Define run-owned paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_dir="$RUNNER_TEMP/direct-rpc-release-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          tools_dir="$RUNNER_TEMP/direct-rpc-tools-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          home_dir="$RUNNER_TEMP/direct-rpc-home-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          tmp_dir="$RUNNER_TEMP/direct-rpc-bootstrap-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$home_dir" "$tmp_dir"
+          {
+            echo "DIRECT_RPC_RUN_DIR=$run_dir"
+            echo "DIRECT_RPC_TOOLS_DIR=$tools_dir"
+            echo "DIRECT_RPC_BOOTSTRAP_TMP=$tmp_dir"
+            echo "RUSTUP_HOME=$run_dir-rustup"
+            echo "CARGO_HOME=$tools_dir/cargo-setup"
+            echo "CODEQL_BIN=$tools_dir/codeql-cli/codeql/codeql"
+            echo "HOME=$home_dir"
+            echo "TMPDIR=$tmp_dir"
+          } >> "$GITHUB_ENV"
+
+      - name: Install pinned Rust toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUSTUP_HOME" "$CARGO_HOME"
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/rustup-install.time" rustup toolchain install 1.100.0 --profile minimal
+          rustup default 1.100.0
+          rustc --version
+          cargo --version
+
+      - name: Download and verify CodeQL CLI 2.27.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DIRECT_RPC_TOOLS_DIR/codeql-cli" "$DIRECT_RPC_TOOLS_DIR/download"
+          archive="$DIRECT_RPC_TOOLS_DIR/download/codeql-linux64.zip"
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/codeql-download.time" \
+            curl --fail --location --retry 3 --output "$archive" \
+            https://github.com/github/codeql-cli-binaries/releases/download/v2.27.4/codeql-linux64.zip
+          printf '%s  %s\n' \
+            393bf92b66596141ec93baf9b483f4a350f3749916c922fed0dd63c67706047 \
+            "$archive" | sha256sum --check --strict
+          /usr/bin/time -v -o "$DIRECT_RPC_TOOLS_DIR/codeql-unzip.time" \
+            unzip -q "$archive" -d "$DIRECT_RPC_TOOLS_DIR/codeql-cli"
+          test -f "$CODEQL_BIN" && test -x "$CODEQL_BIN"
+          "$CODEQL_BIN" version
+
+      - name: Run source-pinned producer release gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$DIRECT_RPC_BOOTSTRAP_TMP"
+          export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
+          python3 scripts/direct-rpc-release-gate.py
+
+      - name: Upload normalized receipt and raw query outputs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: direct-rpc-r2-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/preflight.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/source-oracle.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/receipt.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/commands.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/out/**
+            ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/rustup-install.time
+            ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/codeql-download.time
+            ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/codeql-unzip.time
