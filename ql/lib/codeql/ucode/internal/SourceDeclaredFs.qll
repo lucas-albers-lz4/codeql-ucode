@@ -36,7 +36,7 @@ private predicate fsCompetingBindingOrWrite(UCODE::Identifier id) {
  */
 pragma[inline]
 predicate sourceDeclaredFsCall(UCODE::CallExpression raw, string name) {
-  name = ["popen", "basename", "access", "open", "readfile", "readlink"] and
+  name = ["popen", "basename", "access", "open", "readfile", "readlink", "stat"] and
   raw.getFunction() instanceof UCODE::Identifier and
   raw.getFunction().(UCODE::Identifier).getValue() = name and
   not exists(raw.getOptionalChain()) and

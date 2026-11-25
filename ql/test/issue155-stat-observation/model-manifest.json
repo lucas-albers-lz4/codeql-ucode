@@ -1,0 +1,319 @@
+{
+  "schema": "issue155-stat-model-source-first-v1",
+  "positions": "one-based byte columns, end exclusive",
+  "files": [
+    {
+      "path": "model-controls/empty.uc",
+      "bytes": 35,
+      "sha256": "7f72c5d9278783b796c44e2e062b0f4eef0f3a540c9cb35f49f766ae4f2d683f"
+    },
+    {
+      "path": "model-controls/literal.uc",
+      "bytes": 45,
+      "sha256": "024f3405b61d4c98fed093da115547ce3d19fa2a07c27ad9da6f4e6f0bb76fa0"
+    },
+    {
+      "path": "model-controls/malformed.uc",
+      "bytes": 60,
+      "sha256": "db41aa98858cc77ad11648a8f41638e7496eb2fe2b544e4967639f273991866a"
+    },
+    {
+      "path": "model-controls/property.uc",
+      "bytes": 38,
+      "sha256": "f0eb402191a2d043ed0913a8df38f9ae1fef487bea1071118aa22bb2d3ea1caf"
+    },
+    {
+      "path": "model-controls/spread.uc",
+      "bytes": 43,
+      "sha256": "4a067b1316d84df943ddc3665d5be890a3684a65e7a091f6123a002281a79718"
+    },
+    {
+      "path": "model-controls/two.uc",
+      "bytes": 56,
+      "sha256": "5d6b0a51a48bb44aef6a7e66c935b2adfd7eaa91ea34e0e07055b7e8ce261a55"
+    }
+  ],
+  "real_path": "usr/share/rpcd/ucode/ddns.uc",
+  "real_sites": [
+    {
+      "line": 96,
+      "call": [
+        53,
+        103
+      ],
+      "callee": [
+        53,
+        57
+      ],
+      "argument": [
+        58,
+        102
+      ],
+      "argument_kind": "TemplateString"
+    },
+    {
+      "line": 118,
+      "call": [
+        9,
+        40
+      ],
+      "callee": [
+        9,
+        13
+      ],
+      "argument": [
+        14,
+        39
+      ],
+      "argument_kind": "TemplateString"
+    },
+    {
+      "line": 204,
+      "call": [
+        27,
+        60
+      ],
+      "callee": [
+        27,
+        31
+      ],
+      "argument": [
+        32,
+        59
+      ],
+      "argument_kind": "BinaryExpression"
+    },
+    {
+      "line": 208,
+      "call": [
+        8,
+        31
+      ],
+      "callee": [
+        8,
+        12
+      ],
+      "argument": [
+        13,
+        30
+      ],
+      "argument_kind": "Identifier"
+    },
+    {
+      "line": 254,
+      "call": [
+        36,
+        66
+      ],
+      "callee": [
+        36,
+        40
+      ],
+      "argument": [
+        41,
+        65
+      ],
+      "argument_kind": "String"
+    },
+    {
+      "line": 311,
+      "call": [
+        23,
+        51
+      ],
+      "callee": [
+        23,
+        27
+      ],
+      "argument": [
+        28,
+        50
+      ],
+      "argument_kind": "String"
+    },
+    {
+      "line": 312,
+      "call": [
+        6,
+        33
+      ],
+      "callee": [
+        6,
+        10
+      ],
+      "argument": [
+        11,
+        32
+      ],
+      "argument_kind": "String"
+    },
+    {
+      "line": 312,
+      "call": [
+        53,
+        74
+      ],
+      "callee": [
+        53,
+        57
+      ],
+      "argument": [
+        58,
+        73
+      ],
+      "argument_kind": "String"
+    }
+  ],
+  "synthetic_positive": {
+    "controls/positive-direct.uc": [
+      9,
+      16,
+      64,
+      21,
+      63,
+      "TemplateString"
+    ],
+    "controls/positive-post-call-property.uc": [
+      9,
+      16,
+      64,
+      21,
+      63,
+      "TemplateString"
+    ],
+    "controls/negative-fixed-path.uc": [
+      9,
+      16,
+      48,
+      21,
+      47,
+      "TemplateString"
+    ],
+    "controls/negative-request-shadow.uc": [
+      10,
+      16,
+      64,
+      21,
+      63,
+      "TemplateString"
+    ],
+    "model-controls/literal.uc": [
+      2,
+      1,
+      17,
+      6,
+      16,
+      "String"
+    ]
+  },
+  "negative_paths": [
+    "controls/negative-shadow.uc",
+    "controls/negative-reassignment.uc",
+    "controls/negative-other-module.uc",
+    "controls/negative-aliased-import.uc",
+    "controls/negative-optional-call.uc",
+    "controls/negative-readfile.uc",
+    "model-controls/empty.uc",
+    "model-controls/two.uc",
+    "model-controls/spread.uc",
+    "model-controls/property.uc",
+    "model-controls/malformed.uc"
+  ],
+  "unexpected_rows": "reject; malformed is run separately with expected diagnostic",
+  "control_witnesses": {
+    "model-controls/literal.uc": {
+      "call": [
+        2,
+        1,
+        17
+      ],
+      "arguments": [
+        [
+          2,
+          6,
+          16,
+          "String"
+        ]
+      ]
+    },
+    "model-controls/empty.uc": {
+      "call": [
+        2,
+        1,
+        7
+      ],
+      "arguments": []
+    },
+    "model-controls/two.uc": {
+      "call": [
+        2,
+        1,
+        28
+      ],
+      "arguments": [
+        [
+          2,
+          6,
+          16,
+          "String"
+        ],
+        [
+          2,
+          18,
+          27,
+          "String"
+        ]
+      ]
+    },
+    "model-controls/spread.uc": {
+      "call": [
+        2,
+        1,
+        15
+      ],
+      "arguments": [
+        [
+          2,
+          6,
+          14,
+          "SpreadElement"
+        ]
+      ]
+    },
+    "model-controls/property.uc": {
+      "property": [
+        2,
+        1,
+        10
+      ]
+    },
+    "model-controls/malformed.uc": {
+      "call": [
+        2,
+        1,
+        17
+      ],
+      "arguments": [
+        [
+          2,
+          6,
+          16,
+          "String"
+        ]
+      ]
+    }
+  },
+  "malformed_preliminary_diagnostic": {
+    "tag": "parse_error",
+    "count": 1,
+    "start": [
+      3,
+      12
+    ],
+    "end_inclusive": [
+      3,
+      12
+    ],
+    "basis": "tree-sitter 0.27.1 parsed fixture with prebuilt ucode.so; its relationship to generated parser source and current extractor pack is unverified; prediction subject to fresh extraction"
+  }
+}
