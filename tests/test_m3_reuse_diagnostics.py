@@ -54,7 +54,7 @@ else: reject()
 class M3ReuseDiagnostics(unittest.TestCase):
     def run_case(self, smoke, fault, mutant=None, via_symlink=False):
         with tempfile.TemporaryDirectory() as t:
-            t = Path(t)
+            t = Path(t).resolve()
             root = t / 'checkout'
             shutil.copytree(ROOT / 'scripts', root / 'scripts')
             shutil.copytree(ROOT / 'ql', root / 'ql')
