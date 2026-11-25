@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import tempfile
 from pathlib import Path
 import unittest
 
@@ -31,14 +32,31 @@ class FileIdentityTests(unittest.TestCase):
         self.assertEqual(VERIFY.file_identities(URL_DECODE, source, [rel]), [rel])
 
     def test_zero_position_url_identity_is_canonical_and_label_independent(self) -> None:
-        source = Path("/tmp/rpc-source")
+        source = Path("/tmp/rpc-source").resolve()
         rel = "modules/pkg/root/usr/share/rpcd/ucode/luci"
-        uri = "file:///tmp/rpc-source/" + rel
+        uri = (source / rel).as_uri()
         result = {"#select": {"tuples": [[
             {"label": "not the QL class name", "url": {
                 "uri": uri, "startLine": 0, "startColumn": 0, "endLine": 0, "endColumn": 0}}, ""
         ]]}}
         self.assertEqual(VERIFY.file_identities(result, source, [rel]), [rel])
+
+    def test_nonphysical_uri_is_rejected_even_for_same_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            source = root / "source"
+            source.mkdir()
+            alias = root / "alias"
+            alias.symlink_to(source, target_is_directory=True)
+            rel = "luci"
+            (source / rel).write_text("fixture")
+            self.assertEqual((alias / rel).resolve(), source / rel)
+            result = {"#select": {"tuples": [[
+                {"label": "File", "url": {"uri": (alias / rel).as_uri(),
+                 "startLine": 0, "startColumn": 0, "endLine": 0, "endColumn": 0}}, ""
+            ]]}}
+            with self.assertRaisesRegex(SystemExit, "outside canonical source root"):
+                VERIFY.file_identities(result, source, [rel])
 
     def test_duplicate_diagnostics_fail_exact_multiplicity(self) -> None:
         row = HISTORICAL["#select"]["tuples"][0]

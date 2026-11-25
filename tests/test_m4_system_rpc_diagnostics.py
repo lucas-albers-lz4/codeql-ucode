@@ -69,7 +69,7 @@ else: reject('unknown command')
 class SystemRpcDiagnostics(unittest.TestCase):
     def run_smoke(self, fault='valid', mutant=None, alias=False):
         with tempfile.TemporaryDirectory() as d:
-            tmp = Path(d); root = tmp / 'checkout'
+            tmp = Path(d).resolve(); root = tmp / 'checkout'
             shutil.copytree(ROOT / 'scripts', root / 'scripts')
             shutil.copytree(ROOT / 'ql', root / 'ql')
             if mutant in ('errors', 'identity'):
