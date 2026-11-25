@@ -45,7 +45,8 @@ where
    a.getLocation().getFile().getRelativePath().matches("controls/%") or
    a.getLocation().getFile().getRelativePath().matches("model-controls/%") or
    a.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/weechat.uc" or
-   a.getLocation().getFile().getRelativePath().matches("rename-controls/%")) and
+   a.getLocation().getFile().getRelativePath().matches("rename-controls/%") or
+   a.getLocation().getFile().getRelativePath().matches("open-controls/%")) and
   edge(a, field, idx, b)
 select a.getLocation().getFile().getRelativePath() as path, a as source,
   a.getPrimaryQlClasses() as source_classes, field, idx as field_index, b as target,
