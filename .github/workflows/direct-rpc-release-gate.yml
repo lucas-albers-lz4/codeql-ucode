@@ -13,6 +13,7 @@ on:
       - 'ql/src/**'
       - 'ql/test/direct-rpc-shell-word/**'
       - 'ql/test/tailscale-nested-shell/**'
+      - 'ql/test/nested-rpc-shell-command/**'
       - 'ql/test/newer-grammar-syntax/**'
       - 'patches/0005-newer-wifi-ucode-grammar.patch'
       - 'scripts/clone-grammar.sh'

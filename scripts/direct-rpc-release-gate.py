@@ -45,6 +45,8 @@ TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c
 DIRECT_CONTROLS_SHA256 = "5ec2d74cb21732189a41558ec59671126310679c6725f802614ac3fa9c19caf0"
 NEWER_GRAMMAR_MANIFEST_SHA256 = "cccd4b4e8f716c31e730f140d416e37bedfd8d0257af41c126613237704a556d"
 NEWER_GRAMMAR_QUERY_SHA256 = "2a5faf46bb5d95c47553057bf5f576b23190bbf4c0b5d5791324f1ac5331a15a"
+NESTED_MANIFEST_SHA256 = "767d6f91020f664bdacf1df9ec96329d50036d6ac41ffbd6df8407eadf2e7ecd"
+NESTED_QUERY_SHA256 = "eba4b5b732fdc205220c5eadd23ba992f911285b002e0beebda65f7c9b477e79"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -149,7 +151,7 @@ class Runner:
     def codeql_call(self, label: str, args: list[str | pathlib.Path], *,
                     env: dict[str, str] | None = None) -> subprocess.CompletedProcess:
         result = self.call(label, [self.codeql, *args], env=env)
-        if args and args[0] in ("query", "database", "resolve"):
+        if args and args[0] in ("query", "database", "resolve", "bqrs"):
             safe = re.sub(r"[^A-Za-z0-9_.-]+", "-", label)
             stderr_path = self.out / "commands" / f"{safe}.stderr"
             invalidating = invalidating_codeql_warnings(stderr_path.read_text(errors="replace"))
@@ -596,6 +598,65 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
             "cases": cases, "separate_from_default_suite": True}
 
 
+def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str, pathlib.Path], expected: dict) -> dict:
+    """Run the testing-only query against the independently pinned 11-file matrix."""
+    case = "nested-rpc"
+    stage = r.run / "stage" / case
+    base = build / "ql/test/nested-rpc-shell-command"
+    source_path = "applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc"
+    selected, wanted, hashes = [], [], {}
+    def stage_file(source: pathlib.Path, rel: str, info: dict) -> None:
+        dest = stage / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        require(digest(source) == info["sha256"], f"{case}: source mismatch {rel}")
+        shutil.copyfile(source, dest)
+        require(digest(dest) == info["sha256"], f"{case}: staged hash mismatch {rel}")
+        selected.append(rel)
+        hashes[rel] = info["sha256"]
+        for span in info["candidate_sinks"]:
+            match = re.fullmatch(r"(\d+):(\d+)-(\d+)", span)
+            require(match is not None, f"{case}: invalid span {span}")
+            line, start, end = map(int, match.groups())
+            wanted.append((rel, line, start, end + 1))
+    for name in ("parent", "fixed"):
+        info = expected["historical"][name]
+        repo = sources[f"tailscale-{name}"]
+        require(git_output(r, f"nested-{name}-blob", repo, "rev-parse", f"{info['luci_commit']}:{source_path}") == info["git_blob"], f"{case}: blob mismatch {name}")
+        stage_file(repo / source_path, f"usr/share/rpcd/ucode/{name}.uc", info)
+    for name, info in expected["files"].items():
+        require(pathlib.PurePosixPath(name).name == name, f"invalid fixture name {name}")
+        stage_file(base / name, f"usr/share/rpcd/ucode/{name}", info)
+    require(len(selected) == 11 and len(set(selected)) == 11 and len(wanted) == 2, "nested matrix selection changed")
+    db = make_database(r, build, case, stage, sorted(selected))
+    query = build / "ql/src/m4/NestedRpcShellCommand.ql"
+    sarif_path = r.out / case / "candidate.sarif"
+    sp = ":".join(map(str, [build / "extractor-pack", build / "ql/lib", build / "ql/src"]))
+    r.codeql_call("nested-rpc-explicit-analyze", ["database", "analyze", db, query,
+        "--format=sarifv2.1.0", f"--output={sarif_path}", f"--search-path={sp}",
+        f"--common-caches={r.cache / 'codeql-common' / case}",
+        f"--compilation-cache={r.cache / 'codeql-compile' / case}",
+        "--no-default-compilation-cache", "--threads=1", "--ram=2048"])
+    sarif = json.loads(sarif_path.read_text())
+    require(sarif.get("version") == "2.1.0" and len(sarif.get("runs", [])) == 1, "nested SARIF envelope mismatch")
+    run = sarif["runs"][0]
+    rule = "ucode/m4/nested-rpc-shell-command-candidate"
+    require([x["id"] for x in run["tool"]["driver"].get("rules", [])] == [rule], "nested SARIF rule mismatch")
+    actual = []
+    for result in run.get("results", []):
+        require(result.get("ruleId") == rule and result.get("ruleIndex") == 0 and len(result.get("locations", [])) == 1, "nested SARIF result mismatch")
+        phys = result["locations"][0]["physicalLocation"]
+        region = phys["region"]
+        require(region.get("endLine", region.get("startLine")) == region.get("startLine"), "nested SARIF end line mismatch")
+        actual.append((phys["artifactLocation"]["uri"], region["startLine"], region["startColumn"], region["endColumn"]))
+    require(collections.Counter(actual) == collections.Counter(wanted), f"nested SARIF tuple multiset differs: {actual} != {wanted}")
+    require(all(digest(stage / rel) == sha for rel, sha in hashes.items()), "nested sources changed during run")
+    return {"selected": sorted(selected), "successful_multiset": dict.fromkeys(selected, 1),
+            "route_sha256": digest(r.out / case / "routing.json"),
+            "source_sha256": hashes, "expected_locations": wanted,
+            "observed_locations": actual, "sarif_sha256": digest(sarif_path), "extraction_errors": 0,
+            "query_sha256": NESTED_QUERY_SHA256, "manifest_sha256": NESTED_MANIFEST_SHA256}
+
+
 def run_newer_grammar_syntax(r: Runner, build: pathlib.Path, expected: dict) -> dict:
     """Check plain and markup typed AST rows against a source-first syntax fixture."""
     case = "newer-grammar-syntax"
@@ -750,6 +811,11 @@ def main() -> int:
             "newer grammar syntax query differs from reviewed pin")
     source_oracle["newer_grammar_syntax"] = {
         "manifest_sha256": NEWER_GRAMMAR_MANIFEST_SHA256, "expectations": syntax_expected}
+    nested_manifest = build / "ql/test/nested-rpc-shell-command/expected.json"
+    require(digest(nested_manifest) == NESTED_MANIFEST_SHA256, "nested source-first manifest differs")
+    require(digest(build / "ql/src/m4/NestedRpcShellCommand.ql") == NESTED_QUERY_SHA256, "nested query differs")
+    nested_expected = json.loads(nested_manifest.read_text())
+    source_oracle["nested_rpc"] = {"manifest_sha256": NESTED_MANIFEST_SHA256, "expectations": nested_expected}
     (run / "source-oracle.json").write_text(json.dumps(source_oracle, indent=2) + "\n")
     preflight.update({"producer_commit": producer_sha, "producer_dirty_before_run": False,
         "producer_archive_sha256": digest(archive_path), "luci_repo_url": LUCI_URL,
@@ -776,11 +842,13 @@ def main() -> int:
     default = run_default_cases(runner, build, upstream)
     direct_controls = run_direct_controls(runner, build, direct_controls_expected)
     tailscale = run_tailscale_regression(runner, build, upstream)
+    nested = run_nested_rpc_regression(runner, build, upstream, nested_expected)
     newer_grammar = run_newer_grammar_syntax(runner, build, syntax_expected)
     summary = {"producer_commit": producer_sha, "codeql_version": version_line,
         "source_oracle_sha256": digest(run / "source-oracle.json"),
         "default_suite": default, "direct_control_matrix": direct_controls,
         "tailscale_explicit_regression": tailscale,
+        "nested_rpc_explicit_regression": nested,
         "newer_grammar_syntax": newer_grammar,
         "commands": runner.commands, "command_count": len(runner.commands)}
     bundle_path = run / "artifact/codeql-ucode-linux.tar.gz"
