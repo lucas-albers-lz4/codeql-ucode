@@ -1,0 +1,4285 @@
+{
+  "schema": "issue155-open-wx-source-first-v1",
+  "positions": "one-based byte columns, end exclusive; tabs count one byte",
+  "real": {
+    "path": "usr/share/rpcd/ucode/weechat.uc",
+    "source_path": "applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc",
+    "fixture_path": "ql/test/issue155-rename/usr/share/rpcd/ucode/weechat.uc",
+    "bytes": 11315,
+    "sha256": "548213868a38bd84d8a9cb9b9842c647d4e79fa9df21b815b6b869f26a54e44e",
+    "git_blob": "9f17ae3718a278eab2813ccfae4f2c732a9118e8",
+    "expected_route": {
+      "classification": "plain",
+      "reason": "rpcd_raw_mode_full_path",
+      "status": "plain_route_selected"
+    },
+    "expected_model_rows": 1,
+    "anchors": {
+      "import_statement": {
+        "text": "import { access, lstat, readfile, unlink, rename, chmod, chown, mkdir, mkdtemp, open, popen } from 'fs';",
+        "start": [
+          4,
+          1
+        ],
+        "end_exclusive": [
+          4,
+          105
+        ]
+      },
+      "import_specifier": {
+        "text": "open",
+        "start": [
+          4,
+          81
+        ],
+        "end_exclusive": [
+          4,
+          85
+        ]
+      },
+      "import_name": {
+        "text": "open",
+        "start": [
+          4,
+          81
+        ],
+        "end_exclusive": [
+          4,
+          85
+        ]
+      },
+      "import_module": {
+        "text": "'fs'",
+        "start": [
+          4,
+          100
+        ],
+        "end_exclusive": [
+          4,
+          104
+        ]
+      },
+      "module_fragment": {
+        "text": "fs",
+        "start": [
+          4,
+          101
+        ],
+        "end_exclusive": [
+          4,
+          103
+        ]
+      },
+      "call": {
+        "text": "open(tmp_file, 'wx', 0640)",
+        "start": [
+          365,
+          12
+        ],
+        "end_exclusive": [
+          365,
+          38
+        ]
+      },
+      "callee": {
+        "text": "open",
+        "start": [
+          365,
+          12
+        ],
+        "end_exclusive": [
+          365,
+          16
+        ]
+      },
+      "arguments": [
+        {
+          "text": "tmp_file",
+          "start": [
+            365,
+            17
+          ],
+          "end_exclusive": [
+            365,
+            25
+          ],
+          "kind": "Identifier"
+        },
+        {
+          "text": "'wx'",
+          "start": [
+            365,
+            27
+          ],
+          "end_exclusive": [
+            365,
+            31
+          ],
+          "kind": "String"
+        },
+        {
+          "text": "0640",
+          "start": [
+            365,
+            33
+          ],
+          "end_exclusive": [
+            365,
+            37
+          ],
+          "kind": "Number"
+        }
+      ],
+      "fragment_1": {
+        "text": "wx",
+        "start": [
+          365,
+          28
+        ],
+        "end_exclusive": [
+          365,
+          30
+        ]
+      }
+    }
+  },
+  "controls": [
+    {
+      "path": "open-controls/alias.uc",
+      "bytes": 66,
+      "sha256": "c96eb316b8a61d103aeb85a6e4cf00fc12a2efa2bff45c5119ed25e455848294",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open as open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            35
+          ]
+        },
+        "import_specifier": {
+          "text": "open as open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            22
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            30
+          ],
+          "end_exclusive": [
+            1,
+            34
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            31
+          ],
+          "end_exclusive": [
+            1,
+            33
+          ]
+        },
+        "alias": {
+          "text": "open",
+          "start": [
+            1,
+            18
+          ],
+          "end_exclusive": [
+            1,
+            22
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/alternate-mode.uc",
+      "bytes": 59,
+      "sha256": "a0d2640827e5bc493695561ade03946c50853949090c851731ec7b3df5a12d4f",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'w+x', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            31
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'w+x'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              24
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              26
+            ],
+            "end_exclusive": [
+              2,
+              30
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "w+x",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/duplicate.uc",
+      "bytes": 97,
+      "sha256": "f922faa80413747c761c33bf49559ae24be6f9655d9b00d1b66fd09f45ca8903",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "second_import": {
+          "text": "import { readfile as open } from 'fs';",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            39
+          ]
+        },
+        "second_specifier": {
+          "text": "readfile as open",
+          "start": [
+            2,
+            10
+          ],
+          "end_exclusive": [
+            2,
+            26
+          ]
+        },
+        "second_name": {
+          "text": "readfile",
+          "start": [
+            2,
+            10
+          ],
+          "end_exclusive": [
+            2,
+            18
+          ]
+        },
+        "second_alias": {
+          "text": "open",
+          "start": [
+            2,
+            22
+          ],
+          "end_exclusive": [
+            2,
+            26
+          ]
+        },
+        "second_module": {
+          "text": "'fs'",
+          "start": [
+            2,
+            34
+          ],
+          "end_exclusive": [
+            2,
+            38
+          ]
+        },
+        "second_fragment": {
+          "text": "fs",
+          "start": [
+            2,
+            35
+          ],
+          "end_exclusive": [
+            2,
+            37
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              3,
+              6
+            ],
+            "end_exclusive": [
+              3,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              3,
+              19
+            ],
+            "end_exclusive": [
+              3,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              3,
+              25
+            ],
+            "end_exclusive": [
+              3,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            3,
+            7
+          ],
+          "end_exclusive": [
+            3,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            3,
+            20
+          ],
+          "end_exclusive": [
+            3,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/dynamic-mode.uc",
+      "bytes": 58,
+      "sha256": "14864013c0bbf409aa7a9230e734fd199384a3d5394e15b012ba65151d9da724",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', mode, 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "mode",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "Identifier"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/dynamic-permission.uc",
+      "bytes": 58,
+      "sha256": "38d41f58fe033a433d5e3aa0e58a5fb411f493617b27938fb44bda4b5bb4dc95",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 1,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', perm)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "perm",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Identifier"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/four.uc",
+      "bytes": 67,
+      "sha256": "da8ed72d38047a6ca69a916406632217159bf0a0624ed1cac5065fad78226ce7",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640, 'extra')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            39
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          },
+          {
+            "text": "'extra'",
+            "start": [
+              2,
+              31
+            ],
+            "end_exclusive": [
+              2,
+              38
+            ],
+            "kind": "String"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        },
+        "fragment_3": {
+          "text": "extra",
+          "start": [
+            2,
+            32
+          ],
+          "end_exclusive": [
+            2,
+            37
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/literal-three.uc",
+      "bytes": 58,
+      "sha256": "32cb301da276e182f78493ba9f6dbc040ceec4c7c59398efa9ad835c6a1b37da",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 1,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/literal-two.uc",
+      "bytes": 52,
+      "sha256": "8768d15f9c914a4140e00f28008673174bfd30284ac7982eb612c8694efdc6fc",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 1,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            24
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/malformed.uc",
+      "bytes": 73,
+      "sha256": "b60e54d05fe6daaf96d76bb0cc69ebb2f834c00246940a6c327ad99336bcce24",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/no-import.uc",
+      "bytes": 31,
+      "sha256": "191ecd37fef87c3d69ebcbe274db25e55de240a6d8614b7e70e88f78f5428880",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              1,
+              6
+            ],
+            "end_exclusive": [
+              1,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              1,
+              19
+            ],
+            "end_exclusive": [
+              1,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              1,
+              25
+            ],
+            "end_exclusive": [
+              1,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            1,
+            7
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            1,
+            20
+          ],
+          "end_exclusive": [
+            1,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/one.uc",
+      "bytes": 46,
+      "sha256": "1689b25cc836965174b558a710bfeb3608b1fb78b4ef86b344badff806d3bb62",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            18
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/optional.uc",
+      "bytes": 60,
+      "sha256": "75cf768d6b5deba7d2c839d0749037cee8ff0213b76d6aa38c97b457aa53ad90",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open?.('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            32
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "optional": {
+          "text": "?.",
+          "start": [
+            2,
+            5
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              19
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              21
+            ],
+            "end_exclusive": [
+              2,
+              25
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              27
+            ],
+            "end_exclusive": [
+              2,
+              31
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            9
+          ],
+          "end_exclusive": [
+            2,
+            18
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            22
+          ],
+          "end_exclusive": [
+            2,
+            24
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/other-binding.uc",
+      "bytes": 70,
+      "sha256": "35bcd225da43912d878ed3afcd703395d1fc9b247a45e695fd4c36248f3cf4ae",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { readfile as open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            39
+          ]
+        },
+        "import_specifier": {
+          "text": "readfile as open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "import_name": {
+          "text": "readfile",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            18
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            34
+          ],
+          "end_exclusive": [
+            1,
+            38
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            35
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ]
+        },
+        "alias": {
+          "text": "open",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/property.uc",
+      "bytes": 38,
+      "sha256": "3ae322d7b145722f930d6f8ca8be17cce1e47c3d6d3c792b403038ed90f1e125",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "property": {
+          "text": "open.name",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            10
+          ]
+        },
+        "property_object": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "property_name": {
+          "text": "name",
+          "start": [
+            2,
+            6
+          ],
+          "end_exclusive": [
+            2,
+            10
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/read.uc",
+      "bytes": 57,
+      "sha256": "5e4a0d7700989f050bef715653c0503c5abcf3b65784881419e83b0f91da47ad",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'r', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            29
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'r'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              24
+            ],
+            "end_exclusive": [
+              2,
+              28
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "r",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            21
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/reassignment.uc",
+      "bytes": 72,
+      "sha256": "e3a7b801ec36017f52deed40777c64f0f6143477b09bd5b5b57bd95007a3a750",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              3,
+              6
+            ],
+            "end_exclusive": [
+              3,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              3,
+              19
+            ],
+            "end_exclusive": [
+              3,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              3,
+              25
+            ],
+            "end_exclusive": [
+              3,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            3,
+            7
+          ],
+          "end_exclusive": [
+            3,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            3,
+            20
+          ],
+          "end_exclusive": [
+            3,
+            22
+          ]
+        },
+        "write": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/shadow-lexical.uc",
+      "bytes": 105,
+      "sha256": "a055ad9519866b34cad8bbe565175a612cbbf7d5c566eb956e106754343489a0",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            46
+          ],
+          "end_exclusive": [
+            2,
+            75
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            46
+          ],
+          "end_exclusive": [
+            2,
+            50
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              51
+            ],
+            "end_exclusive": [
+              2,
+              62
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              64
+            ],
+            "end_exclusive": [
+              2,
+              68
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              70
+            ],
+            "end_exclusive": [
+              2,
+              74
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            52
+          ],
+          "end_exclusive": [
+            2,
+            61
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            65
+          ],
+          "end_exclusive": [
+            2,
+            67
+          ]
+        },
+        "shadow_lexical": {
+          "text": "open",
+          "start": [
+            2,
+            25
+          ],
+          "end_exclusive": [
+            2,
+            29
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/shadow.uc",
+      "bytes": 91,
+      "sha256": "7df95f34eab7cf42a4e609e405dc3d8b2c57b43188b65bf0c93aa8e03ec15149",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            32
+          ],
+          "end_exclusive": [
+            2,
+            61
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            32
+          ],
+          "end_exclusive": [
+            2,
+            36
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              37
+            ],
+            "end_exclusive": [
+              2,
+              48
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              50
+            ],
+            "end_exclusive": [
+              2,
+              54
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              56
+            ],
+            "end_exclusive": [
+              2,
+              60
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            38
+          ],
+          "end_exclusive": [
+            2,
+            47
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            51
+          ],
+          "end_exclusive": [
+            2,
+            53
+          ]
+        },
+        "shadow": {
+          "text": "open",
+          "start": [
+            2,
+            17
+          ],
+          "end_exclusive": [
+            2,
+            21
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/spread-mode.uc",
+      "bytes": 62,
+      "sha256": "bcabd0c49286456e8545052708fa138b339817b9e64efd28648f6a1c463a029e",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', ...modes, 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            34
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "...modes",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              27
+            ],
+            "kind": "SpreadElement"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              29
+            ],
+            "end_exclusive": [
+              2,
+              33
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/spread-path.uc",
+      "bytes": 55,
+      "sha256": "6d25690ea5405129ff8fea80c1a4b5c5ba00963aef574f6f45891e4b39651404",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open(...paths, 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            27
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "...paths",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ],
+            "kind": "SpreadElement"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              20
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              22
+            ],
+            "end_exclusive": [
+              2,
+              26
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            17
+          ],
+          "end_exclusive": [
+            2,
+            19
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/spread-permission.uc",
+      "bytes": 62,
+      "sha256": "a75a211cad7b8b2b4121136cbc722610a34a9fca3f14527b820818451a691177",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', ...perms)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            34
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "...perms",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              33
+            ],
+            "kind": "SpreadElement"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/wrapper.uc",
+      "bytes": 60,
+      "sha256": "5d8e09d167ba0aa63084df8dde051252ee62f13f5bb60637f3304795be6ae351",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "wrapped_call": {
+          "text": "(open)('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            32
+          ]
+        },
+        "wrapped_callee": {
+          "text": "(open)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "wrapped_identifier": {
+          "text": "open",
+          "start": [
+            2,
+            2
+          ],
+          "end_exclusive": [
+            2,
+            6
+          ]
+        },
+        "wrapped_arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              19
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              21
+            ],
+            "end_exclusive": [
+              2,
+              25
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              27
+            ],
+            "end_exclusive": [
+              2,
+              31
+            ],
+            "kind": "Number"
+          }
+        ]
+      }
+    },
+    {
+      "path": "open-controls/write.uc",
+      "bytes": 57,
+      "sha256": "b050845c3e2e8748e2492fb6678f47fc77d17781de1c7ae24e94bda87b9d7d53",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'w', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            29
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'w'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              24
+            ],
+            "end_exclusive": [
+              2,
+              28
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "w",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            21
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/wrong-module.uc",
+      "bytes": 61,
+      "sha256": "2da50e2b0d10e6cc6de399e1e8a6008470601bb03efad9e4430a39b59e5d4584",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'other';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            30
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'other'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "module_fragment": {
+          "text": "other",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            30
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              23
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              25
+            ],
+            "end_exclusive": [
+              2,
+              29
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/wrong-slot-path.uc",
+      "bytes": 50,
+      "sha256": "202349deab29a86739362d1e2bdfc8d158e76dac3379488bc72fbe145549be39",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('wx', 'r', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              10
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'r'",
+            "start": [
+              2,
+              12
+            ],
+            "end_exclusive": [
+              2,
+              15
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              17
+            ],
+            "end_exclusive": [
+              2,
+              21
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "wx",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            9
+          ]
+        },
+        "fragment_1": {
+          "text": "r",
+          "start": [
+            2,
+            13
+          ],
+          "end_exclusive": [
+            2,
+            14
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/wrong-slot-permission.uc",
+      "bytes": 57,
+      "sha256": "90738f1d26bb41f3d7b4cdf2059ec5b80b0358d032f9c37b34ccad273ecc612a",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'r', 'wx')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            29
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'r'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx'",
+            "start": [
+              2,
+              24
+            ],
+            "end_exclusive": [
+              2,
+              28
+            ],
+            "kind": "String"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "r",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            21
+          ]
+        },
+        "fragment_2": {
+          "text": "wx",
+          "start": [
+            2,
+            25
+          ],
+          "end_exclusive": [
+            2,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "open-controls/zero.uc",
+      "bytes": 35,
+      "sha256": "4ae2b456ebcfd6b7974cb229ff179c8643f46f25cff696bb4d14f5ec42e38417",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open()",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": []
+      }
+    },
+    {
+      "path": "open-controls/mode-escape.uc",
+      "bytes": 60,
+      "sha256": "d761915376879ff3996c983e759b3532218da0b345e6b80df0722b59f4de1d7b",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { open } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "import_specifier": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_name": {
+          "text": "open",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            23
+          ],
+          "end_exclusive": [
+            1,
+            25
+          ]
+        },
+        "call": {
+          "text": "open('/tmp/item', 'wx\\n', 0640)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            32
+          ]
+        },
+        "callee": {
+          "text": "open",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            5
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/item'",
+            "start": [
+              2,
+              6
+            ],
+            "end_exclusive": [
+              2,
+              17
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'wx\\n'",
+            "start": [
+              2,
+              19
+            ],
+            "end_exclusive": [
+              2,
+              25
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "0640",
+            "start": [
+              2,
+              27
+            ],
+            "end_exclusive": [
+              2,
+              31
+            ],
+            "kind": "Number"
+          }
+        ],
+        "fragment_0": {
+          "text": "/tmp/item",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            16
+          ]
+        },
+        "fragment_1": {
+          "text": "wx",
+          "start": [
+            2,
+            20
+          ],
+          "end_exclusive": [
+            2,
+            22
+          ]
+        },
+        "mode_escape": {
+          "text": "\\n",
+          "start": [
+            2,
+            22
+          ],
+          "end_exclusive": [
+            2,
+            24
+          ]
+        }
+      }
+    }
+  ],
+  "malformed_diagnostic": {
+    "path": "open-controls/malformed.uc",
+    "start": [
+      3,
+      12
+    ],
+    "end_inclusive": [
+      3,
+      12
+    ],
+    "count": 1,
+    "basis": "same grammar malformed suffix observed in stat and rename; fresh extraction required"
+  },
+  "unexpected_rows": "reject"
+}
