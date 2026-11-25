@@ -151,7 +151,7 @@ def mutations(source):
         result[name] = source.replace(guard, '').replace('ucode/inventory/issue-155-stat-observation', f'ucode/testing/issue-155-{name}-mutant')
     return result
 
-def model_mutations(source):
+def source_declared_fs_guard_queries(source, *, family, id_prefix, selection):
     guards = {
       'declaration': '  exists(UCODE::VariableDeclarator d | d.getName() = id)\n  or ',
       'write': '  or exists(UCODE::AssignmentExpression a | a.getLeft() = id)\n',
@@ -165,7 +165,11 @@ def model_mutations(source):
     for name, guard in guards.items():
         require(source.count(guard) == 1, f'model mutation target changed: {name}')
         body = source.replace(guard, '    1 = 1\n' if name == 'diagnostic' else '')
-        output[name] = (f"/** @name Testing-only stat {name} guard mutation\n * @kind table\n * @id ucode/testing/issue155-model-{name}-mutant\n * @tags testing\n */\nimport codeql.files.FileSystem\n" + body + """
+        output[name] = (f"/** @name Testing-only {family} {name} guard mutation\n * @kind table\n * @id ucode/testing/{id_prefix}{name}-mutant\n * @tags testing\n */\nimport codeql.files.FileSystem\n" + body + selection)
+    return output
+
+def model_mutations(source):
+    return source_declared_fs_guard_queries(source, family='stat', id_prefix='issue155-model-', selection="""
 from UCODE::CallExpression call, UCODE::AstNode arg
 where sourceDeclaredFsCall(call, "stat") and
   arg = call.getArguments().getChild(0) and arg instanceof UCODE::Expression and
@@ -173,7 +177,6 @@ where sourceDeclaredFsCall(call, "stat") and
 select call.getLocation().getFile().getRelativePath() as path, call as call_node,
   call.getFunction() as callee_node, arg as argument_node
 """)
-    return output
 
 def check_sources(stage, entries):
     for e in entries:

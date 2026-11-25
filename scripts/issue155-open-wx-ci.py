@@ -110,8 +110,6 @@ def verify_fragments(results,arguments,imports):
     require(i==Counter(imports),'import fragment identities or values')
 
 def guard_mutations():
-    variants=common.inputs.model_mutations((ROOT/'ql/lib/codeql/ucode/internal/SourceDeclaredFs.qll').read_text())
-    marker='from UCODE::CallExpression call, UCODE::AstNode arg\n'
     tail='''from UCODE::CallExpression call, UCODE::AstNode pathArg, UCODE::String mode
 where sourceDeclaredFsCall(call, "open") and pathArg = call.getArguments().getChild(0) and pathArg instanceof UCODE::Expression and
   mode = call.getArguments().getChild(1) and mode.getChild(0).(UCODE::StringFragment).getValue() = "wx" and not exists(mode.getChild(1)) and
@@ -120,11 +118,7 @@ where sourceDeclaredFsCall(call, "open") and pathArg = call.getArguments().getCh
 select call.getLocation().getFile().getRelativePath() as path, call as call_node,
   call.getFunction() as callee_node, pathArg as path_node, mode as mode_node
 '''
-    result={}
-    for name,text in variants.items():
-        require(text.count(marker)==1,f'{name}: guard mutant template')
-        result[name]=text.split(marker)[0].replace('issue155-model-','issue155-open-wx-guard-').replace('Testing-only stat','Testing-only open wx')+tail
-    return result
+    return common.inputs.source_declared_fs_guard_queries((ROOT/'ql/lib/codeql/ucode/internal/SourceDeclaredFs.qll').read_text(), family='open wx', id_prefix='issue155-open-wx-guard-', selection='\n'+tail)
 
 def candidate_tuple(raw,path,e):
     a=e['anchors'];call=oracle.node(raw,path,'CallExpression',a['call']);callee=oracle.node(raw,path,'Identifier',a['callee'])
