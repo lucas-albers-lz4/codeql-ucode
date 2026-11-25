@@ -11,6 +11,7 @@ predicate edge(UCODE::AstNode a, string field, int idx, UCODE::AstNode b) {
   exists(UCODE::CallExpression x | a=x and idx=-1 and
     (field="call-function" and b=x.getFunction() or field="call-arguments" and b=x.getArguments() or field="call-optional" and b=x.getOptionalChain()))
   or exists(UCODE::Arguments x | a=x and b=x.getChild(idx) and field="argument")
+  or exists(UCODE::ParenthesizedExpression x | a=x and idx=-1 and field="parenthesized-child" and b=x.getChild())
   or exists(UCODE::MemberExpression x | a=x and idx=-1 and
     (field="member-object" and b=x.getObject() or field="member-property" and b=x.getProperty() or field="member-optional" and b=x.getOptionalChain()))
   or exists(UCODE::FunctionExpression x | a=x and idx=-1 and field="function-parameters" and b=x.getParameters())
@@ -42,7 +43,9 @@ from UCODE::AstNode a, UCODE::AstNode b, string field, int idx
 where
   (a.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/ddns.uc" or
    a.getLocation().getFile().getRelativePath().matches("controls/%") or
-   a.getLocation().getFile().getRelativePath().matches("model-controls/%")) and
+   a.getLocation().getFile().getRelativePath().matches("model-controls/%") or
+   a.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/weechat.uc" or
+   a.getLocation().getFile().getRelativePath().matches("rename-controls/%")) and
   edge(a, field, idx, b)
 select a.getLocation().getFile().getRelativePath() as path, a as source,
   a.getPrimaryQlClasses() as source_classes, field, idx as field_index, b as target,

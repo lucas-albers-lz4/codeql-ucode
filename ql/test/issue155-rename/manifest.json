@@ -1,0 +1,2402 @@
+{
+  "schema": "issue155-rename-source-first-v1",
+  "positions": "one-based byte columns, end exclusive; tabs count one byte",
+  "real": {
+    "path": "usr/share/rpcd/ucode/weechat.uc",
+    "bytes": 11315,
+    "sha256": "548213868a38bd84d8a9cb9b9842c647d4e79fa9df21b815b6b869f26a54e44e",
+    "git_blob": "9f17ae3718a278eab2813ccfae4f2c732a9118e8",
+    "source_commit": "b2e0be4b46ec0fd43394c081fa7c50657af14011",
+    "source_path": "applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc",
+    "expected_route": {
+      "classification": "plain",
+      "reason": "rpcd_raw_mode_full_path",
+      "status": "plain_route_selected"
+    },
+    "expected_model_rows": 1,
+    "anchors": {
+      "import_specifier": {
+        "text": "rename",
+        "start": [
+          4,
+          43
+        ],
+        "end_exclusive": [
+          4,
+          49
+        ]
+      },
+      "call": {
+        "text": "rename(tmp_file, path)",
+        "start": [
+          374,
+          9
+        ],
+        "end_exclusive": [
+          374,
+          31
+        ]
+      },
+      "callee": {
+        "text": "rename",
+        "start": [
+          374,
+          9
+        ],
+        "end_exclusive": [
+          374,
+          15
+        ]
+      },
+      "arguments": [
+        {
+          "kind": "Identifier",
+          "text": "tmp_file",
+          "start": [
+            374,
+            16
+          ],
+          "end_exclusive": [
+            374,
+            24
+          ]
+        },
+        {
+          "kind": "Identifier",
+          "text": "path",
+          "start": [
+            374,
+            26
+          ],
+          "end_exclusive": [
+            374,
+            30
+          ]
+        }
+      ],
+      "import_statement": {
+        "text": "import { access, lstat, readfile, unlink, rename, chmod, chown, mkdir, mkdtemp, open, popen } from 'fs';",
+        "start": [
+          4,
+          1
+        ],
+        "end_exclusive": [
+          4,
+          105
+        ]
+      },
+      "import_module": {
+        "text": "'fs'",
+        "start": [
+          4,
+          100
+        ],
+        "end_exclusive": [
+          4,
+          104
+        ]
+      },
+      "import_name": {
+        "text": "rename",
+        "start": [
+          4,
+          43
+        ],
+        "end_exclusive": [
+          4,
+          49
+        ]
+      },
+      "module_fragment": {
+        "text": "fs",
+        "start": [
+          4,
+          101
+        ],
+        "end_exclusive": [
+          4,
+          103
+        ]
+      }
+    }
+  },
+  "controls": [
+    {
+      "path": "rename-controls/literal.uc",
+      "bytes": 53,
+      "sha256": "2a8fd6e129a44483bc7574931ebc3a6e1781c3c6f694210f9e5821c9b323904d",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 1,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/identifier.uc",
+      "bytes": 79,
+      "sha256": "3ed08845f8c1d46affdf4165f701bf631da1720c7c2b3f82d7c15027b7e5f539",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 1,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename(src, dst)",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            17
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "Identifier",
+            "text": "src",
+            "start": [
+              3,
+              8
+            ],
+            "end_exclusive": [
+              3,
+              11
+            ]
+          },
+          {
+            "kind": "Identifier",
+            "text": "dst",
+            "start": [
+              3,
+              13
+            ],
+            "end_exclusive": [
+              3,
+              16
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/wrong-module.uc",
+      "bytes": 56,
+      "sha256": "3767d126d0c6a83e4d50486e94dd7a818e25abae218be3c12660d8aabea48bdb",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ]
+          }
+        ],
+        "module": {
+          "text": "'other'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            31
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'other';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            32
+          ]
+        },
+        "import_module": {
+          "text": "'other'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            31
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "other",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            30
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/alias.uc",
+      "bytes": 63,
+      "sha256": "8f12ee59981534b868ffcfe13fe75cbf3bcd96986ea18aed00ca7608204c9f8b",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename as rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ]
+          }
+        ],
+        "alias": {
+          "text": "rename",
+          "start": [
+            1,
+            20
+          ],
+          "end_exclusive": [
+            1,
+            26
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename as rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            39
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            34
+          ],
+          "end_exclusive": [
+            1,
+            38
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            35
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/duplicate.uc",
+      "bytes": 94,
+      "sha256": "c2466c90b8d2e52565dc3ffbf69e1bcaec929cc239ebc54a7feaba22097a58dc",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              3,
+              8
+            ],
+            "end_exclusive": [
+              3,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              3,
+              16
+            ],
+            "end_exclusive": [
+              3,
+              22
+            ]
+          }
+        ],
+        "second_import": {
+          "text": "import { readfile as rename } from 'fs';",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            41
+          ]
+        },
+        "second_alias": {
+          "text": "rename",
+          "start": [
+            2,
+            22
+          ],
+          "end_exclusive": [
+            2,
+            28
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "second_specifier": {
+          "text": "readfile as rename",
+          "start": [
+            2,
+            10
+          ],
+          "end_exclusive": [
+            2,
+            28
+          ]
+        },
+        "second_module": {
+          "text": "'fs'",
+          "start": [
+            2,
+            36
+          ],
+          "end_exclusive": [
+            2,
+            40
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "second_name": {
+          "text": "readfile",
+          "start": [
+            2,
+            10
+          ],
+          "end_exclusive": [
+            2,
+            18
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "second_fragment": {
+          "text": "fs",
+          "start": [
+            2,
+            37
+          ],
+          "end_exclusive": [
+            2,
+            39
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/shadow.uc",
+      "bytes": 88,
+      "sha256": "2113f2a20623a8512ccc79175cad3468b999a07d34d1f635a7936637e28a2ce6",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            34
+          ],
+          "end_exclusive": [
+            2,
+            56
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            34
+          ],
+          "end_exclusive": [
+            2,
+            40
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              41
+            ],
+            "end_exclusive": [
+              2,
+              47
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              49
+            ],
+            "end_exclusive": [
+              2,
+              55
+            ]
+          }
+        ],
+        "shadow": {
+          "text": "rename",
+          "start": [
+            2,
+            17
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/reassignment.uc",
+      "bytes": 69,
+      "sha256": "5c12350e657ee4cca307faa23aa62de5a2803783316c585ba58c321245b578d6",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            3,
+            1
+          ],
+          "end_exclusive": [
+            3,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              3,
+              8
+            ],
+            "end_exclusive": [
+              3,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              3,
+              16
+            ],
+            "end_exclusive": [
+              3,
+              22
+            ]
+          }
+        ],
+        "write": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/optional.uc",
+      "bytes": 55,
+      "sha256": "4339da810a419c79f66194e9a9421cc696dd3cb454b4a162b63d1b48f1a5494e",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename?.('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            25
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              10
+            ],
+            "end_exclusive": [
+              2,
+              16
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              18
+            ],
+            "end_exclusive": [
+              2,
+              24
+            ]
+          }
+        ],
+        "optional": {
+          "text": "?.",
+          "start": [
+            2,
+            7
+          ],
+          "end_exclusive": [
+            2,
+            9
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/zero.uc",
+      "bytes": 39,
+      "sha256": "30e6c3ab437c934eb688b934583f1be92f9ce98f3a7fd2254da9e077850bf346",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename()",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            9
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/one.uc",
+      "bytes": 45,
+      "sha256": "088420c25fa30c90c9fc308d44d5cdb10d38efcd251dcfce43ea76e82e099a10",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            15
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/three.uc",
+      "bytes": 63,
+      "sha256": "71646e4fb9807a616b994e67e174c4b557b21ea58e1684d039e3a2872db77f80",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new', '/extra')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            33
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/extra'",
+            "start": [
+              2,
+              24
+            ],
+            "end_exclusive": [
+              2,
+              32
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/spread-first.uc",
+      "bytes": 55,
+      "sha256": "e372a3dd77d45e793cefa4cd8af9c7ce05c07fa44c7218ad7e52d89bd9ed21f5",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename(...paths, '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            25
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "SpreadElement",
+            "text": "...paths",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              16
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              18
+            ],
+            "end_exclusive": [
+              2,
+              24
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/spread-second.uc",
+      "bytes": 55,
+      "sha256": "6961dcfe6a7f6d5e7d898a26d7a771de0fea5a829986fe538ba710895812513d",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', ...paths)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            25
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "SpreadElement",
+            "text": "...paths",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              24
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/property.uc",
+      "bytes": 42,
+      "sha256": "7533bc1a2c21eedf6f18404b8b17992e2f476b8f76ac1e70c19f531cfc6656df",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "property": {
+          "text": "rename.name",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            12
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "property_object": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "property_name": {
+          "text": "name",
+          "start": [
+            2,
+            8
+          ],
+          "end_exclusive": [
+            2,
+            12
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/wrapper.uc",
+      "bytes": 55,
+      "sha256": "512c8a9cd889861f87e03bab689176e2ff96779bb188f42b6171e0f47fa51496",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "wrapped_callee": {
+          "text": "(rename)",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            9
+          ]
+        },
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "wrapped_call": {
+          "text": "(rename)('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            25
+          ]
+        },
+        "wrapped_arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              10
+            ],
+            "end_exclusive": [
+              2,
+              16
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              18
+            ],
+            "end_exclusive": [
+              2,
+              24
+            ]
+          }
+        ],
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        },
+        "wrapped_identifier": {
+          "text": "rename",
+          "start": [
+            2,
+            2
+          ],
+          "end_exclusive": [
+            2,
+            8
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/malformed.uc",
+      "bytes": 68,
+      "sha256": "55810d6f5ce881741ef1379a36ff8e42f67fcfd939f6bdf5a74f7e159538e63d",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "kind": "String",
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ]
+          },
+          {
+            "kind": "String",
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ]
+          }
+        ],
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/no-import.uc",
+      "bytes": 24,
+      "sha256": "8ee9e2eb74fdbca165558bf004189b7fa0c6707794e4f28287ff601067b9a369",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/old'",
+            "start": [
+              1,
+              8
+            ],
+            "end_exclusive": [
+              1,
+              14
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'/new'",
+            "start": [
+              1,
+              16
+            ],
+            "end_exclusive": [
+              1,
+              22
+            ],
+            "kind": "String"
+          }
+        ]
+      }
+    },
+    {
+      "path": "rename-controls/other-binding.uc",
+      "bytes": 65,
+      "sha256": "f988208fae586a92861dc40021dfef54373bbca90e52bbb372128fbb9b4c6542",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            23
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            1
+          ],
+          "end_exclusive": [
+            2,
+            7
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/old'",
+            "start": [
+              2,
+              8
+            ],
+            "end_exclusive": [
+              2,
+              14
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'/new'",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              22
+            ],
+            "kind": "String"
+          }
+        ],
+        "import_statement": {
+          "text": "import { readfile as rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            41
+          ]
+        },
+        "import_specifier": {
+          "text": "readfile as rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            36
+          ],
+          "end_exclusive": [
+            1,
+            40
+          ]
+        },
+        "alias": {
+          "text": "rename",
+          "start": [
+            1,
+            22
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "import_name": {
+          "text": "readfile",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            18
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            37
+          ],
+          "end_exclusive": [
+            1,
+            39
+          ]
+        }
+      }
+    },
+    {
+      "path": "rename-controls/shadow-lexical.uc",
+      "bytes": 102,
+      "sha256": "dcf529b830ec5e42d2e0c6d584a2a3ae4a770f8c97fb4f2afc2c78601718e884",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_model_rows": 0,
+      "anchors": {
+        "import_statement": {
+          "text": "import { rename } from 'fs';",
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            29
+          ]
+        },
+        "import_specifier": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "import_name": {
+          "text": "rename",
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            16
+          ]
+        },
+        "import_module": {
+          "text": "'fs'",
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            28
+          ]
+        },
+        "call": {
+          "text": "rename('/old', '/new')",
+          "start": [
+            2,
+            48
+          ],
+          "end_exclusive": [
+            2,
+            70
+          ]
+        },
+        "callee": {
+          "text": "rename",
+          "start": [
+            2,
+            48
+          ],
+          "end_exclusive": [
+            2,
+            54
+          ]
+        },
+        "arguments": [
+          {
+            "text": "'/old'",
+            "start": [
+              2,
+              55
+            ],
+            "end_exclusive": [
+              2,
+              61
+            ],
+            "kind": "String"
+          },
+          {
+            "text": "'/new'",
+            "start": [
+              2,
+              63
+            ],
+            "end_exclusive": [
+              2,
+              69
+            ],
+            "kind": "String"
+          }
+        ],
+        "shadow_lexical": {
+          "text": "rename",
+          "start": [
+            2,
+            25
+          ],
+          "end_exclusive": [
+            2,
+            31
+          ]
+        },
+        "module_fragment": {
+          "text": "fs",
+          "start": [
+            1,
+            25
+          ],
+          "end_exclusive": [
+            1,
+            27
+          ]
+        }
+      }
+    }
+  ],
+  "malformed_diagnostic": {
+    "path": "rename-controls/malformed.uc",
+    "start": [
+      3,
+      12
+    ],
+    "end_inclusive": [
+      3,
+      12
+    ],
+    "count": 1,
+    "basis": "same grammar malformed suffix observed for stat; current extraction must verify"
+  },
+  "unexpected_rows": "reject"
+}
