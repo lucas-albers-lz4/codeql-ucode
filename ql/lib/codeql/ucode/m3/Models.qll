@@ -90,6 +90,26 @@ class SourceDeclaredFsStatCall extends NamedCall {
   UCODE::AstNode getPathArgument() { result = this.getArgument(0) }
 }
 
+/**
+ * Direct, unaliased source-declared `fs.rename` with exactly two non-spread
+ * expression arguments. This is source attribution, not runtime resolution.
+ * Unsupported and nonmatching calls remain inconclusive.
+ */
+class SourceDeclaredFsRenameCall extends NamedCall {
+  SourceDeclaredFsRenameCall() {
+    sourceDeclaredFsCall(this, "rename") and
+    this.getArgument(0) instanceof UCODE::Expression and
+    this.getArgument(1) instanceof UCODE::Expression and
+    not exists(int i | i != 0 and i != 1 and exists(this.getArgument(i)))
+  }
+
+  /** The raw first argument node, observed as the source path. */
+  UCODE::AstNode getSourceArgument() { result = this.getArgument(0) }
+
+  /** The raw second argument node, observed as the destination path. */
+  UCODE::AstNode getDestinationArgument() { result = this.getArgument(1) }
+}
+
 /** Identifier or rest identifier from a formal parameter list. */
 private predicate systemFormal(UCODE::FormalParameters ps, UCODE::Identifier id) {
   id = ps.getChild(_)
