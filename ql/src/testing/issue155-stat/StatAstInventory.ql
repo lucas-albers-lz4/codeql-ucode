@@ -23,7 +23,9 @@ private predicate targetFile(UCODE::AstNode node) {
   node.getLocation().getFile().getRelativePath() = "controls/negative-aliased-import.uc" or
   node.getLocation().getFile().getRelativePath() = "controls/negative-request-shadow.uc" or
   node.getLocation().getFile().getRelativePath() = "controls/negative-duplicate.uc" or
-  node.getLocation().getFile().getRelativePath().matches("model-controls/%")
+  node.getLocation().getFile().getRelativePath().matches("model-controls/%") or
+  node.getLocation().getFile().getRelativePath() = "usr/share/rpcd/ucode/weechat.uc" or
+  node.getLocation().getFile().getRelativePath().matches("rename-controls/%")
 }
 
 private string rawName(UCODE::AstNode node) {
