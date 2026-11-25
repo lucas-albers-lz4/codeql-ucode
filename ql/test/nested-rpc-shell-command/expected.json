@@ -1,0 +1,63 @@
+{
+  "source_fixture": "ql/test/tailscale-nested-shell/controls/usr/share/rpcd/ucode/nested_pos.uc",
+  "query": "ql/src/m4/NestedRpcShellCommand.ql",
+  "files": {
+    "renamed_pos.uc": {
+      "sha256": "5325abaab7fdf84a857b9bf6b2183ada72749af67f0a961f1250db6b94be4e3e",
+      "candidate_sinks": [
+        "18:5-50"
+      ]
+    },
+    "renamed_fixed.uc": {
+      "sha256": "e30898d14dc318f45cea509878c3685a9aac19e662be81bdb809a014f6e5f52e",
+      "candidate_sinks": []
+    },
+    "renamed_constant.uc": {
+      "sha256": "df201dde2634b95ccf0ce81bbb5f5e42220b185b1b5623390196f52b534c7f37",
+      "candidate_sinks": []
+    },
+    "renamed_reassigned.uc": {
+      "sha256": "23dc041e7f2cdd500b1ec99701ed5c167bc3df537bcd93dd60b961b73178ba59",
+      "candidate_sinks": []
+    },
+    "unreturned_method.uc": {
+      "sha256": "e953873d38476ed21c5ff31fbbf1164084eca15130437da9d412d8ec701aa458",
+      "candidate_sinks": []
+    },
+    "different_object_same_method.uc": {
+      "sha256": "343210b52c00c857538bea54a1c9a3c47a380a5143d0811772dde3177c4c2668",
+      "candidate_sinks": []
+    },
+    "push_after_join.uc": {
+      "sha256": "8d131e58591bc6ab99c813a5cd74919ac4fb7f07aa113af56a7c09efbf54e13f",
+      "candidate_sinks": []
+    },
+    "nested_helper_decoy.uc": {
+      "sha256": "7a6f3a36a92bd2ad05de9e7bcdabc9c97ea15841c93cf86bc9d7cddcc9fa5835",
+      "candidate_sinks": []
+    },
+    "helper_other_replacement.uc": {
+      "sha256": "7a600182a7fd39869f6a645d19089e5a6107fefdabed27cf27a37b001cfc95bb",
+      "candidate_sinks": []
+    }
+  },
+  "query_sha256": "eba4b5b732fdc205220c5eadd23ba992f911285b002e0beebda65f7c9b477e79",
+  "historical": {
+    "parent": {
+      "sha256": "3029c32d7ccd18efb95355aa915841e2bf467b0de147ce1a65b68c55fec9d280",
+      "candidate_sinks": [
+        "164:3-48"
+      ],
+      "luci_commit": "46cd82328dfb7fbb15961c63f9e674a41cef2500",
+      "git_blob": "8e2b7aa56a0b37c0cf392fc4c182d6ae1167e858"
+    },
+    "fixed": {
+      "sha256": "12bffca1f06aae14363f12d98680c0ca3a07223babd26131cc7c1612baf8fc4e",
+      "candidate_sinks": [],
+      "luci_commit": "507ab5e45c304543d4111af9a331db0f03be6bcb",
+      "git_blob": "b7bf94b0baff7817dad2a010b04e1ba293d59733"
+    }
+  },
+  "producer_base_commit": "8d0caef1c9f9b683c1e3d9369f63b2d6aaf288eb",
+  "source_fixture_sha256": "f410af3bbbea20098e78e863c56967bf90af94f908c26f771c2f89c1cdb50592"
+}
