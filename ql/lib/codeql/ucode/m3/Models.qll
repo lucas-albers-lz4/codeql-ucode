@@ -74,6 +74,22 @@ class NamedFsPopenCall extends NamedCall {
   }
 }
 
+/**
+ * Direct, unaliased source-declared `fs.stat` with one non-spread expression.
+ * This is conservative source attribution, not a resolved runtime callable.
+ * Unsupported and nonmatching calls remain inconclusive.
+ */
+class SourceDeclaredFsStatCall extends NamedCall {
+  SourceDeclaredFsStatCall() {
+    sourceDeclaredFsCall(this, "stat") and
+    this.getArgument(0) instanceof UCODE::Expression and
+    not exists(int i | i != 0 and exists(this.getArgument(i)))
+  }
+
+  /** The raw syntax node for the sole path argument. */
+  UCODE::AstNode getPathArgument() { result = this.getArgument(0) }
+}
+
 /** Identifier or rest identifier from a formal parameter list. */
 private predicate systemFormal(UCODE::FormalParameters ps, UCODE::Identifier id) {
   id = ps.getChild(_)

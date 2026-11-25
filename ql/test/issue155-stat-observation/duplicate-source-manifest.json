@@ -1,0 +1,290 @@
+{
+  "schema": "issue155-duplicate-source-first-v1",
+  "positions": "one-based line and byte column, end exclusive; ASCII fixture",
+  "entity_ids": "unknown until database-local raw extraction; map kind and position, independently review before observing candidate results",
+  "baseline_paths": [
+    "controls/positive-direct.uc"
+  ],
+  "mutant_paths": [
+    "controls/positive-direct.uc",
+    "controls/negative-duplicate.uc"
+  ],
+  "row_multiplicity_per_listed_path": 1,
+  "unexpected_rows": "reject",
+  "files": [
+    {
+      "path": "controls/positive-direct.uc",
+      "bytes": 352,
+      "sha256": "6deffd5ab279ed907db2f453f4605e64552643baadb3819a8265771cdd2d762e",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_success_rows": 1,
+      "expected_extraction_error_rows": 0,
+      "expected_local_stat_import_bindings": 1,
+      "expected_named_specifiers": 2,
+      "tuple": {
+        "call_node": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_node": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "text": "stat"
+        },
+        "import_node": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "specifier_node": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "text": "stat"
+        },
+        "handler_node": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "formal_node": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "text": "request"
+        },
+        "argument_node": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            63
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "substitution_node": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            58
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "property_node": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            57
+          ],
+          "text": "request.args.service_name"
+        },
+        "args_node": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            44
+          ],
+          "text": "request.args"
+        },
+        "receiver_node": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            39
+          ],
+          "text": "request"
+        }
+      }
+    },
+    {
+      "path": "controls/negative-duplicate.uc",
+      "bytes": 391,
+      "sha256": "60a144067ad6e354855014c763ee02ac86df0122e5f16740449a97f13bd17667",
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "expected_success_rows": 1,
+      "expected_extraction_error_rows": 0,
+      "expected_local_stat_import_bindings": 2,
+      "expected_named_specifiers": 3,
+      "tuple": {
+        "call_node": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_node": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            20
+          ],
+          "text": "stat"
+        },
+        "import_node": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "specifier_node": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "text": "stat"
+        },
+        "handler_node": {
+          "start": [
+            7,
+            11
+          ],
+          "end_exclusive": [
+            12,
+            6
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "formal_node": {
+          "start": [
+            7,
+            20
+          ],
+          "end_exclusive": [
+            7,
+            27
+          ],
+          "text": "request"
+        },
+        "argument_node": {
+          "start": [
+            10,
+            21
+          ],
+          "end_exclusive": [
+            10,
+            63
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "substitution_node": {
+          "start": [
+            10,
+            30
+          ],
+          "end_exclusive": [
+            10,
+            58
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "property_node": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            57
+          ],
+          "text": "request.args.service_name"
+        },
+        "args_node": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            44
+          ],
+          "text": "request.args"
+        },
+        "receiver_node": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            39
+          ],
+          "text": "request"
+        }
+      }
+    }
+  ]
+}

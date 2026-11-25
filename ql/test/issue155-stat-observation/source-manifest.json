@@ -1,0 +1,3876 @@
+{
+  "schema": "issue155-portable-source-manifest-v1",
+  "producer_revision": "9166af76cf6944e1b3ea5856a9176366a1f7a6ee",
+  "luci_revision": "b2e0be4b46ec0fd43394c081fa7c50657af14011",
+  "source_positions": "One-based line and byte column, end exclusive. Tabs count one byte. Absolute UTF-8 offsets zero-based, end exclusive. These are source-byte spans; map extractor conventions explicitly.",
+  "real_source": {
+    "source_path": "applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc",
+    "staged_path": "usr/share/rpcd/ucode/ddns.uc",
+    "git_blob": "32d1da738b4932159a39bcda7ee6c72b5c58a8fd",
+    "mode": "100644",
+    "bytes": 9093,
+    "sha256": "924bd2b53fbc64d2a00a479e36ef3c9239488445fc1ced70122e8ac3735fdc2b",
+    "expected_ast_anchor": {
+      "call_expression": {
+        "start": [
+          96,
+          53
+        ],
+        "end_exclusive": [
+          96,
+          103
+        ],
+        "byte_offsets": [
+          2509,
+          2559
+        ],
+        "text": "stat(`${logdir}/${request.args.service_name}.log`)"
+      },
+      "callee_identifier": {
+        "start": [
+          96,
+          53
+        ],
+        "end_exclusive": [
+          96,
+          57
+        ],
+        "byte_offsets": [
+          2509,
+          2513
+        ],
+        "text": "stat"
+      },
+      "arguments": {
+        "start": [
+          96,
+          57
+        ],
+        "end_exclusive": [
+          96,
+          103
+        ],
+        "byte_offsets": [
+          2513,
+          2559
+        ],
+        "text": "(`${logdir}/${request.args.service_name}.log`)"
+      },
+      "argument_zero_template": {
+        "start": [
+          96,
+          58
+        ],
+        "end_exclusive": [
+          96,
+          102
+        ],
+        "byte_offsets": [
+          2514,
+          2558
+        ],
+        "text": "`${logdir}/${request.args.service_name}.log`"
+      },
+      "request_substitution": {
+        "start": [
+          96,
+          69
+        ],
+        "end_exclusive": [
+          96,
+          97
+        ],
+        "byte_offsets": [
+          2525,
+          2553
+        ],
+        "text": "${request.args.service_name}"
+      },
+      "request_property": {
+        "start": [
+          96,
+          71
+        ],
+        "end_exclusive": [
+          96,
+          96
+        ],
+        "byte_offsets": [
+          2527,
+          2552
+        ],
+        "text": "request.args.service_name"
+      },
+      "request_args_receiver": {
+        "start": [
+          96,
+          71
+        ],
+        "end_exclusive": [
+          96,
+          83
+        ],
+        "byte_offsets": [
+          2527,
+          2539
+        ],
+        "text": "request.args"
+      },
+      "call_optional_token": null,
+      "post_call_member": {
+        "start": [
+          96,
+          53
+        ],
+        "end_exclusive": [
+          96,
+          109
+        ],
+        "byte_offsets": [
+          2509,
+          2565
+        ],
+        "text": "stat(`${logdir}/${request.args.service_name}.log`)?.type"
+      },
+      "member_optional_token": {
+        "start": [
+          96,
+          103
+        ],
+        "end_exclusive": [
+          96,
+          105
+        ],
+        "byte_offsets": [
+          2559,
+          2561
+        ],
+        "text": "?."
+      },
+      "member_property": {
+        "start": [
+          96,
+          105
+        ],
+        "end_exclusive": [
+          96,
+          109
+        ],
+        "byte_offsets": [
+          2561,
+          2565
+        ],
+        "text": "type"
+      },
+      "named_import_identifier": {
+        "start": [
+          5,
+          27
+        ],
+        "end_exclusive": [
+          5,
+          31
+        ],
+        "byte_offsets": [
+          63,
+          67
+        ],
+        "text": "stat"
+      },
+      "module_source_token": {
+        "start": [
+          5,
+          45
+        ],
+        "end_exclusive": [
+          5,
+          49
+        ],
+        "byte_offsets": [
+          81,
+          85
+        ],
+        "text": "'fs'"
+      },
+      "handler_key": {
+        "start": [
+          82,
+          2
+        ],
+        "end_exclusive": [
+          82,
+          18
+        ],
+        "byte_offsets": [
+          1992,
+          2008
+        ],
+        "text": "get_services_log"
+      },
+      "handler_parameters": {
+        "start": [
+          84,
+          17
+        ],
+        "end_exclusive": [
+          84,
+          26
+        ],
+        "byte_offsets": [
+          2070,
+          2079
+        ],
+        "text": "(request)"
+      },
+      "return_map_rpc_object": {
+        "start": [
+          319,
+          10
+        ],
+        "end_exclusive": [
+          319,
+          21
+        ],
+        "byte_offsets": [
+          9069,
+          9080
+        ],
+        "text": "'luci.ddns'"
+      },
+      "request_receiver_identifier": {
+        "start": [
+          96,
+          71
+        ],
+        "end_exclusive": [
+          96,
+          78
+        ],
+        "byte_offsets": [
+          2527,
+          2534
+        ],
+        "text": "request"
+      }
+    },
+    "adjacent_readfile_anchor": {
+      "call_expression": {
+        "start": [
+          97,
+          14
+        ],
+        "end_exclusive": [
+          97,
+          68
+        ],
+        "byte_offsets": [
+          2593,
+          2647
+        ],
+        "text": "readfile(`${logdir}/${request.args.service_name}.log`)"
+      },
+      "callee_identifier": {
+        "start": [
+          97,
+          14
+        ],
+        "end_exclusive": [
+          97,
+          22
+        ],
+        "byte_offsets": [
+          2593,
+          2601
+        ],
+        "text": "readfile"
+      },
+      "arguments": {
+        "start": [
+          97,
+          22
+        ],
+        "end_exclusive": [
+          97,
+          68
+        ],
+        "byte_offsets": [
+          2601,
+          2647
+        ],
+        "text": "(`${logdir}/${request.args.service_name}.log`)"
+      },
+      "argument_zero_template": {
+        "start": [
+          97,
+          23
+        ],
+        "end_exclusive": [
+          97,
+          67
+        ],
+        "byte_offsets": [
+          2602,
+          2646
+        ],
+        "text": "`${logdir}/${request.args.service_name}.log`"
+      },
+      "request_substitution": {
+        "start": [
+          97,
+          34
+        ],
+        "end_exclusive": [
+          97,
+          62
+        ],
+        "byte_offsets": [
+          2613,
+          2641
+        ],
+        "text": "${request.args.service_name}"
+      },
+      "request_property": {
+        "start": [
+          97,
+          36
+        ],
+        "end_exclusive": [
+          97,
+          61
+        ],
+        "byte_offsets": [
+          2615,
+          2640
+        ],
+        "text": "request.args.service_name"
+      },
+      "request_args_receiver": {
+        "start": [
+          97,
+          36
+        ],
+        "end_exclusive": [
+          97,
+          48
+        ],
+        "byte_offsets": [
+          2615,
+          2627
+        ],
+        "text": "request.args"
+      },
+      "call_optional_token": null,
+      "post_call_member": null,
+      "member_optional_token": null,
+      "member_property": null
+    },
+    "source_witnesses": {
+      "import_statement_source": {
+        "start": [
+          5,
+          1
+        ],
+        "end_exclusive": [
+          5,
+          50
+        ],
+        "byte_offsets": [
+          37,
+          86
+        ],
+        "text": "import { readfile, popen, stat, glob } from 'fs';"
+      },
+      "stat_import_specifier_source": {
+        "start": [
+          5,
+          27
+        ],
+        "end_exclusive": [
+          5,
+          31
+        ],
+        "byte_offsets": [
+          63,
+          67
+        ],
+        "text": "stat"
+      },
+      "import_module_literal": {
+        "start": [
+          5,
+          45
+        ],
+        "end_exclusive": [
+          5,
+          49
+        ],
+        "byte_offsets": [
+          81,
+          85
+        ],
+        "text": "'fs'"
+      },
+      "handler_key_identifier": {
+        "start": [
+          82,
+          2
+        ],
+        "end_exclusive": [
+          82,
+          18
+        ],
+        "byte_offsets": [
+          1992,
+          2008
+        ],
+        "text": "get_services_log"
+      },
+      "handler_function_expression_source": {
+        "start": [
+          84,
+          9
+        ],
+        "end_exclusive": [
+          102,
+          4
+        ],
+        "byte_offsets": [
+          2062,
+          2705
+        ],
+        "text": "function(request) {\n\t\t\tlet result = 'File not found or empty';\n\t\t\t\n\t\t\t// Get the log directory. Fall back to '/var/log/ddns' if not found\n\t\t\tlet logdir = uci.get('ddns', 'global', 'ddns_logdir') || ddns_log_path;\n\n\t\t\t// Fall back to default logdir with insecure path\n\t\t\tif (match(logdir, /\\.\\.\\//)) {\n\t\t\t\tlogdir = ddns_log_path;\n\t\t\t}\n\n\t\t\t// Check if service_name is provided and log file exists\n\t\t\tif (request.args && request.args.service_name && stat(`${logdir}/${request.args.service_name}.log`)?.type == 'file' ) {\n\t\t\t\tresult = readfile(`${logdir}/${request.args.service_name}.log`);\n\t\t\t}\n\n\t\t\tuci.unload();\n\t\t\treturn { result: result };\n\t\t}"
+      },
+      "request_formal_identifier": {
+        "start": [
+          84,
+          18
+        ],
+        "end_exclusive": [
+          84,
+          25
+        ],
+        "byte_offsets": [
+          2071,
+          2078
+        ],
+        "text": "request"
+      },
+      "request_guard_source": {
+        "start": [
+          96,
+          8
+        ],
+        "end_exclusive": [
+          96,
+          49
+        ],
+        "byte_offsets": [
+          2464,
+          2505
+        ],
+        "text": "request.args && request.args.service_name"
+      },
+      "returned_rpc_object_key": {
+        "start": [
+          319,
+          10
+        ],
+        "end_exclusive": [
+          319,
+          21
+        ],
+        "byte_offsets": [
+          9069,
+          9080
+        ],
+        "text": "'luci.ddns'"
+      },
+      "guard_request_property": {
+        "start": [
+          96,
+          24
+        ],
+        "end_exclusive": [
+          96,
+          49
+        ],
+        "byte_offsets": [
+          2480,
+          2505
+        ],
+        "text": "request.args.service_name"
+      }
+    },
+    "expected_route": {
+      "classification": "plain",
+      "reason": "rpcd_raw_mode_full_path",
+      "status": "plain_route_selected"
+    }
+  },
+  "controls": [
+    {
+      "path": "controls/positive-direct.uc",
+      "sha256": "6deffd5ab279ed907db2f453f4605e64552643baadb3819a8265771cdd2d762e",
+      "bytes": 352,
+      "criterion": "Direct named fs import and exact request property in path argument.",
+      "expected_candidate_rows": 1,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            241,
+            289
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            241,
+            245
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            245,
+            289
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            63
+          ],
+          "byte_offsets": [
+            246,
+            288
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            58
+          ],
+          "byte_offsets": [
+            255,
+            283
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            57
+          ],
+          "byte_offsets": [
+            257,
+            282
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            44
+          ],
+          "byte_offsets": [
+            257,
+            269
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            39
+          ],
+          "byte_offsets": [
+            257,
+            264
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            304
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            321,
+            339
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/positive-post-call-property.uc",
+      "sha256": "b856a069001d4c1763251ddba16b61808600f6436f577f4495ebc7ca89cb1b4c",
+      "bytes": 358,
+      "criterion": "Optional access belongs to the result member.",
+      "expected_candidate_rows": 1,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            241,
+            289
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            241,
+            245
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            245,
+            289
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            63
+          ],
+          "byte_offsets": [
+            246,
+            288
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            58
+          ],
+          "byte_offsets": [
+            255,
+            283
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            57
+          ],
+          "byte_offsets": [
+            257,
+            282
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            44
+          ],
+          "byte_offsets": [
+            257,
+            269
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            39
+          ],
+          "byte_offsets": [
+            257,
+            264
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            70
+          ],
+          "byte_offsets": [
+            241,
+            295
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)?.type"
+        },
+        "member_optional_token": {
+          "start": [
+            9,
+            64
+          ],
+          "end_exclusive": [
+            9,
+            66
+          ],
+          "byte_offsets": [
+            289,
+            291
+          ],
+          "text": "?."
+        },
+        "member_property": {
+          "start": [
+            9,
+            66
+          ],
+          "end_exclusive": [
+            9,
+            70
+          ],
+          "byte_offsets": [
+            291,
+            295
+          ],
+          "text": "type"
+        }
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            310
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`)?.type;\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            327,
+            345
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-shadow.uc",
+      "sha256": "6e868f55ea09ac97ed6e53db281cfa20143d07621d71e5558ecc9e7e2ac97d2d",
+      "bytes": 404,
+      "criterion": "Inner local declaration shadows the import.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            293,
+            341
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            20
+          ],
+          "byte_offsets": [
+            293,
+            297
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            10,
+            20
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            297,
+            341
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            10,
+            21
+          ],
+          "end_exclusive": [
+            10,
+            63
+          ],
+          "byte_offsets": [
+            298,
+            340
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            10,
+            30
+          ],
+          "end_exclusive": [
+            10,
+            58
+          ],
+          "byte_offsets": [
+            307,
+            335
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            57
+          ],
+          "byte_offsets": [
+            309,
+            334
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            44
+          ],
+          "byte_offsets": [
+            309,
+            321
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            39
+          ],
+          "byte_offsets": [
+            309,
+            316
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            12,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            356
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        let stat = function(path) { return null; };\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            15,
+            10
+          ],
+          "end_exclusive": [
+            15,
+            28
+          ],
+          "byte_offsets": [
+            373,
+            391
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": {
+          "start": [
+            9,
+            9
+          ],
+          "end_exclusive": [
+            9,
+            52
+          ],
+          "byte_offsets": [
+            234,
+            277
+          ],
+          "text": "let stat = function(path) { return null; };"
+        },
+        "competing_stat_declaration_name": {
+          "start": [
+            9,
+            13
+          ],
+          "end_exclusive": [
+            9,
+            17
+          ],
+          "byte_offsets": [
+            238,
+            242
+          ],
+          "text": "stat"
+        },
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-reassignment.uc",
+      "sha256": "1c2c0d814503a8a6aa03ae928cc41e534b26051ccc4cbfce65cc9cbefa8482c2",
+      "bytes": 400,
+      "criterion": "Competing write to the imported name.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            289,
+            337
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            20
+          ],
+          "byte_offsets": [
+            289,
+            293
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            10,
+            20
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            293,
+            337
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            10,
+            21
+          ],
+          "end_exclusive": [
+            10,
+            63
+          ],
+          "byte_offsets": [
+            294,
+            336
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            10,
+            30
+          ],
+          "end_exclusive": [
+            10,
+            58
+          ],
+          "byte_offsets": [
+            303,
+            331
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            57
+          ],
+          "byte_offsets": [
+            305,
+            330
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            44
+          ],
+          "byte_offsets": [
+            305,
+            317
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            39
+          ],
+          "byte_offsets": [
+            305,
+            312
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            12,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            352
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        stat = function(path) { return null; };\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            15,
+            10
+          ],
+          "end_exclusive": [
+            15,
+            28
+          ],
+          "byte_offsets": [
+            369,
+            387
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": {
+          "start": [
+            9,
+            9
+          ],
+          "end_exclusive": [
+            9,
+            48
+          ],
+          "byte_offsets": [
+            234,
+            273
+          ],
+          "text": "stat = function(path) { return null; };"
+        },
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": {
+          "start": [
+            9,
+            9
+          ],
+          "end_exclusive": [
+            9,
+            13
+          ],
+          "byte_offsets": [
+            234,
+            238
+          ],
+          "text": "stat"
+        },
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-other-module.uc",
+      "sha256": "23efd8f5b2c49b9ed832b492959473d9c1490a63ec43afeb9cb7eee26c024c28",
+      "bytes": 365,
+      "criterion": "Same name and import form, different module.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            254,
+            302
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            254,
+            258
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            258,
+            302
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            63
+          ],
+          "byte_offsets": [
+            259,
+            301
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            58
+          ],
+          "byte_offsets": [
+            268,
+            296
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            57
+          ],
+          "byte_offsets": [
+            270,
+            295
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            44
+          ],
+          "byte_offsets": [
+            270,
+            282
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            39
+          ],
+          "byte_offsets": [
+            270,
+            277
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            50
+          ],
+          "byte_offsets": [
+            0,
+            49
+          ],
+          "text": "import { stat, readfile } from 'fixture_helpers';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            49
+          ],
+          "byte_offsets": [
+            31,
+            48
+          ],
+          "text": "'fixture_helpers'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            95,
+            102
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            160,
+            317
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            169,
+            176
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            186,
+            230
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            191,
+            216
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            191,
+            198
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            334,
+            352
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-fixed-path.uc",
+      "sha256": "a0ebab5c38173350d12c87f923c7d3f4103a2b029278fe78db0bce6bee813d26",
+      "bytes": 336,
+      "criterion": "Request guard remains, no request property in path.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            48
+          ],
+          "byte_offsets": [
+            241,
+            273
+          ],
+          "text": "stat(`${base}/${'fixture'}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            241,
+            245
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            48
+          ],
+          "byte_offsets": [
+            245,
+            273
+          ],
+          "text": "(`${base}/${'fixture'}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            47
+          ],
+          "byte_offsets": [
+            246,
+            272
+          ],
+          "text": "`${base}/${'fixture'}.log`"
+        },
+        "request_substitution": null,
+        "request_property": null,
+        "request_args_receiver": null,
+        "request_receiver_identifier": null,
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            288
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${'fixture'}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            305,
+            323
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null,
+        "fixed_path_substitution": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            42
+          ],
+          "byte_offsets": [
+            255,
+            267
+          ],
+          "text": "${'fixture'}"
+        }
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-readfile.uc",
+      "sha256": "2c85529d4593b42e4e2f672e91aab955babca8746d4ad63bfad6328d95a0320a",
+      "bytes": 356,
+      "criterion": "Same input shape to a different fs callee.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            68
+          ],
+          "byte_offsets": [
+            241,
+            293
+          ],
+          "text": "readfile(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            24
+          ],
+          "byte_offsets": [
+            241,
+            249
+          ],
+          "text": "readfile"
+        },
+        "arguments": {
+          "start": [
+            9,
+            24
+          ],
+          "end_exclusive": [
+            9,
+            68
+          ],
+          "byte_offsets": [
+            249,
+            293
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            25
+          ],
+          "end_exclusive": [
+            9,
+            67
+          ],
+          "byte_offsets": [
+            250,
+            292
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            34
+          ],
+          "end_exclusive": [
+            9,
+            62
+          ],
+          "byte_offsets": [
+            259,
+            287
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            36
+          ],
+          "end_exclusive": [
+            9,
+            61
+          ],
+          "byte_offsets": [
+            261,
+            286
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            36
+          ],
+          "end_exclusive": [
+            9,
+            48
+          ],
+          "byte_offsets": [
+            261,
+            273
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            36
+          ],
+          "end_exclusive": [
+            9,
+            43
+          ],
+          "byte_offsets": [
+            261,
+            268
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            308
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return readfile(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            325,
+            343
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-optional-call.uc",
+      "sha256": "3c7ca6890e20c7b2d46f2e063931db57d6113171d07899d42f5d214a438bcd96",
+      "bytes": 354,
+      "criterion": "Optional marker belongs to the call itself.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            66
+          ],
+          "byte_offsets": [
+            241,
+            291
+          ],
+          "text": "stat?.(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            241,
+            245
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            22
+          ],
+          "end_exclusive": [
+            9,
+            66
+          ],
+          "byte_offsets": [
+            247,
+            291
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            23
+          ],
+          "end_exclusive": [
+            9,
+            65
+          ],
+          "byte_offsets": [
+            248,
+            290
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            60
+          ],
+          "byte_offsets": [
+            257,
+            285
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            34
+          ],
+          "end_exclusive": [
+            9,
+            59
+          ],
+          "byte_offsets": [
+            259,
+            284
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            34
+          ],
+          "end_exclusive": [
+            9,
+            46
+          ],
+          "byte_offsets": [
+            259,
+            271
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            34
+          ],
+          "end_exclusive": [
+            9,
+            41
+          ],
+          "byte_offsets": [
+            259,
+            266
+          ],
+          "text": "request"
+        },
+        "call_optional_token": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            22
+          ],
+          "byte_offsets": [
+            245,
+            247
+          ],
+          "text": "?."
+        },
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            306
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat?.(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            323,
+            341
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-aliased-import.uc",
+      "sha256": "cf026f38eef38c75b7ce28930a279148f41349f980a5d6737ad307a8234db82c",
+      "bytes": 360,
+      "criterion": "Preserve the local and exported stat names and fs module; add only a same-name alias specifier.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            249,
+            297
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            9,
+            16
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            249,
+            253
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            9,
+            20
+          ],
+          "end_exclusive": [
+            9,
+            64
+          ],
+          "byte_offsets": [
+            253,
+            297
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            9,
+            21
+          ],
+          "end_exclusive": [
+            9,
+            63
+          ],
+          "byte_offsets": [
+            254,
+            296
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            9,
+            30
+          ],
+          "end_exclusive": [
+            9,
+            58
+          ],
+          "byte_offsets": [
+            263,
+            291
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            57
+          ],
+          "byte_offsets": [
+            265,
+            290
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            44
+          ],
+          "byte_offsets": [
+            265,
+            277
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            9,
+            32
+          ],
+          "end_exclusive": [
+            9,
+            39
+          ],
+          "byte_offsets": [
+            265,
+            272
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            45
+          ],
+          "byte_offsets": [
+            0,
+            44
+          ],
+          "text": "import { stat as stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            22
+          ],
+          "byte_offsets": [
+            9,
+            21
+          ],
+          "text": "stat as stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": {
+          "start": [
+            1,
+            18
+          ],
+          "end_exclusive": [
+            1,
+            22
+          ],
+          "byte_offsets": [
+            17,
+            21
+          ],
+          "text": "stat"
+        },
+        "import_module_literal": {
+          "start": [
+            1,
+            40
+          ],
+          "end_exclusive": [
+            1,
+            44
+          ],
+          "byte_offsets": [
+            39,
+            43
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            24
+          ],
+          "end_exclusive": [
+            1,
+            32
+          ],
+          "byte_offsets": [
+            23,
+            31
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            90,
+            97
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            11,
+            6
+          ],
+          "byte_offsets": [
+            155,
+            312
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            164,
+            171
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            181,
+            225
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            186,
+            211
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            186,
+            193
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            14,
+            10
+          ],
+          "end_exclusive": [
+            14,
+            28
+          ],
+          "byte_offsets": [
+            329,
+            347
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": null,
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": null
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/negative-request-shadow.uc",
+      "sha256": "743ace8e39d4ef595871a4b1de486e554d78cff44c1d42246f637b9f5cf59cdc",
+      "bytes": 413,
+      "criterion": "Preserve the outer request formal and guard, with the path root now resolving to the inner request local.",
+      "expected_candidate_rows": 0,
+      "source_anchors": {
+        "call_expression": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            302,
+            350
+          ],
+          "text": "stat(`${base}/${request.args.service_name}.log`)"
+        },
+        "callee_identifier": {
+          "start": [
+            10,
+            16
+          ],
+          "end_exclusive": [
+            10,
+            20
+          ],
+          "byte_offsets": [
+            302,
+            306
+          ],
+          "text": "stat"
+        },
+        "arguments": {
+          "start": [
+            10,
+            20
+          ],
+          "end_exclusive": [
+            10,
+            64
+          ],
+          "byte_offsets": [
+            306,
+            350
+          ],
+          "text": "(`${base}/${request.args.service_name}.log`)"
+        },
+        "argument_zero_template": {
+          "start": [
+            10,
+            21
+          ],
+          "end_exclusive": [
+            10,
+            63
+          ],
+          "byte_offsets": [
+            307,
+            349
+          ],
+          "text": "`${base}/${request.args.service_name}.log`"
+        },
+        "request_substitution": {
+          "start": [
+            10,
+            30
+          ],
+          "end_exclusive": [
+            10,
+            58
+          ],
+          "byte_offsets": [
+            316,
+            344
+          ],
+          "text": "${request.args.service_name}"
+        },
+        "request_property": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            57
+          ],
+          "byte_offsets": [
+            318,
+            343
+          ],
+          "text": "request.args.service_name"
+        },
+        "request_args_receiver": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            44
+          ],
+          "byte_offsets": [
+            318,
+            330
+          ],
+          "text": "request.args"
+        },
+        "request_receiver_identifier": {
+          "start": [
+            10,
+            32
+          ],
+          "end_exclusive": [
+            10,
+            39
+          ],
+          "byte_offsets": [
+            318,
+            325
+          ],
+          "text": "request"
+        },
+        "call_optional_token": null,
+        "post_call_member": null,
+        "member_optional_token": null,
+        "member_property": null
+      },
+      "source_witnesses": {
+        "import_statement_source": {
+          "start": [
+            1,
+            1
+          ],
+          "end_exclusive": [
+            1,
+            37
+          ],
+          "byte_offsets": [
+            0,
+            36
+          ],
+          "text": "import { stat, readfile } from 'fs';"
+        },
+        "stat_import_specifier_source": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_exported_identifier": {
+          "start": [
+            1,
+            10
+          ],
+          "end_exclusive": [
+            1,
+            14
+          ],
+          "byte_offsets": [
+            9,
+            13
+          ],
+          "text": "stat"
+        },
+        "stat_import_alias_identifier": null,
+        "import_module_literal": {
+          "start": [
+            1,
+            32
+          ],
+          "end_exclusive": [
+            1,
+            36
+          ],
+          "byte_offsets": [
+            31,
+            35
+          ],
+          "text": "'fs'"
+        },
+        "readfile_import_specifier_source": {
+          "start": [
+            1,
+            16
+          ],
+          "end_exclusive": [
+            1,
+            24
+          ],
+          "byte_offsets": [
+            15,
+            23
+          ],
+          "text": "readfile"
+        },
+        "handler_key_identifier": {
+          "start": [
+            4,
+            3
+          ],
+          "end_exclusive": [
+            4,
+            10
+          ],
+          "byte_offsets": [
+            82,
+            89
+          ],
+          "text": "observe"
+        },
+        "handler_function_expression_source": {
+          "start": [
+            6,
+            11
+          ],
+          "end_exclusive": [
+            12,
+            6
+          ],
+          "byte_offsets": [
+            147,
+            365
+          ],
+          "text": "function(request) {\n      if (!request.args.service_name) return null;\n      {\n        let request = { args: { service_name: 'fixture' } };\n        return stat(`${base}/${request.args.service_name}.log`);\n      }\n    }"
+        },
+        "request_formal_identifier": {
+          "start": [
+            6,
+            20
+          ],
+          "end_exclusive": [
+            6,
+            27
+          ],
+          "byte_offsets": [
+            156,
+            163
+          ],
+          "text": "request"
+        },
+        "request_guard_source": {
+          "start": [
+            7,
+            7
+          ],
+          "end_exclusive": [
+            7,
+            51
+          ],
+          "byte_offsets": [
+            173,
+            217
+          ],
+          "text": "if (!request.args.service_name) return null;"
+        },
+        "guard_request_property": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            37
+          ],
+          "byte_offsets": [
+            178,
+            203
+          ],
+          "text": "request.args.service_name"
+        },
+        "guard_receiver_identifier": {
+          "start": [
+            7,
+            12
+          ],
+          "end_exclusive": [
+            7,
+            19
+          ],
+          "byte_offsets": [
+            178,
+            185
+          ],
+          "text": "request"
+        },
+        "returned_rpc_object_key": {
+          "start": [
+            15,
+            10
+          ],
+          "end_exclusive": [
+            15,
+            28
+          ],
+          "byte_offsets": [
+            382,
+            400
+          ],
+          "text": "'luci.review.stat'"
+        },
+        "intervening_setup_source": {
+          "start": [
+            9,
+            9
+          ],
+          "end_exclusive": [
+            9,
+            61
+          ],
+          "byte_offsets": [
+            234,
+            286
+          ],
+          "text": "let request = { args: { service_name: 'fixture' } };"
+        },
+        "competing_stat_declaration_name": null,
+        "competing_stat_write_identifier": null,
+        "shadow_request_declaration_name": {
+          "start": [
+            9,
+            13
+          ],
+          "end_exclusive": [
+            9,
+            20
+          ],
+          "byte_offsets": [
+            238,
+            245
+          ],
+          "text": "request"
+        }
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    }
+  ],
+  "source_first_pins_sha256": "1b1c052b189f68f69f330f55901b47d2c4f6ebd5f1500dbccb46f76a51cb4cb5"
+}
