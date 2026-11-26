@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ucode-linux-release-${{ github.ref }}
@@ -16,7 +17,7 @@ jobs:
   build:
     name: Source-pinned Linux gate and release asset
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     outputs:
       asset_sha256: ${{ steps.package.outputs.asset_sha256 }}
       manifest_sha256: ${{ steps.package.outputs.manifest_sha256 }}
@@ -49,6 +50,9 @@ jobs:
 
       - name: Test installed-stage preflight and identity checks
         run: python3 scripts/test-run-installed-stage.py
+
+      - name: Test actual-IPK staging controls
+        run: python3 scripts/test-stage-installed-ipk.py
 
       - name: Define run-owned paths
         shell: bash
@@ -105,6 +109,14 @@ jobs:
           export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
           python3 scripts/direct-rpc-release-gate.py
 
+      - name: Run installed-stage package gate on pinned actual IPKs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          bash scripts/r25-package-gate.sh
+
       - name: Package and verify versioned asset
         id: package
         shell: bash
@@ -140,6 +152,10 @@ jobs:
           cp "$DIRECT_RPC_RUN_DIR/preflight.json" "$payload/r2-preflight.json"
           cp "$DIRECT_RPC_RUN_DIR/source-oracle.json" "$payload/r2-source-oracle.json"
           cp "$DIRECT_RPC_RUN_DIR/commands.json" "$payload/r2-commands.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/stage-luci-receipt.json" "$payload/r25-stage-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/stage-wifi-receipt.json" "$payload/r25-stage-wifi.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/run-luci/receipt.json" "$payload/r25-run-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/run-wifi/receipt.json" "$payload/r25-run-wifi.json"
 
       - name: Transfer verified release payload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

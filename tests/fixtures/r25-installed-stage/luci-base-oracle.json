@@ -1,0 +1,203 @@
+{
+  "files": [
+    {
+      "expect_success": true,
+      "path": "usr/share/rpcd/ucode/luci",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "rpcd_raw_mode_full_path",
+        "status": "plain_route_selected"
+      },
+      "sha256": "6f9d972958d9cfb8a7ba421f38f0a5b03718ffeb0e30d460b64c9faf725fc54e"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/controller/admin/index.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "7d7a5dc3e694ad232e4e0f3d01db17c2f5502338aa8c4fc44fa714b0b1147620"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/controller/admin/uci.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "ac75cfef7d74f87ed7f957778004a7bf486c76df699398c215795b4947e0c93e"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/dispatcher.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "4f9923cf569aeebb956343d208bcc38f40d8a26d2f46f12c5539a9582fa4f037"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/http.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "68f8a7dffc7bccdfe98956cb3b6e0e087592c86049a2b83d061e5be3585fa5fa"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/runtime.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "b15afce07020e2a7ad50718d49a874da30d0582ede7de65e54acaceb6e9d0926"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/sys.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "0380fba5d843a8950bab0ef70982cb40ab8f475e8d267c873e4199a736b55656"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/csrftoken.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "a2f223208d9ff2c3e1bfa808f11d74636028b4902973afb5b7f336328f7e2160"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/error404.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "8fa2306435be3aca3ca59b09adaaa0190292c6cfe2fecda9df4eb3eeac5b8552"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/error500.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "6c7a519229524d7a34b18c5da97cb8b05f622ee0938fe1a4b2d2516a6adf1887"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/footer.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "5625f938d625ff406e53434d37aa7643cc09e11f74379887a4ba154021240495"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/header.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "6fb25a4ddb6038a3ffc207906157db2503cc1bff7dd230fd588776cde329c02e"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/sysauth.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "8c1dcf98cd29410021ed4f5f9dc668f8c70c0227f39f97f60f7205f9d52fa5bb"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/template/view.ut",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "ut_markup_extension",
+        "status": "inconclusive"
+      },
+      "sha256": "785bf7d4cceb5cdd9f113cbede0bde5b69e35b69cc1b51d2e498665d50091d62"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/uhttpd.uc",
+      "route": {
+        "classification": "markup",
+        "inconclusive_reason": "markup_not_modeled",
+        "reason": "markup_tag_content",
+        "status": "inconclusive"
+      },
+      "sha256": "a2b2694f52c021af16dd06ac8c988b8a0a726d9e8186d308708268ebb8849493"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/version.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "9567da9ecf509e8a58cec8b09806d8a0bd3d3717fb9a8160c24ad3e1903a6fa8"
+    },
+    {
+      "expect_success": true,
+      "path": "usr/share/ucode/luci/zoneinfo.uc",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      },
+      "sha256": "54162a073660ea65706aa920a10cfbd3ee4d345e1e4ab3bed8a8d56c9cab3863"
+    },
+    {
+      "expect_success": true,
+      "path": "www/cgi-bin/luci",
+      "route": {
+        "classification": "plain",
+        "inconclusive_reason": null,
+        "reason": "ucode_shebang",
+        "status": "plain_route_selected"
+      },
+      "sha256": "aced6c9b2e621bb6e1dd1bb7d675925e9325ed901f49b1aabb0696a06942dacb"
+    }
+  ],
+  "schema": "ucode-installed-stage-v1"
+}

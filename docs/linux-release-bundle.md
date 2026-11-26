@@ -95,6 +95,19 @@ manifest digest; the consuming lock must pin that digest independently. A
 versioned release and clean Linux package tests are still required before
 the candidate becomes a supported interface.
 
+The producer's R2.5 CI gate uses actual `luci-base` and Ucode-enabled
+`wifi-scripts` IPKs retained by `codeql-openwrt` runs 45513606386 and
+45548269425. Their pinned archive SHA-256 values are
+`1a2188f5206ce61c993fdcc451781a06994ae2175b489eef56595858ef22b363`
+and `20f2e18297a10e2c2fc0f3457dee52e5ee2db01a8d17d52ba44dffaf79ba833a`.
+The source-first oracle files under `tests/fixtures/r25-installed-stage/`
+cover 18 and 17 regular package members respectively. The first includes two
+extensionless files and eight markup routes that remain inconclusive; the
+second includes Ucode-shebang `mac80211.sh` and extensionless `iwinfo`.
+`scripts/stage-installed-ipk.py` compares actual IPK member bytes and the
+independently fixed oracle before staging. GitHub Actions artifacts expire;
+the pinned runs are a temporary fixture source, not durable release custody.
+
 The producer R2 CI job can upload the resulting archive as a short-lived
 candidate beside its R2 receipt. Passing that job validates bundle creation
 and manifest checks, not release publication or downstream acceptance. R2
