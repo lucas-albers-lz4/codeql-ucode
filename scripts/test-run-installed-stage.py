@@ -73,6 +73,26 @@ class InstalledStageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "route reason mismatch"):
             runner.check_route(receipt, self.stage, oracle)
 
+    def test_excluded_regular_file_is_part_of_route_oracle(self):
+        excluded_path = self.stage / "etc/config/example"
+        excluded_path.parent.mkdir(parents=True)
+        excluded_path.write_text("config example\n")
+        excluded = {"path": "etc/config/example", "sha256": runner.sha256(excluded_path),
+                    "expect_success": False,
+                    "route": {"classification": "excluded", "reason": "no_ucode_route",
+                              "status": "excluded", "inconclusive_reason": None}}
+        self.oracle.write_text(json.dumps({"schema": "ucode-installed-stage-v1",
+                                           "files": [self.entry, excluded]}))
+        oracle = runner.load_oracle(self.oracle, self.stage)
+        receipt = self.root / "routing.json"
+        receipt.write_text(json.dumps({"input_count": 2, "duplicate_input_count": 0,
+            "decisions": [
+                {"path": str(self.stage / self.rel), "installed_path": self.rel,
+                 **self.entry["route"]},
+                {"path": str(excluded_path), "installed_path": excluded["path"],
+                 **excluded["route"]}]}))
+        runner.check_route(receipt, self.stage, oracle)
+
 
 if __name__ == "__main__":
     unittest.main()

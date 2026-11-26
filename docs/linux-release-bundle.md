@@ -61,8 +61,8 @@ signature: pin the outer archive SHA-256 through a trusted release reference.
 
 ## Installed-stage entry point (R2.5 candidate)
 
-Prepare a stage containing only the selected installed-path-shaped regular
-files. Before running CodeQL, derive a JSON oracle from the actual package
+Prepare a stage containing every installed-path-shaped regular member of the
+selected package. Before running CodeQL, derive a JSON oracle from the actual package
 members. Its schema is `ucode-installed-stage-v1`; `files` is a nonempty array
 of objects with `path` (stage-relative POSIX path), `sha256` (member bytes),
 `expect_success` (boolean), and `route` (the exact expected
@@ -101,7 +101,8 @@ The producer's R2.5 CI gate uses actual `luci-base` and Ucode-enabled
 `1a2188f5206ce61c993fdcc451781a06994ae2175b489eef56595858ef22b363`
 and `20f2e18297a10e2c2fc0f3457dee52e5ee2db01a8d17d52ba44dffaf79ba833a`.
 The source-first oracle files under `tests/fixtures/r25-installed-stage/`
-cover 18 and 17 regular package members respectively. The first includes two
+identify 18 and 17 selected members respectively, alongside all other regular
+members as explicit exclusions. The first includes two
 extensionless files and eight markup routes that remain inconclusive; the
 second includes Ucode-shebang `mac80211.sh` and extensionless `iwinfo`.
 `scripts/stage-installed-ipk.py` compares actual IPK member bytes and the

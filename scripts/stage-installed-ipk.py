@@ -28,18 +28,22 @@ def candidate(path: str, data: bytes) -> bool:
     if suffix in {".uc", ".ucode", ".ut"} or path.startswith("usr/share/rpcd/ucode/"):
         return True
     first = data.split(b"\n", 1)[0].decode("utf-8", "replace")
-    if not first.startswith("#!"):
-        return False
-    words = first[2:].split()
-    if not words:
-        return False
-    interpreter = words[0]
-    if interpreter.rsplit("/", 1)[-1] == "ucode":
+    if first.startswith("#!"):
+        words = first[2:].split()
+        if words:
+            interpreter = words[0]
+            if interpreter.rsplit("/", 1)[-1] == "ucode":
+                return True
+            if interpreter in {"/usr/bin/env", "/bin/env"} and len(words) > 1:
+                command = words[2] if words[1] == "-S" and len(words) > 2 else words[1]
+                command = command.removeprefix("-S").strip("'\"")
+                command_words = command.split()
+                if command_words and command_words[0].rsplit("/", 1)[-1] == "ucode":
+                    return True
+    if any(line.lstrip().startswith(("{%", "{{", "{#"))
+           for line in data.decode("utf-8", "replace").splitlines()):
         return True
-    if interpreter in {"/usr/bin/env", "/bin/env"}:
-        command = words[2] if len(words) > 2 and words[1] == "-S" else (words[1] if len(words) > 1 else "")
-        return command.strip("'\"") == "ucode"
-    return False
+    return path.startswith("usr/share/ucode/")
 
 
 def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> dict:
@@ -52,6 +56,8 @@ def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> d
     if oracle.get("schema") != "ucode-installed-stage-v1":
         raise ValueError("wrong stage oracle schema")
     expected = {entry["path"]: entry["sha256"] for entry in oracle["files"]}
+    expected_selected = {entry["path"] for entry in oracle["files"]
+                         if entry["route"]["classification"] != "excluded"}
     if len(expected) != len(oracle["files"]):
         raise ValueError("duplicate oracle path")
     with tarfile.open(fileobj=io.BytesIO(raw), mode="r:gz") as package:
@@ -59,10 +65,15 @@ def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> d
         if len(data_members) != 1 or not data_members[0].isfile():
             raise ValueError("IPK lacks one regular data.tar.gz member")
         payload = package.extractfile(data_members[0]).read()
-    selected: dict[str, bytes] = {}
+    staged: dict[str, bytes] = {}
+    selected: set[str] = set()
     with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as data_archive:
+        seen_members: set[str] = set()
         for member in data_archive:
             name = safe_path(member.name)
+            if name in seen_members:
+                raise ValueError(f"duplicate data archive member: {name}")
+            seen_members.add(name)
             if member.isdir():
                 continue
             if not member.isfile():
@@ -70,24 +81,27 @@ def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> d
                     raise ValueError(f"expected file is not a regular archive member: {name}")
                 continue
             data = data_archive.extractfile(member).read()
-            if not candidate(name, data):
-                continue
-            if name in selected:
-                raise ValueError(f"duplicate candidate member: {name}")
-            selected[name] = data
-    if set(selected) != set(expected):
-        raise ValueError(f"candidate inventory differs from oracle: missing={sorted(set(expected)-set(selected))} extra={sorted(set(selected)-set(expected))}")
-    for name, data in selected.items():
+            if name in staged:
+                raise ValueError(f"duplicate regular member: {name}")
+            staged[name] = data
+            if candidate(name, data):
+                selected.add(name)
+    if set(staged) != set(expected):
+        raise ValueError(f"regular-member inventory differs from oracle: missing={sorted(set(expected)-set(staged))} extra={sorted(set(staged)-set(expected))}")
+    if selected != expected_selected:
+        raise ValueError(f"selected-member inventory differs from oracle: missing={sorted(expected_selected-selected)} extra={sorted(selected-expected_selected)}")
+    for name, data in staged.items():
         if digest(data) != expected[name]:
             raise ValueError(f"member digest mismatch: {name}")
     output.mkdir(parents=True)
-    for name, data in selected.items():
+    for name, data in staged.items():
         target = output / name
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(data)
     return {"schema": "ucode-ipk-stage-receipt-v1", "ipk_sha256": expected_sha256,
             "oracle_sha256": digest(oracle_path.read_bytes()),
-            "files": {name: digest(data) for name, data in sorted(selected.items())}}
+            "files": {name: digest(data) for name, data in sorted(staged.items())},
+            "selected": sorted(selected), "excluded": sorted(set(staged) - selected)}
 
 
 def main() -> int:

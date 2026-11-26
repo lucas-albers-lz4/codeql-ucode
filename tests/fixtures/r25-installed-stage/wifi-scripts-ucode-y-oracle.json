@@ -1,6 +1,83 @@
 {
   "files": [
     {
+      "expect_success": false,
+      "path": "etc/hotplug.d/ieee80211/10-wifi-detect",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "0f8f0830ce3f7708505596b6b933e6ec6bc1156af26ae890ba4b69ae015abdfb"
+    },
+    {
+      "expect_success": false,
+      "path": "etc/hotplug.d/ieee80211/11-ath12k-trigger",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "9a898767faf6a90ec53a8d603f8bcdfb604161c40f20556578e183c9e241c930"
+    },
+    {
+      "expect_success": false,
+      "path": "etc/rc.button/wps",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "cc6b4b9f6ac632c39ec1e9c9c7496b2c6b6d3e1f9c1a22b52f19e9c14741f510"
+    },
+    {
+      "expect_success": false,
+      "path": "etc/rc.wps/40-wps_ap",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "71e7284fc2edd429fb7d51bebe7ca7bad40d55724f5575fa98a9b02911b441b5"
+    },
+    {
+      "expect_success": false,
+      "path": "etc/rc.wps/50-wps_sta",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "f22f5449f65835d4b402dc4f7906ef7a949e92902ed25d38610767d7fd438c1a"
+    },
+    {
+      "expect_success": false,
+      "path": "lib/netifd/hostapd.sh",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "30f2e5a5241f471c590bc4498efa20c500673b99c584b7ccc5b02574d58f94b3"
+    },
+    {
+      "expect_success": false,
+      "path": "lib/netifd/netifd-wireless.sh",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "60f31b2a25e4da6d5878d72d18f6be911e73245eaceb4aa76008e206cd7dafc1"
+    },
+    {
       "expect_success": true,
       "path": "lib/netifd/wireless-device.uc",
       "route": {
@@ -45,6 +122,17 @@
       "sha256": "36da7b5286c98b8e82433c3656e2c4f02e12648ba7cb75899ab5546702b2ec1c"
     },
     {
+      "expect_success": false,
+      "path": "sbin/wifi",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "44e8d36504c097484a6053a5d7b5604e33a2116be2c4ac12f2e799eaa37cd8c9"
+    },
+    {
       "expect_success": true,
       "path": "usr/bin/iwinfo",
       "route": {
@@ -87,6 +175,61 @@
         "status": "plain_route_selected"
       },
       "sha256": "1b21c13ef3e8df83575303c9b75609f22b3e359e66128abc43ebd369652270ab"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/iso3166.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "5e0af4dae42fd4748beed51be245dcd4c4a1558976c5db7b7ce9fc88325e6bee"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/schema/wireless.wifi-device.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "5490721e58bbee6b4b1ce6b37e4dbac4f3665e937a1d2f11840a65e437f8c982"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/schema/wireless.wifi-iface.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "c3b93856ee5f0bc13a5b21d0e247e7159dea7319b462b5336c2c19422dddb97b"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/schema/wireless.wifi-station.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "db3d47e6458f64721b65d30c050e575fff0997be2fbfe07970a599a256ae6eda"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/schema/wireless.wifi-vlan.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "733e1effb37eee70906bb61d465b0d0b7893eb3b649837af3bd0dc9945f92df3"
     },
     {
       "expect_success": true,
@@ -186,6 +329,17 @@
         "status": "plain_route_selected"
       },
       "sha256": "2710fca796071133b30abedb28a8615ad0172af2b66a7c47580dde2f804eb4ee"
+    },
+    {
+      "expect_success": false,
+      "path": "usr/share/wifi_devices.json",
+      "route": {
+        "classification": "excluded",
+        "inconclusive_reason": null,
+        "reason": "no_ucode_route",
+        "status": "excluded"
+      },
+      "sha256": "4060e6cb0327ae9722deba26c226a85f70dfd3cf4fc7301fbec9221170faca16"
     }
   ],
   "schema": "ucode-installed-stage-v1"

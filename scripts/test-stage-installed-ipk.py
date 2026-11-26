@@ -32,7 +32,10 @@ class StageTests(unittest.TestCase):
         self.source = b"#!/usr/bin/ucode\nreturn 1;\n"
         self.oracle = self.root / "oracle.json"
         self.oracle.write_text(json.dumps({"schema": "ucode-installed-stage-v1", "files": [
-            {"path": "usr/bin/tool", "sha256": stage_ipk.digest(self.source)}]}))
+            {"path": "usr/bin/tool", "sha256": stage_ipk.digest(self.source),
+             "route": {"classification": "plain"}},
+            {"path": "usr/bin/shell", "sha256": stage_ipk.digest(b"#!/bin/sh\n"),
+             "route": {"classification": "excluded"}}]}))
 
     def ipk(self, entries):
         path = self.root / "fixture.ipk"
@@ -43,23 +46,30 @@ class StageTests(unittest.TestCase):
         path = self.ipk({"./usr/bin/tool": self.source, "./usr/bin/shell": b"#!/bin/sh\n"})
         receipt = stage_ipk.stage(path, stage_ipk.digest(path.read_bytes()), self.oracle,
                                   self.root / "stage")
-        self.assertEqual(receipt["files"], {"usr/bin/tool": stage_ipk.digest(self.source)})
+        self.assertEqual(receipt["selected"], ["usr/bin/tool"])
+        self.assertEqual(receipt["excluded"], ["usr/bin/shell"])
         self.assertEqual((self.root / "stage/usr/bin/tool").read_bytes(), self.source)
 
     def test_changed_ipk_and_extra_candidate_fail(self):
-        path = self.ipk({"./usr/bin/tool": self.source})
+        path = self.ipk({"./usr/bin/tool": self.source, "./usr/bin/shell": b"#!/bin/sh\n"})
         with self.assertRaisesRegex(ValueError, "IPK digest"):
             stage_ipk.stage(path, "0" * 64, self.oracle, self.root / "stage")
         path = self.ipk({"./usr/bin/tool": self.source, "./usr/bin/extra.uc": b"return 2;\n"})
-        with self.assertRaisesRegex(ValueError, "candidate inventory"):
+        with self.assertRaisesRegex(ValueError, "regular-member inventory"):
             stage_ipk.stage(path, stage_ipk.digest(path.read_bytes()), self.oracle,
                             self.root / "stage")
 
     def test_traversal_member_rejected(self):
-        path = self.ipk({"../outside.uc": b"return 2;\n", "usr/bin/tool": self.source})
+        path = self.ipk({"../outside.uc": b"return 2;\n", "usr/bin/tool": self.source,
+                         "usr/bin/shell": b"#!/bin/sh\n"})
         with self.assertRaisesRegex(ValueError, "unsafe archive member"):
             stage_ipk.stage(path, stage_ipk.digest(path.read_bytes()), self.oracle,
                             self.root / "stage")
+
+    def test_selection_rules_cover_markup_and_uncertain_paths(self):
+        self.assertTrue(stage_ipk.candidate("usr/share/ucode/luci/page", b"  {{ value }}\n"))
+        self.assertTrue(stage_ipk.candidate("usr/share/ucode/unknown", b"plain text\n"))
+        self.assertFalse(stage_ipk.candidate("etc/config/example", b"config example\n"))
 
 
 if __name__ == "__main__":
