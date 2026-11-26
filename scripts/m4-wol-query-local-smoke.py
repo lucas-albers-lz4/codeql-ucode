@@ -78,7 +78,12 @@ def main():
     shutil.copytree(packages, home / '.codeql/packages')
     tmp = work / 'tmp'
     tmp.mkdir()
-    env = dict(os.environ, HOME=str(home), TMPDIR=str(tmp))
+    cache = work / 'xdg-cache'
+    config = work / 'xdg-config'
+    cache.mkdir()
+    config.mkdir()
+    env = dict(os.environ, HOME=str(home), TMPDIR=str(tmp), TMP=str(tmp),
+               TEMP=str(tmp), XDG_CACHE_HOME=str(cache), XDG_CONFIG_HOME=str(config))
     search = ':'.join(map(str, (PACK, ROOT / 'ql/lib', ROOT / 'ql/src')))
     records = []
     run('init', [CLI, 'database', 'init', str(db), '--language=ucode',
