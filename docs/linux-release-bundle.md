@@ -10,13 +10,14 @@ independent SHA-256 pin in `codeql-openwrt`.
 
 ## Included files
 
-The archive contains exactly three producer payload trees:
+The archive contains four producer payload trees:
 
 - `extractor-pack/`: generated Linux extractor, routing configuration,
   dbscheme, downgrade data and helper tools.
 - `ql/lib/`: the versioned `ucode-all` QL library pack and lockfile.
 - `ql/src/`: the versioned `ucode-queries` QL query pack, default suite,
   queries and lockfile.
+- `runner/`: the installed-stage entry point.
 
 It also carries the small root `.codeqlmanifest.json`, which declares the
 `ql/*/qlpack.yml` workspace packs needed to resolve the local `${workspace}`
@@ -57,6 +58,42 @@ signature: pin the outer archive SHA-256 through a trusted release reference.
    all three directories as the query search path. Resolve the default suite
    with the pinned CLI and require the reviewed rule/query identities. Verify
    the fresh extraction multiset and actual SARIF at the consumer gate.
+
+## Installed-stage entry point (R2.5 candidate)
+
+Prepare a stage containing only the selected installed-path-shaped regular
+files. Before running CodeQL, derive a JSON oracle from the actual package
+members. Its schema is `ucode-installed-stage-v1`; `files` is a nonempty array
+of objects with `path` (stage-relative POSIX path), `sha256` (member bytes),
+`expect_success` (boolean), and `route` (the exact expected
+`classification`, `reason`, `status`, and `inconclusive_reason`, using JSON
+`null` when absent). Include excluded or inconclusive members explicitly.
+The runner rejects any staged file missing from the oracle, duplicate path,
+changed byte, symlink or special file before invoking CodeQL.
+
+After independently verifying and extracting the release archive and pinned
+CodeQL CLI, run from a fresh Linux workspace:
+
+```sh
+python3 codeql-ucode-linux/runner/run-installed-stage.py \
+  --bundle codeql-ucode-linux \
+  --bundle-sha256 '<pinned bundle-manifest.json SHA-256>' \
+  --codeql /absolute/path/to/codeql \
+  --stage /absolute/path/to/stage \
+  --oracle /absolute/path/to/oracle.json \
+  --output /absolute/path/to/new-run
+```
+
+The command copies the bundle into its new run directory, installs locked QL
+dependencies into run-owned HOME and caches, creates a new database, checks
+the route and exact successful-file multiset, requires zero extraction errors,
+resolves and analyzes the default suite, and writes `receipt.json`,
+`commands.json`, raw command logs, routing and SARIF under `new-run/`. It
+records command wall times and Linux peak RSS where GNU time is available.
+This interface does not derive the oracle or authenticate a caller-supplied
+manifest digest; the consuming lock must pin that digest independently. A
+versioned release and clean Linux package tests are still required before
+the candidate becomes a supported interface.
 
 The producer R2 CI job can upload the resulting archive as a short-lived
 candidate beside its R2 receipt. Passing that job validates bundle creation

@@ -21,6 +21,8 @@ on:
       - 'scripts/package-linux-release.py'
       - 'scripts/verify-linux-release-bundle.py'
       - 'scripts/test-package-linux-release.py'
+      - 'scripts/test-run-installed-stage.py'
+      - 'runner/**'
 
 permissions:
   contents: read
@@ -42,6 +44,9 @@ jobs:
 
       - name: Test Linux bundle archiver and verifier
         run: python3 scripts/test-package-linux-release.py
+
+      - name: Test installed-stage preflight and identity checks
+        run: python3 scripts/test-run-installed-stage.py
 
       - name: Define run-owned paths
         shell: bash

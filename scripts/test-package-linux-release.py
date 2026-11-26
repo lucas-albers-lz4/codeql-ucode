@@ -59,6 +59,7 @@ class BundleTests(unittest.TestCase):
         (self.root / "ql/src/codeql-suites").mkdir()
         (self.root / "ql/src/codeql-suites/code-scanning.qls").write_text("- description: test\n")
         (self.root / "ql/src/Sample.ql").write_text("select 1\n")
+        (self.root / "runner/run-installed-stage.py").write_text("#!/usr/bin/env python3\n")
         self.kwargs = dict(producer_commit="1" * 40, codeql_version="2.27.4",
                            rustc="rustc 1.100.0", cargo="cargo 1.100.0",
                            grammar_revision="2" * 40,
@@ -83,7 +84,8 @@ class BundleTests(unittest.TestCase):
                                            "extractor-pack/tools/linux64/extractor",
                                            "ql/lib/qlpack.yml", "ql/lib/codeql-pack.lock.yml",
                                            "ql/src/qlpack.yml", "ql/src/codeql-pack.lock.yml",
-                                           "ql/src/codeql-suites/code-scanning.qls", "ql/src/Sample.ql"})
+                                           "ql/src/codeql-suites/code-scanning.qls", "ql/src/Sample.ql",
+                                           "runner/run-installed-stage.py"})
             for name, entry in listed.items():
                 data = archive.extractfile("codeql-ucode-linux/" + name).read()
                 self.assertEqual(len(data), entry["bytes"])

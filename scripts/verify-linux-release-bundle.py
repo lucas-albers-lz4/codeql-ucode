@@ -96,7 +96,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     for item in entries:
         rel = item.get("path")
         path = parse_relative_path(rel, "file")
-        if (path.parts[0] not in {"extractor-pack", "ql"} and rel != ".codeqlmanifest.json") or rel in expected:
+        if (path.parts[0] not in {"extractor-pack", "ql", "runner"} and rel != ".codeqlmanifest.json") or rel in expected:
             raise ValueError(f"invalid or duplicate manifest path: {rel!r}")
         if (not re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", "")) or
                 not isinstance(item.get("bytes"), int) or item["bytes"] < 0):
@@ -109,7 +109,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     for item in dir_entries:
         rel = item.get("path")
         path = parse_relative_path(rel, "directory")
-        if path.parts[0] not in {"extractor-pack", "ql"} or rel in expected_dirs or rel in expected:
+        if path.parts[0] not in {"extractor-pack", "ql", "runner"} or rel in expected_dirs or rel in expected:
             raise ValueError(f"invalid or duplicate manifest directory: {rel!r}")
         if item.get("mode") != 0o755:
             raise ValueError(f"unsupported payload directory mode: {rel}")
@@ -119,6 +119,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
         "extractor-pack/codeql-extractor.yml", "extractor-pack/tools/linux64/extractor", "ql/lib/qlpack.yml",
         "ql/lib/codeql-pack.lock.yml", "ql/src/qlpack.yml",
         "ql/src/codeql-pack.lock.yml", "ql/src/codeql-suites/code-scanning.qls",
+        "runner/run-installed-stage.py",
     }
     if not required_files.issubset(expected):
         raise ValueError(f"required producer pack files missing: {sorted(required_files-set(expected))}")
@@ -128,7 +129,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     if not re.search(r"(?m)^name:\s*ucode\s*$", extractor_config):
         raise ValueError("extractor pack configuration is not for ucode")
     actual_root_children = {p.name for p in root.iterdir()}
-    if actual_root_children != {".codeqlmanifest.json", "bundle-manifest.json", "extractor-pack", "ql"}:
+    if actual_root_children != {".codeqlmanifest.json", "bundle-manifest.json", "extractor-pack", "ql", "runner"}:
         raise ValueError(f"unexpected bundle-root members: {sorted(actual_root_children)}")
     workspace = json.loads((root / ".codeqlmanifest.json").read_text(encoding="utf-8"))
     if workspace.get("provide") != ["ql/*/qlpack.yml"]:
@@ -149,7 +150,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
         raise ValueError("QL root directory mode or manifest entry mismatch")
     observed_dirs = set()
     observed_dirs.add("ql")
-    for base in (root / "extractor-pack", root / "ql/lib", root / "ql/src"):
+    for base in (root / "extractor-pack", root / "ql/lib", root / "ql/src", root / "runner"):
         if not base.is_dir() or base.is_symlink():
             raise ValueError(f"missing/invalid payload directory: {base}")
         base_rel = base.relative_to(root).as_posix()
