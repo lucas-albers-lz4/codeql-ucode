@@ -5,9 +5,18 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
+import shutil
+import stat
 import tarfile
+
+MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
+MAX_MEMBER_BYTES = 64 * 1024 * 1024
+MAX_EXTRACTED_BYTES = 256 * 1024 * 1024
+MAX_MEMBERS = 20000
+MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 
 
 def digest(path: Path) -> str:
@@ -35,6 +44,35 @@ def parse_relative_path(rel: str, kind: str) -> PurePosixPath:
     return path
 
 
+def preflight_payload_tree(root: Path) -> None:
+    """Reject links and special files before reading any bundle payload."""
+    count = 0
+    total_bytes = 0
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                count += 1
+                if count > MAX_MEMBERS:
+                    raise ValueError("bundle root has too many members")
+                info = entry.stat(follow_symlinks=False)
+                if stat.S_ISDIR(info.st_mode):
+                    pending.append(Path(entry.path))
+                elif stat.S_ISREG(info.st_mode):
+                    if info.st_nlink != 1:
+                        raise ValueError(f"bundle root contains hardlinked file: {entry.path}")
+                    if entry.name == "bundle-manifest.json" and directory == root and info.st_size > MAX_MANIFEST_BYTES:
+                        raise ValueError("bundle manifest exceeds size limit")
+                    if info.st_size > MAX_MEMBER_BYTES:
+                        raise ValueError("bundle member exceeds size limit")
+                    total_bytes += info.st_size
+                    if total_bytes > MAX_EXTRACTED_BYTES:
+                        raise ValueError("bundle root exceeds size limit")
+                else:
+                    raise ValueError(f"bundle root contains link or special file: {entry.path}")
+
+
 def verify(root: Path, expected_release_tag: str | None = None,
            expected_producer_commit: str | None = None,
            expected_manifest_sha256: str | None = None) -> dict:
@@ -42,6 +80,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     if root.is_symlink():
         raise ValueError("bundle root must not be a symlink")
     root = root.resolve(strict=True)
+    preflight_payload_tree(root)
     manifest_path = root / "bundle-manifest.json"
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise ValueError("bundle manifest must be a regular file")
@@ -96,7 +135,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     for item in entries:
         rel = item.get("path")
         path = parse_relative_path(rel, "file")
-        if (path.parts[0] not in {"extractor-pack", "ql"} and rel != ".codeqlmanifest.json") or rel in expected:
+        if (path.parts[0] not in {"extractor-pack", "ql", "runner"} and rel != ".codeqlmanifest.json") or rel in expected:
             raise ValueError(f"invalid or duplicate manifest path: {rel!r}")
         if (not re.fullmatch(r"[0-9a-f]{64}", item.get("sha256", "")) or
                 not isinstance(item.get("bytes"), int) or item["bytes"] < 0):
@@ -109,7 +148,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     for item in dir_entries:
         rel = item.get("path")
         path = parse_relative_path(rel, "directory")
-        if path.parts[0] not in {"extractor-pack", "ql"} or rel in expected_dirs or rel in expected:
+        if path.parts[0] not in {"extractor-pack", "ql", "runner"} or rel in expected_dirs or rel in expected:
             raise ValueError(f"invalid or duplicate manifest directory: {rel!r}")
         if item.get("mode") != 0o755:
             raise ValueError(f"unsupported payload directory mode: {rel}")
@@ -119,6 +158,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
         "extractor-pack/codeql-extractor.yml", "extractor-pack/tools/linux64/extractor", "ql/lib/qlpack.yml",
         "ql/lib/codeql-pack.lock.yml", "ql/src/qlpack.yml",
         "ql/src/codeql-pack.lock.yml", "ql/src/codeql-suites/code-scanning.qls",
+        "runner/run-installed-stage.py",
     }
     if not required_files.issubset(expected):
         raise ValueError(f"required producer pack files missing: {sorted(required_files-set(expected))}")
@@ -128,7 +168,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     if not re.search(r"(?m)^name:\s*ucode\s*$", extractor_config):
         raise ValueError("extractor pack configuration is not for ucode")
     actual_root_children = {p.name for p in root.iterdir()}
-    if actual_root_children != {".codeqlmanifest.json", "bundle-manifest.json", "extractor-pack", "ql"}:
+    if actual_root_children != {".codeqlmanifest.json", "bundle-manifest.json", "extractor-pack", "ql", "runner"}:
         raise ValueError(f"unexpected bundle-root members: {sorted(actual_root_children)}")
     workspace = json.loads((root / ".codeqlmanifest.json").read_text(encoding="utf-8"))
     if workspace.get("provide") != ["ql/*/qlpack.yml"]:
@@ -149,7 +189,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
         raise ValueError("QL root directory mode or manifest entry mismatch")
     observed_dirs = set()
     observed_dirs.add("ql")
-    for base in (root / "extractor-pack", root / "ql/lib", root / "ql/src"):
+    for base in (root / "extractor-pack", root / "ql/lib", root / "ql/src", root / "runner"):
         if not base.is_dir() or base.is_symlink():
             raise ValueError(f"missing/invalid payload directory: {base}")
         base_rel = base.relative_to(root).as_posix()
@@ -240,6 +280,8 @@ def main() -> int:
         if args.bundle_root or not args.expected_sha256 or not args.output_dir:
             parser.error("--archive requires --expected-sha256 and --output-dir, and no bundle_root")
         archive_path = args.archive.resolve(strict=True)
+        if archive_path.stat().st_size > MAX_ARCHIVE_BYTES:
+            raise ValueError("archive exceeds compressed byte budget")
         if not __import__("re").fullmatch(r"[0-9a-f]{64}", args.expected_sha256):
             parser.error("--expected-sha256 must be 64 lowercase hex characters")
         if digest(archive_path) != args.expected_sha256:
@@ -248,7 +290,18 @@ def main() -> int:
         if output.exists():
             raise FileExistsError(f"extraction directory already exists: {output}")
         with tarfile.open(archive_path, "r:gz") as archive:
-            members = archive.getmembers()
+            members = []
+            extracted_bytes = 0
+            for member in archive:
+                if len(members) >= MAX_MEMBERS:
+                    raise ValueError("archive exceeds member budget")
+                if member.size > MAX_MEMBER_BYTES:
+                    raise ValueError(f"archive member exceeds byte budget: {member.name}")
+                if member.isreg():
+                    extracted_bytes += member.size
+                    if extracted_bytes > MAX_EXTRACTED_BYTES:
+                        raise ValueError("archive exceeds extracted byte budget")
+                members.append(member)
             if not members:
                 raise ValueError("empty archive")
             validated = []
@@ -270,6 +323,8 @@ def main() -> int:
                                     if member.name == "codeql-ucode-linux/bundle-manifest.json"), None)
             if manifest_member is None or not manifest_member.isreg():
                 raise ValueError("archive is missing its regular bundle manifest")
+            if manifest_member.size > MAX_MANIFEST_BYTES:
+                raise ValueError("bundle manifest exceeds byte budget")
             root_member = next((member for member in members if member.name == "codeql-ucode-linux"), None)
             if root_member is None or not root_member.isdir():
                 raise ValueError("archive root member must be a directory")
@@ -310,7 +365,7 @@ def main() -> int:
                 if stream is None:
                     raise ValueError(f"cannot read archive member: {member.name}")
                 with stream, target.open("xb") as destination:
-                    destination.write(stream.read())
+                    shutil.copyfileobj(stream, destination, 1024 * 1024)
                 target.chmod(member.mode & 0o777)
         result = verify(output / "codeql-ucode-linux", args.expected_release_tag,
                         args.expected_producer_commit, args.expected_manifest_sha256)

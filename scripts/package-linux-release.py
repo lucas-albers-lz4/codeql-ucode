@@ -19,7 +19,7 @@ import tarfile
 import tempfile
 
 
-PAYLOADS = ("extractor-pack", "ql/lib", "ql/src")
+PAYLOADS = ("extractor-pack", "ql/lib", "ql/src", "runner")
 CONTROL_FILES = (".codeqlmanifest.json",)
 SCHEMA_VERSION = 1
 

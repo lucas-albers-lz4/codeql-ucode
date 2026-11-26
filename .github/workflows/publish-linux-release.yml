@@ -1,4 +1,4 @@
-name: Publish versioned Linux ucode release
+name: Prepare versioned Linux ucode release
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: ucode-linux-release-${{ github.ref }}
@@ -16,7 +17,7 @@ jobs:
   build:
     name: Source-pinned Linux gate and release asset
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     outputs:
       asset_sha256: ${{ steps.package.outputs.asset_sha256 }}
       manifest_sha256: ${{ steps.package.outputs.manifest_sha256 }}
@@ -46,6 +47,15 @@ jobs:
 
       - name: Test bundle archiver and verifier
         run: python3 scripts/test-package-linux-release.py
+
+      - name: Test installed-stage preflight and identity checks
+        run: python3 scripts/test-run-installed-stage.py
+
+      - name: Test actual-IPK staging controls
+        run: python3 scripts/test-stage-installed-ipk.py
+
+      - name: Test pinned artifact ZIP boundary
+        run: python3 scripts/test-download-pinned-r25-artifact.py
 
       - name: Define run-owned paths
         shell: bash
@@ -102,6 +112,14 @@ jobs:
           export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
           python3 scripts/direct-rpc-release-gate.py
 
+      - name: Run installed-stage package gate on pinned actual IPKs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          bash scripts/r25-package-gate.sh
+
       - name: Package and verify versioned asset
         id: package
         shell: bash
@@ -137,6 +155,12 @@ jobs:
           cp "$DIRECT_RPC_RUN_DIR/preflight.json" "$payload/r2-preflight.json"
           cp "$DIRECT_RPC_RUN_DIR/source-oracle.json" "$payload/r2-source-oracle.json"
           cp "$DIRECT_RPC_RUN_DIR/commands.json" "$payload/r2-commands.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/stage-luci-receipt.json" "$payload/r25-stage-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/stage-wifi-receipt.json" "$payload/r25-stage-wifi.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/luci-artifact-receipt.json" "$payload/r25-artifact-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/wifi-artifact-receipt.json" "$payload/r25-artifact-wifi.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/run-luci/receipt.json" "$payload/r25-run-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/run-wifi/receipt.json" "$payload/r25-run-wifi.json"
 
       - name: Transfer verified release payload
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -146,7 +170,7 @@ jobs:
           path: ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/release-payload/*
 
   publish:
-    name: Publish and refetch immutable asset
+    name: Create and refetch verified draft
     needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -164,18 +188,14 @@ jobs:
           name: versioned-linux-payload-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/release-payload-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - name: Verify transfer, current remote tag, and publish once
+      - name: Verify transferred release bytes without write token
         shell: bash
         env:
-          GH_REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_POLICY_CONFIRMED: ${{ vars.RELEASE_POLICY_CONFIRMED }}
           EXPECTED_ASSET_SHA256: ${{ needs.build.outputs.asset_sha256 }}
           EXPECTED_MANIFEST_SHA256: ${{ needs.build.outputs.manifest_sha256 }}
         run: |
           set -euo pipefail
           tag="${GITHUB_REF#refs/tags/}"
-          test "$RELEASE_POLICY_CONFIRMED" = true
           payload="$RUNNER_TEMP/release-payload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           asset="$payload/codeql-ucode-linux-x64.tar.gz"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -190,6 +210,21 @@ jobs:
             --output-dir "$RUNNER_TEMP/release-verified-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" > "$payload/publish-verify.json"
           git fetch origin main
           git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+
+      - name: Create and refetch verified draft release
+        shell: bash
+        env:
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_POLICY_CONFIRMED: ${{ vars.RELEASE_POLICY_CONFIRMED }}
+          EXPECTED_ASSET_SHA256: ${{ needs.build.outputs.asset_sha256 }}
+          EXPECTED_MANIFEST_SHA256: ${{ needs.build.outputs.manifest_sha256 }}
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/}"
+          test "$RELEASE_POLICY_CONFIRMED" = true
+          payload="$RUNNER_TEMP/release-payload-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          asset="$payload/codeql-ucode-linux-x64.tar.gz"
           gh api "repos/$GH_REPO/rulesets/28002678" > "$payload/tag-ruleset.json"
           jq -e '.target == "tag" and .enforcement == "active" and
             (.conditions.ref_name.include | index("refs/tags/v*") != null) and
@@ -211,12 +246,21 @@ jobs:
             echo "Default suite and historical controls passed in workflow run $GITHUB_RUN_ID."
             echo "Consumers must pin the full commit and asset digest independently."
           } > "$notes"
+          release_type=()
+          if [[ "$tag" == *-* ]]; then
+            release_type+=(--prerelease --latest=false)
+          fi
           gh release create "$tag" \
             "$asset#codeql-ucode-linux-x64.tar.gz" "$payload/SHA256SUMS#SHA256SUMS" \
-            --verify-tag --target "$GITHUB_SHA" --title "$tag" --notes-file "$notes"
+            --draft "${release_type[@]}" --verify-tag --target "$GITHUB_SHA" \
+            --title "$tag" --notes-file "$notes"
           gh release download "$tag" --pattern 'codeql-ucode-linux-x64.tar.gz' \
             --dir "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
           test "$(sha256sum "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/codeql-ucode-linux-x64.tar.gz" | cut -d ' ' -f 1)" = "$EXPECTED_ASSET_SHA256"
-          test "$(gh release view "$tag" --json isImmutable --jq '.isImmutable')" = true
+          gh release download "$tag" --pattern 'SHA256SUMS' \
+            --dir "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          cmp "$payload/SHA256SUMS" "$RUNNER_TEMP/release-refetch-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT/SHA256SUMS"
+          test "$(gh release view "$tag" --json isDraft --jq '.isDraft')" = true
           remote_commit="$(git ls-remote origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk '$2 ~ /\^\{\}$/ {peeled=$1} $2 !~ /\^\{\}$/ {direct=$1} END {print peeled ? peeled : direct}')"
           test "$remote_commit" = "$GITHUB_SHA"
+          echo "Verified draft $tag. An administrator must check the live immutable-release setting before publishing."

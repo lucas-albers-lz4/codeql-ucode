@@ -13,6 +13,7 @@ import sys
 import tempfile
 import tarfile
 import io
+import os
 import unittest
 
 
@@ -59,6 +60,7 @@ class BundleTests(unittest.TestCase):
         (self.root / "ql/src/codeql-suites").mkdir()
         (self.root / "ql/src/codeql-suites/code-scanning.qls").write_text("- description: test\n")
         (self.root / "ql/src/Sample.ql").write_text("select 1\n")
+        (self.root / "runner/run-installed-stage.py").write_text("#!/usr/bin/env python3\n")
         self.kwargs = dict(producer_commit="1" * 40, codeql_version="2.27.4",
                            rustc="rustc 1.100.0", cargo="cargo 1.100.0",
                            grammar_revision="2" * 40,
@@ -83,7 +85,8 @@ class BundleTests(unittest.TestCase):
                                            "extractor-pack/tools/linux64/extractor",
                                            "ql/lib/qlpack.yml", "ql/lib/codeql-pack.lock.yml",
                                            "ql/src/qlpack.yml", "ql/src/codeql-pack.lock.yml",
-                                           "ql/src/codeql-suites/code-scanning.qls", "ql/src/Sample.ql"})
+                                           "ql/src/codeql-suites/code-scanning.qls", "ql/src/Sample.ql",
+                                           "runner/run-installed-stage.py"})
             for name, entry in listed.items():
                 data = archive.extractfile("codeql-ucode-linux/" + name).read()
                 self.assertEqual(len(data), entry["bytes"])
@@ -103,6 +106,7 @@ class BundleTests(unittest.TestCase):
             self.assertEqual(manifest["build"]["grammar_generated_files_sha256"], "5" * 64)
             self.assertEqual(manifest["packs"]["queries"]["default_suite_sha256"],
                              hashlib.sha256(b"- description: test\n").hexdigest())
+
             self.assertEqual(manifest["packs"]["queries"]["query_files"]["Sample.ql"],
                              hashlib.sha256(b"select 1\n").hexdigest())
         extra_archive = Path(self.temp.name) / "extra-root-member.tar.gz"
@@ -136,6 +140,41 @@ class BundleTests(unittest.TestCase):
         (payload / "rogue-executable").unlink()
         (payload / "ql/src/Sample.ql").write_text("changed\n")
         with self.assertRaisesRegex(ValueError, "digest/size mismatch"):
+            verify_bundle.verify(payload)
+
+    def test_archive_byte_budget_rejects_before_open(self):
+        archive, result = self.build("bounded.tar.gz")
+        old = verify_bundle.MAX_ARCHIVE_BYTES
+        verify_bundle.MAX_ARCHIVE_BYTES = archive.stat().st_size - 1
+        self.addCleanup(setattr, verify_bundle, "MAX_ARCHIVE_BYTES", old)
+        previous_argv = sys.argv
+        sys.argv = ["verify-linux-release-bundle.py", "--archive", str(archive),
+                    "--expected-sha256", result["archive_sha256"],
+                    "--output-dir", str(self.root / "bounded-out")]
+        self.addCleanup(setattr, sys, "argv", previous_argv)
+        with self.assertRaisesRegex(ValueError, "compressed byte budget"):
+            verify_bundle.main()
+
+    def test_direct_root_rejects_links_and_fifo_before_payload_read(self):
+        archive, result = self.build("direct-preflight.tar.gz")
+        output = Path(self.temp.name) / "direct-preflight"
+        proc = subprocess.run([sys.executable, str(MODULE_PATH.with_name("verify-linux-release-bundle.py")),
+                               "--archive", str(archive), "--expected-sha256", result["archive_sha256"],
+                               "--output-dir", str(output)], capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        payload = output / "codeql-ucode-linux"
+        config = payload / "extractor-pack/codeql-extractor.yml"
+        config.unlink()
+        config.symlink_to(self.root / "Cargo.lock")
+        with self.assertRaisesRegex(ValueError, "link or special file"):
+            verify_bundle.verify(payload)
+        config.unlink()
+        os.mkfifo(config)
+        with self.assertRaisesRegex(ValueError, "link or special file"):
+            verify_bundle.verify(payload)
+        config.unlink()
+        os.link(self.root / "Cargo.lock", config)
+        with self.assertRaisesRegex(ValueError, "hardlinked file"):
             verify_bundle.verify(payload)
 
     def test_archive_traversal_fails_before_extraction(self):

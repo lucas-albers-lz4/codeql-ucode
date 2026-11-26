@@ -24,9 +24,18 @@ on:
       - 'scripts/package-linux-release.py'
       - 'scripts/verify-linux-release-bundle.py'
       - 'scripts/test-package-linux-release.py'
+      - 'scripts/test-run-installed-stage.py'
+      - 'scripts/stage-installed-ipk.py'
+      - 'scripts/download-pinned-r25-artifact.py'
+      - 'scripts/test-download-pinned-r25-artifact.py'
+      - 'scripts/test-stage-installed-ipk.py'
+      - 'scripts/r25-package-gate.sh'
+      - 'tests/fixtures/r25-installed-stage/**'
+      - 'runner/**'
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: direct-rpc-release-gate-${{ github.event.pull_request.number || github.ref }}
@@ -36,7 +45,7 @@ jobs:
   producer-r2:
     name: Linux R2 source and suite gate
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       RUSTUP_TOOLCHAIN: 1.100.0
 
@@ -45,6 +54,15 @@ jobs:
 
       - name: Test Linux bundle archiver and verifier
         run: python3 scripts/test-package-linux-release.py
+
+      - name: Test installed-stage preflight and identity checks
+        run: python3 scripts/test-run-installed-stage.py
+
+      - name: Test actual-IPK staging controls
+        run: python3 scripts/test-stage-installed-ipk.py
+
+      - name: Test pinned artifact ZIP boundary
+        run: python3 scripts/test-download-pinned-r25-artifact.py
 
       - name: Test candidate opt-in and extraction identities
         run: python3 -m unittest discover -s tests -p test_nested_rpc_candidate_gate.py
@@ -104,6 +122,14 @@ jobs:
           export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
           python3 scripts/direct-rpc-release-gate.py --nested-rpc-candidate
 
+      - name: Run installed-stage package gate on pinned actual IPKs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          bash scripts/r25-package-gate.sh
+
       - name: Upload normalized receipt and raw query outputs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -117,6 +143,11 @@ jobs:
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/artifact/codeql-ucode-linux.tar.gz
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/commands.json
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/out/**
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/stage-*-receipt.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/*-artifact-receipt.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/receipt.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/commands.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/output/**
             ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/rustup-install.time
             ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/codeql-download.time
             ${{ runner.temp }}/direct-rpc-tools-${{ github.run_id }}-${{ github.run_attempt }}/codeql-unzip.time
