@@ -172,6 +172,10 @@ class BundleTests(unittest.TestCase):
         os.mkfifo(config)
         with self.assertRaisesRegex(ValueError, "link or special file"):
             verify_bundle.verify(payload)
+        config.unlink()
+        os.link(self.root / "Cargo.lock", config)
+        with self.assertRaisesRegex(ValueError, "hardlinked file"):
+            verify_bundle.verify(payload)
 
     def test_archive_traversal_fails_before_extraction(self):
         bad = Path(self.temp.name) / "bad.tar.gz"

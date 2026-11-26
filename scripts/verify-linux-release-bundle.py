@@ -60,6 +60,8 @@ def preflight_payload_tree(root: Path) -> None:
                 if stat.S_ISDIR(info.st_mode):
                     pending.append(Path(entry.path))
                 elif stat.S_ISREG(info.st_mode):
+                    if info.st_nlink != 1:
+                        raise ValueError(f"bundle root contains hardlinked file: {entry.path}")
                     if entry.name == "bundle-manifest.json" and directory == root and info.st_size > MAX_MANIFEST_BYTES:
                         raise ValueError("bundle manifest exceeds size limit")
                     if info.st_size > MAX_MEMBER_BYTES:
