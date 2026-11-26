@@ -9,11 +9,22 @@ set -euo pipefail
 
 root="$DIRECT_RPC_RUN_DIR/r25"
 test ! -e "$root"
-mkdir -p "$root/ipk/luci" "$root/ipk/wifi"
-gh run download 45513606386 -R lucas-albers-lz4/codeql-openwrt \
-  -n luci-ipk-byte-45513606386-1 -D "$root/ipk/luci"
-gh run download 45548269425 -R lucas-albers-lz4/codeql-openwrt \
-  -n wifi-ipk-byte-45548269425-1 -D "$root/ipk/wifi"
+mkdir -p "$root/ipk"
+python3 scripts/download-pinned-r25-artifact.py \
+  --run-id 45513606386 --artifact-id 14979253876 \
+  --artifact-name luci-ipk-byte-45513606386-1 \
+  --zip-sha256 cefdf043c269e61a6e13d2dbe9213898c8898f30b7d9413761d3a51c5d9c95da \
+  --ipk-name luci-base.ipk \
+  --ipk-sha256 1a2188f5206ce61c993fdcc451781a06994ae2175b489eef56595858ef22b363 \
+  --output "$root/ipk/luci" > "$root/luci-artifact-receipt.json"
+python3 scripts/download-pinned-r25-artifact.py \
+  --run-id 45548269425 --artifact-id 14997815607 \
+  --artifact-name wifi-ipk-byte-45548269425-1 \
+  --zip-sha256 c52528d8bf453585cc5c384d1a573263db7a0102c2a9df443bee7a029869970a \
+  --ipk-name y-wifi-scripts.ipk \
+  --ipk-sha256 20f2e18297a10e2c2fc0f3457dee52e5ee2db01a8d17d52ba44dffaf79ba833a \
+  --output "$root/ipk/wifi" > "$root/wifi-artifact-receipt.json"
+unset GH_TOKEN GITHUB_TOKEN
 
 bundle="$DIRECT_RPC_RUN_DIR/verified-bundle/codeql-ucode-linux"
 test -f "$bundle/bundle-manifest.json"

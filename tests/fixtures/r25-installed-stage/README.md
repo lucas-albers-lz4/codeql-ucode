@@ -11,8 +11,8 @@ including multiplicity; these JSON files are expectations, not observations.
 
 | Package | Retained OpenWrt Actions source | Whole IPK SHA-256 |
 | --- | --- | --- |
-| `luci-base` `26.284.22350~8125d12` (`x86_64`) | Run `45513606386`, artifact `luci-ipk-byte-45513606386-1` (`14979253876`) | `1a2188f5206ce61c993fdcc451781a06994ae2175b489eef56595858ef22b363` |
-| `wifi-scripts` `1.0-r1` (`all`, `CONFIG_WIFI_SCRIPTS_UCODE=y`) | Run `45548269425`, artifact `wifi-ipk-byte-45548269425-1` (`14997815607`) | `20f2e18297a10e2c2fc0f3457dee52e5ee2db01a8d17d52ba44dffaf79ba833a` |
+| `luci-base` `26.284.22350~8125d12` (`x86_64`) | Run `45513606386`, artifact `luci-ipk-byte-45513606386-1` (`14979253876`), ZIP SHA-256 `cefdf043c269e61a6e13d2dbe9213898c8898f30b7d9413761d3a51c5d9c95da` | `1a2188f5206ce61c993fdcc451781a06994ae2175b489eef56595858ef22b363` |
+| `wifi-scripts` `1.0-r1` (`all`, `CONFIG_WIFI_SCRIPTS_UCODE=y`) | Run `45548269425`, artifact `wifi-ipk-byte-45548269425-1` (`14997815607`), ZIP SHA-256 `c52528d8bf453585cc5c384d1a573263db7a0102c2a9df443bee7a029869970a` | `20f2e18297a10e2c2fc0f3457dee52e5ee2db01a8d17d52ba44dffaf79ba833a` |
 
 The pinned OpenWrt source revision is
 `4e9642517b48bae612ff10fb72fb9199e559500e`; LuCI is

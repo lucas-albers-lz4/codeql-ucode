@@ -119,6 +119,14 @@ second includes Ucode-shebang `mac80211.sh` and extensionless `iwinfo`.
 `scripts/stage-installed-ipk.py` compares actual IPK member bytes and the
 independently fixed oracle before staging. GitHub Actions artifacts expire;
 the pinned runs are a temporary fixture source, not durable release custody.
+The producer gate fetches each artifact by its numeric artifact ID into a
+new run-owned directory. It caps the live response, checks the reviewed ZIP
+SHA-256, validates every ZIP member's path, type, uniqueness and declared size,
+then extracts only the named IPK with an exclusive create and checks its
+independently pinned digest. Other members, including build logs and the
+Wi-Fi `n` variant, are never expanded. The GitHub read token is removed from
+the environment before staging and CodeQL execution. The gate retains a small
+artifact receipt with the IDs, ZIP and IPK digests and byte counts.
 
 The producer R2 CI job can upload the resulting archive as a short-lived
 candidate beside its R2 receipt. Passing that job validates bundle creation

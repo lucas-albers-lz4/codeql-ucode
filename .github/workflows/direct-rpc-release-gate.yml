@@ -26,6 +26,8 @@ on:
       - 'scripts/test-package-linux-release.py'
       - 'scripts/test-run-installed-stage.py'
       - 'scripts/stage-installed-ipk.py'
+      - 'scripts/download-pinned-r25-artifact.py'
+      - 'scripts/test-download-pinned-r25-artifact.py'
       - 'scripts/test-stage-installed-ipk.py'
       - 'scripts/r25-package-gate.sh'
       - 'tests/fixtures/r25-installed-stage/**'
@@ -58,6 +60,9 @@ jobs:
 
       - name: Test actual-IPK staging controls
         run: python3 scripts/test-stage-installed-ipk.py
+
+      - name: Test pinned artifact ZIP boundary
+        run: python3 scripts/test-download-pinned-r25-artifact.py
 
       - name: Test candidate opt-in and extraction identities
         run: python3 -m unittest discover -s tests -p test_nested_rpc_candidate_gate.py
@@ -139,6 +144,7 @@ jobs:
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/commands.json
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/out/**
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/stage-*-receipt.json
+            ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/*-artifact-receipt.json
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/receipt.json
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/commands.json
             ${{ runner.temp }}/direct-rpc-release-${{ github.run_id }}-${{ github.run_attempt }}/r25/run-*/output/**

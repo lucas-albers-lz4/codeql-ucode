@@ -54,6 +54,9 @@ jobs:
       - name: Test actual-IPK staging controls
         run: python3 scripts/test-stage-installed-ipk.py
 
+      - name: Test pinned artifact ZIP boundary
+        run: python3 scripts/test-download-pinned-r25-artifact.py
+
       - name: Define run-owned paths
         shell: bash
         run: |
@@ -154,6 +157,8 @@ jobs:
           cp "$DIRECT_RPC_RUN_DIR/commands.json" "$payload/r2-commands.json"
           cp "$DIRECT_RPC_RUN_DIR/r25/stage-luci-receipt.json" "$payload/r25-stage-luci.json"
           cp "$DIRECT_RPC_RUN_DIR/r25/stage-wifi-receipt.json" "$payload/r25-stage-wifi.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/luci-artifact-receipt.json" "$payload/r25-artifact-luci.json"
+          cp "$DIRECT_RPC_RUN_DIR/r25/wifi-artifact-receipt.json" "$payload/r25-artifact-wifi.json"
           cp "$DIRECT_RPC_RUN_DIR/r25/run-luci/receipt.json" "$payload/r25-run-luci.json"
           cp "$DIRECT_RPC_RUN_DIR/r25/run-wifi/receipt.json" "$payload/r25-run-wifi.json"
 
