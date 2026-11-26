@@ -90,6 +90,17 @@ class SourceDeclaredFsStatCall extends NamedCall {
   UCODE::AstNode getPathArgument() { result = this.getArgument(0) }
 }
 
+/** Source-declared static namespace `fs.stat`, not runtime resolution or flow. */
+class SourceDeclaredFsNamespaceStatCall extends UCODE::CallExpression {
+  SourceDeclaredFsNamespaceStatCall() {
+    sourceDeclaredFsNamespaceCall(this, "stat") and
+    this.getArguments().getChild(0) instanceof UCODE::Expression and
+    not exists(int i | i != 0 and exists(this.getArguments().getChild(i)))
+  }
+
+  UCODE::AstNode getPathArgument() { result = this.getArguments().getChild(0) }
+}
+
 /**
  * Direct, unaliased source-declared `fs.rename` with exactly two non-spread
  * expression arguments. This is source attribution, not runtime resolution.
