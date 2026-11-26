@@ -9,8 +9,9 @@
 
 import codeql.files.FileSystem
 import codeql.ucode.Diagnostics
+import codeql.ucode.ast.AstNodes
 
-from File f
+from UcodeFile f
 where
   not exists(ExtractionError e | e.getLocation().getFile() = f) and
   exists(f.getRelativePath())

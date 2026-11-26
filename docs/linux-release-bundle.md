@@ -79,6 +79,7 @@ python3 codeql-ucode-linux/runner/run-installed-stage.py \
   --bundle codeql-ucode-linux \
   --bundle-sha256 '<pinned bundle-manifest.json SHA-256>' \
   --codeql /absolute/path/to/codeql \
+  --codeql-archive /absolute/path/to/pinned-codeql-linux64.zip \
   --stage /absolute/path/to/stage \
   --oracle /absolute/path/to/oracle.json \
   --output /absolute/path/to/new-run
@@ -88,8 +89,19 @@ The command copies the bundle into its new run directory, installs locked QL
 dependencies into run-owned HOME and caches, creates a new database, checks
 the route and exact successful-file multiset, requires zero extraction errors,
 resolves and analyzes the default suite, and writes `receipt.json`,
-`commands.json`, raw command logs, routing and SARIF under `new-run/`. It
+`commands.json`, `output/coverage-manifest.json`, raw command logs, routing
+and SARIF under `new-run/`. The coverage manifest records each package member's
+actual route, digest, successful-file multiplicity, extraction-error count,
+resolved suite, SARIF digest and command costs; the receipt pins its digest. It
 records command wall times and Linux peak RSS where GNU time is available.
+The successful-file diagnostic is restricted to `UcodeFile` entities with
+extractor-emitted AST locations. An excluded file can still be represented by
+CodeQL's general file table, so a bare `File` row is insufficient evidence of
+Ucode extraction.
+The runner hashes the supplied CodeQL ZIP against the bundle's pinned ZIP
+digest and records that identity. The caller must point `--codeql` at the CLI
+extracted from that verified ZIP; the runner checks its reported version but
+does not reverify every installed CLI file against the archive.
 This interface does not derive the oracle or authenticate a caller-supplied
 manifest digest; the consuming lock must pin that digest independently. A
 versioned release and clean Linux package tests are still required before
@@ -130,6 +142,14 @@ through the admin-only repository API. Before publication, an administrator
 must query that setting, verify it is enabled, verify the draft assets and
 tag against the recorded pins, then publish the draft. A successful publish
 must be followed by an `isImmutable=true` check and independent asset refetch.
+The release operator should record the exact `gh api
+repos/lucas-albers-lz4/codeql-ucode/immutable-releases` response immediately
+before publishing, verify the draft tag and both downloaded asset hashes,
+then publish with `gh release edit TAG --draft=false --prerelease=true
+--latest=false`. If the live setting cannot be read with admin credentials,
+leave the draft unpublished. A failed preparation job leaves a draft that
+must be inspected and explicitly resolved; rerunning the tag workflow does
+not overwrite an existing release.
 The repository must protect release tags and enable immutable releases before
 publication. Set the repository variable `RELEASE_POLICY_CONFIRMED=true`
 only after checking both settings. The build job refuses to run without it;

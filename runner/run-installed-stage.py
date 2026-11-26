@@ -228,6 +228,7 @@ def execute(args: argparse.Namespace) -> dict:
     bundle = args.bundle.resolve(strict=True)
     stage = args.stage.resolve(strict=True)
     codeql = args.codeql.resolve(strict=True)
+    codeql_archive = args.codeql_archive.resolve(strict=True)
     require(bundle.is_dir() and stage.is_dir() and codeql.is_file(), "bundle, stage or CLI missing")
     oracle = load_oracle(args.oracle, stage)  # independent source expectation precedes output
     manifest = json.loads((bundle / "bundle-manifest.json").read_text())
@@ -235,6 +236,10 @@ def execute(args: argparse.Namespace) -> dict:
             "unverified bundle manifest")
     require(args.bundle_sha256 == sha256(bundle / "bundle-manifest.json"),
             "bundle manifest digest does not match consumer pin")
+    require(codeql_archive.is_file(), "CodeQL CLI archive missing")
+    archive_digest = sha256(codeql_archive)
+    require(archive_digest == manifest["build"]["codeql_cli_linux_zip_sha256"],
+            "CodeQL CLI archive differs from bundle's pinned tool")
     verify_bundle(bundle, manifest)
     run = Run(args.output.resolve(), codeql, bundle, stage)
     try:
@@ -289,22 +294,51 @@ def execute(args: argparse.Namespace) -> dict:
         sarif_summary = check_sarif(sarif, stage)
         require({e["path"]: sha256(stage / e["path"]) for e in oracle["files"]} ==
                 {e["path"]: e["sha256"] for e in oracle["files"]}, "source bytes changed during run")
+        actual_routes = {decision["installed_path"]: {
+            key: decision.get(key) for key in
+            ("classification", "reason", "status", "inconclusive_reason")}
+            for decision in route["decisions"]}
+        coverage = {"schema": "ucode-installed-stage-coverage-v1",
+                    "bundle_manifest_sha256": args.bundle_sha256,
+                    "producer_commit": manifest["producer_commit"],
+                    "release_tag": manifest["release_tag"],
+                    "codeql_version": version.strip(),
+                    "codeql_archive_sha256": archive_digest,
+                    "oracle_sha256": sha256(args.oracle),
+                    "files": [{"path": entry["path"], "sha256": entry["sha256"],
+                               "route": actual_routes[entry["path"]],
+                               "successful_count": got[entry["path"]],
+                               "extraction_error_count": 0}
+                              for entry in sorted(oracle["files"], key=lambda item: item["path"])],
+                    "routing_sha256": sha256(run.root / "output/routing.json"),
+                    "resolved_queries": queries,
+                    "resolved_suite_sha256": sha256(run.root / "output/resolved-suite.json"),
+                    "sarif": sarif_summary,
+                    "commands": [{"label": command["label"],
+                                  "exit_status": command["exit_status"],
+                                  "elapsed_seconds": command["elapsed_seconds"],
+                                  "peak_rss_kb": command["peak_rss_kb"]}
+                                 for command in run.commands]}
+        coverage_path = run.root / "output/coverage-manifest.json"
+        coverage_path.write_text(json.dumps(coverage, indent=2, sort_keys=True) + "\n")
         return {"schema": "ucode-installed-stage-receipt-v1",
                 "bundle_manifest_sha256": args.bundle_sha256,
                 "producer_commit": manifest["producer_commit"], "release_tag": manifest["release_tag"],
                 "codeql_version": version.strip(), "oracle_sha256": sha256(args.oracle),
+                "codeql_archive_sha256": archive_digest,
                 "stage_files": {e["path"]: e["sha256"] for e in oracle["files"]},
                 "routing_sha256": sha256(run.root / "output/routing.json"),
                 "successful_files": dict(sorted(got.items())), "extraction_errors": errors,
                 "resolved_queries": queries, "resolved_suite_sha256": sha256(run.root / "output/resolved-suite.json"),
-                "sarif": sarif_summary, "commands": run.commands}
+                "sarif": sarif_summary, "coverage_manifest_sha256": sha256(coverage_path),
+                "commands": run.commands}
     finally:
         (run.root / "commands.json").write_text(json.dumps(run.commands, indent=2) + "\n")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("bundle", "stage", "oracle", "codeql", "output"):
+    for name in ("bundle", "stage", "oracle", "codeql", "codeql-archive", "output"):
         parser.add_argument(f"--{name}", type=Path, required=True)
     parser.add_argument("--bundle-sha256", required=True,
                         help="independently pinned SHA-256 of bundle-manifest.json")

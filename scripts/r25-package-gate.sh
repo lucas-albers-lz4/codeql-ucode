@@ -3,6 +3,7 @@
 set -euo pipefail
 
 : "${DIRECT_RPC_RUN_DIR:?}"
+: "${DIRECT_RPC_TOOLS_DIR:?}"
 : "${CODEQL_BIN:?}"
 : "${GH_TOKEN:?}"
 
@@ -25,9 +26,15 @@ python3 scripts/stage-installed-ipk.py \
   --output "$root/stage-luci" > "$root/stage-luci-receipt.json"
 python3 "$bundle/runner/run-installed-stage.py" \
   --bundle "$bundle" --bundle-sha256 "$manifest_sha" \
-  --codeql "$CODEQL_BIN" --stage "$root/stage-luci" \
+  --codeql "$CODEQL_BIN" --codeql-archive "$DIRECT_RPC_TOOLS_DIR/download/codeql-linux64.zip" \
+  --stage "$root/stage-luci" \
   --oracle tests/fixtures/r25-installed-stage/luci-base-oracle.json \
   --output "$root/run-luci"
+jq -e '(.files | length) == 76 and
+  ([.files[] | select(.route.classification == "excluded")] | length) == 58 and
+  ([.files[].successful_count] | add) == 18 and
+  ([.files[] | select(.route.status == "inconclusive")] | length) == 8' \
+  "$root/run-luci/output/coverage-manifest.json"
 
 python3 scripts/stage-installed-ipk.py \
   --ipk "$root/ipk/wifi/y-wifi-scripts.ipk" \
@@ -36,6 +43,12 @@ python3 scripts/stage-installed-ipk.py \
   --output "$root/stage-wifi" > "$root/stage-wifi-receipt.json"
 python3 "$bundle/runner/run-installed-stage.py" \
   --bundle "$bundle" --bundle-sha256 "$manifest_sha" \
-  --codeql "$CODEQL_BIN" --stage "$root/stage-wifi" \
+  --codeql "$CODEQL_BIN" --codeql-archive "$DIRECT_RPC_TOOLS_DIR/download/codeql-linux64.zip" \
+  --stage "$root/stage-wifi" \
   --oracle tests/fixtures/r25-installed-stage/wifi-scripts-ucode-y-oracle.json \
   --output "$root/run-wifi"
+jq -e '(.files | length) == 31 and
+  ([.files[] | select(.route.classification == "excluded")] | length) == 14 and
+  ([.files[].successful_count] | add) == 17 and
+  ([.files[] | select(.route.status == "inconclusive")] | length) == 0' \
+  "$root/run-wifi/output/coverage-manifest.json"
