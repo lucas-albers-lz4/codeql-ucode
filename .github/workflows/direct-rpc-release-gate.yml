@@ -13,11 +13,14 @@ on:
       - 'ql/src/**'
       - 'ql/test/direct-rpc-shell-word/**'
       - 'ql/test/tailscale-nested-shell/**'
+      - 'ql/test/nested-rpc-shell-command/**'
       - 'ql/test/newer-grammar-syntax/**'
       - 'patches/0005-newer-wifi-ucode-grammar.patch'
       - 'scripts/clone-grammar.sh'
       - 'scripts/create-extractor-pack.sh'
       - 'scripts/direct-rpc-release-gate.py'
+      - 'scripts/nested-rpc-shell-command-verify.py'
+      - 'tests/test_nested_rpc_candidate_gate.py'
       - 'scripts/package-linux-release.py'
       - 'scripts/verify-linux-release-bundle.py'
       - 'scripts/test-package-linux-release.py'
@@ -55,6 +58,9 @@ jobs:
 
       - name: Test actual-IPK staging controls
         run: python3 scripts/test-stage-installed-ipk.py
+
+      - name: Test candidate opt-in and extraction identities
+        run: python3 -m unittest discover -s tests -p test_nested_rpc_candidate_gate.py
 
       - name: Define run-owned paths
         shell: bash
@@ -109,7 +115,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$DIRECT_RPC_BOOTSTRAP_TMP"
           export TMPDIR="$DIRECT_RPC_BOOTSTRAP_TMP"
-          python3 scripts/direct-rpc-release-gate.py
+          python3 scripts/direct-rpc-release-gate.py --nested-rpc-candidate
 
       - name: Run installed-stage package gate on pinned actual IPKs
         shell: bash
