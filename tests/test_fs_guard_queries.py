@@ -52,11 +52,15 @@ class GuardQueryTests(unittest.TestCase):
     def test_every_missing_and_duplicate_guard_is_rejected(self):
         guards = self.guard_anchors()
         self.assertEqual(len(guards), 7)
+        marker = "/** A selected dot member or any bracket member of the namespace identifier. */"
+        named, namespace = SOURCE.split(marker, 1)
         for name, guard in guards.items():
-            self.assertEqual(SOURCE.count(guard), 1)
-            for altered in (SOURCE.replace(guard, ''), SOURCE.replace(guard, guard + guard)):
+            self.assertEqual(named.count(guard), 1)
+            for changed in (named.replace(guard, ''), named.replace(guard, guard + guard)):
+                altered = changed + marker + namespace
                 with self.subTest(name=name), self.assertRaisesRegex(ValueError, f'model mutation target changed: {name}'):
                     stat.source_declared_fs_guard_queries(altered, family='test', id_prefix='test-', selection='')
+            self.assertEqual(stat.model_mutations(SOURCE), stat.model_mutations(SOURCE + guard))
 
 if __name__ == '__main__':
     unittest.main()
