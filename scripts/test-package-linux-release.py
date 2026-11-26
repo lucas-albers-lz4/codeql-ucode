@@ -105,6 +105,7 @@ class BundleTests(unittest.TestCase):
             self.assertEqual(manifest["build"]["grammar_generated_files_sha256"], "5" * 64)
             self.assertEqual(manifest["packs"]["queries"]["default_suite_sha256"],
                              hashlib.sha256(b"- description: test\n").hexdigest())
+
             self.assertEqual(manifest["packs"]["queries"]["query_files"]["Sample.ql"],
                              hashlib.sha256(b"select 1\n").hexdigest())
         extra_archive = Path(self.temp.name) / "extra-root-member.tar.gz"
@@ -139,6 +140,19 @@ class BundleTests(unittest.TestCase):
         (payload / "ql/src/Sample.ql").write_text("changed\n")
         with self.assertRaisesRegex(ValueError, "digest/size mismatch"):
             verify_bundle.verify(payload)
+
+    def test_archive_byte_budget_rejects_before_open(self):
+        archive, result = self.build("bounded.tar.gz")
+        old = verify_bundle.MAX_ARCHIVE_BYTES
+        verify_bundle.MAX_ARCHIVE_BYTES = archive.stat().st_size - 1
+        self.addCleanup(setattr, verify_bundle, "MAX_ARCHIVE_BYTES", old)
+        previous_argv = sys.argv
+        sys.argv = ["verify-linux-release-bundle.py", "--archive", str(archive),
+                    "--expected-sha256", result["archive_sha256"],
+                    "--output-dir", str(self.root / "bounded-out")]
+        self.addCleanup(setattr, sys, "argv", previous_argv)
+        with self.assertRaisesRegex(ValueError, "compressed byte budget"):
+            verify_bundle.main()
 
     def test_archive_traversal_fails_before_extraction(self):
         bad = Path(self.temp.name) / "bad.tar.gz"

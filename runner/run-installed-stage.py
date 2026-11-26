@@ -44,6 +44,12 @@ def load_oracle(path: Path, stage: Path) -> dict:
     require(oracle.get("schema") == "ucode-installed-stage-v1", "unknown stage oracle schema")
     entries = oracle.get("files")
     require(isinstance(entries, list) and entries, "stage oracle needs files")
+    actual = set()
+    for source in stage.rglob("*"):
+        require(not source.is_symlink(), f"stage symlink is unsupported: {source}")
+        require(source.is_dir() or source.is_file(), f"special stage file is unsupported: {source}")
+        if source.is_file():
+            actual.add(source.relative_to(stage).as_posix())
     seen: set[str] = set()
     for entry in entries:
         require(isinstance(entry, dict), "invalid stage entry")
@@ -63,12 +69,6 @@ def load_oracle(path: Path, stage: Path) -> dict:
         source = stage / parsed
         require(source.is_file() and not source.is_symlink(), f"missing regular stage file: {rel}")
         require(sha256(source) == entry["sha256"], f"stage digest mismatch: {rel}")
-    actual = set()
-    for source in stage.rglob("*"):
-        require(not source.is_symlink(), f"stage symlink is unsupported: {source}")
-        require(source.is_dir() or source.is_file(), f"special stage file is unsupported: {source}")
-        if source.is_file():
-            actual.add(source.relative_to(stage).as_posix())
     require(actual == seen, f"stage file inventory mismatch: missing={sorted(seen-actual)} extra={sorted(actual-seen)}")
     return oracle
 

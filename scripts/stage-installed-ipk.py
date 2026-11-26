@@ -10,6 +10,19 @@ from pathlib import Path, PurePosixPath
 import re
 import tarfile
 
+MAX_IPK_BYTES = 4 * 1024 * 1024
+MAX_DATA_TAR_BYTES = 4 * 1024 * 1024
+MAX_MEMBER_BYTES = 2 * 1024 * 1024
+MAX_TOTAL_REGULAR_BYTES = 16 * 1024 * 1024
+MAX_MEMBERS = 512
+
+
+def read_limited(stream, limit: int, label: str) -> bytes:
+    data = stream.read(limit + 1)
+    if len(data) > limit:
+        raise ValueError(f"{label} exceeds byte budget")
+    return data
+
 
 def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
@@ -49,7 +62,10 @@ def candidate(path: str, data: bytes) -> bool:
 def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> dict:
     if output.exists():
         raise FileExistsError(f"stage already exists: {output}")
-    raw = ipk.read_bytes()
+    if ipk.stat().st_size > MAX_IPK_BYTES:
+        raise ValueError("IPK exceeds byte budget")
+    with ipk.open("rb") as stream:
+        raw = read_limited(stream, MAX_IPK_BYTES, "IPK")
     if digest(raw) != expected_sha256:
         raise ValueError("IPK digest differs from independent pin")
     oracle = json.loads(oracle_path.read_text())
@@ -61,15 +77,25 @@ def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> d
     if len(expected) != len(oracle["files"]):
         raise ValueError("duplicate oracle path")
     with tarfile.open(fileobj=io.BytesIO(raw), mode="r:gz") as package:
-        data_members = [member for member in package if safe_path(member.name) == "data.tar.gz"]
+        outer_members = []
+        for member in package:
+            if len(outer_members) >= MAX_MEMBERS:
+                raise ValueError("IPK exceeds member budget")
+            outer_members.append(member)
+        data_members = [member for member in outer_members if safe_path(member.name) == "data.tar.gz"]
         if len(data_members) != 1 or not data_members[0].isfile():
             raise ValueError("IPK lacks one regular data.tar.gz member")
-        payload = package.extractfile(data_members[0]).read()
+        if data_members[0].size > MAX_DATA_TAR_BYTES:
+            raise ValueError("data.tar.gz exceeds byte budget")
+        payload = read_limited(package.extractfile(data_members[0]), MAX_DATA_TAR_BYTES, "data.tar.gz")
     staged: dict[str, bytes] = {}
     selected: set[str] = set()
     with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as data_archive:
         seen_members: set[str] = set()
+        regular_bytes = 0
         for member in data_archive:
+            if len(seen_members) >= MAX_MEMBERS:
+                raise ValueError("data archive exceeds member budget")
             name = safe_path(member.name)
             if name in seen_members:
                 raise ValueError(f"duplicate data archive member: {name}")
@@ -80,7 +106,12 @@ def stage(ipk: Path, expected_sha256: str, oracle_path: Path, output: Path) -> d
                 if name in expected:
                     raise ValueError(f"expected file is not a regular archive member: {name}")
                 continue
-            data = data_archive.extractfile(member).read()
+            if member.size > MAX_MEMBER_BYTES:
+                raise ValueError(f"member exceeds byte budget: {name}")
+            regular_bytes += member.size
+            if regular_bytes > MAX_TOTAL_REGULAR_BYTES:
+                raise ValueError("regular members exceed total byte budget")
+            data = read_limited(data_archive.extractfile(member), MAX_MEMBER_BYTES, name)
             if name in staged:
                 raise ValueError(f"duplicate regular member: {name}")
             staged[name] = data

@@ -116,19 +116,24 @@ release publication and R3 consumer acceptance remain separate gates.
 
 ## Versioned publication
 
-The `publish-linux-release.yml` tag workflow rebuilds and reruns the R2 gate
+The `publish-linux-release.yml` tag workflow rebuilds and reruns the R2 and
+R2.5 gates
 from the tagged commit in a read-only job. It requires a clean checkout, a
 version-shaped tag that resolves to the event SHA, and a commit reachable
 from `origin/main`. A separate publication job verifies the transferred
-archive, manifest, commit and tag pins, then rechecks the remote tag and main
-ancestry immediately before refusing an existing release or publishing.
-The archive is marked `versioned-release`; the publication job refetches its
-asset and compares the SHA-256 after creation.
+archive, manifest, commit and tag pins without a write token, then rechecks
+the remote tag and main ancestry before refusing an existing release or
+creating a draft. The archive is marked `versioned-release`; the draft job
+refetches both assets and compares their bytes. It does not publish the draft:
+the GitHub Actions token cannot establish the live immutable-release setting
+through the admin-only repository API. Before publication, an administrator
+must query that setting, verify it is enabled, verify the draft assets and
+tag against the recorded pins, then publish the draft. A successful publish
+must be followed by an `isImmutable=true` check and independent asset refetch.
 The repository must protect release tags and enable immutable releases before
 publication. Set the repository variable `RELEASE_POLICY_CONFIRMED=true`
 only after checking both settings. The build job refuses to run without it;
-the publication job checks GitHub's `isImmutable` field and the remote tag
-target again after publication. Workflow checks alone cannot stop an
-administrator from later changing repository policy. The consumer must independently pin the
+the draft job checks the remote tag target. Workflow checks alone cannot stop
+an administrator from later changing repository policy. The consumer must independently pin the
 full commit, tag and archive digest and verify the downloaded bytes. A
 successful publication still does not prove OpenWrt's downstream R3 handoff.

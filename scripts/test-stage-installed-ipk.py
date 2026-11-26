@@ -71,6 +71,15 @@ class StageTests(unittest.TestCase):
         self.assertTrue(stage_ipk.candidate("usr/share/ucode/unknown", b"plain text\n"))
         self.assertFalse(stage_ipk.candidate("etc/config/example", b"config example\n"))
 
+    def test_member_byte_budget_rejects_before_read(self):
+        path = self.ipk({"./usr/bin/tool": self.source, "./usr/bin/shell": b"#!/bin/sh\n"})
+        original = stage_ipk.MAX_MEMBER_BYTES
+        stage_ipk.MAX_MEMBER_BYTES = len(self.source) - 1
+        self.addCleanup(setattr, stage_ipk, "MAX_MEMBER_BYTES", original)
+        with self.assertRaisesRegex(ValueError, "member exceeds byte budget"):
+            stage_ipk.stage(path, stage_ipk.digest(path.read_bytes()), self.oracle,
+                            self.root / "stage")
+
 
 if __name__ == "__main__":
     unittest.main()

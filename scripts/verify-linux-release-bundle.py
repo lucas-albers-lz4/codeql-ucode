@@ -7,7 +7,14 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath
 import re
+import shutil
 import tarfile
+
+MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
+MAX_MEMBER_BYTES = 64 * 1024 * 1024
+MAX_EXTRACTED_BYTES = 256 * 1024 * 1024
+MAX_MEMBERS = 20000
+MAX_MANIFEST_BYTES = 4 * 1024 * 1024
 
 
 def digest(path: Path) -> str:
@@ -241,6 +248,8 @@ def main() -> int:
         if args.bundle_root or not args.expected_sha256 or not args.output_dir:
             parser.error("--archive requires --expected-sha256 and --output-dir, and no bundle_root")
         archive_path = args.archive.resolve(strict=True)
+        if archive_path.stat().st_size > MAX_ARCHIVE_BYTES:
+            raise ValueError("archive exceeds compressed byte budget")
         if not __import__("re").fullmatch(r"[0-9a-f]{64}", args.expected_sha256):
             parser.error("--expected-sha256 must be 64 lowercase hex characters")
         if digest(archive_path) != args.expected_sha256:
@@ -249,7 +258,18 @@ def main() -> int:
         if output.exists():
             raise FileExistsError(f"extraction directory already exists: {output}")
         with tarfile.open(archive_path, "r:gz") as archive:
-            members = archive.getmembers()
+            members = []
+            extracted_bytes = 0
+            for member in archive:
+                if len(members) >= MAX_MEMBERS:
+                    raise ValueError("archive exceeds member budget")
+                if member.size > MAX_MEMBER_BYTES:
+                    raise ValueError(f"archive member exceeds byte budget: {member.name}")
+                if member.isreg():
+                    extracted_bytes += member.size
+                    if extracted_bytes > MAX_EXTRACTED_BYTES:
+                        raise ValueError("archive exceeds extracted byte budget")
+                members.append(member)
             if not members:
                 raise ValueError("empty archive")
             validated = []
@@ -271,6 +291,8 @@ def main() -> int:
                                     if member.name == "codeql-ucode-linux/bundle-manifest.json"), None)
             if manifest_member is None or not manifest_member.isreg():
                 raise ValueError("archive is missing its regular bundle manifest")
+            if manifest_member.size > MAX_MANIFEST_BYTES:
+                raise ValueError("bundle manifest exceeds byte budget")
             root_member = next((member for member in members if member.name == "codeql-ucode-linux"), None)
             if root_member is None or not root_member.isdir():
                 raise ValueError("archive root member must be a directory")
@@ -311,7 +333,7 @@ def main() -> int:
                 if stream is None:
                     raise ValueError(f"cannot read archive member: {member.name}")
                 with stream, target.open("xb") as destination:
-                    destination.write(stream.read())
+                    shutil.copyfileobj(stream, destination, 1024 * 1024)
                 target.chmod(member.mode & 0o777)
         result = verify(output / "codeql-ucode-linux", args.expected_release_tag,
                         args.expected_producer_commit, args.expected_manifest_sha256)
