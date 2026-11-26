@@ -94,10 +94,9 @@ and SARIF under `new-run/`. The coverage manifest records each package member's
 actual route, digest, successful-file multiplicity, extraction-error count,
 resolved suite, SARIF digest and command costs; the receipt pins its digest. It
 records command wall times and Linux peak RSS where GNU time is available.
-The successful-file diagnostic is restricted to `UcodeFile` entities with
-extractor-emitted AST locations. An excluded file can still be represented by
-CodeQL's general file table, so a bare `File` row is insufficient evidence of
-Ucode extraction.
+The successful-file diagnostic requires an extractor-emitted plain or markup
+AST location. An excluded file can still be represented by CodeQL's general
+file table, so a bare `File` row is insufficient evidence of Ucode extraction.
 The runner hashes the supplied CodeQL ZIP against the bundle's pinned ZIP
 digest and records that identity. The caller must point `--codeql` at the CLI
 extracted from that verified ZIP; the runner checks its reported version but

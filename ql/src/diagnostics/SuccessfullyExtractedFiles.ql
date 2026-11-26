@@ -10,9 +10,14 @@
 import codeql.files.FileSystem
 import codeql.ucode.Diagnostics
 import codeql.ucode.ast.AstNodes
+import codeql.ucode.Markup
 
-from UcodeFile f
+from File f
 where
+  (
+    f instanceof UcodeFile or
+    exists(UcodeMarkup::AstNode n | n.getLocation().getFile() = f)
+  ) and
   not exists(ExtractionError e | e.getLocation().getFile() = f) and
   exists(f.getRelativePath())
 select f, ""
