@@ -128,9 +128,6 @@ def verify_models(model_data,membership_data,wrong_data,expected):
 
 def guard_mutations():
     """Use the shared helper's single-guard mutations with rename's exact shape."""
-    source=(ROOT/'ql/lib/codeql/ucode/internal/SourceDeclaredFs.qll').read_text()
-    variants=common.inputs.model_mutations(source)
-    marker='from UCODE::CallExpression call, UCODE::AstNode arg\n'
     tail="""from UCODE::CallExpression call, UCODE::AstNode src, UCODE::AstNode dst
 where sourceDeclaredFsCall(call, "rename") and
   src = call.getArguments().getChild(0) and src instanceof UCODE::Expression and
@@ -139,11 +136,7 @@ where sourceDeclaredFsCall(call, "rename") and
 select call.getLocation().getFile().getRelativePath() as path, call as call_node,
   call.getFunction() as callee_node, src as source_node, dst as destination_node
 """
-    result={}
-    for name,text in variants.items():
-        require(text.count(marker)==1,f'{name}: guard mutant template')
-        result[name]=text.split(marker)[0].replace('issue155-model-','issue155-rename-guard-').replace('Testing-only stat','Testing-only rename')+tail
-    return result
+    return common.inputs.source_declared_fs_guard_queries((ROOT/'ql/lib/codeql/ucode/internal/SourceDeclaredFs.qll').read_text(), family='rename', id_prefix='issue155-rename-guard-', selection='\n'+tail)
 
 def verify_guard_mutants(raw_data,results,entries,baseline):
     raw=oracle.tuples(raw_data);by_path={e['path']:e for e in entries}
