@@ -255,6 +255,12 @@ where
   builtinShape(mapCall, "map", 2) and
   mapCall.getArgument(0) = source and
   mapCall.getArgument(1) = callbackUse and
+  // Dynamic evaluation may replace a same-spelled callback without a
+  // statically visible Identifier write. Leave such a file unclassified.
+  not exists(NamedCall dynamic |
+    dynamic.getLocation().getFile() = mapCall.getLocation().getFile() and
+    dynamic.getName() = "eval"
+  ) and
   callback.getParent() instanceof UCODE::Program and
   earlier(callback, callbackUse) and
   unsharedUse(callback.getName(), callbackUse) and
