@@ -6,6 +6,7 @@ assert package installation or runtime behavior.
 """
 from __future__ import annotations
 
+import argparse
 import collections
 import csv
 import hashlib
@@ -45,8 +46,8 @@ TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c
 DIRECT_CONTROLS_SHA256 = "5ec2d74cb21732189a41558ec59671126310679c6725f802614ac3fa9c19caf0"
 NEWER_GRAMMAR_MANIFEST_SHA256 = "cccd4b4e8f716c31e730f140d416e37bedfd8d0257af41c126613237704a556d"
 NEWER_GRAMMAR_QUERY_SHA256 = "2a5faf46bb5d95c47553057bf5f576b23190bbf4c0b5d5791324f1ac5331a15a"
-NESTED_MANIFEST_SHA256 = "767d6f91020f664bdacf1df9ec96329d50036d6ac41ffbd6df8407eadf2e7ecd"
-NESTED_QUERY_SHA256 = "eba4b5b732fdc205220c5eadd23ba992f911285b002e0beebda65f7c9b477e79"
+NESTED_MANIFEST_SHA256 = "0c4c17ebdb4d4fed6378ba5e004007ce38b0551cb1dda2b5505d00295457efbe"
+NESTED_QUERY_SHA256 = "33864223e00c3af0b00c7dd02ac10ab90a34a9a6714321519399d9efab2b6563"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -599,7 +600,7 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
 
 
 def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str, pathlib.Path], expected: dict) -> dict:
-    """Run the testing-only query against the independently pinned 11-file matrix."""
+    """Run the testing-only query against the independently pinned 13-file matrix."""
     case = "nested-rpc"
     stage = r.run / "stage" / case
     base = build / "ql/test/nested-rpc-shell-command"
@@ -626,7 +627,7 @@ def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str,
     for name, info in expected["files"].items():
         require(pathlib.PurePosixPath(name).name == name, f"invalid fixture name {name}")
         stage_file(base / name, f"usr/share/rpcd/ucode/{name}", info)
-    require(len(selected) == 11 and len(set(selected)) == 11 and len(wanted) == 2, "nested matrix selection changed")
+    require(len(selected) == 13 and len(set(selected)) == 13 and len(wanted) == 2, "nested matrix selection changed")
     db = make_database(r, build, case, stage, sorted(selected))
     query = build / "ql/src/m4/NestedRpcShellCommand.ql"
     sarif_path = r.out / case / "candidate.sarif"
@@ -729,7 +730,29 @@ def run_newer_grammar_syntax(r: Runner, build: pathlib.Path, expected: dict) -> 
             "note": "exact projected typed AST locations; entity uniqueness is not inferred from CSV rows"}
 
 
-def main() -> int:
+def nested_oracle(enabled: bool, build: pathlib.Path, source_oracle: dict) -> dict | None:
+    if not enabled:
+        return None
+    manifest = build / "ql/test/nested-rpc-shell-command/expected.json"
+    require(digest(manifest) == NESTED_MANIFEST_SHA256, "nested source-first manifest differs")
+    require(digest(build / "ql/src/m4/NestedRpcShellCommand.ql") == NESTED_QUERY_SHA256, "nested query differs")
+    expected = json.loads(manifest.read_text())
+    source_oracle["nested_rpc"] = {"manifest_sha256": NESTED_MANIFEST_SHA256, "expectations": expected}
+    return expected
+
+
+def add_nested_regression(enabled: bool, runner: Runner, build: pathlib.Path,
+                          upstream: dict, expected: dict | None, summary: dict) -> None:
+    if enabled:
+        require(expected is not None, "nested oracle required")
+        summary["nested_rpc_explicit_regression"] = run_nested_rpc_regression(runner, build, upstream, expected)
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--nested-rpc-candidate", action="store_true",
+                        help="run the testing-only nested RPC candidate matrix")
+    args = parser.parse_args(argv)
     codeql_text = os.environ.get("CODEQL_BIN")
     run_text = os.environ.get("DIRECT_RPC_RUN_DIR")
     require(codeql_text and run_text, "CODEQL_BIN and DIRECT_RPC_RUN_DIR are required")
@@ -811,11 +834,7 @@ def main() -> int:
             "newer grammar syntax query differs from reviewed pin")
     source_oracle["newer_grammar_syntax"] = {
         "manifest_sha256": NEWER_GRAMMAR_MANIFEST_SHA256, "expectations": syntax_expected}
-    nested_manifest = build / "ql/test/nested-rpc-shell-command/expected.json"
-    require(digest(nested_manifest) == NESTED_MANIFEST_SHA256, "nested source-first manifest differs")
-    require(digest(build / "ql/src/m4/NestedRpcShellCommand.ql") == NESTED_QUERY_SHA256, "nested query differs")
-    nested_expected = json.loads(nested_manifest.read_text())
-    source_oracle["nested_rpc"] = {"manifest_sha256": NESTED_MANIFEST_SHA256, "expectations": nested_expected}
+    nested_expected = nested_oracle(args.nested_rpc_candidate, build, source_oracle)
     (run / "source-oracle.json").write_text(json.dumps(source_oracle, indent=2) + "\n")
     preflight.update({"producer_commit": producer_sha, "producer_dirty_before_run": False,
         "producer_archive_sha256": digest(archive_path), "luci_repo_url": LUCI_URL,
@@ -842,15 +861,14 @@ def main() -> int:
     default = run_default_cases(runner, build, upstream)
     direct_controls = run_direct_controls(runner, build, direct_controls_expected)
     tailscale = run_tailscale_regression(runner, build, upstream)
-    nested = run_nested_rpc_regression(runner, build, upstream, nested_expected)
     newer_grammar = run_newer_grammar_syntax(runner, build, syntax_expected)
     summary = {"producer_commit": producer_sha, "codeql_version": version_line,
         "source_oracle_sha256": digest(run / "source-oracle.json"),
         "default_suite": default, "direct_control_matrix": direct_controls,
         "tailscale_explicit_regression": tailscale,
-        "nested_rpc_explicit_regression": nested,
         "newer_grammar_syntax": newer_grammar,
         "commands": runner.commands, "command_count": len(runner.commands)}
+    add_nested_regression(args.nested_rpc_candidate, runner, build, upstream, nested_expected, summary)
     bundle_path = run / "artifact/codeql-ucode-linux.tar.gz"
     grammar_generated_fingerprint = hashlib.sha256(json.dumps(
         GRAMMAR_GENERATED_SHA256, sort_keys=True, separators=(",", ":")).encode()).hexdigest()

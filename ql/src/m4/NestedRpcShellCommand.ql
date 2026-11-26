@@ -20,6 +20,7 @@ private predicate ident(UCODE::AstNode n, string name) {
 }
 
 private predicate literal(UCODE::AstNode n, string value) {
+  not exists(UCODE::EscapeSequence escape | escape = n.(UCODE::String).getChild(_)) and
   stringLiteralValue(n.(UCODE::String)) = value
 }
 
@@ -86,7 +87,13 @@ private predicate quotedHelperBody(UCODE::FunctionDeclaration def) {
     replacement = call and replacement.getName() = "replace" and
     ident(replacement.getArgument(0), parameter.getValue()) and
     literal(replacement.getArgument(1), "'") and
-    literal(replacement.getArgument(2), "'''")
+    exists(UCODE::String value |
+      value = replacement.getArgument(2) and
+      value.getChild(0).(UCODE::StringFragment).getValue() = "'" and
+      value.getChild(1).(UCODE::EscapeSequence).toString() = "\\\\" and
+      value.getChild(2).(UCODE::StringFragment).getValue() = "''" and
+      not exists(value.getChild(3))
+    )
   )
 }
 
@@ -180,7 +187,7 @@ private predicate pushedField(string arrayName, string valueName, string command
     pushCall.getName() = "push" and ident(pushCall.getArgument(0), arrayName) and
     quoteCall.getName() = "shell_quote" and ident(quoteCall.getArgument(0), valueName) and
     concatenation(pushCall.getArgument(1), option, quoteCall) and
-    option instanceof UCODE::String and
+    not exists(UCODE::EscapeSequence escape | escape = option.(UCODE::String).getChild(_)) and
     stringLiteralValue(option.(UCODE::String)).regexpMatch("[-A-Za-z0-9_./ =]+") and
     sameFileCall(quoteCall, quoteDef) and quotedHelperBody(quoteDef) and
     commandDecl.getName().getValue() = commandName and inSinkFunction(commandDecl, sink) and
@@ -199,7 +206,7 @@ private predicate arrayJoinedIntoCommand(string arrayName, string commandName, N
     joinCall.getName() = "join" and literal(joinCall.getArgument(0), " ") and
     ident(joinCall.getArgument(1), arrayName) and
     concatenation(commandDecl.getValue(), commandPrefix, joinCall) and
-    commandPrefix instanceof UCODE::String and
+    not exists(UCODE::EscapeSequence escape | escape = commandPrefix.(UCODE::String).getChild(_)) and
     stringLiteralValue(commandPrefix.(UCODE::String)).regexpMatch("[A-Za-z0-9_./ -]+") and
     inSinkFunction(arrayDecl, sink) and inSinkFunction(commandDecl, sink) and
     inSinkFunction(joinCall, sink) and

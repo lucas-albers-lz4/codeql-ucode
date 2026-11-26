@@ -39,9 +39,17 @@
     "helper_other_replacement.uc": {
       "sha256": "7a600182a7fd39869f6a645d19089e5a6107fefdabed27cf27a37b001cfc95bb",
       "candidate_sinks": []
+    },
+    "outer_escape.uc": {
+      "sha256": "65c930b60afa47d3ee354dbfa7784f9b2e356e951172a5f1d545f510cff361f8",
+      "candidate_sinks": []
+    },
+    "helper_escape.uc": {
+      "sha256": "7e476c9edeb4836fbd64744ddc77c20865024aa3f0b763b6b7c512323d4fad53",
+      "candidate_sinks": []
     }
   },
-  "query_sha256": "eba4b5b732fdc205220c5eadd23ba992f911285b002e0beebda65f7c9b477e79",
+  "query_sha256": "33864223e00c3af0b00c7dd02ac10ab90a34a9a6714321519399d9efab2b6563",
   "historical": {
     "parent": {
       "sha256": "3029c32d7ccd18efb95355aa915841e2bf467b0de147ce1a65b68c55fec9d280",

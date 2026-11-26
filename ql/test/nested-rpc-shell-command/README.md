@@ -1,7 +1,10 @@
 # Nested RPC shell command candidate
 
 `NestedRpcShellCommand.ql` is a testing-tagged, syntactic candidate. It is not
-in the default code-scanning suite. The query recognizes one bounded source
+in the default code-scanning suite. The draft Linux regression workflow opts in
+explicitly to its matrix; the tag-publishing release gate does not run that
+matrix. The release bundle includes the `ql/src` pack, including this query,
+for explicit testing use. The query recognizes one bounded source
 shape: a field of an RPC call formal is trimmed, quoted by a same-file helper,
 pushed into an array, joined into a literal-prefixed command, and passed to an
 imported `fs.popen` in the old outer `'/bin/sh -c "' + command + ' &"'` form.
@@ -13,7 +16,7 @@ was returned after its method assignment, or resolve the global `replace`
 binding. Other command and quoting shapes remain unknown.
 
 [`expected.json`](expected.json) pins the historical LuCI Tailscale parent and
-fix bytes and nine derived controls. `renamed_pos.uc` changes the command,
+fix bytes and eleven derived controls. `renamed_pos.uc` changes the command,
 option, field, and handler-formal spellings. `renamed_fixed.uc` quotes the
 whole shell argument; `renamed_constant.uc` passes a constant at the same
 sink; `renamed_reassigned.uc` overwrites the formal; `unreturned_method.uc`
@@ -21,7 +24,9 @@ returns another object; and `different_object_same_method.uc` returns a
 different object with the same method name. `push_after_join.uc` moves the
 push after command initialization; `nested_helper_decoy.uc` puts the quoting
 return in an unused nested helper; `helper_other_replacement.uc` changes the
-reviewed quote-helper return shape. Their zero results mark query exclusions,
+reviewed quote-helper return shape. `outer_escape.uc` adds an escape to the
+outer prefix. `helper_escape.uc` changes the helper replacement escape. Their
+zero results mark query exclusions,
 not safety judgments. The expected candidate locations use inclusive source
 columns. SARIF end columns are exclusive.
 
@@ -37,7 +42,7 @@ before this candidate can enter any release contract.
 
 Local development retained the initial zero-result query caused by an
 incorrect `rpcCallFn` pair-shape guard under ignored `work/`. A later fixture
-revision corrected a predeclared column-span mismatch. The final-byte
+revision corrected a predeclared column-span mismatch. The earlier
 eleven-file run and a separate 17-file current LuCI rpcd source-staged run
 are recorded in the ledger's ignored `work/` tree, not distributed with this
 test. The current-source zero result is a bounded observation, not a safety

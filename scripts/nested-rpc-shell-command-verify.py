@@ -22,6 +22,12 @@ def tuples(path: Path) -> list:
     return json.loads(path.read_text())["#select"]["tuples"]
 
 
+def verify_success_identities(rows: list, stage: Path, wanted_files: dict) -> None:
+    actual = collections.Counter(row[0]["label"] for row in rows)
+    expected = collections.Counter(str((stage / rel).resolve()) for rel in wanted_files)
+    assert actual == expected, "successful-file identities differ"
+
+
 def main() -> None:
     if not __debug__:
         raise RuntimeError("run this verifier without Python -O")
@@ -55,11 +61,7 @@ def main() -> None:
         assert digest(run / "stage" / rel) == info["sha256"], f"staged bytes differ: {rel}"
         assert source_first["files"][rel]["sha256"] == info["sha256"]
 
-    success = collections.Counter(
-        row[0]["label"].split("/stage/", 1)[1]
-        for row in tuples(run / "out/success-decode.stdout")
-    )
-    assert success == collections.Counter(wanted_files.keys()), "successful-file identities differ"
+    verify_success_identities(tuples(run / "out/success-decode.stdout"), run / "stage", wanted_files)
     assert tuples(run / "out/errors-decode.stdout") == [], "extraction errors present"
     commands = json.loads((run / "out/commands.json").read_text())
     assert commands and all(command["exit"] == 0 for command in commands), "run command failed"
