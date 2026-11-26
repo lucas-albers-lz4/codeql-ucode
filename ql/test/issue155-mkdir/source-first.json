@@ -1,0 +1,452 @@
+{
+  "schema": "mkdir-source-first-v1",
+  "positions": "one-based byte columns; end exclusive",
+  "entries": [
+    {
+      "path": "usr/share/rpcd/ucode/luci.openvpn.uc",
+      "fixture_path": "ql/test/issue155-mkdir/usr/share/rpcd/ucode/luci.openvpn.uc",
+      "sha256": "6593792678951fd500c2b090d17d9e500a05a642cfb996ee02c1649473152410",
+      "bytes": 2910,
+      "expected": "model",
+      "line": 25,
+      "call_column": 3,
+      "call": "mkdir(join('/', grow))",
+      "arguments": [
+        "join('/', grow)"
+      ],
+      "anchors": {
+        "call": {
+          "text": "mkdir(join('/', grow))",
+          "line": 25,
+          "start_column": 3,
+          "end_column_exclusive": 25
+        },
+        "callee": {
+          "text": "mkdir",
+          "line": 25,
+          "start_column": 3,
+          "end_column_exclusive": 8
+        },
+        "arguments": [
+          {
+            "text": "join('/', grow)",
+            "line": 25,
+            "start_column": 9,
+            "end_column_exclusive": 24,
+            "kind": "CallExpression"
+          }
+        ]
+      }
+    },
+    {
+      "path": "usr/share/rpcd/ucode/weechat.uc",
+      "fixture_path": "ql/test/issue155-rename/usr/share/rpcd/ucode/weechat.uc",
+      "sha256": "548213868a38bd84d8a9cb9b9842c647d4e79fa9df21b815b6b869f26a54e44e",
+      "bytes": 11315,
+      "expected": "model",
+      "line": 268,
+      "call_column": 10,
+      "call": "mkdir(TLS_DIR, 0755)",
+      "arguments": [
+        "TLS_DIR",
+        "0755"
+      ],
+      "anchors": {
+        "call": {
+          "text": "mkdir(TLS_DIR, 0755)",
+          "line": 268,
+          "start_column": 10,
+          "end_column_exclusive": 30
+        },
+        "callee": {
+          "text": "mkdir",
+          "line": 268,
+          "start_column": 10,
+          "end_column_exclusive": 15
+        },
+        "arguments": [
+          {
+            "text": "TLS_DIR",
+            "line": 268,
+            "start_column": 16,
+            "end_column_exclusive": 23,
+            "kind": "Identifier"
+          },
+          {
+            "text": "0755",
+            "line": 268,
+            "start_column": 25,
+            "end_column_exclusive": 29,
+            "kind": "Number"
+          }
+        ]
+      }
+    },
+    {
+      "path": "controls/alias.uc",
+      "sha256": "5ef96ade6fd6cc7bc01a5f76b5efc5468806981512fb4f9bc7afcf53f86e373a",
+      "bytes": 54,
+      "expected": "inconclusive",
+      "purpose": "alias",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 2,
+        "start_column": 7,
+        "end_column_exclusive": 15
+      }
+    },
+    {
+      "path": "controls/duplicate.uc",
+      "sha256": "457475e7d2e02ae10361f4790b19e31cd7f0292a7cbcb24609790b65f6c99464",
+      "bytes": 85,
+      "expected": "inconclusive",
+      "purpose": "duplicate",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 3,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 3,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 3,
+        "start_column": 7,
+        "end_column_exclusive": 15
+      }
+    },
+    {
+      "path": "controls/extra.uc",
+      "sha256": "286600043a93d1abae9793460ff1fb6db69f00be26428c065e8cb31dce862afe",
+      "bytes": 54,
+      "expected": "inconclusive",
+      "purpose": "extra",
+      "mutation_call": {
+        "text": "mkdir('/tmp/a', 0755, 0)",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 25
+      }
+    },
+    {
+      "path": "controls/malformed.uc",
+      "sha256": "bd12ef6b61f3deb11db9012e71d6d3a25d2e0ddaa3a8e72f97df65664b24f3c2",
+      "bytes": 60,
+      "expected": "inconclusive",
+      "purpose": "malformed",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 2,
+        "start_column": 7,
+        "end_column_exclusive": 15
+      }
+    },
+    {
+      "path": "controls/no-import.uc",
+      "sha256": "1e2005e2b89afdd942cc8f3ab3310e6e08264546e9b28459cd00cfc54632a600",
+      "bytes": 17,
+      "expected": "inconclusive",
+      "purpose": "no-import"
+    },
+    {
+      "path": "controls/one.uc",
+      "sha256": "6a632033b7faf927fb41db8745ad92305789ed4bf34e6b8eb79890cfc58e0351",
+      "bytes": 45,
+      "expected": "model",
+      "purpose": "one",
+      "anchors": {
+        "call": {
+          "text": "mkdir('/tmp/a')",
+          "line": 2,
+          "start_column": 1,
+          "end_column_exclusive": 16
+        },
+        "callee": {
+          "text": "mkdir",
+          "line": 2,
+          "start_column": 1,
+          "end_column_exclusive": 6
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/a'",
+            "line": 2,
+            "start_column": 7,
+            "end_column_exclusive": 15,
+            "kind": "String"
+          }
+        ]
+      }
+    },
+    {
+      "path": "controls/optional.uc",
+      "sha256": "b03266ef4b6dcf954ffa7fb11bed16b773bf150b986d7f1c145bef02d39399dc",
+      "bytes": 47,
+      "expected": "inconclusive",
+      "purpose": "optional",
+      "guard_call": {
+        "text": "mkdir?.('/tmp/a')",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 18
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 2,
+        "start_column": 9,
+        "end_column_exclusive": 17
+      }
+    },
+    {
+      "path": "controls/property.uc",
+      "sha256": "5ecaa250f2762c6276cfaef020f65024a155ecf0da7e0c17b058ee76dce1696a",
+      "bytes": 40,
+      "expected": "inconclusive",
+      "purpose": "property",
+      "negative_anchor": {
+        "text": "mkdir.name",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 11
+      }
+    },
+    {
+      "path": "controls/reassignment.uc",
+      "sha256": "acd950d67095b8a44252aa9bf64b8b5f0f29d76470b31cc7ad99d7fc70d1e117",
+      "bytes": 60,
+      "expected": "inconclusive",
+      "purpose": "reassignment",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 3,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 3,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 3,
+        "start_column": 7,
+        "end_column_exclusive": 15
+      }
+    },
+    {
+      "path": "controls/shadow.uc",
+      "sha256": "916c6f33bb8dfad2f0c8c136f6229a7eb8bb27d5b591aa56bc6ee436bfa6282e",
+      "bytes": 67,
+      "expected": "inconclusive",
+      "purpose": "shadow",
+      "negative_anchor": {
+        "text": "mkdir('/tmp/a')",
+        "line": 2,
+        "start_column": 21,
+        "end_column_exclusive": 36
+      },
+      "formal_anchor": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 12,
+        "end_column_exclusive": 17
+      }
+    },
+    {
+      "path": "controls/spread-mode.uc",
+      "sha256": "dcd24634254c84cebe0ce9d90c36af3c70f1a4c10a90484a5536ac35af204f5a",
+      "bytes": 55,
+      "expected": "inconclusive",
+      "purpose": "spread-mode",
+      "mutation_call": {
+        "text": "mkdir('/tmp/a', ...modes)",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 26
+      }
+    },
+    {
+      "path": "controls/spread-path.uc",
+      "sha256": "6eae1fe4bdbd6fa7efa005cffd83981006f73069fff8d34d65aa484f2d32d2bd",
+      "bytes": 45,
+      "expected": "inconclusive",
+      "purpose": "spread-path",
+      "mutation_call": {
+        "text": "mkdir(...paths)",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      }
+    },
+    {
+      "path": "controls/two.uc",
+      "sha256": "19696ae10431ad172328336bfdbf5cf68137627c40acd7c18014729f83e34a26",
+      "bytes": 51,
+      "expected": "model",
+      "purpose": "two",
+      "anchors": {
+        "call": {
+          "text": "mkdir('/tmp/a', mode)",
+          "line": 2,
+          "start_column": 1,
+          "end_column_exclusive": 22
+        },
+        "callee": {
+          "text": "mkdir",
+          "line": 2,
+          "start_column": 1,
+          "end_column_exclusive": 6
+        },
+        "arguments": [
+          {
+            "text": "'/tmp/a'",
+            "line": 2,
+            "start_column": 7,
+            "end_column_exclusive": 15,
+            "kind": "String"
+          },
+          {
+            "text": "mode",
+            "line": 2,
+            "start_column": 17,
+            "end_column_exclusive": 21,
+            "kind": "Identifier"
+          }
+        ]
+      }
+    },
+    {
+      "path": "controls/wrapper.uc",
+      "sha256": "4ed37de8515af74292cde0fb35db2acc3b39ffb5b0c5c10fcfc8f79d57937f15",
+      "bytes": 47,
+      "expected": "inconclusive",
+      "purpose": "wrapper",
+      "negative_anchor": {
+        "text": "(mkdir)('/tmp/a')",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 18
+      }
+    },
+    {
+      "path": "controls/wrong-module.uc",
+      "sha256": "49db874ecfb6f8fe5ba5d37e9f6f32aad4b6d212672c62db02ab7d834490eecb",
+      "bytes": 48,
+      "expected": "inconclusive",
+      "purpose": "wrong-module",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 16
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 6
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 2,
+        "start_column": 7,
+        "end_column_exclusive": 15
+      }
+    },
+    {
+      "path": "controls/zero.uc",
+      "sha256": "7ac3b819d7c044a2ea0bcdae5f8fef5119bfae2036ab57f7c7ed0bb523352ddb",
+      "bytes": 37,
+      "expected": "inconclusive",
+      "purpose": "zero",
+      "negative_anchor": {
+        "text": "mkdir()",
+        "line": 2,
+        "start_column": 1,
+        "end_column_exclusive": 8
+      }
+    },
+    {
+      "path": "controls/other-binding.uc",
+      "sha256": "32c1faeacc1931a764bd304aa403892189f7d199fe6a16df5a6c4e8bbcbf1b7d",
+      "bytes": 57,
+      "expected": "inconclusive",
+      "purpose": "other-binding"
+    },
+    {
+      "path": "controls/shadow-lexical.uc",
+      "sha256": "d58337ab2a71c4f51671a59cfbadb569ebee8afa30722b1f2302531023bc46d5",
+      "bytes": 81,
+      "expected": "inconclusive",
+      "purpose": "shadow-lexical",
+      "guard_call": {
+        "text": "mkdir('/tmp/a')",
+        "line": 2,
+        "start_column": 35,
+        "end_column_exclusive": 50
+      },
+      "guard_callee": {
+        "text": "mkdir",
+        "line": 2,
+        "start_column": 35,
+        "end_column_exclusive": 40
+      },
+      "guard_path": {
+        "text": "'/tmp/a'",
+        "line": 2,
+        "start_column": 41,
+        "end_column_exclusive": 49
+      }
+    }
+  ],
+  "malformed_diagnostic": {
+    "path": "controls/malformed.uc",
+    "start": [
+      3,
+      12
+    ],
+    "end_inclusive": [
+      3,
+      12
+    ],
+    "count": 1,
+    "basis": "existing rename fixture identical malformed suffix; verify on current extraction"
+  }
+}

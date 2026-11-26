@@ -122,6 +122,26 @@ class SourceDeclaredFsRenameCall extends NamedCall {
 }
 
 /**
+ * Direct, unaliased source-declared `mkdir(path[, mode])` with one or two
+ * non-spread expression arguments. This is source attribution, not runtime
+ * resolution or evidence that a directory was created.
+ */
+class SourceDeclaredFsMkdirCall extends NamedCall {
+  SourceDeclaredFsMkdirCall() {
+    sourceDeclaredFsCall(this, "mkdir") and
+    this.getArgument(0) instanceof UCODE::Expression and
+    (not exists(this.getArgument(1)) or this.getArgument(1) instanceof UCODE::Expression) and
+    not exists(int i | i != 0 and i != 1 and exists(this.getArgument(i)))
+  }
+
+  /** The raw path argument at index 0. */
+  UCODE::AstNode getPathArgument() { result = this.getArgument(0) }
+
+  /** The optional raw mode argument at index 1. */
+  UCODE::AstNode getModeArgument() { result = this.getArgument(1) }
+}
+
+/**
  * Direct, unaliased source-declared `fs.open` with literal `wx` mode and
  * two or three non-spread expression arguments. This is source syntax, not
  * runtime binding or proof of an opened handle. Nonmatches are inconclusive.

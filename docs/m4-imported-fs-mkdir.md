@@ -1,0 +1,5 @@
+# Source-declared `mkdir` syntax
+
+`SourceDeclaredFsMkdirCall` recognizes a direct, unaliased named `mkdir` import from the plain `fs` module and a direct call with one or two non-spread expression arguments. `getPathArgument()` returns argument 0 and `getModeArgument()` returns optional argument 1 as raw syntax, without asserting its type or effective permissions. It uses the shared conservative file-wide binding, write, import-order and extraction-error guards. Unsupported forms are inconclusive.
+
+Two source anchors motivate the shape: OpenVPN at LuCI `8d1aecd0216a02ad52c830e9a03c21da734bf630`, `protocols/luci-proto-openvpn/root/usr/share/rpcd/ucode/luci.openvpn.uc`, blob `eb3b418f855d24ae0a34d5d09a289b9342098129`, line 25 `mkdir(join('/', grow))`; and WeeChat at LuCI `b2e0be4b46ec0fd43394c081fa7c50657af14011`, `applications/luci-app-weechat/root/usr/share/rpcd/ucode/weechat.uc`, blob `9f17ae3718a278eab2813ccfae4f2c732a9118e8`, line 268 `mkdir(TLS_DIR, 0755)`. These pins are distinct. This model identifies source syntax only; it does not resolve runtime bindings, establish flow, directory creation, authorization, or exploitability.
