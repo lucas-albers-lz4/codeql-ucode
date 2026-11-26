@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import shutil
+import stat
 import tarfile
 
 MAX_ARCHIVE_BYTES = 64 * 1024 * 1024
@@ -42,6 +44,33 @@ def parse_relative_path(rel: str, kind: str) -> PurePosixPath:
     return path
 
 
+def preflight_payload_tree(root: Path) -> None:
+    """Reject links and special files before reading any bundle payload."""
+    count = 0
+    total_bytes = 0
+    pending = [root]
+    while pending:
+        directory = pending.pop()
+        with os.scandir(directory) as entries:
+            for entry in entries:
+                count += 1
+                if count > MAX_MEMBERS:
+                    raise ValueError("bundle root has too many members")
+                info = entry.stat(follow_symlinks=False)
+                if stat.S_ISDIR(info.st_mode):
+                    pending.append(Path(entry.path))
+                elif stat.S_ISREG(info.st_mode):
+                    if entry.name == "bundle-manifest.json" and directory == root and info.st_size > MAX_MANIFEST_BYTES:
+                        raise ValueError("bundle manifest exceeds size limit")
+                    if info.st_size > MAX_MEMBER_BYTES:
+                        raise ValueError("bundle member exceeds size limit")
+                    total_bytes += info.st_size
+                    if total_bytes > MAX_EXTRACTED_BYTES:
+                        raise ValueError("bundle root exceeds size limit")
+                else:
+                    raise ValueError(f"bundle root contains link or special file: {entry.path}")
+
+
 def verify(root: Path, expected_release_tag: str | None = None,
            expected_producer_commit: str | None = None,
            expected_manifest_sha256: str | None = None) -> dict:
@@ -49,6 +78,7 @@ def verify(root: Path, expected_release_tag: str | None = None,
     if root.is_symlink():
         raise ValueError("bundle root must not be a symlink")
     root = root.resolve(strict=True)
+    preflight_payload_tree(root)
     manifest_path = root / "bundle-manifest.json"
     if manifest_path.is_symlink() or not manifest_path.is_file():
         raise ValueError("bundle manifest must be a regular file")

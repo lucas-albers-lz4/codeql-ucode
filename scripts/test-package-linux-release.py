@@ -13,6 +13,7 @@ import sys
 import tempfile
 import tarfile
 import io
+import os
 import unittest
 
 
@@ -153,6 +154,24 @@ class BundleTests(unittest.TestCase):
         self.addCleanup(setattr, sys, "argv", previous_argv)
         with self.assertRaisesRegex(ValueError, "compressed byte budget"):
             verify_bundle.main()
+
+    def test_direct_root_rejects_links_and_fifo_before_payload_read(self):
+        archive, result = self.build("direct-preflight.tar.gz")
+        output = Path(self.temp.name) / "direct-preflight"
+        proc = subprocess.run([sys.executable, str(MODULE_PATH.with_name("verify-linux-release-bundle.py")),
+                               "--archive", str(archive), "--expected-sha256", result["archive_sha256"],
+                               "--output-dir", str(output)], capture_output=True, text=True)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        payload = output / "codeql-ucode-linux"
+        config = payload / "extractor-pack/codeql-extractor.yml"
+        config.unlink()
+        config.symlink_to(self.root / "Cargo.lock")
+        with self.assertRaisesRegex(ValueError, "link or special file"):
+            verify_bundle.verify(payload)
+        config.unlink()
+        os.mkfifo(config)
+        with self.assertRaisesRegex(ValueError, "link or special file"):
+            verify_bundle.verify(payload)
 
     def test_archive_traversal_fails_before_extraction(self):
         bad = Path(self.temp.name) / "bad.tar.gz"
