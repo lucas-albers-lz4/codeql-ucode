@@ -53,6 +53,7 @@ def main():
     need(CLI is not None, 'CodeQL CLI is unavailable')
     manifest = json.loads((FIXTURES / 'expected.json').read_text())
     need(manifest['schema'] == 'wol-unquoted-map-join-fixtures-v1', 'fixture schema changed')
+    need(digest(QUERY) == manifest['expected_query_sha256'], 'testing query bytes changed')
     files = manifest['files']
     actual_files = {str(p.relative_to(STAGE)) for p in STAGE.rglob('*') if p.is_file()}
     need(actual_files == set(files), 'fixture file set changed')

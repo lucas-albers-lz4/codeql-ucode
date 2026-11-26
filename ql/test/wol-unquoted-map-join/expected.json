@@ -8,6 +8,7 @@
     "callback_write_before_use.uc": "callback reassignment"
   },
   "expected_extraction_errors": [],
+  "expected_query_sha256": "9005733e17b2b8229a397947dcde92c6307983af372360505e05fde25508f9a8",
   "expected_result_locations": {
     "usr/share/rpcd/ucode/identity.uc": {
       "end_column": 61,
