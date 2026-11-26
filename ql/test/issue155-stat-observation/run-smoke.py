@@ -152,6 +152,12 @@ def mutations(source):
     return result
 
 def source_declared_fs_guard_queries(source, *, family, id_prefix, selection):
+    # These mutations exercise the named-import model only. Namespace predicates
+    # have independent controls and may legitimately share textual guard fragments.
+    marker = "/** A selected dot member or any bracket member of the namespace identifier. */"
+    if marker in source:
+        require(source.count(marker) == 1, "duplicate namespace predicate marker")
+        source = source.split(marker, 1)[0]
     guards = {
       'declaration': '  exists(UCODE::VariableDeclarator d | d.getName() = id)\n  or ',
       'write': '  or exists(UCODE::AssignmentExpression a | a.getLeft() = id)\n',
