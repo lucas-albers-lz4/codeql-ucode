@@ -46,8 +46,8 @@ TAILSCALE_QUERY_SHA256 = "136ec48e2f38c0da03d3dd975fcccae348997dbb6e6ec4a014444c
 DIRECT_CONTROLS_SHA256 = "5ec2d74cb21732189a41558ec59671126310679c6725f802614ac3fa9c19caf0"
 NEWER_GRAMMAR_MANIFEST_SHA256 = "cccd4b4e8f716c31e730f140d416e37bedfd8d0257af41c126613237704a556d"
 NEWER_GRAMMAR_QUERY_SHA256 = "2a5faf46bb5d95c47553057bf5f576b23190bbf4c0b5d5791324f1ac5331a15a"
-NESTED_MANIFEST_SHA256 = "0c4c17ebdb4d4fed6378ba5e004007ce38b0551cb1dda2b5505d00295457efbe"
-NESTED_QUERY_SHA256 = "33864223e00c3af0b00c7dd02ac10ab90a34a9a6714321519399d9efab2b6563"
+NESTED_MANIFEST_SHA256 = "e0d95b4bac63383118e63333fca35013dcd80addcd9aae774175c91b81d86b01"
+NESTED_QUERY_SHA256 = "b7fe803c55c73ae352c3f16b167b830ba4361faa59a92b810e74a46ae5074d75"
 DIRECT_RULE_ID = "ucode/m4/direct-rpc-shell-word"
 LUCI_URL = "https://github.com/openwrt/luci.git"
 OPENVPN_PARENT = "b45584b4e6068b9b096872dd02494a048d869c36"
@@ -213,7 +213,7 @@ def copy_source(r: Runner, repo: pathlib.Path, revision: str, path: str, target:
 
 
 def run_query(r: Runner, build: pathlib.Path, db: pathlib.Path, case: str, name: str,
-              query: pathlib.Path, fmt: str = "json") -> list:
+              query: pathlib.Path, fmt: str = "json", entities: str = "url,string") -> list:
     common = r.cache / "codeql-common" / case
     comp = r.cache / "codeql-compile" / case
     common.mkdir(parents=True, exist_ok=True)
@@ -226,13 +226,43 @@ def run_query(r: Runner, build: pathlib.Path, db: pathlib.Path, case: str, name:
         f"--compilation-cache={comp}", "--no-default-compilation-cache",
         f"--output={output}", "--threads=1", "--ram=2048"])
     decoded = r.codeql_call(f"{case}-{name}-decode", ["bqrs", "decode", f"--format={fmt}",
-        *( ["--entities=url,string"] if fmt == "json" else []), output])
+        *( [f"--entities={entities}"] if fmt == "json" else []), output])
     decoded_path = r.out / case / f"{name}.{fmt}"
     decoded_path.write_text((r.out / "commands" /
         (f"{case}-{name}-decode.stdout")).read_text())
     if fmt == "json":
         return json.loads(decoded_path.read_text())["#select"]["tuples"]
     return []
+
+
+def checked_nested_witness_rows(rows: list, stage: pathlib.Path, wanted: list) -> list:
+    observed = []
+    ids_by_span = {}
+    for entity, message in rows:
+        loc = entity.get("url", {})
+        uri = loc.get("uri")
+        require(uri is not None and type(entity.get("id")) is int,
+                "nested witness needs source URL and AST ID")
+        parsed = urlsplit(uri)
+        require(parsed.scheme == "file" and not parsed.netloc,
+                f"nested witness has unexpected URI {uri}")
+        path = pathlib.Path(unquote(parsed.path)).resolve()
+        rel = path.relative_to(stage.resolve()).as_posix()
+        require(loc.get("endLine") == loc.get("startLine"),
+                "nested witness spans more than one line")
+        match = re.fullmatch(
+            r"Request field ([A-Za-z_][A-Za-z0-9_]*) matches this bounded nested-shell construction; review bindings and both shell parsing stages\.",
+            message)
+        require(match is not None, f"nested witness has unexpected message {message}")
+        span = (rel, loc["startLine"], loc["startColumn"], loc["endColumn"] + 1)
+        ids_by_span.setdefault(span, set()).add(entity["id"])
+        observed.append((*span, match.group(1), entity["id"]))
+    require(collections.Counter(row[:5] for row in observed) == collections.Counter(wanted),
+            f"nested BQRS field witnesses differ: {observed} != {wanted}")
+    require(all(len(ids) == 1 for ids in ids_by_span.values()) and
+            len({next(iter(ids)) for ids in ids_by_span.values()}) == len(ids_by_span),
+            f"nested sink AST identities differ across spans: {ids_by_span}")
+    return observed
 
 
 def checked_file_identities(rows: list, stage: pathlib.Path, expected_rel: list[str], case: str) -> None:
@@ -600,12 +630,12 @@ def run_tailscale_regression(r: Runner, build: pathlib.Path, sources: dict[str, 
 
 
 def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str, pathlib.Path], expected: dict) -> dict:
-    """Run the testing-only query against the independently pinned 13-file matrix."""
+    """Run the testing-only query against the independently pinned 20-file matrix."""
     case = "nested-rpc"
     stage = r.run / "stage" / case
     base = build / "ql/test/nested-rpc-shell-command"
     source_path = "applications/luci-app-tailscale-community/root/usr/share/rpcd/ucode/tailscale.uc"
-    selected, wanted, hashes = [], [], {}
+    selected, wanted, hashes, wanted_witness = [], [], {}, []
     def stage_file(source: pathlib.Path, rel: str, info: dict) -> None:
         dest = stage / rel
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -619,6 +649,10 @@ def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str,
             require(match is not None, f"{case}: invalid span {span}")
             line, start, end = map(int, match.groups())
             wanted.append((rel, line, start, end + 1))
+            for field in info.get("candidate_fields", []):
+                wanted_witness.append((rel, line, start, end + 1, field))
+        require(not info.get("candidate_fields") or len(info["candidate_sinks"]) == 1,
+                f"{case}: field witnesses require one sink per fixture")
     for name in ("parent", "fixed"):
         info = expected["historical"][name]
         repo = sources[f"tailscale-{name}"]
@@ -627,9 +661,11 @@ def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str,
     for name, info in expected["files"].items():
         require(pathlib.PurePosixPath(name).name == name, f"invalid fixture name {name}")
         stage_file(base / name, f"usr/share/rpcd/ucode/{name}", info)
-    require(len(selected) == 13 and len(set(selected)) == 13 and len(wanted) == 2, "nested matrix selection changed")
+    require(len(selected) == 20 and len(set(selected)) == 20 and len(wanted) == 2 and len(wanted_witness) == 3, "nested matrix selection changed")
     db = make_database(r, build, case, stage, sorted(selected))
     query = build / "ql/src/m4/NestedRpcShellCommand.ql"
+    witness_rows = run_query(r, build, db, case, "candidate-witness", query, entities="all")
+    witnessed = checked_nested_witness_rows(witness_rows, stage, wanted_witness)
     sarif_path = r.out / case / "candidate.sarif"
     sp = ":".join(map(str, [build / "extractor-pack", build / "ql/lib", build / "ql/src"]))
     r.codeql_call("nested-rpc-explicit-analyze", ["database", "analyze", db, query,
@@ -643,18 +679,31 @@ def run_nested_rpc_regression(r: Runner, build: pathlib.Path, sources: dict[str,
     rule = "ucode/m4/nested-rpc-shell-command-candidate"
     require([x["id"] for x in run["tool"]["driver"].get("rules", [])] == [rule], "nested SARIF rule mismatch")
     actual = []
+    sarif_fields = {}
     for result in run.get("results", []):
         require(result.get("ruleId") == rule and result.get("ruleIndex") == 0 and len(result.get("locations", [])) == 1, "nested SARIF result mismatch")
         phys = result["locations"][0]["physicalLocation"]
         region = phys["region"]
         require(region.get("endLine", region.get("startLine")) == region.get("startLine"), "nested SARIF end line mismatch")
-        actual.append((phys["artifactLocation"]["uri"], region["startLine"], region["startColumn"], region["endColumn"]))
+        uri = phys["artifactLocation"]["uri"]
+        actual.append((uri, region["startLine"], region["startColumn"], region["endColumn"]))
+        fields = []
+        for line in result["message"]["text"].splitlines():
+            match = re.fullmatch(r"Request field ([A-Za-z_][A-Za-z0-9_]*) matches this bounded nested-shell construction; review bindings and both shell parsing stages\.", line)
+            require(match is not None, f"nested SARIF message differs: {line}")
+            fields.append(match.group(1))
+        sarif_fields[uri] = fields
     require(collections.Counter(actual) == collections.Counter(wanted), f"nested SARIF tuple multiset differs: {actual} != {wanted}")
+    require(collections.Counter((uri, field) for uri, fields in sarif_fields.items() for field in fields) ==
+            collections.Counter((rel, field) for rel, _, _, _, field in wanted_witness),
+            f"nested SARIF field messages differ: {sarif_fields}")
     require(all(digest(stage / rel) == sha for rel, sha in hashes.items()), "nested sources changed during run")
     return {"selected": sorted(selected), "successful_multiset": dict.fromkeys(selected, 1),
             "route_sha256": digest(r.out / case / "routing.json"),
             "source_sha256": hashes, "expected_locations": wanted,
-            "observed_locations": actual, "sarif_sha256": digest(sarif_path), "extraction_errors": 0,
+            "observed_locations": actual, "expected_field_witnesses": wanted_witness,
+            "observed_field_witnesses": witnessed, "sarif_fields": sarif_fields,
+            "sarif_sha256": digest(sarif_path), "extraction_errors": 0,
             "query_sha256": NESTED_QUERY_SHA256, "manifest_sha256": NESTED_MANIFEST_SHA256}
 
 

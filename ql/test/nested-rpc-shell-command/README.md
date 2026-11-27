@@ -9,14 +9,19 @@ shape: a field of an RPC call formal is trimmed, quoted by a same-file helper,
 pushed into an array, joined into a literal-prefixed command, and passed to an
 imported `fs.popen` in the old outer `'/bin/sh -c "' + command + ' &"'` form.
 The handler must be the exact `call` function in an assigned method object
-whose uniquely declared owner is returned at top level. Matching source
-syntax does not prove runtime registration, helper behavior, reachability,
-authorization, or shell execution. The query does not prove that the owner
-was returned after its method assignment, or resolve the global `replace`
-binding. Other command and quoting shapes remain unknown.
+whose uniquely declared owner is returned by the first direct top-level
+return after a direct top-level assignment. The query excludes selected
+same-file declarations, imports, formals, and writes for the presumed
+builtins `trim`, `push`, `join`, and `replace`. These are conservative syntax
+checks across the whole file: an unrelated later or sibling binding can
+suppress a candidate. They are not name resolution or runtime reachability.
+Matching syntax does
+not prove registration, helper behavior, authorization, or shell execution.
+A conditional early return, table declaration after assignment, other
+shadowing forms, and other command or quoting shapes remain unknown.
 
 [`expected.json`](expected.json) pins the historical LuCI Tailscale parent and
-fix bytes and eleven derived controls. `renamed_pos.uc` changes the command,
+fix bytes and eighteen derived controls. `renamed_pos.uc` changes the command,
 option, field, and handler-formal spellings. `renamed_fixed.uc` quotes the
 whole shell argument; `renamed_constant.uc` passes a constant at the same
 sink; `renamed_reassigned.uc` overwrites the formal; `unreturned_method.uc`
@@ -25,10 +30,22 @@ different object with the same method name. `push_after_join.uc` moves the
 push after command initialization; `nested_helper_decoy.uc` puts the quoting
 return in an unused nested helper; `helper_other_replacement.uc` changes the
 reviewed quote-helper return shape. `outer_escape.uc` adds an escape to the
-outer prefix. `helper_escape.uc` changes the helper replacement escape. Their
-zero results mark query exclusions,
+outer prefix. `helper_escape.uc` changes the helper replacement escape.
+`assignment_after_return.uc` places the assignment after the top-level
+return; `conditional_assignment.uc` encloses it in a top-level `if`.
+`shadow_trim.uc`, `shadow_push.uc`, `shadow_join.uc`, `shadow_replace.uc`,
+and `shadow_import_trim.uc` introduce visible local or imported bindings.
+All seven matched the prior query at the same sink shape. Their zero results
+under this query mark exclusions,
 not safety judgments. The expected candidate locations use inclusive source
 columns. SARIF end columns are exclusive.
+
+The historical parent has two distinct field-name witnesses at one sink
+entity: `loginserver` and `loginserver_authkey`. SARIF groups their messages
+into one result. The opt-in gate and standalone verifier check BQRS
+field/location/AST-ID tuples and grouped SARIF messages separately. These
+witnesses do not establish
+unique field-read entities or resolved data flow.
 
 For each run, verify the source hashes before extraction, use a fresh database
 and run-owned caches, and record the selected producer, extractor, grammar,

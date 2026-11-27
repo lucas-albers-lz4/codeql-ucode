@@ -11,8 +11,8 @@ import codeql.ucode.m3.Models
 
 /*
  * This is a syntactic review candidate. A matching return-table shape is not
- * runtime registration. String-name associations and source line order do not
- * prove executed data flow. Only the stated outer literal grammar is covered.
+ * runtime registration. Conservative top-level and builtin-binding exclusions
+ * still do not prove executed data flow. Only the stated outer literal grammar is covered.
  */
 
 private predicate ident(UCODE::AstNode n, string name) {
@@ -74,6 +74,44 @@ private predicate stableBinding(UCODE::VariableDeclarator d, NestedShellSink sin
   )
 }
 
+/* Reject visible same-file bindings that could change a presumed builtin. */
+private predicate unshadowedBuiltin(NamedCall call) {
+  (call.getName() = "trim" or call.getName() = "push" or
+    call.getName() = "join" or call.getName() = "replace") and
+  not exists(UCODE::ImportStatement imp |
+    imp.getLocation().getFile() = call.getLocation().getFile() and
+    importedLocalName(imp, call.getName())
+  ) and
+  not exists(UCODE::VariableDeclarator d |
+    d.getLocation().getFile() = call.getLocation().getFile() and
+    d.getName().getValue() = call.getName()
+  ) and
+  not exists(UCODE::FunctionDeclaration d |
+    d.getLocation().getFile() = call.getLocation().getFile() and
+    d.getName().getValue() = call.getName()
+  ) and
+  not exists(UCODE::Identifier formal, UCODE::FunctionExpression fn |
+    fn.getLocation().getFile() = call.getLocation().getFile() and
+    formal = fn.getParameters().getChild(_) and formal.getValue() = call.getName()
+  ) and
+  not exists(UCODE::Identifier formal, UCODE::FunctionDeclaration fn |
+    fn.getLocation().getFile() = call.getLocation().getFile() and
+    formal = fn.getParameters().getChild(_) and formal.getValue() = call.getName()
+  ) and
+  not exists(UCODE::AssignmentExpression write |
+    write.getLocation().getFile() = call.getLocation().getFile() and
+    ident(write.getLeft(), call.getName())
+  ) and
+  not exists(UCODE::AugmentedAssignmentExpression write |
+    write.getLocation().getFile() = call.getLocation().getFile() and
+    ident(write.getLeft(), call.getName())
+  ) and
+  not exists(UCODE::UpdateExpression write |
+    write.getLocation().getFile() = call.getLocation().getFile() and
+    ident(write.getArgument(), call.getName())
+  )
+}
+
 /* The local helper returns single-quoted text with embedded quotes replaced. */
 private predicate quotedHelperBody(UCODE::FunctionDeclaration def) {
   exists(UCODE::Identifier parameter, UCODE::ReturnStatement ret,
@@ -85,6 +123,7 @@ private predicate quotedHelperBody(UCODE::FunctionDeclaration def) {
     concatenation(left, leading, call) and
     literal(leading, "'") and literal(trailing, "'") and
     replacement = call and replacement.getName() = "replace" and
+    unshadowedBuiltin(replacement) and
     ident(replacement.getArgument(0), parameter.getValue()) and
     literal(replacement.getArgument(1), "'") and
     exists(UCODE::String value |
@@ -102,8 +141,16 @@ private predicate assignedRpcCallFn(UCODE::FunctionExpression fn) {
   exists(UCODE::AssignmentExpression assignment, UCODE::MemberExpression target,
          UCODE::Object body, UCODE::Pair callPair, UCODE::Pair argsPair,
          UCODE::Identifier owner, UCODE::ReturnStatement ret,
-         UCODE::VariableDeclarator table |
+         UCODE::VariableDeclarator table, UCODE::Program program,
+         UCODE::ExpressionStatement statement, int assignmentIndex, int returnIndex |
     target = assignment.getLeft() and owner = target.getObject() and
+    statement = assignment.getParent() and
+    statement = program.getChild(assignmentIndex) and
+    ret = program.getChild(returnIndex) and
+    assignmentIndex < returnIndex and
+    not exists(UCODE::ReturnStatement earlier, int index |
+      earlier = program.getChild(index) and index < returnIndex
+    ) and
     table.getName().getValue() = owner.getValue() and
     table.getValue() instanceof UCODE::Object and
     table.getLocation().getFile() = assignment.getLocation().getFile() and
@@ -123,7 +170,7 @@ private predicate assignedRpcCallFn(UCODE::FunctionExpression fn) {
     fn = callPair.getValue() and
     argsPair = body.getChild(_) and propertyName(argsPair.getKey()) = "args" and
     ret.getLocation().getFile() = assignment.getLocation().getFile() and
-    ret.getParent() instanceof UCODE::Program and
+
     (
       ident(ret.getChild(), owner.getValue())
       or
@@ -163,10 +210,11 @@ private predicate formBinding(UCODE::MemberExpression source, string formName, N
   )
 }
 
-private predicate trimmedField(string formName, string valueName, NestedShellSink sink) {
+private predicate trimmedField(string formName, string valueName, string fieldName, NestedShellSink sink) {
   exists(UCODE::VariableDeclarator d, NamedCall trimCall, UCODE::MemberExpression read |
     d.getName().getValue() = valueName and stableBinding(d, sink) and
-    trimCall.getName() = "trim" and read = trimCall.getArgument(0) and
+    trimCall.getName() = "trim" and unshadowedBuiltin(trimCall) and
+    read = trimCall.getArgument(0) and fieldName = read.getProperty().getValue() and
     ident(read.getObject(), formName) and
     (
       d.getValue() = trimCall
@@ -184,7 +232,8 @@ private predicate pushedField(string arrayName, string valueName, string command
                               NestedShellSink sink) {
   exists(NamedCall pushCall, NamedCall quoteCall, UCODE::FunctionDeclaration quoteDef,
          UCODE::VariableDeclarator commandDecl, UCODE::AstNode option |
-    pushCall.getName() = "push" and ident(pushCall.getArgument(0), arrayName) and
+    pushCall.getName() = "push" and unshadowedBuiltin(pushCall) and
+    ident(pushCall.getArgument(0), arrayName) and
     quoteCall.getName() = "shell_quote" and ident(quoteCall.getArgument(0), valueName) and
     concatenation(pushCall.getArgument(1), option, quoteCall) and
     not exists(UCODE::EscapeSequence escape | escape = option.(UCODE::String).getChild(_)) and
@@ -203,7 +252,8 @@ private predicate arrayJoinedIntoCommand(string arrayName, string commandName, N
     arrayDecl.getName().getValue() = arrayName and stableBinding(arrayDecl, sink) and
     arrayDecl.getValue() instanceof UCODE::Array and
     commandDecl.getName().getValue() = commandName and stableBinding(commandDecl, sink) and
-    joinCall.getName() = "join" and literal(joinCall.getArgument(0), " ") and
+    joinCall.getName() = "join" and unshadowedBuiltin(joinCall) and
+    literal(joinCall.getArgument(0), " ") and
     ident(joinCall.getArgument(1), arrayName) and
     concatenation(commandDecl.getValue(), commandPrefix, joinCall) and
     not exists(UCODE::EscapeSequence escape | escape = commandPrefix.(UCODE::String).getChild(_)) and
@@ -232,12 +282,12 @@ private class NestedShellSink extends NamedFsPopenCall {
 }
 
 from UCODE::MemberExpression source, NestedShellSink sink, string formName,
-     string arrayName, string commandName
+     string arrayName, string commandName, string fieldName
 where
   commandName = sink.getCommandName() and formBinding(source, formName, sink) and
   arrayJoinedIntoCommand(arrayName, commandName, sink) and
   exists(string valueName |
-    trimmedField(formName, valueName, sink) and
+    trimmedField(formName, valueName, fieldName, sink) and
     pushedField(arrayName, valueName, commandName, sink)
   )
-select sink, "A request field matches this bounded nested-shell construction; review bindings and both shell parsing stages."
+select sink, "Request field " + fieldName + " matches this bounded nested-shell construction; review bindings and both shell parsing stages."
