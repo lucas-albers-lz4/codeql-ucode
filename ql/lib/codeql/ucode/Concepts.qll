@@ -10,6 +10,7 @@
 private import codeql.ucode.DataFlow
 private import codeql.threatmodels.ThreatModels
 private import codeql.ucode.ast.internal.TreeSitter
+private import codeql.ucode.internal.SourceDeclaredUci
 
 /**
  * A syntactic `ubus.call(...)` call site. This matches the direct member
@@ -81,4 +82,15 @@ module ThreatModelSource {
  */
 class ActiveThreatModelSource extends ThreatModelSource {
   ActiveThreatModelSource() { currentThreatModel(this.getThreatModel()) }
+}
+
+/** Direct source-declared cursor commit association; runtime binding is unknown. */
+class SourceDeclaredUciCommit extends UCODE::CallExpression {
+  SourceDeclaredUciCommit() { sourceDeclaredUciCommit(this, _, _, _, _, _, _) }
+  UCODE::ImportStatement getImport() { sourceDeclaredUciCommit(this, result, _, _, _, _, _) }
+  UCODE::ImportSpecifier getSpecifier() { sourceDeclaredUciCommit(this, _, result, _, _, _, _) }
+  UCODE::VariableDeclarator getReceiverDeclaration() { sourceDeclaredUciCommit(this, _, _, result, _, _, _) }
+  UCODE::CallExpression getInitializer() { sourceDeclaredUciCommit(this, _, _, _, result, _, _) }
+  UCODE::Identifier getReceiver() { sourceDeclaredUciCommit(this, _, _, _, _, result, _) }
+  UCODE::String getConfigArgument() { sourceDeclaredUciCommit(this, _, _, _, _, _, result) }
 }

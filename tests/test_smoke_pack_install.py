@@ -17,7 +17,7 @@ class SmokePackInstallTests(unittest.TestCase):
         scripts = self.root / "scripts"
         scripts.mkdir()
         for name in ("ci-ql-smoke.sh", "ql-smoke-pack-install.sh",
-                     "m4-uci-helper-observation-smoke.sh", "m4-namespace-stat-smoke.sh", "m4-stat-model-smoke.sh", "m4-rename-model-smoke.sh", "m4-open-wx-model-smoke.sh", "m4-mkdir-model-smoke.sh",
+                     "m4-uci-helper-observation-smoke.sh", "m4-uci-commit-model-smoke.sh", "m4-namespace-stat-smoke.sh", "m4-stat-model-smoke.sh", "m4-rename-model-smoke.sh", "m4-open-wx-model-smoke.sh", "m4-mkdir-model-smoke.sh",
                      "smoke-extractor-platform.sh"):
             shutil.copy(REPO / "scripts" / name, scripts / name)
         child = '''#!/usr/bin/env bash
@@ -90,6 +90,13 @@ with Path(os.environ["SMOKE_LOG"]).open("a") as log:
 if os.environ.get("FAIL_MKDIR"):
     raise SystemExit(53)
 """)
+        (scripts / "issue53-uci-commit-ci.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("issue53-uci-commit-ci.py\\n")
+if os.environ.get("FAIL_UCI_COMMIT"):
+    raise SystemExit(54)
+""")
         for platform in ("linux64", "osx64"):
             extractor = self.root / "extractor-pack" / "tools" / platform / "extractor"
             extractor.parent.mkdir(parents=True)
@@ -142,7 +149,7 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
                          "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
-                         "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
+                         "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py", "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
@@ -232,13 +239,22 @@ exit 29
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py"])
 
+    def test_uci_commit_failure_stops_later_smokes(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_UCI_COMMIT="1")
+        self.assertEqual(result.returncode, 54, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py",
+                         "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py",
+                         "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py"])
+
     def test_uci_observer_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_UCI="1")
         self.assertEqual(result.returncode, 47, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
                          "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
-                         "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "uci-helper-observation-smoke.py"])
+                         "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py", "uci-helper-observation-smoke.py"])
 
     def test_markup_failure_stops_before_m4(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP="1")

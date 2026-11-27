@@ -1,0 +1,2194 @@
+{
+  "schema": "uci-commit-source-first-v1",
+  "positions": "one-based UTF-8 byte columns, end exclusive",
+  "entries": [
+    {
+      "path": "controls/alias.uc",
+      "bytes": 97,
+      "sha256": "1d992de93bab5b8fb0e2335899ea19a9b2bb077cda455d74c3fbc5bb6d4e7949",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 81
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 77
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 48,
+          "offset": 77
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 77
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 81
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 53,
+          "offset": 88
+        }
+      }
+    },
+    {
+      "path": "controls/computed-write.uc",
+      "bytes": 110,
+      "sha256": "0b54909b2d7e8b16f993d43e14d38d50eb88103f53b163e6a9b7a8b625b2604a",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 43,
+          "end_column_exclusive": 49,
+          "offset": 72
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 61,
+        "end_column_exclusive": 77,
+        "offset": 90
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 61,
+          "end_column_exclusive": 71,
+          "offset": 90
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 61,
+          "end_column_exclusive": 64,
+          "offset": 90
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 65,
+          "end_column_exclusive": 71,
+          "offset": 94
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 72,
+          "end_column_exclusive": 76,
+          "offset": 101
+        }
+      },
+      "guard_operation": {
+        "subscript": {
+          "text": "ctx['commit']",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 51,
+          "offset": 67
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        },
+        "operation": {
+          "text": "ctx['commit'] = other",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 59,
+          "offset": 67
+        }
+      }
+    },
+    {
+      "path": "controls/constructor-args.uc",
+      "bytes": 92,
+      "sha256": "9dd67d6b597e86d180a95aba54d7b8f3b85bcd876d4c0e5d48c10f4c1cccaebe",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 47,
+          "end_column_exclusive": 53,
+          "offset": 76
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 43,
+        "end_column_exclusive": 59,
+        "offset": 72
+      }
+    },
+    {
+      "path": "controls/constructor-indirect.uc",
+      "bytes": 104,
+      "sha256": "1a35c1a33c9b934b82144bad35b6fa9cab1da5c0cc75ab00ad66f0a909afcf25",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 59,
+          "end_column_exclusive": 65,
+          "offset": 88
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 55,
+        "end_column_exclusive": 71,
+        "offset": 84
+      }
+    },
+    {
+      "path": "controls/copied-receiver.uc",
+      "bytes": 102,
+      "sha256": "c4a23fc02ce43b7915ca0cfd9463b0eadcbc1017f926de60c8f5cdb67223c5e0",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 57,
+          "end_column_exclusive": 63,
+          "offset": 86
+        }
+      },
+      "guard_call": {
+        "text": "alt.commit('ok')",
+        "line": 2,
+        "column": 53,
+        "end_column_exclusive": 69,
+        "offset": 82
+      }
+    },
+    {
+      "path": "controls/cursor-shadow.uc",
+      "bytes": 93,
+      "sha256": "981d4bfb1f80b9ccdb5efe515591fb97f2a3952e7b9abb018ead6780615b0ae1",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 48,
+          "end_column_exclusive": 54,
+          "offset": 77
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 44,
+        "end_column_exclusive": 60,
+        "offset": 73
+      }
+    },
+    {
+      "path": "controls/delete-write.uc",
+      "bytes": 109,
+      "sha256": "ebf3046792562086af2add042d12fe567b918ff66e3fe73b2d71eb9deecb4497",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 50,
+          "end_column_exclusive": 56,
+          "offset": 79
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 60,
+        "end_column_exclusive": 76,
+        "offset": 89
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 60,
+          "end_column_exclusive": 70,
+          "offset": 89
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 60,
+          "end_column_exclusive": 63,
+          "offset": 89
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 64,
+          "end_column_exclusive": 70,
+          "offset": 93
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 71,
+          "end_column_exclusive": 75,
+          "offset": 100
+        }
+      },
+      "guard_operation": {
+        "subscript": {
+          "text": "ctx['commit']",
+          "line": 2,
+          "column": 45,
+          "end_column_exclusive": 58,
+          "offset": 74
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 45,
+          "end_column_exclusive": 48,
+          "offset": 74
+        },
+        "operation": {
+          "text": "delete ctx['commit']",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 58,
+          "offset": 67
+        }
+      }
+    },
+    {
+      "path": "controls/duplicate-import.uc",
+      "bytes": 119,
+      "sha256": "68560c44bae6c9fd48cfddb2015ac4f594d3e4ae1d4d1f3abffcdc93073c437b",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 3,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 103
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 3,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 99
+      }
+    },
+    {
+      "path": "controls/dynamic-arg.uc",
+      "bytes": 89,
+      "sha256": "dfd9d10f4035f8ab9ed9c034117dade1919036d2dc45d8c7a1eb73a8feeb7ea9",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit(config)",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 56,
+        "offset": 67
+      }
+    },
+    {
+      "path": "controls/extra-args.uc",
+      "bytes": 96,
+      "sha256": "ab58cbbb478a938d746e04b290ffe7ae11731f2dc6adb6a86cbfe67d07fea3b9",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok', 'extra')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 63,
+        "offset": 67
+      }
+    },
+    {
+      "path": "controls/function-redeclare.uc",
+      "bytes": 105,
+      "sha256": "857a66a3d483e2bae95a31fee8a4ef01592299d3d1e7eee8fa99413033ffd6fc",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 60,
+          "end_column_exclusive": 66,
+          "offset": 89
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 56,
+        "end_column_exclusive": 72,
+        "offset": 85
+      },
+      "guard_operation": {
+        "operation": {
+          "text": "function ctx() {}",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 55,
+          "offset": 67
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 47,
+          "end_column_exclusive": 50,
+          "offset": 76
+        }
+      }
+    },
+    {
+      "path": "controls/function-shadow.uc",
+      "bytes": 109,
+      "sha256": "816ea9d2a2dd6e87a3bda8e4036a4dc184bd0d57b4bf50ba72adb77b37b5c587",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 68,
+          "offset": 91
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 58,
+        "end_column_exclusive": 74,
+        "offset": 87
+      },
+      "guard_operation": {
+        "operation": {
+          "text": "function ctx() {}",
+          "line": 2,
+          "column": 40,
+          "end_column_exclusive": 57,
+          "offset": 69
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 52,
+          "offset": 78
+        }
+      }
+    },
+    {
+      "path": "controls/late-import.uc",
+      "bytes": 108,
+      "sha256": "6e3cafd006a657dd3ebe5bb1cb2c5edd345634f0bcc67a62e2448d6aa26d0596",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 47,
+          "end_column_exclusive": 53,
+          "offset": 46
+        },
+        "commit": {
+          "text": "commit",
+          "line": 1,
+          "column": 61,
+          "end_column_exclusive": 67,
+          "offset": 60
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 1,
+        "column": 57,
+        "end_column_exclusive": 73,
+        "offset": 56
+      }
+    },
+    {
+      "path": "controls/malformed.uc",
+      "bytes": 102,
+      "sha256": "fd795250b918ae121af7e9cf77bd4ed1f3843cc919306b9018c3cb5bc0ab37a5",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 67
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 48,
+          "offset": 67
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 53,
+          "offset": 78
+        }
+      }
+    },
+    {
+      "path": "controls/optional-call.uc",
+      "bytes": 89,
+      "sha256": "b19fd71bacafbd501edcca83723b03a85e59fec9f2586bcdad429d410ea1b349",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit?.('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 56,
+        "offset": 67
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 48,
+          "offset": 67
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 51,
+          "end_column_exclusive": 55,
+          "offset": 80
+        }
+      }
+    },
+    {
+      "path": "controls/optional.uc",
+      "bytes": 88,
+      "sha256": "6587f16a13838c1c28b642a42e7a0fa73d6dc02c17c6bd33eaadb6561524a38e",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 43,
+          "end_column_exclusive": 49,
+          "offset": 72
+        }
+      },
+      "guard_call": {
+        "text": "ctx?.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 55,
+        "offset": 67
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx?.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 49,
+          "offset": 67
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 43,
+          "end_column_exclusive": 49,
+          "offset": 72
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 50,
+          "end_column_exclusive": 54,
+          "offset": 79
+        }
+      }
+    },
+    {
+      "path": "controls/other-scope-member.uc",
+      "bytes": 128,
+      "sha256": "d67b410df68a123e2a13708870f5c5f6f4f146ce1af7b822d93c325b2644758e",
+      "expected": "model",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 61,
+          "end_column_exclusive": 67,
+          "offset": 90
+        }
+      },
+      "roles": {
+        "import": {
+          "text": "import { cursor } from 'uci';",
+          "line": 1,
+          "column": 1,
+          "end_column_exclusive": 30,
+          "offset": 0
+        },
+        "specifier": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "declaration": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 36,
+          "offset": 51
+        },
+        "initializer": {
+          "text": "cursor()",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 36,
+          "offset": 57
+        },
+        "init_callee": {
+          "text": "cursor",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 34,
+          "offset": 57
+        },
+        "import_source": {
+          "text": "'uci'",
+          "line": 1,
+          "column": 24,
+          "end_column_exclusive": 29,
+          "offset": 23
+        },
+        "decl_name": {
+          "text": "ctx",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 25,
+          "offset": 51
+        },
+        "specifier_name": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "import_fragment": {
+          "text": "uci",
+          "line": 1,
+          "column": 25,
+          "end_column_exclusive": 28,
+          "offset": 24
+        }
+      },
+      "calls": [
+        {
+          "call": {
+            "text": "ctx.commit('ok')",
+            "line": 2,
+            "column": 79,
+            "end_column_exclusive": 95,
+            "offset": 108
+          },
+          "receiver": {
+            "text": "ctx",
+            "line": 2,
+            "column": 79,
+            "end_column_exclusive": 82,
+            "offset": 108
+          },
+          "member": {
+            "text": "ctx.commit",
+            "line": 2,
+            "column": 79,
+            "end_column_exclusive": 89,
+            "offset": 108
+          },
+          "property": {
+            "text": "commit",
+            "line": 2,
+            "column": 83,
+            "end_column_exclusive": 89,
+            "offset": 112
+          },
+          "argument": {
+            "text": "'ok'",
+            "line": 2,
+            "column": 90,
+            "end_column_exclusive": 94,
+            "offset": 119
+          },
+          "argument_fragment": {
+            "text": "ok",
+            "line": 2,
+            "column": 91,
+            "end_column_exclusive": 93,
+            "offset": 120
+          }
+        }
+      ],
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 79,
+        "end_column_exclusive": 95,
+        "offset": 108
+      },
+      "guard_operation": {
+        "operation": {
+          "text": "ctx.commit = other",
+          "line": 2,
+          "column": 57,
+          "end_column_exclusive": 75,
+          "offset": 86
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 57,
+          "end_column_exclusive": 60,
+          "offset": 86
+        },
+        "declaration": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 44,
+          "end_column_exclusive": 55,
+          "offset": 73
+        }
+      }
+    },
+    {
+      "path": "controls/other-scope-write.uc",
+      "bytes": 121,
+      "sha256": "1061f653af8f32afb5cf7b6a64726e84bd63b32ca9f0e2e5c42157a95823baec",
+      "expected": "model",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 76,
+          "end_column_exclusive": 82,
+          "offset": 105
+        }
+      },
+      "roles": {
+        "import": {
+          "text": "import { cursor } from 'uci';",
+          "line": 1,
+          "column": 1,
+          "end_column_exclusive": 30,
+          "offset": 0
+        },
+        "specifier": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "declaration": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 36,
+          "offset": 51
+        },
+        "initializer": {
+          "text": "cursor()",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 36,
+          "offset": 57
+        },
+        "init_callee": {
+          "text": "cursor",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 34,
+          "offset": 57
+        },
+        "import_source": {
+          "text": "'uci'",
+          "line": 1,
+          "column": 24,
+          "end_column_exclusive": 29,
+          "offset": 23
+        },
+        "decl_name": {
+          "text": "ctx",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 25,
+          "offset": 51
+        },
+        "specifier_name": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "import_fragment": {
+          "text": "uci",
+          "line": 1,
+          "column": 25,
+          "end_column_exclusive": 28,
+          "offset": 24
+        }
+      },
+      "calls": [
+        {
+          "call": {
+            "text": "ctx.commit('ok')",
+            "line": 2,
+            "column": 72,
+            "end_column_exclusive": 88,
+            "offset": 101
+          },
+          "receiver": {
+            "text": "ctx",
+            "line": 2,
+            "column": 72,
+            "end_column_exclusive": 75,
+            "offset": 101
+          },
+          "member": {
+            "text": "ctx.commit",
+            "line": 2,
+            "column": 72,
+            "end_column_exclusive": 82,
+            "offset": 101
+          },
+          "property": {
+            "text": "commit",
+            "line": 2,
+            "column": 76,
+            "end_column_exclusive": 82,
+            "offset": 105
+          },
+          "argument": {
+            "text": "'ok'",
+            "line": 2,
+            "column": 83,
+            "end_column_exclusive": 87,
+            "offset": 112
+          },
+          "argument_fragment": {
+            "text": "ok",
+            "line": 2,
+            "column": 84,
+            "end_column_exclusive": 86,
+            "offset": 113
+          }
+        }
+      ],
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 72,
+        "end_column_exclusive": 88,
+        "offset": 101
+      },
+      "guard_operation": {
+        "operation": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 57,
+          "end_column_exclusive": 68,
+          "offset": 86
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 57,
+          "end_column_exclusive": 60,
+          "offset": 86
+        },
+        "declaration": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 44,
+          "end_column_exclusive": 55,
+          "offset": 73
+        }
+      }
+    },
+    {
+      "path": "controls/owner-after.uc",
+      "bytes": 104,
+      "sha256": "3c41812b0e12782d2a559a10d59e86859090188b76bd6ae66d83164c512e9e51",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 67
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 48,
+          "offset": 67
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 53,
+          "offset": 78
+        }
+      },
+      "guard_operation": {
+        "declaration_second": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 60,
+          "end_column_exclusive": 71,
+          "offset": 89
+        },
+        "declaration_first": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 36,
+          "offset": 51
+        }
+      }
+    },
+    {
+      "path": "controls/positive.uc",
+      "bytes": 142,
+      "sha256": "cdc343eb942eb8f94a07ef7cd5d02b4e23645cee8ec5d3902cd0ce33a41bf0d1",
+      "expected": "model",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "roles": {
+        "import": {
+          "text": "import { cursor } from 'uci';",
+          "line": 1,
+          "column": 1,
+          "end_column_exclusive": 30,
+          "offset": 0
+        },
+        "specifier": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "declaration": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 36,
+          "offset": 51
+        },
+        "initializer": {
+          "text": "cursor()",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 36,
+          "offset": 57
+        },
+        "init_callee": {
+          "text": "cursor",
+          "line": 2,
+          "column": 28,
+          "end_column_exclusive": 34,
+          "offset": 57
+        },
+        "import_source": {
+          "text": "'uci'",
+          "line": 1,
+          "column": 24,
+          "end_column_exclusive": 29,
+          "offset": 23
+        },
+        "decl_name": {
+          "text": "ctx",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 25,
+          "offset": 51
+        },
+        "specifier_name": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "import_fragment": {
+          "text": "uci",
+          "line": 1,
+          "column": 25,
+          "end_column_exclusive": 28,
+          "offset": 24
+        }
+      },
+      "calls": [
+        {
+          "call": {
+            "text": "ctx.commit('ok')",
+            "line": 2,
+            "column": 38,
+            "end_column_exclusive": 54,
+            "offset": 67
+          },
+          "receiver": {
+            "text": "ctx",
+            "line": 2,
+            "column": 38,
+            "end_column_exclusive": 41,
+            "offset": 67
+          },
+          "member": {
+            "text": "ctx.commit",
+            "line": 2,
+            "column": 38,
+            "end_column_exclusive": 48,
+            "offset": 67
+          },
+          "property": {
+            "text": "commit",
+            "line": 2,
+            "column": 42,
+            "end_column_exclusive": 48,
+            "offset": 71
+          },
+          "argument": {
+            "text": "'ok'",
+            "line": 2,
+            "column": 49,
+            "end_column_exclusive": 53,
+            "offset": 78
+          },
+          "argument_fragment": {
+            "text": "ok",
+            "line": 2,
+            "column": 50,
+            "end_column_exclusive": 52,
+            "offset": 79
+          },
+          "statement_owner": {
+            "kind": "StatementBlock",
+            "start": [
+              2,
+              16
+            ],
+            "end_exclusive": [
+              2,
+              112
+            ],
+            "index": 1
+          },
+          "restart_callee": {
+            "text": "system",
+            "line": 2,
+            "column": 56,
+            "end_column_exclusive": 62,
+            "offset": 85
+          },
+          "restart_argument": {
+            "text": "'/etc/init.d/fixture restart >/dev/null 2>&1'",
+            "line": 2,
+            "column": 63,
+            "end_column_exclusive": 108,
+            "offset": 92
+          },
+          "restart_fragment": {
+            "text": "/etc/init.d/fixture restart >/dev/null 2>&1",
+            "line": 2,
+            "column": 64,
+            "end_column_exclusive": 107,
+            "offset": 93
+          }
+        }
+      ],
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 67
+      },
+      "restart": {
+        "text": "system('/etc/init.d/fixture restart >/dev/null 2>&1')",
+        "line": 2,
+        "column": 56,
+        "end_column_exclusive": 109,
+        "offset": 85
+      },
+      "function": {
+        "kind": "FunctionDeclaration",
+        "start": [
+          2,
+          1
+        ],
+        "end_exclusive": [
+          2,
+          112
+        ]
+      }
+    },
+    {
+      "path": "controls/property-only.uc",
+      "bytes": 94,
+      "sha256": "ed73b7b0c8a7fda82e760a1110c820d829b7a172f56f7c4d22f9207dbf0749cd",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 55,
+          "end_column_exclusive": 61,
+          "offset": 84
+        }
+      }
+    },
+    {
+      "path": "controls/receiver-write.uc",
+      "bytes": 100,
+      "sha256": "711c749f171456256a8a1e380a194760423f73c06b54b4db3bec4f2d3d7e1a2b",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 55,
+          "end_column_exclusive": 61,
+          "offset": 84
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 51,
+        "end_column_exclusive": 67,
+        "offset": 80
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 51,
+          "end_column_exclusive": 61,
+          "offset": 80
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 51,
+          "end_column_exclusive": 54,
+          "offset": 80
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 55,
+          "end_column_exclusive": 61,
+          "offset": 84
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 66,
+          "offset": 91
+        }
+      },
+      "guard_operation": {
+        "operation": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 49,
+          "offset": 67
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 67
+        }
+      }
+    },
+    {
+      "path": "controls/same-scope-redeclare.uc",
+      "bytes": 104,
+      "sha256": "e817cb1d608cf42c1eeabe4a31df50ed65df4788386ecdebcc40b3446e9f71ef",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 59,
+          "end_column_exclusive": 65,
+          "offset": 88
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 55,
+        "end_column_exclusive": 71,
+        "offset": 84
+      }
+    },
+    {
+      "path": "controls/wrapped.uc",
+      "bytes": 89,
+      "sha256": "902096c4dc2a4f544c6a95c302d992480ae6773c75cb68147762dfc7a76d5667",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 43,
+          "end_column_exclusive": 49,
+          "offset": 72
+        }
+      },
+      "guard_call": {
+        "text": "(ctx.commit)('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 56,
+        "offset": 67
+      }
+    },
+    {
+      "path": "controls/wrong-module.uc",
+      "bytes": 89,
+      "sha256": "b49c739336ccce51467594cb8d200be98002617c545ff57bbeb39d8287326a9d",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 73
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 54,
+        "offset": 69
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 48,
+          "offset": 69
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 41,
+          "offset": 69
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 73
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 53,
+          "offset": 80
+        }
+      }
+    },
+    {
+      "path": "controls/wrong-receiver.uc",
+      "bytes": 105,
+      "sha256": "6b7b7efca6f15cf5aed948e02f6170d9e2b4a1559878c8de1da359253ed1dedf",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 60,
+          "end_column_exclusive": 66,
+          "offset": 89
+        }
+      },
+      "guard_call": {
+        "text": "other.commit('ok')",
+        "line": 2,
+        "column": 54,
+        "end_column_exclusive": 72,
+        "offset": 83
+      }
+    },
+    {
+      "path": "controls/zero-args.uc",
+      "bytes": 83,
+      "sha256": "74881a2cd710d968c3d4668490047f28e4b5c5eaae4a24a8307e7b44b8f7ceee",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 42,
+          "end_column_exclusive": 48,
+          "offset": 71
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit()",
+        "line": 2,
+        "column": 38,
+        "end_column_exclusive": 50,
+        "offset": 67
+      }
+    },
+    {
+      "path": "usr/share/rpcd/ucode/luci.adblock-fast",
+      "bytes": 23660,
+      "sha256": "3cb9d07b33a0aec36743326a5cb1e18885d245a132ef92174eb4c8b70aaebdd8",
+      "expected": "model-three",
+      "anchors": {
+        "import": {
+          "text": "import { cursor } from 'uci';",
+          "line": 24,
+          "column": 1,
+          "end_column_exclusive": 30,
+          "offset": 1431
+        },
+        "initializer": {
+          "text": "let uci_ctx = cursor();",
+          "line": 572,
+          "column": 4,
+          "end_column_exclusive": 27,
+          "offset": 20269
+        }
+      },
+      "calls": [
+        {
+          "call": {
+            "text": "uci_ctx.commit('dhcp')",
+            "line": 611,
+            "column": 5,
+            "end_column_exclusive": 27,
+            "offset": 21728
+          },
+          "receiver": {
+            "text": "uci_ctx",
+            "line": 611,
+            "column": 5,
+            "end_column_exclusive": 12,
+            "offset": 21728
+          },
+          "argument": {
+            "text": "'dhcp'",
+            "line": 611,
+            "column": 20,
+            "end_column_exclusive": 26,
+            "offset": 21743
+          },
+          "member": {
+            "text": "uci_ctx.commit",
+            "line": 611,
+            "column": 5,
+            "end_column_exclusive": 19,
+            "offset": 21728
+          },
+          "property": {
+            "text": "commit",
+            "line": 611,
+            "column": 13,
+            "end_column_exclusive": 19,
+            "offset": 21736
+          },
+          "argument_fragment": {
+            "text": "dhcp",
+            "line": 611,
+            "column": 21,
+            "end_column_exclusive": 25,
+            "offset": 21744
+          },
+          "restart": {
+            "text": "system('/etc/init.d/dnsmasq restart >/dev/null 2>&1')",
+            "line": 612,
+            "column": 5,
+            "end_column_exclusive": 58,
+            "offset": 21756
+          },
+          "statement_owner": {
+            "kind": "StatementBlock",
+            "start": [
+              579,
+              20
+            ],
+            "end_exclusive": [
+              614,
+              5
+            ],
+            "index": 3
+          },
+          "restart_callee": {
+            "text": "system",
+            "line": 612,
+            "column": 5,
+            "end_column_exclusive": 11,
+            "offset": 21756
+          },
+          "restart_argument": {
+            "text": "'/etc/init.d/dnsmasq restart >/dev/null 2>&1'",
+            "line": 612,
+            "column": 12,
+            "end_column_exclusive": 57,
+            "offset": 21763
+          },
+          "restart_fragment": {
+            "text": "/etc/init.d/dnsmasq restart >/dev/null 2>&1",
+            "line": 612,
+            "column": 13,
+            "end_column_exclusive": 56,
+            "offset": 21764
+          }
+        },
+        {
+          "call": {
+            "text": "uci_ctx.commit('smartdns')",
+            "line": 637,
+            "column": 5,
+            "end_column_exclusive": 31,
+            "offset": 22677
+          },
+          "receiver": {
+            "text": "uci_ctx",
+            "line": 637,
+            "column": 5,
+            "end_column_exclusive": 12,
+            "offset": 22677
+          },
+          "argument": {
+            "text": "'smartdns'",
+            "line": 637,
+            "column": 20,
+            "end_column_exclusive": 30,
+            "offset": 22692
+          },
+          "member": {
+            "text": "uci_ctx.commit",
+            "line": 637,
+            "column": 5,
+            "end_column_exclusive": 19,
+            "offset": 22677
+          },
+          "property": {
+            "text": "commit",
+            "line": 637,
+            "column": 13,
+            "end_column_exclusive": 19,
+            "offset": 22685
+          },
+          "argument_fragment": {
+            "text": "smartdns",
+            "line": 637,
+            "column": 21,
+            "end_column_exclusive": 29,
+            "offset": 22693
+          },
+          "restart": {
+            "text": "system('/etc/init.d/smartdns restart >/dev/null 2>&1')",
+            "line": 638,
+            "column": 5,
+            "end_column_exclusive": 59,
+            "offset": 22709
+          },
+          "statement_owner": {
+            "kind": "StatementBlock",
+            "start": [
+              615,
+              21
+            ],
+            "end_exclusive": [
+              640,
+              5
+            ],
+            "index": 3
+          },
+          "restart_callee": {
+            "text": "system",
+            "line": 638,
+            "column": 5,
+            "end_column_exclusive": 11,
+            "offset": 22709
+          },
+          "restart_argument": {
+            "text": "'/etc/init.d/smartdns restart >/dev/null 2>&1'",
+            "line": 638,
+            "column": 12,
+            "end_column_exclusive": 58,
+            "offset": 22716
+          },
+          "restart_fragment": {
+            "text": "/etc/init.d/smartdns restart >/dev/null 2>&1",
+            "line": 638,
+            "column": 13,
+            "end_column_exclusive": 57,
+            "offset": 22717
+          }
+        },
+        {
+          "call": {
+            "text": "uci_ctx.commit('unbound')",
+            "line": 661,
+            "column": 5,
+            "end_column_exclusive": 30,
+            "offset": 23434
+          },
+          "receiver": {
+            "text": "uci_ctx",
+            "line": 661,
+            "column": 5,
+            "end_column_exclusive": 12,
+            "offset": 23434
+          },
+          "argument": {
+            "text": "'unbound'",
+            "line": 661,
+            "column": 20,
+            "end_column_exclusive": 29,
+            "offset": 23449
+          },
+          "member": {
+            "text": "uci_ctx.commit",
+            "line": 661,
+            "column": 5,
+            "end_column_exclusive": 19,
+            "offset": 23434
+          },
+          "property": {
+            "text": "commit",
+            "line": 661,
+            "column": 13,
+            "end_column_exclusive": 19,
+            "offset": 23442
+          },
+          "argument_fragment": {
+            "text": "unbound",
+            "line": 661,
+            "column": 21,
+            "end_column_exclusive": 28,
+            "offset": 23450
+          },
+          "restart": {
+            "text": "system('/etc/init.d/unbound restart >/dev/null 2>&1')",
+            "line": 662,
+            "column": 5,
+            "end_column_exclusive": 58,
+            "offset": 23465
+          },
+          "statement_owner": {
+            "kind": "SwitchCase",
+            "start": [
+              641,
+              4
+            ],
+            "end_exclusive": [
+              663,
+              11
+            ],
+            "index": 2
+          },
+          "restart_callee": {
+            "text": "system",
+            "line": 662,
+            "column": 5,
+            "end_column_exclusive": 11,
+            "offset": 23465
+          },
+          "restart_argument": {
+            "text": "'/etc/init.d/unbound restart >/dev/null 2>&1'",
+            "line": 662,
+            "column": 12,
+            "end_column_exclusive": 57,
+            "offset": 23472
+          },
+          "restart_fragment": {
+            "text": "/etc/init.d/unbound restart >/dev/null 2>&1",
+            "line": 662,
+            "column": 13,
+            "end_column_exclusive": 56,
+            "offset": 23473
+          }
+        }
+      ],
+      "nonliteral_excluded_lines": [
+        433,
+        501
+      ],
+      "roles": {
+        "import": {
+          "text": "import { cursor } from 'uci';",
+          "line": 24,
+          "column": 1,
+          "end_column_exclusive": 30,
+          "offset": 1431
+        },
+        "specifier": {
+          "text": "cursor",
+          "line": 24,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 1440
+        },
+        "declaration": {
+          "text": "uci_ctx = cursor()",
+          "line": 572,
+          "column": 8,
+          "end_column_exclusive": 26,
+          "offset": 20273
+        },
+        "initializer": {
+          "text": "cursor()",
+          "line": 572,
+          "column": 18,
+          "end_column_exclusive": 26,
+          "offset": 20283
+        },
+        "init_callee": {
+          "text": "cursor",
+          "line": 572,
+          "column": 18,
+          "end_column_exclusive": 24,
+          "offset": 20283
+        },
+        "import_source": {
+          "text": "'uci'",
+          "line": 24,
+          "column": 24,
+          "end_column_exclusive": 29,
+          "offset": 1454
+        },
+        "decl_name": {
+          "text": "uci_ctx",
+          "line": 572,
+          "column": 8,
+          "end_column_exclusive": 15,
+          "offset": 20273
+        },
+        "specifier_name": {
+          "text": "cursor",
+          "line": 24,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 1440
+        },
+        "import_fragment": {
+          "text": "uci",
+          "line": 24,
+          "column": 25,
+          "end_column_exclusive": 28,
+          "offset": 1455
+        }
+      },
+      "function": {
+        "kind": "FunctionExpression",
+        "start": [
+          566,
+          9
+        ],
+        "end_exclusive": [
+          669,
+          4
+        ]
+      }
+    },
+    {
+      "path": "controls/cardinality-switch.uc",
+      "bytes": 142,
+      "sha256": "ff81fa10e246ac9004578aa4bdb9eb8915a835d793b9b778ee2199cdb33b3c60",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 2,
+          "column": 49,
+          "end_column_exclusive": 55,
+          "offset": 78
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 95,
+          "end_column_exclusive": 101,
+          "offset": 124
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 91,
+        "end_column_exclusive": 107,
+        "offset": 120
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 91,
+          "end_column_exclusive": 101,
+          "offset": 120
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 91,
+          "end_column_exclusive": 94,
+          "offset": 120
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 95,
+          "end_column_exclusive": 101,
+          "offset": 124
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 102,
+          "end_column_exclusive": 106,
+          "offset": 131
+        }
+      },
+      "guard_operation": {
+        "declaration_first": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 43,
+          "end_column_exclusive": 57,
+          "offset": 72
+        },
+        "declaration_second": {
+          "text": "ctx = other",
+          "line": 2,
+          "column": 78,
+          "end_column_exclusive": 89,
+          "offset": 107
+        }
+      }
+    },
+    {
+      "path": "controls/parenthesized-delete.uc",
+      "bytes": 111,
+      "sha256": "5a410070616bd389312c40aa0140e309b527037aa661d6e9760e5a275b46ff6e",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 66,
+          "end_column_exclusive": 72,
+          "offset": 95
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 62,
+        "end_column_exclusive": 78,
+        "offset": 91
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 72,
+          "offset": 91
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 65,
+          "offset": 91
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 66,
+          "end_column_exclusive": 72,
+          "offset": 95
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 73,
+          "end_column_exclusive": 77,
+          "offset": 102
+        }
+      },
+      "guard_operation": {
+        "subscript": {
+          "text": "ctx['commit']",
+          "line": 2,
+          "column": 46,
+          "end_column_exclusive": 59,
+          "offset": 75
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 46,
+          "end_column_exclusive": 49,
+          "offset": 75
+        },
+        "operation": {
+          "text": "delete (ctx['commit'])",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 60,
+          "offset": 67
+        }
+      }
+    },
+    {
+      "path": "controls/parenthesized-base.uc",
+      "bytes": 111,
+      "sha256": "a07e188996fde59fb9172dbc99f7357af02fa9a8f8eef26a4df4c1db8463cfe2",
+      "expected": "inconclusive",
+      "anchors": {
+        "import": {
+          "text": "cursor",
+          "line": 1,
+          "column": 10,
+          "end_column_exclusive": 16,
+          "offset": 9
+        },
+        "commit": {
+          "text": "commit",
+          "line": 2,
+          "column": 66,
+          "end_column_exclusive": 72,
+          "offset": 95
+        }
+      },
+      "guard_call": {
+        "text": "ctx.commit('ok')",
+        "line": 2,
+        "column": 62,
+        "end_column_exclusive": 78,
+        "offset": 91
+      },
+      "guard_witness": {
+        "member": {
+          "text": "ctx.commit",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 72,
+          "offset": 91
+        },
+        "receiver": {
+          "text": "ctx",
+          "line": 2,
+          "column": 62,
+          "end_column_exclusive": 65,
+          "offset": 91
+        },
+        "property": {
+          "text": "commit",
+          "line": 2,
+          "column": 66,
+          "end_column_exclusive": 72,
+          "offset": 95
+        },
+        "argument": {
+          "text": "'ok'",
+          "line": 2,
+          "column": 73,
+          "end_column_exclusive": 77,
+          "offset": 102
+        }
+      },
+      "guard_operation": {
+        "subscript": {
+          "text": "delete (ctx)['commit']",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 60,
+          "offset": 67
+        },
+        "operand": {
+          "text": "ctx",
+          "line": 2,
+          "column": 46,
+          "end_column_exclusive": 49,
+          "offset": 75
+        },
+        "operation": {
+          "text": "delete (ctx)",
+          "line": 2,
+          "column": 38,
+          "end_column_exclusive": 50,
+          "offset": 67
+        },
+        "paren": {
+          "text": "(ctx)",
+          "line": 2,
+          "column": 45,
+          "end_column_exclusive": 50,
+          "offset": 74
+        }
+      }
+    }
+  ]
+}
