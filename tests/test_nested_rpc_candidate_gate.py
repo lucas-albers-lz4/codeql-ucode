@@ -52,5 +52,28 @@ class CandidateGateTest(unittest.TestCase):
         with self.assertRaisesRegex(AssertionError, 'successful-file identities differ'):
             verify.verify_success_identities(row('/tmp/other/stage/usr/share/rpcd/ucode/a.uc'), stage, wanted)
 
+    def test_field_witnesses_bind_to_one_sink_identity_per_span(self):
+        stage = Path('/tmp/nested-witness/stage').resolve()
+        def row(name, line, start, end, field, entity_id):
+            path = stage / 'usr/share/rpcd/ucode' / name
+            return [{'id': entity_id, 'label': 'CallExpression',
+                     'url': {'uri': path.as_uri(), 'startLine': line,
+                             'startColumn': start, 'endLine': line,
+                             'endColumn': end}},
+                    f'Request field {field} matches this bounded nested-shell construction; review bindings and both shell parsing stages.']
+        rows = [row('parent.uc', 164, 3, 48, 'loginserver', 17),
+                row('parent.uc', 164, 3, 48, 'loginserver_authkey', 17),
+                row('renamed_pos.uc', 18, 5, 50, 'endpoint', 23)]
+        wanted = [('usr/share/rpcd/ucode/parent.uc', 164, 3, 49, 'loginserver'),
+                  ('usr/share/rpcd/ucode/parent.uc', 164, 3, 49, 'loginserver_authkey'),
+                  ('usr/share/rpcd/ucode/renamed_pos.uc', 18, 5, 51, 'endpoint')]
+        self.assertEqual(len(gate.checked_nested_witness_rows(rows, stage, wanted)), 3)
+        split = [rows[0], row('parent.uc', 164, 3, 48, 'loginserver_authkey', 19), rows[2]]
+        with self.assertRaisesRegex(RuntimeError, 'AST identities differ'):
+            gate.checked_nested_witness_rows(split, stage, wanted)
+        reused = [rows[0], rows[1], row('renamed_pos.uc', 18, 5, 50, 'endpoint', 17)]
+        with self.assertRaisesRegex(RuntimeError, 'AST identities differ'):
+            gate.checked_nested_witness_rows(reused, stage, wanted)
+
 if __name__ == '__main__':
     unittest.main()
