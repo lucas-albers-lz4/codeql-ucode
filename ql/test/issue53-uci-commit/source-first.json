@@ -1410,6 +1410,13 @@
           "column": 38,
           "end_column_exclusive": 41,
           "offset": 67
+        },
+        "declaration": {
+          "text": "ctx = cursor()",
+          "line": 2,
+          "column": 22,
+          "end_column_exclusive": 36,
+          "offset": 51
         }
       }
     },
