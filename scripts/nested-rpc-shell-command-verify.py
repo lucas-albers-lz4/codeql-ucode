@@ -40,7 +40,10 @@ def main() -> None:
     expected = json.loads((producer / "ql/test/nested-rpc-shell-command/expected.json").read_text())
     query = producer / expected["query"]
     assert digest(query) == expected["query_sha256"], "query bytes differ"
-    assert digest(run / "producer/ql/src/m4/NestedRpcShellCommand.ql") == expected["query_sha256"]
+    copied_query = run / "pack/ql/src/m4/NestedRpcShellCommand.ql"
+    if not copied_query.is_file():
+        copied_query = run / "producer/ql/src/m4/NestedRpcShellCommand.ql"
+    assert digest(copied_query) == expected["query_sha256"]
     assert digest(producer / expected["source_fixture"]) == expected["source_fixture_sha256"]
 
     wanted_files = {}
@@ -49,17 +52,17 @@ def main() -> None:
         assert digest(producer / "ql/test/nested-rpc-shell-command" / name) == info["sha256"]
         wanted_files[rel] = info
     for case, info in expected["historical"].items():
-        rel = f"{case}/usr/share/rpcd/ucode/tailscale.uc"
-        fixture = producer / "ql/test/tailscale-nested-shell" / rel
+        rel = f"usr/share/rpcd/ucode/{case}.uc"
+        fixture = producer / "ql/test/tailscale-nested-shell" / case / "usr/share/rpcd/ucode/tailscale.uc"
         assert digest(fixture) == info["sha256"]
         assert git_blob(fixture) == info["git_blob"], f"historical Git blob differs: {case}"
         wanted_files[rel] = info
     source_first = json.loads((run / "source-first.json").read_text())
     assert source_first["query_sha256"] == expected["query_sha256"]
-    assert set(source_first["files"]) == set(wanted_files)
+    assert set(source_first["source_files"]) == set(wanted_files)
     for rel, info in wanted_files.items():
         assert digest(run / "stage" / rel) == info["sha256"], f"staged bytes differ: {rel}"
-        assert source_first["files"][rel]["sha256"] == info["sha256"]
+        assert source_first["source_files"][rel] == info["sha256"]
 
     verify_success_identities(tuples(run / "out/success-decode.stdout"), run / "stage", wanted_files)
     assert tuples(run / "out/errors-decode.stdout") == [], "extraction errors present"
@@ -72,20 +75,42 @@ def main() -> None:
     rule_id = "ucode/m4/nested-rpc-shell-command-candidate"
     assert [rule["id"] for rule in one_run["tool"]["driver"]["rules"]] == [rule_id]
     wanted = []
+    wanted_fields = []
     for rel, info in wanted_files.items():
         for span in info["candidate_sinks"]:
             line, columns = span.split(":")
             first, last_inclusive = map(int, columns.split("-"))
             wanted.append((rel, int(line), first, last_inclusive + 1))
+            wanted_fields.extend((rel, int(line), first, last_inclusive + 1, field)
+                                 for field in info.get("candidate_fields", []))
+    witness_rows = tuples(run / "out/candidate-decode.stdout")
+    witnessed = []
+    ids_by_span = {}
+    for entity, message in witness_rows:
+        url = entity["url"]
+        rel = str(Path(url["uri"].removeprefix("file://")).relative_to(run / "stage"))
+        assert url["endLine"] == url["startLine"] and type(entity.get("id")) is int
+        span = (rel, url["startLine"], url["startColumn"], url["endColumn"] + 1)
+        ids_by_span.setdefault(span, set()).add(entity["id"])
+        field = message.split("Request field ", 1)[1].split(" matches ", 1)[0]
+        witnessed.append((*span, field))
+    assert collections.Counter(witnessed) == collections.Counter(wanted_fields), "BQRS field witnesses differ"
+    assert all(len(ids) == 1 for ids in ids_by_span.values())
+    assert len({next(iter(ids)) for ids in ids_by_span.values()}) == len(ids_by_span)
     actual = []
+    sarif_fields = []
     for result in one_run.get("results", []):
         assert result["ruleId"] == rule_id and len(result["locations"]) == 1
         physical = result["locations"][0]["physicalLocation"]
         region = physical["region"]
         assert region.get("endLine", region["startLine"]) == region["startLine"]
-        actual.append((physical["artifactLocation"]["uri"], region["startLine"],
-                       region["startColumn"], region["endColumn"]))
+        span = (physical["artifactLocation"]["uri"], region["startLine"],
+                region["startColumn"], region["endColumn"])
+        actual.append(span)
+        sarif_fields.extend((*span, line.split("Request field ", 1)[1].split(" matches ", 1)[0])
+                            for line in result["message"]["text"].splitlines())
     assert collections.Counter(actual) == collections.Counter(wanted), "SARIF locations differ"
+    assert collections.Counter(sarif_fields) == collections.Counter(wanted_fields), "SARIF fields differ"
     print(f"verified {len(wanted_files)} extraction identities and {len(actual)} exact SARIF results")
 
 
