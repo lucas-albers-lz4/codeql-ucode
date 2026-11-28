@@ -55,10 +55,10 @@ an extractor-pack symlink as the search path; CodeQL cannot resolve the
 extractor through it in this environment. Example:
 
 ```sh
-CODEQL=/absolute/path/to/codeql-2.27.4/codeql
-UCODE_EXTRACTOR_PACK=/absolute/path/to/extractor-pack
-UCODE_EXTRACTOR_PACK_SOURCE_REVISION=<revision-that-produced-the-pack>
-ISSUE155_TEMPLATE_FLOW_OUT=/absolute/path/to/fresh-output
+export CODEQL=/absolute/path/to/codeql-2.27.4/codeql
+export UCODE_EXTRACTOR_PACK=/absolute/path/to/extractor-pack
+export UCODE_EXTRACTOR_PACK_SOURCE_REVISION='revision-that-produced-the-pack'
+export ISSUE155_TEMPLATE_FLOW_OUT=/absolute/path/to/fresh-output
 python3 scripts/issue155-template-flow-ci.py
 ```
 
