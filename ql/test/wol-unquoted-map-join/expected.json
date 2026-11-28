@@ -1,0 +1,301 @@
+{
+  "binding_witness_query_sha256": "9ff90fd5c99a7c6748f9b9099571e51488226aaa83ebc9a8eff5e4277556ea99",
+  "binding_witnesses": [
+    {
+      "declaration": {
+        "end_column": 26,
+        "line": 5,
+        "start_column": 20
+      },
+      "declaration_kind": "Identifier",
+      "occurrence": {
+        "end_column": 33,
+        "line": 6,
+        "start_column": 27
+      },
+      "path": "usr/share/rpcd/ucode/nested_capture_write.uc",
+      "variable_group": "captured"
+    },
+    {
+      "declaration": {
+        "end_column": 26,
+        "line": 5,
+        "start_column": 20
+      },
+      "declaration_kind": "Identifier",
+      "occurrence": {
+        "end_column": 29,
+        "line": 7,
+        "start_column": 23
+      },
+      "path": "usr/share/rpcd/ucode/nested_capture_write.uc",
+      "variable_group": "captured"
+    },
+    {
+      "declaration": {
+        "end_column": 29,
+        "line": 6,
+        "start_column": 23
+      },
+      "declaration_kind": "Identifier",
+      "occurrence": {
+        "end_column": 40,
+        "line": 6,
+        "start_column": 34
+      },
+      "path": "usr/share/rpcd/ucode/nested_formal_disjoint.uc",
+      "variable_group": "inner"
+    },
+    {
+      "declaration": {
+        "end_column": 26,
+        "line": 5,
+        "start_column": 20
+      },
+      "declaration_kind": "Identifier",
+      "occurrence": {
+        "end_column": 29,
+        "line": 7,
+        "start_column": 23
+      },
+      "path": "usr/share/rpcd/ucode/nested_formal_disjoint.uc",
+      "variable_group": "outer"
+    },
+    {
+      "declaration": {
+        "end_column": 31,
+        "line": 8,
+        "start_column": 25
+      },
+      "declaration_kind": "Identifier",
+      "occurrence": {
+        "end_column": 49,
+        "line": 8,
+        "start_column": 43
+      },
+      "path": "usr/share/rpcd/ucode/nested_formal_shadow.uc",
+      "variable_group": "inner"
+    },
+    {
+      "declaration": {
+        "end_column": 27,
+        "line": 7,
+        "start_column": 13
+      },
+      "declaration_kind": "VariableDeclarator",
+      "occurrence": {
+        "end_column": 31,
+        "line": 9,
+        "start_column": 25
+      },
+      "path": "usr/share/rpcd/ucode/nested_formal_shadow.uc",
+      "variable_group": "local"
+    },
+    {
+      "declaration": {
+        "end_column": 39,
+        "line": 40,
+        "start_column": 8
+      },
+      "declaration_kind": "VariableDeclarator",
+      "occurrence": {
+        "end_column": 37,
+        "line": 41,
+        "start_column": 29
+      },
+      "path": "usr/share/rpcd/ucode/path_binding_shadow.uc",
+      "variable_group": "local"
+    },
+    {
+      "declaration": {
+        "end_column": 38,
+        "line": 8,
+        "start_column": 7
+      },
+      "declaration_kind": "VariableDeclarator",
+      "occurrence": {
+        "end_column": 71,
+        "line": 41,
+        "start_column": 63
+      },
+      "path": "usr/share/rpcd/ucode/path_binding_shadow.uc",
+      "variable_group": "global"
+    }
+  ],
+  "control_purpose": {
+    "callback_dynamic_eval.uc": "dynamic eval syntactically replaces identity callback with constant-returning callback; runtime effect unknown",
+    "callback_extra_read.uc": "conservative extra use",
+    "callback_forward.uc": "use before declaration",
+    "callback_function_let.uc": "same-scope lexical shadow",
+    "callback_two_functions.uc": "duplicate top-level function",
+    "callback_write_before_use.uc": "callback reassignment",
+    "nested_capture_write.uc": "nested helper writes captured handler request; stableFormal must exclude candidate",
+    "nested_formal_disjoint.uc": "same helper has a shadowing request formal; its write is disjoint and candidate remains",
+    "nested_formal_shadow.uc": "inner request local and nested same-named formal must not bind the handler formal; no result",
+    "path_binding_shadow.uc": "same-value handler-local etherwake shadows top-level declaration; guard classification must be no-matching"
+  },
+  "expected_extraction_errors": [],
+  "expected_guard_shapes": {
+    "usr/share/rpcd/ucode/identity.uc": "no-matching-comparison",
+    "usr/share/rpcd/ucode/identity_fixed_guard.uc": "fixed-path-comparison",
+    "usr/share/rpcd/ucode/nested_formal_disjoint.uc": "no-matching-comparison",
+    "usr/share/rpcd/ucode/path_binding_shadow.uc": "no-matching-comparison"
+  },
+  "expected_query_sha256": "56d32c8d9501373a126baa92fe6af7be50cbec9ddfd92126f85433fcf3da406e",
+  "expected_result_locations": {
+    "usr/share/rpcd/ucode/identity.uc": {
+      "end_column": 61,
+      "line": 7,
+      "start_column": 18
+    },
+    "usr/share/rpcd/ucode/identity_fixed_guard.uc": {
+      "end_column": 65,
+      "line": 42,
+      "start_column": 16
+    },
+    "usr/share/rpcd/ucode/nested_formal_disjoint.uc": {
+      "end_column": 61,
+      "line": 8,
+      "start_column": 18
+    },
+    "usr/share/rpcd/ucode/path_binding_shadow.uc": {
+      "end_column": 65,
+      "line": 43,
+      "start_column": 16
+    }
+  },
+  "expected_route_reasons": {
+    "usr/share/rpcd/ucode/altered_guard.uc": "ucode_shebang",
+    "usr/share/rpcd/ucode/callback_dynamic_eval.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_extra_read.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_forward.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_function_let.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_two_functions.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_write.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/callback_write_before_use.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/escaped_join.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/fixed_args.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/identity.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/identity_fixed_guard.uc": "ucode_shebang",
+    "usr/share/rpcd/ucode/join_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/luci.wol": "ucode_shebang",
+    "usr/share/rpcd/ucode/map_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/mixed_parts.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/mixed_quoted_parts.uc": "ucode_shebang",
+    "usr/share/rpcd/ucode/nested_capture_write.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/nested_formal_disjoint.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/nested_formal_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/no_join.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/nonreturned.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/other_callback.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/overridden_method.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/partial_quote.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/parts_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/parts_write.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/path_binding_shadow.uc": "ucode_shebang",
+    "usr/share/rpcd/ucode/popen_shadow.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/request_write.uc": "ucode_extension",
+    "usr/share/rpcd/ucode/wrong_import.uc": "ucode_extension"
+  },
+  "expected_successful_multiset": {
+    "usr/share/rpcd/ucode/altered_guard.uc": 1,
+    "usr/share/rpcd/ucode/callback_dynamic_eval.uc": 1,
+    "usr/share/rpcd/ucode/callback_extra_read.uc": 1,
+    "usr/share/rpcd/ucode/callback_forward.uc": 1,
+    "usr/share/rpcd/ucode/callback_function_let.uc": 1,
+    "usr/share/rpcd/ucode/callback_shadow.uc": 1,
+    "usr/share/rpcd/ucode/callback_two_functions.uc": 1,
+    "usr/share/rpcd/ucode/callback_write.uc": 1,
+    "usr/share/rpcd/ucode/callback_write_before_use.uc": 1,
+    "usr/share/rpcd/ucode/escaped_join.uc": 1,
+    "usr/share/rpcd/ucode/fixed_args.uc": 1,
+    "usr/share/rpcd/ucode/identity.uc": 1,
+    "usr/share/rpcd/ucode/identity_fixed_guard.uc": 1,
+    "usr/share/rpcd/ucode/join_shadow.uc": 1,
+    "usr/share/rpcd/ucode/luci.wol": 1,
+    "usr/share/rpcd/ucode/map_shadow.uc": 1,
+    "usr/share/rpcd/ucode/mixed_parts.uc": 1,
+    "usr/share/rpcd/ucode/mixed_quoted_parts.uc": 1,
+    "usr/share/rpcd/ucode/nested_capture_write.uc": 1,
+    "usr/share/rpcd/ucode/nested_formal_disjoint.uc": 1,
+    "usr/share/rpcd/ucode/nested_formal_shadow.uc": 1,
+    "usr/share/rpcd/ucode/no_join.uc": 1,
+    "usr/share/rpcd/ucode/nonreturned.uc": 1,
+    "usr/share/rpcd/ucode/other_callback.uc": 1,
+    "usr/share/rpcd/ucode/overridden_method.uc": 1,
+    "usr/share/rpcd/ucode/partial_quote.uc": 1,
+    "usr/share/rpcd/ucode/parts_shadow.uc": 1,
+    "usr/share/rpcd/ucode/parts_write.uc": 1,
+    "usr/share/rpcd/ucode/path_binding_shadow.uc": 1,
+    "usr/share/rpcd/ucode/popen_shadow.uc": 1,
+    "usr/share/rpcd/ucode/request_write.uc": 1,
+    "usr/share/rpcd/ucode/wrong_import.uc": 1
+  },
+  "expected_zero_result_paths": [
+    "usr/share/rpcd/ucode/altered_guard.uc",
+    "usr/share/rpcd/ucode/callback_dynamic_eval.uc",
+    "usr/share/rpcd/ucode/callback_extra_read.uc",
+    "usr/share/rpcd/ucode/callback_forward.uc",
+    "usr/share/rpcd/ucode/callback_function_let.uc",
+    "usr/share/rpcd/ucode/callback_shadow.uc",
+    "usr/share/rpcd/ucode/callback_two_functions.uc",
+    "usr/share/rpcd/ucode/callback_write.uc",
+    "usr/share/rpcd/ucode/callback_write_before_use.uc",
+    "usr/share/rpcd/ucode/escaped_join.uc",
+    "usr/share/rpcd/ucode/fixed_args.uc",
+    "usr/share/rpcd/ucode/join_shadow.uc",
+    "usr/share/rpcd/ucode/luci.wol",
+    "usr/share/rpcd/ucode/map_shadow.uc",
+    "usr/share/rpcd/ucode/mixed_parts.uc",
+    "usr/share/rpcd/ucode/mixed_quoted_parts.uc",
+    "usr/share/rpcd/ucode/no_join.uc",
+    "usr/share/rpcd/ucode/nonreturned.uc",
+    "usr/share/rpcd/ucode/other_callback.uc",
+    "usr/share/rpcd/ucode/overridden_method.uc",
+    "usr/share/rpcd/ucode/partial_quote.uc",
+    "usr/share/rpcd/ucode/parts_shadow.uc",
+    "usr/share/rpcd/ucode/parts_write.uc",
+    "usr/share/rpcd/ucode/popen_shadow.uc",
+    "usr/share/rpcd/ucode/request_write.uc",
+    "usr/share/rpcd/ucode/wrong_import.uc"
+  ],
+  "files": {
+    "usr/share/rpcd/ucode/altered_guard.uc": "34d33303fc7ec0878ecdd442c7cb5b00ed3de65cabdb2f508e00c2f48a7bdc9b",
+    "usr/share/rpcd/ucode/callback_dynamic_eval.uc": "29d75b154c95ef287123ded10311f28acfdf8694fa14502e95ad08032c242572",
+    "usr/share/rpcd/ucode/callback_extra_read.uc": "37407439b8f4f3a4d4caedd3cf8f0ab6b675b4ab0f5e53920797cbfeece8dcc9",
+    "usr/share/rpcd/ucode/callback_forward.uc": "c3457454e049db1d59d32285808c834a51ed2699ccbdf6d7c2609411d95e502d",
+    "usr/share/rpcd/ucode/callback_function_let.uc": "c2ac42d57dcbaca8d65b7eaafd66aa85f0cab0a25a898a60e6d3e4a38ef691ea",
+    "usr/share/rpcd/ucode/callback_shadow.uc": "28733c47e6afbf847b903310a7c7cf3363513be4c35a0dd3b6956321ec03c540",
+    "usr/share/rpcd/ucode/callback_two_functions.uc": "62a6fc5f2c61be4dbd5e3218ace7b1075b52c53ad023f288e95e523548d089c3",
+    "usr/share/rpcd/ucode/callback_write.uc": "16680cf3b2d5b5214eb7f177082366b27d7c32bd4c2e907ee735f14251dfa9cd",
+    "usr/share/rpcd/ucode/callback_write_before_use.uc": "93ac159a01c3276e6db7135cd0f1efe46c8c9f0eb028b10c455b1f9084b269ee",
+    "usr/share/rpcd/ucode/escaped_join.uc": "1542e4065d8fad2edde180da52535791c0fc106b8858053b2f89686fcc9c9d9a",
+    "usr/share/rpcd/ucode/fixed_args.uc": "3d1a4b1a58a0302453f9634db0479de48657fe0d14520ad68a1b72861bb80eef",
+    "usr/share/rpcd/ucode/identity.uc": "1d24bf25ed62996998cb8d158e31d59dafcf970059ccf36e19166a001a2d8c56",
+    "usr/share/rpcd/ucode/identity_fixed_guard.uc": "7acce78e523a5de0b8728b3285247fa182f1a221aa83089f69d9a1123a88067b",
+    "usr/share/rpcd/ucode/join_shadow.uc": "fe24bcca4576b8229a673e178ad199e7fab978988eeac21113dc0724d17ec247",
+    "usr/share/rpcd/ucode/luci.wol": "51214ec57bcbd8d50e65016efda2a05e8eb7822dc7e510d014965834c61ef92b",
+    "usr/share/rpcd/ucode/map_shadow.uc": "c3b6c25e8f08c7ac7c30b29f26959a1adfdcb9f4e9a019048c0fec228cb3f03f",
+    "usr/share/rpcd/ucode/mixed_parts.uc": "06b1401e0294740dff32be2b608a6f6041efabc782420c4d8f39b9badfbdbae5",
+    "usr/share/rpcd/ucode/mixed_quoted_parts.uc": "93649da7f27d6edb71521422cea62b74141ca68bbc1c8ed630122e0635744521",
+    "usr/share/rpcd/ucode/nested_capture_write.uc": "8a33ce0d7c94f354742939f80099fd5c9c9f03b22c06422bf229e7fb76f78143",
+    "usr/share/rpcd/ucode/nested_formal_disjoint.uc": "19afee65e752609b5e2f0062935c9ff997bd4621569bd3140ddfde32dddab69a",
+    "usr/share/rpcd/ucode/nested_formal_shadow.uc": "7118097da68f24b121b42db6dd1690474d90898ac0a76ece6e67cc2f6f4adee5",
+    "usr/share/rpcd/ucode/no_join.uc": "5b2039086d0c83895abe5a33eed359bce62db33bf243083c6138a453554428a7",
+    "usr/share/rpcd/ucode/nonreturned.uc": "570ba28b8d350c665180bf684644246eb497d16b5ad25fab2abd4629f9fbac6f",
+    "usr/share/rpcd/ucode/other_callback.uc": "4b9518f9f85885801107085669d5a52f8fdbe0d2344e5f1308e838e079667afd",
+    "usr/share/rpcd/ucode/overridden_method.uc": "8507ccf866bf2f3124ffd7b4069a11c23efec3add86069c3df1d7813065045f6",
+    "usr/share/rpcd/ucode/partial_quote.uc": "060beee8118c82de943f9de8f7e76e4c624db54acb157b00b56b66b3535e2720",
+    "usr/share/rpcd/ucode/parts_shadow.uc": "8abb1b79aabd98e85b4955e646f013c7f9cb747ef53ed9b0f6be4708e5de1101",
+    "usr/share/rpcd/ucode/parts_write.uc": "ba2a18e79e2e891a6271993bf6160a67f494b0306de90ede19cb294d71cf744c",
+    "usr/share/rpcd/ucode/path_binding_shadow.uc": "71b4006cbb3b9e25f402b5fed22b21b32cde2e6004d560b323fd12f6fc619b2b",
+    "usr/share/rpcd/ucode/popen_shadow.uc": "5b29144f248286f5729daee25df2e13191ad5bed13b5f2898a3248bafec5376c",
+    "usr/share/rpcd/ucode/request_write.uc": "f62b64fc3fab38cc8ab9b7bc630d8da6672de95c566800944fae4ae442b3c0a1",
+    "usr/share/rpcd/ucode/wrong_import.uc": "771881e63f92ed77a355fc79346112977daaadc579206128c563080e6f0f20f3"
+  },
+  "luci_commit": "b2e0be4b46ec0fd43394c081fa7c50657af14011",
+  "real_wol_source_sha256": "51214ec57bcbd8d50e65016efda2a05e8eb7822dc7e510d014965834c61ef92b",
+  "schema": "wol-unquoted-map-join-fixtures-v1",
+  "scope": "testing-only single-use callback syntax; source-staged bytes are not installed package members"
+}
