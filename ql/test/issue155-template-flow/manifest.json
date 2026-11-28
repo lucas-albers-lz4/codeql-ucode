@@ -1,0 +1,365 @@
+{
+  "schema": "ucode-issue155-template-flow-v1",
+  "purpose": "Testing-only template interpolation to direct fs.stat template-argument flow foundation.",
+  "luci_commit": "b2e0be4b46ec0fd43394c081fa7c50657af14011",
+  "luci_source_path": "applications/luci-app-ddns/root/usr/share/rpcd/ucode/ddns.uc",
+  "luci_git_blob": "32d1da738b4932159a39bcda7ee6c72b5c58a8fd",
+  "luci_source_sha256": "924bd2b53fbc64d2a00a479e36ef3c9239488445fc1ced70122e8ac3735fdc2b",
+  "producer_base": "5930c37946c73099ebe10c37b6e96ea33575e2e4",
+  "malformed_path": "controls/malformed.uc",
+  "expected_flow_rows": [
+    {
+      "path": "controls/assigned.uc",
+      "source": [
+        4,
+        19,
+        43
+      ],
+      "template_argument": [
+        5,
+        15,
+        26
+      ],
+      "call": [
+        5,
+        10,
+        27
+      ],
+      "formal": [
+        2,
+        85,
+        91
+      ],
+      "import_specifier": [
+        1,
+        10,
+        13
+      ],
+      "edge_candidates": [
+        {
+          "source": [
+            5,
+            18,
+            24
+          ],
+          "substitution": [
+            5,
+            16,
+            25
+          ]
+        }
+      ]
+    },
+    {
+      "path": "controls/direct.uc",
+      "source": [
+        8,
+        30,
+        54
+      ],
+      "template_argument": [
+        8,
+        19,
+        60
+      ],
+      "call": [
+        8,
+        14,
+        61
+      ],
+      "formal": [
+        6,
+        20,
+        26
+      ],
+      "import_specifier": [
+        1,
+        10,
+        13
+      ],
+      "edge_candidates": [
+        {
+          "source": [
+            8,
+            30,
+            54
+          ],
+          "substitution": [
+            8,
+            28,
+            55
+          ]
+        }
+      ]
+    },
+    {
+      "path": "usr/share/rpcd/ucode/ddns.uc",
+      "source": [
+        96,
+        71,
+        95
+      ],
+      "template_argument": [
+        96,
+        58,
+        101
+      ],
+      "call": [
+        96,
+        53,
+        102
+      ],
+      "formal": [
+        84,
+        18,
+        24
+      ],
+      "import_specifier": [
+        5,
+        27,
+        30
+      ],
+      "edge_candidates": [
+        {
+          "source": [
+            96,
+            71,
+            95
+          ],
+          "substitution": [
+            96,
+            69,
+            96
+          ]
+        }
+      ]
+    },
+    {
+      "path": "controls/nested-shadow-positive.uc",
+      "source": [
+        5,
+        18,
+        42
+      ],
+      "template_argument": [
+        5,
+        15,
+        44
+      ],
+      "call": [
+        5,
+        10,
+        45
+      ],
+      "formal": [
+        2,
+        85,
+        91
+      ],
+      "import_specifier": [
+        1,
+        10,
+        13
+      ],
+      "edge_candidates": [
+        {
+          "source": [
+            5,
+            18,
+            42
+          ],
+          "substitution": [
+            5,
+            16,
+            43
+          ]
+        }
+      ]
+    }
+  ],
+  "expected_negative_paths": [
+    "controls/fixed.uc",
+    "controls/malformed.uc",
+    "controls/other-argument.uc",
+    "controls/reassignment.uc",
+    "controls/shadow.uc",
+    "controls/unrelated.uc",
+    "controls/formal-assignment.uc",
+    "controls/formal-for-in.uc",
+    "controls/args-replacement.uc",
+    "controls/property-replacement.uc",
+    "controls/same-scope-shadow.uc",
+    "controls/helper-function.uc",
+    "controls/nested-capture.uc",
+    "controls/extra-argument.uc",
+    "controls/spread-argument.uc",
+    "controls/same-scope-function.uc",
+    "controls/delete-property.uc",
+    "controls/parenthesized-replacement.uc",
+    "controls/if-function-shadow.uc",
+    "controls/delete-parenthesized.uc",
+    "controls/delete-subscript.uc",
+    "controls/duplicate-formal.uc"
+  ],
+  "expected_indexed_count": 26,
+  "expected_successful_count": 25,
+  "expected_diagnostic_count": 1,
+  "files": [
+    {
+      "path": "controls/args-replacement.uc",
+      "bytes": 325,
+      "mode": 420,
+      "sha256": "c330e71af12d8e31736342fa82bd8e29144eb0b6c3f54cb8b14cd5bcc61db505"
+    },
+    {
+      "path": "controls/assigned.uc",
+      "bytes": 294,
+      "mode": 420,
+      "sha256": "c069cdc0d2a2e6217118558efd3d1dcee736415789486b2399bec7400559c36e"
+    },
+    {
+      "path": "controls/delete-parenthesized.uc",
+      "bytes": 317,
+      "mode": 420,
+      "sha256": "4f9084dd4f4ce0d32d2e8f5c619c2ed4670895efb9b6270a92c15053da524882"
+    },
+    {
+      "path": "controls/delete-property.uc",
+      "bytes": 316,
+      "mode": 420,
+      "sha256": "922a2a24e1587ed0343621c8a2da6886cf948ed9d59a288a5d914a86b74ea6cc"
+    },
+    {
+      "path": "controls/delete-subscript.uc",
+      "bytes": 317,
+      "mode": 420,
+      "sha256": "b21c2fa6b61a8018e5a2ac2375dca27b9fcf7ad3e083b4cd7f2d373145083a94"
+    },
+    {
+      "path": "controls/direct.uc",
+      "bytes": 334,
+      "mode": 420,
+      "sha256": "d1860d65e7de6f5ae9638f0b554698bc3b53873e90d7cd85f2beb04e71b67606"
+    },
+    {
+      "path": "controls/duplicate-formal.uc",
+      "bytes": 284,
+      "mode": 420,
+      "sha256": "84424eac5e1453e46639500c90b1726a9496257babe5ddd3695f545e16ad1fbc"
+    },
+    {
+      "path": "controls/extra-argument.uc",
+      "bytes": 276,
+      "mode": 420,
+      "sha256": "5245f9cb31463e74a4842690a8fc2d219211343f4d41bf49d40ebd1e7432eea7"
+    },
+    {
+      "path": "controls/fixed.uc",
+      "bytes": 252,
+      "mode": 420,
+      "sha256": "19c01e6d1f6eb49d76869003a49583acf40c382f0bd2e03fc10d40c002f57734"
+    },
+    {
+      "path": "controls/formal-assignment.uc",
+      "bytes": 331,
+      "mode": 420,
+      "sha256": "46e0997c278a4d9bc2707a1463107b386c35c136f10bde5642e572119be6c640"
+    },
+    {
+      "path": "controls/formal-for-in.uc",
+      "bytes": 313,
+      "mode": 420,
+      "sha256": "350f2a123b21c082abad77a3d579234d5bbb559dc071e4557cf67d193da05eaf"
+    },
+    {
+      "path": "controls/helper-function.uc",
+      "bytes": 323,
+      "mode": 420,
+      "sha256": "56032daf8ec8f5fa4510de2fa3d3fd74bc470ebed4cf39dc80b867077ec7d59f"
+    },
+    {
+      "path": "controls/if-function-shadow.uc",
+      "bytes": 331,
+      "mode": 420,
+      "sha256": "4d10f1b9e3a8066f90bcb4b9b8022ce77337e087018d0181c004b379e4fc83a7"
+    },
+    {
+      "path": "controls/malformed.uc",
+      "bytes": 102,
+      "mode": 420,
+      "sha256": "5b0bab4d90d3b7bd0add1742387ddf6e931c22664e717a077099a977e2bb6440"
+    },
+    {
+      "path": "controls/nested-capture.uc",
+      "bytes": 296,
+      "mode": 420,
+      "sha256": "7fb117f3f0b7cd46d4d73b4af338799f32706727abcef04c4154648750d9ca62"
+    },
+    {
+      "path": "controls/nested-shadow-positive.uc",
+      "bytes": 353,
+      "mode": 420,
+      "sha256": "410e6fa1185c0704583f97f80629bd0704e5d3471a7adeea08108466f97aa7c3"
+    },
+    {
+      "path": "controls/other-argument.uc",
+      "bytes": 283,
+      "mode": 420,
+      "sha256": "ed049c1943fa72f9d4c5a9dfae64323ee552501966ea66abc6441556fc08b2f4"
+    },
+    {
+      "path": "controls/parenthesized-replacement.uc",
+      "bytes": 331,
+      "mode": 420,
+      "sha256": "c0d712dc762e632db9d8f040afef72d7041316ef0221d42f4d5cdcaf37a370ae"
+    },
+    {
+      "path": "controls/property-replacement.uc",
+      "bytes": 324,
+      "mode": 420,
+      "sha256": "aeff9b00ccd37428d04425b03d3c61cfbbb6c7005bb3975fbb78c4cfbf3a616d"
+    },
+    {
+      "path": "controls/reassignment.uc",
+      "bytes": 317,
+      "mode": 420,
+      "sha256": "78cec6b53baa1ad1428731c409e421842502ffe87ab055a4c23a9dd3dc36e181"
+    },
+    {
+      "path": "controls/same-scope-function.uc",
+      "bytes": 316,
+      "mode": 420,
+      "sha256": "eaedd8d29f689340dcb55f4d8dbaa85f114033f04a207856ea88f3ea15947838"
+    },
+    {
+      "path": "controls/same-scope-shadow.uc",
+      "bytes": 335,
+      "mode": 420,
+      "sha256": "c68e76684b8c2f54e6baabd721e5d15f2b80eb51f6ab08dba1ea91db3129dc68"
+    },
+    {
+      "path": "controls/shadow.uc",
+      "bytes": 326,
+      "mode": 420,
+      "sha256": "44c64905f60763d736949ff576b9008405cf178df24219f7069af9eb68e61625"
+    },
+    {
+      "path": "controls/spread-argument.uc",
+      "bytes": 281,
+      "mode": 420,
+      "sha256": "471a6b531c5d1bd06e6074380d40a96d30277678e2cace0bdc5c1a18513c40ab"
+    },
+    {
+      "path": "controls/unrelated.uc",
+      "bytes": 340,
+      "mode": 420,
+      "sha256": "2a614049539fc4fb749dd087b8c0f8148fa08cada26c8a33dddb96cc8f3395cc"
+    },
+    {
+      "path": "usr/share/rpcd/ucode/ddns.uc",
+      "bytes": 9093,
+      "mode": 420,
+      "sha256": "924bd2b53fbc64d2a00a479e36ef3c9239488445fc1ced70122e8ac3735fdc2b"
+    }
+  ]
+}
