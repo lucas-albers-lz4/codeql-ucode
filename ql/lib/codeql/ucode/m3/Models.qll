@@ -169,6 +169,34 @@ class SourceDeclaredFsOpenWxCall extends NamedCall {
   UCODE::AstNode getPermissionArgument() { result = this.getArgument(2) }
 }
 
+/**
+ * Direct, unaliased source-declared `fs.open` with literal `r` mode and
+ * two or three non-spread expression arguments. This is source syntax, not
+ * runtime binding or proof of an opened handle. Nonmatches are inconclusive.
+ */
+class SourceDeclaredFsOpenReadCall extends NamedCall {
+  SourceDeclaredFsOpenReadCall() {
+    sourceDeclaredFsCall(this, "open") and
+    this.getArgument(0) instanceof UCODE::Expression and
+    exists(UCODE::String mode |
+      mode = this.getArgument(1) and
+      mode.getChild(0).(UCODE::StringFragment).getValue() = "r" and
+      not exists(mode.getChild(1))
+    ) and
+    (not exists(this.getArgument(2)) or this.getArgument(2) instanceof UCODE::Expression) and
+    not exists(int i | i != 0 and i != 1 and i != 2 and exists(this.getArgument(i)))
+  }
+
+  /** The raw path argument at index 0. */
+  UCODE::AstNode getPathArgument() { result = this.getArgument(0) }
+
+  /** The raw literal mode argument at index 1. */
+  UCODE::AstNode getModeArgument() { result = this.getArgument(1) }
+
+  /** The optional raw permission expression at index 2. */
+  UCODE::AstNode getPermissionArgument() { result = this.getArgument(2) }
+}
+
 /** Identifier or rest identifier from a formal parameter list. */
 private predicate systemFormal(UCODE::FormalParameters ps, UCODE::Identifier id) {
   id = ps.getChild(_)

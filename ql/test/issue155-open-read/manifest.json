@@ -1,0 +1,945 @@
+{
+  "schema": "issue155-open-read-source-first-v1",
+  "source": "https://github.com/openwrt/luci/blob/b2e0be4b46ec0fd43394c081fa7c50657af14011/applications/luci-app-upnp/root/usr/share/rpcd/ucode/luci.upnp",
+  "git_blob": "f72b57b7ba84188b9b78854bf7ad0711394a0045",
+  "real": {
+    "path": "usr/share/rpcd/ucode/luci.upnp",
+    "sha256": "e149db4350cdfa2e3f3ccc529244d3a3143d72016fa4216f72cf2792f3fd202d",
+    "bytes": 3330,
+    "expected_count": 1,
+    "call": [
+      24,
+      22,
+      24,
+      77
+    ],
+    "callee": [
+      24,
+      22,
+      24,
+      25
+    ],
+    "path_argument": [
+      24,
+      27,
+      24,
+      71
+    ],
+    "mode_argument": [
+      24,
+      74,
+      24,
+      76
+    ],
+    "expected_route": {
+      "classification": "plain",
+      "reason": "rpcd_raw_mode_full_path",
+      "status": "plain_route_selected"
+    },
+    "mode_fragment": [
+      24,
+      75,
+      24,
+      75
+    ],
+    "import_statement": [
+      6,
+      1,
+      6,
+      41
+    ],
+    "import_specifier": [
+      6,
+      18,
+      6,
+      21
+    ],
+    "import_module": [
+      6,
+      37,
+      6,
+      40
+    ],
+    "module_fragment": [
+      6,
+      38,
+      6,
+      39
+    ]
+  },
+  "controls": [
+    {
+      "path": "controls/positive-two.uc",
+      "sha256": "b53f627478aad4227be2a0157df2edfae7b82b36daab897f0719466fb5b2baf1",
+      "bytes": 48,
+      "expected_count": 1,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "selected": {
+        "call": {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        },
+        "callee": [
+          2,
+          1,
+          2,
+          4
+        ],
+        "path_argument": [
+          2,
+          6,
+          2,
+          13
+        ],
+        "mode_argument": [
+          2,
+          16,
+          2,
+          18
+        ],
+        "mode_fragment": [
+          2,
+          17,
+          2,
+          17
+        ],
+        "import_statement": [
+          1,
+          1,
+          1,
+          26
+        ],
+        "import_specifier": [
+          1,
+          10,
+          1,
+          13
+        ],
+        "import_module": [
+          1,
+          22,
+          1,
+          25
+        ],
+        "module_fragment": [
+          1,
+          23,
+          1,
+          24
+        ]
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/positive-three.uc",
+      "sha256": "ac852e703032dc3f4132d35a739ed0fa213dbf709f5f22983facbb6c52c3ae17",
+      "bytes": 54,
+      "expected_count": 1,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r', mode)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            25
+          ]
+        }
+      ],
+      "selected": {
+        "call": {
+          "text": "open('/tmp/a', 'r', mode)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            25
+          ]
+        },
+        "callee": [
+          2,
+          1,
+          2,
+          4
+        ],
+        "path_argument": [
+          2,
+          6,
+          2,
+          13
+        ],
+        "mode_argument": [
+          2,
+          16,
+          2,
+          18
+        ],
+        "third_argument": [
+          2,
+          21,
+          2,
+          24
+        ],
+        "mode_fragment": [
+          2,
+          17,
+          2,
+          17
+        ],
+        "import_statement": [
+          1,
+          1,
+          1,
+          26
+        ],
+        "import_specifier": [
+          1,
+          10,
+          1,
+          13
+        ],
+        "import_module": [
+          1,
+          22,
+          1,
+          25
+        ],
+        "module_fragment": [
+          1,
+          23,
+          1,
+          24
+        ]
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/same-file-wx.uc",
+      "sha256": "c04f6cd35d3973c649d9f569c124b7e0a178b936828ce108964403528a6aac58",
+      "bytes": 70,
+      "expected_count": 1,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        },
+        {
+          "text": "open('/tmp/b', 'wx')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            20
+          ]
+        }
+      ],
+      "selected": {
+        "call": {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        },
+        "callee": [
+          2,
+          1,
+          2,
+          4
+        ],
+        "path_argument": [
+          2,
+          6,
+          2,
+          13
+        ],
+        "mode_argument": [
+          2,
+          16,
+          2,
+          18
+        ],
+        "mode_fragment": [
+          2,
+          17,
+          2,
+          17
+        ],
+        "import_statement": [
+          1,
+          1,
+          1,
+          26
+        ],
+        "import_specifier": [
+          1,
+          10,
+          1,
+          13
+        ],
+        "import_module": [
+          1,
+          22,
+          1,
+          25
+        ],
+        "module_fragment": [
+          1,
+          23,
+          1,
+          24
+        ]
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/omitted.uc",
+      "sha256": "5a364dd58a881c5cc62a2ac1415dff086aa882ea56e4efab90585172229f93e2",
+      "bytes": 43,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            14
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/read-plus.uc",
+      "sha256": "f4ec9d5e923654a3c4d74add0c8a37b788bde6d741fac6bc4885ea5ae135bc11",
+      "bytes": 49,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r+')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            20
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/write.uc",
+      "sha256": "aa4d64faa56876e46bbcc86373a2db66221fa32425ea1acb23345017a1bca875",
+      "bytes": 48,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'w')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/dynamic.uc",
+      "sha256": "3a0a6d57408423bfd46ff6ca7acb8e26f32288f0052da634416d2ac0f9cd7eec",
+      "bytes": 49,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', mode)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            20
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/extra-fragment.uc",
+      "sha256": "7a01782d9c488bfb3dfb1ef519eeee8009e7c1982fc361983ae5ffcf8a33814d",
+      "bytes": 52,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r\\x20')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            23
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/wrong-slot.uc",
+      "sha256": "72444e1ac275a1c0799dca15df628025cb6427e4aa93b7e45e1fd16d803925fa",
+      "bytes": 48,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('r', '/tmp/a')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/alias.uc",
+      "sha256": "7c252d022faa67a14ae6c5614fe33f0c8478b6653bfd24987c0394bfbbb8c3ce",
+      "bytes": 56,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/wrong-module.uc",
+      "sha256": "4d25b63208fffe99bcdaa6ec3f6276f6b0c2ba1a540a5ec4d4a3048c618403cb",
+      "bytes": 51,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/duplicate.uc",
+      "sha256": "0d4222a0461802f2a1fae4bd30870b0141269a42712ada407bc39d484b9243fd",
+      "bytes": 84,
+      "expected_count": 1,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        }
+      ],
+      "selected": {
+        "call": {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        },
+        "callee": [
+          3,
+          1,
+          3,
+          4
+        ],
+        "path_argument": [
+          3,
+          6,
+          3,
+          13
+        ],
+        "mode_argument": [
+          3,
+          16,
+          3,
+          18
+        ],
+        "mode_fragment": [
+          3,
+          17,
+          3,
+          17
+        ],
+        "import_statement": [
+          1,
+          1,
+          1,
+          26
+        ],
+        "import_specifier": [
+          1,
+          10,
+          1,
+          13
+        ],
+        "import_module": [
+          1,
+          22,
+          1,
+          25
+        ],
+        "module_fragment": [
+          1,
+          23,
+          1,
+          24
+        ]
+      },
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/competing.uc",
+      "sha256": "e7db12a0dba70058643e203e4ac81c0cdafe6806cf143255168347ffd0e299e2",
+      "bytes": 68,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/write-binding.uc",
+      "sha256": "ae62113aee0c41af35480f2df727faaa74c3a89402eae0242d51c2a2cc7d0c9f",
+      "bytes": 62,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/optional.uc",
+      "sha256": "216b1ceca80dda4d125c3373f82064a5ac2a581db15bf6725667e44ccc8cce7c",
+      "bytes": 50,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open?.('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            21
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/spread-path.uc",
+      "sha256": "d1124ab2599de41f85ef853700d9a0d0301455799b4db2e8de519286839eb082",
+      "bytes": 48,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open(...paths, 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/spread-mode.uc",
+      "sha256": "b86c740764f3426ab0856c9948a5d2bda525e91062151b651e8b38f4b7bfd004",
+      "bytes": 53,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', ...modes)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            24
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/spread-third.uc",
+      "sha256": "f032793693712e58edccbde102f6d15e42d86684297e3140c5b851120560477a",
+      "bytes": 64,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r', ...permissions)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            35
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/four.uc",
+      "sha256": "136ac73cf094b11c6c1f13fa1f0eb64c60bb1c15ab0ea779642a1e55107f6dc3",
+      "bytes": 61,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r', mode, extra)",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            32
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/malformed.uc",
+      "sha256": "0f80feb9bbcb2ac1fecfd3d0ae8a150fb51de4f75bdd119311f6d509ce9302e9",
+      "bytes": 63,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/zero.uc",
+      "sha256": "4ae2b456ebcfd6b7974cb229ff179c8643f46f25cff696bb4d14f5ec42e38417",
+      "bytes": 35,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open()",
+          "start": [
+            2,
+            1
+          ],
+          "end_inclusive": [
+            2,
+            6
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/wrapped.uc",
+      "sha256": "2b98dca0c1a51d047afe753c6f432ecc5d81980845c3e3f9ebc95a6704e97c1f",
+      "bytes": 50,
+      "expected_count": 0,
+      "calls": [],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/before-import.uc",
+      "sha256": "50e6573113d4d472317d3c830f541f771dee4e55737dfc3fa3df0245d5b831e6",
+      "bytes": 48,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            1,
+            1
+          ],
+          "end_inclusive": [
+            1,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/duplicate-name.uc",
+      "sha256": "2e2f26c7e062212b47e5075e1915ed3719f63c4d3d312cf1b96416a9b54085d4",
+      "bytes": 78,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/property-read.uc",
+      "sha256": "dae31adb94120fad0c6f3ef117597511d0f3dcec5c6c23e2585cfe8e428a7f1f",
+      "bytes": 50,
+      "expected_count": 0,
+      "calls": [],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    },
+    {
+      "path": "controls/shadow-lexical.uc",
+      "sha256": "86a963feff8b5f14e56ae5de4481d7f35cf0cd20ffcee6a11cdb0919b30e4094",
+      "bytes": 66,
+      "expected_count": 0,
+      "calls": [
+        {
+          "text": "open('/tmp/a', 'r')",
+          "start": [
+            3,
+            1
+          ],
+          "end_inclusive": [
+            3,
+            19
+          ]
+        }
+      ],
+      "expected_route": {
+        "classification": "plain",
+        "reason": "ucode_extension",
+        "status": "plain_route_selected"
+      }
+    }
+  ],
+  "malformed_diagnostic": {
+    "path": "controls/malformed.uc",
+    "start": [
+      3,
+      12
+    ],
+    "end_inclusive": [
+      3,
+      12
+    ],
+    "count": 1
+  }
+}

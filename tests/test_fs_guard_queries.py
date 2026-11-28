@@ -16,13 +16,15 @@ def load(name, path):
 stat = load('stat_guard_inputs', 'ql/test/issue155-stat-observation/run-smoke.py')
 rename = load('rename_guard_ci', 'scripts/issue155-rename-ci.py')
 open_wx = load('open_guard_ci', 'scripts/issue155-open-wx-ci.py')
+open_read = load('open_read_guard_ci', 'scripts/issue155-open-read-ci.py')
 SOURCE = (ROOT / 'ql/lib/codeql/ucode/internal/SourceDeclaredFs.qll').read_text()
 
 class GuardQueryTests(unittest.TestCase):
     def test_seven_distinct_named_variants_and_guard_removal(self):
         families = ((stat.model_mutations(SOURCE), 'stat', 'issue155-model-'),
                     (rename.guard_mutations(), 'rename', 'issue155-rename-guard-'),
-                    (open_wx.guard_mutations(), 'open wx', 'issue155-open-wx-guard-'))
+                    (open_wx.guard_mutations(), 'open wx', 'issue155-open-wx-guard-'),
+                    (open_read.guard_mutations(), 'open read', 'issue155-open-read-guard-'))
         guards = self.guard_anchors()
         for variants, family, prefix in families:
             self.assertEqual(set(variants), set(guards))
@@ -44,7 +46,7 @@ class GuardQueryTests(unittest.TestCase):
         return ast.literal_eval(assignment.value)
 
     def test_siblings_ignore_stat_wrapper_format_and_projection(self):
-        for module in (rename, open_wx):
+        for module in (rename, open_wx, open_read):
             before = module.guard_mutations()
             with patch.object(module.common.inputs, 'model_mutations', return_value={'changed': 'from wrapped\nselect changed'}):
                 self.assertEqual(module.guard_mutations(), before)
