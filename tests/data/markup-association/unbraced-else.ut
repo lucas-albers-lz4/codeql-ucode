@@ -1,0 +1,1 @@
+{% if (test) noop(); else function page() {} const page = value; %}{{ page }}
