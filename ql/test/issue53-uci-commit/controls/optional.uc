@@ -1,0 +1,2 @@
+import { cursor } from 'uci';
+function run() { let ctx = cursor(); ctx?.commit('ok'); }
