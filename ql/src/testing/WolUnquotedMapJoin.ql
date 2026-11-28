@@ -10,8 +10,31 @@
 import codeql.ucode.AST
 import codeql.ucode.ast.internal.AstNodes
 import codeql.ucode.m3.Models
+import testing.WolScopedVariables as Scoped
 
-private predicate earlier(UCODE::AstNode a, UCODE::AstNode b) {
+private predicate identifierEarlier(UCODE::Identifier a, UCODE::Identifier b) {
+  a.getLocation().getFile() = b.getLocation().getFile() and
+  (
+    a.getLocation().getEndLine() < b.getLocation().getStartLine()
+    or
+    a.getLocation().getEndLine() = b.getLocation().getStartLine() and
+    a.getLocation().getEndColumn() < b.getLocation().getStartColumn()
+  )
+}
+
+
+private predicate functionEarlier(UCODE::FunctionDeclaration a, UCODE::Identifier b) {
+  a.getLocation().getFile() = b.getLocation().getFile() and
+  (
+    a.getLocation().getEndLine() < b.getLocation().getStartLine()
+    or
+    a.getLocation().getEndLine() = b.getLocation().getStartLine() and
+    a.getLocation().getEndColumn() < b.getLocation().getStartColumn()
+  )
+}
+
+
+private predicate declaratorEarlier(UCODE::VariableDeclarator a, UCODE::VariableDeclarator b) {
   a.getLocation().getFile() = b.getLocation().getFile() and
   (
     a.getLocation().getEndLine() < b.getLocation().getStartLine()
@@ -22,16 +45,16 @@ private predicate earlier(UCODE::AstNode a, UCODE::AstNode b) {
 }
 
 private predicate reads(UCODE::Identifier use, AstNode declaration) {
-  exists(VariableReadAccess read |
+  exists(Scoped::VariableReadAccess read |
     read.getAstNode() = TIdentifier(use) and
     read.getVariable().getAstNode() = declaration and
-    not exists(VariableAccess other | other != read and other.getAstNode() = read.getAstNode())
+    not exists(Scoped::VariableAccess other | other != read and other.getAstNode() = read.getAstNode())
   )
 }
 
 private predicate unsharedUse(UCODE::Identifier declaration, UCODE::Identifier use) {
   declaration.getValue() = use.getValue() and
-  earlier(declaration, use) and
+  identifierEarlier(declaration, use) and
   not exists(UCODE::Identifier other |
     other.getValue() = use.getValue() and
     other.getLocation().getFile() = use.getLocation().getFile() and
@@ -123,13 +146,13 @@ private predicate handlerField(UCODE::MemberExpression field, UCODE::Identifier 
 private predicate stableFormal(UCODE::Identifier formal, UCODE::FunctionExpression handler) {
   handler.getParameters().getChild(0) = formal and
   not exists(handler.getParameters().getChild(1)) and
-  not exists(VariableAccess access |
+  not exists(Scoped::VariableAccess access |
     access.getVariable().getAstNode() = TIdentifier(formal) and
     not exists(UCODE::MemberExpression member, UCODE::Identifier receiver |
       member.getObject() = receiver and
       member.getProperty().getValue() = "args" and
       access.getAstNode() = TIdentifier(receiver) and
-      access instanceof VariableReadAccess
+      access instanceof Scoped::VariableReadAccess
     )
   ) and
   not exists(UCODE::AssignmentExpression write, UCODE::Identifier receiver |
@@ -214,7 +237,7 @@ private predicate fixedComparison(
     reads(pathUse, TVariableDeclarator(pathDecl)) and
     lexical = pathDecl.getParent() and
     lexical.getParent() instanceof UCODE::Program and
-    not exists(VariableWriteAccess write |
+    not exists(Scoped::VariableWriteAccess write |
       write.getVariable().getAstNode() = TVariableDeclarator(pathDecl)
     ) and
     path = pathDecl.getValue() and
@@ -262,14 +285,14 @@ where
     dynamic.getName() = "eval"
   ) and
   callback.getParent() instanceof UCODE::Program and
-  earlier(callback, callbackUse) and
+  functionEarlier(callback, callbackUse) and
   unsharedUse(callback.getName(), callbackUse) and
   parts.getValue() = mapCall and
   unsharedUse(parts.getName(), partsUse) and
   reads(partsUse, TVariableDeclarator(parts)) and
   parts.getParent().getParent() = block and
   sinkDecl.getParent().getParent() = block and
-  earlier(parts, sinkDecl) and
+  declaratorEarlier(parts, sinkDecl) and
   (
     block = handler.getBody()
     or
