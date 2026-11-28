@@ -3,11 +3,16 @@
 `expected.json` now pins 32 source-staged file hashes, expected extraction
 identities, zero extraction errors, four candidate locations and 28 zero-row
 paths. The original query was evaluated on all 32 controls with zero extraction errors;
-the scoped product layout has separate validation. The real `luci.wol` bytes came from LuCI commit
-`b2e0be4b46ec0fd43394c081fa7c50657af14011`; the `installed/` prefix
-models the source-to-installed path and does not prove package-member bytes.
-The remaining files are synthetic controls for callback binding, quote-body,
-import, handler, local-write and command-assembly shapes.
+the scoped product layout has separate validation. The unmodified `luci.wol`
+fixture is from [LuCI at commit `b2e0be4`](https://github.com/openwrt/luci/blob/b2e0be4b46ec0fd43394c081fa7c50657af14011/applications/luci-app-wol/root/usr/share/rpcd/ucode/luci.wol),
+Git blob `fd9e9f0485ab6baec96ae089caf1089a6d471c99`. The `installed/`
+prefix models the source-to-installed path and does not prove package-member
+bytes. `altered_guard.uc`, `identity_fixed_guard.uc`, `mixed_quoted_parts.uc`,
+and `path_binding_shadow.uc` are modified, byte-derived variants of that LuCI
+source. See the LuCI [license](../luci-fixture-attribution/LICENSE) and
+[notice](../luci-fixture-attribution/NOTICE). The other files are synthetic
+controls for callback binding, quote-body, import, handler, local-write and
+command-assembly shapes.
 
 The query uses a file-wide, single-use top-level callback-name condition.
 It leaves a file with a direct `eval` call unclassified because the dynamic
