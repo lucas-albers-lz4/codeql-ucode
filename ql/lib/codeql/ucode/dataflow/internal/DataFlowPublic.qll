@@ -4,6 +4,7 @@ private import DataFlowPrivate
 private import codeql.ucode.controlflow.ControlFlowGraph
 private import codeql.ucode.controlflow.CfgNodes as CfgNodes
 private import codeql.ucode.dataflow.Ssa
+private import codeql.ucode.ast.internal.AstNodes
 
 /**
  * An element, viewed as a node in a data flow graph. Either an expression
@@ -69,6 +70,26 @@ class ExprNode extends Node, TExprNode {
 
   /** Gets the expression corresponding to this node. */
   CfgNodes::ExprCfgNode getExprNode() { result = n }
+}
+
+/**
+ * A testing-foundation node for a template string used as a direct call
+ * argument. It preserves that argument's AST identity without treating the
+ * template as an ordinary expression or adding default flow steps.
+ */
+class TemplateStringArgumentNode extends Node, NodeImpl {
+  private CfgNodes::AstCfgNode n;
+
+  TemplateStringArgumentNode() { this = TTemplateStringArgumentNode(n) }
+
+  /** Gets the template-string AST node represented by this argument. */
+  TemplateString getTemplateString() { result = n.getAstNode().(TemplateString) }
+
+  override CfgScope getCfgScope() { result = n.getScope() }
+
+  override Location getLocationImpl() { result = n.getLocation() }
+
+  override string toStringImpl() { result = "template string argument" }
 }
 
 /**

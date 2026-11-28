@@ -1,0 +1,68 @@
+name: Issue 155 template-flow foundation
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/issue155-template-flow.yml'
+      - 'Cargo.lock'
+      - 'Cargo.toml'
+      - 'codeql-extractor.yml'
+      - 'extractor/**'
+      - 'patches/**'
+      - 'ql/lib/**'
+      - 'ql/src/qlpack.yml'
+      - '.codeqlmanifest.json'
+      - 'ql/src/diagnostics/**'
+      - 'ql/src/testing/issue155-template-flow/**'
+      - 'ql/test/issue155-template-flow/**'
+      - 'scripts/clone-grammar.sh'
+      - 'scripts/create-extractor-pack.sh'
+      - 'scripts/issue155-template-flow-ci.py'
+      - 'tests/test_issue155_template_flow_ci.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: issue155-template-flow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  template-flow-foundation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install pinned CodeQL CLI 2.27.4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/codeql-cli"
+          gh release download v2.27.4 \
+            --repo github/codeql-cli-binaries \
+            --pattern 'codeql-linux64.zip' \
+            --dir "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP/codeql-linux64.zip" -d "$RUNNER_TEMP/codeql-cli"
+          cli_binary="$RUNNER_TEMP/codeql-cli/codeql/codeql"
+          test -f "$cli_binary" && test -x "$cli_binary" && test ! -L "$cli_binary"
+          "$cli_binary" version --format=json
+          echo "$RUNNER_TEMP/codeql-cli/codeql" >> "$GITHUB_PATH"
+      - name: Clone the pinned grammar
+        run: bash scripts/clone-grammar.sh
+      - name: Test fixture and output-contract checks
+        run: python3 -m unittest tests/test_issue155_template_flow_ci.py -v
+      - name: Build the extractor pack from this revision
+        run: bash scripts/create-extractor-pack.sh
+      - name: Resolve QL pack dependencies
+        run: |
+          codeql pack install ql/lib
+          codeql pack install ql/src
+      - name: Run exact template-flow controls on a fresh database
+        env:
+          CODEQL: ${{ runner.temp }}/codeql-cli/codeql/codeql
+          UCODE_EXTRACTOR_PACK: ${{ github.workspace }}/extractor-pack
+          UCODE_EXTRACTOR_PACK_SOURCE_REVISION: ${{ github.sha }}
+          ISSUE155_TEMPLATE_FLOW_OUT: ${{ runner.temp }}/issue155-template-flow-${{ github.run_id }}-${{ github.run_attempt }}
+        run: python3 scripts/issue155-template-flow-ci.py

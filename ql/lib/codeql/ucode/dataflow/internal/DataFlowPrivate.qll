@@ -432,6 +432,14 @@ private module Cached {
   cached
   newtype TNode =
     TExprNode(CfgNodes::ExprCfgNode n) or
+    // Testing foundation: preserve the identity of a template-string call
+    // argument, which is not a TExpr and therefore has no ExprNode today.
+    TTemplateStringArgumentNode(CfgNodes::AstCfgNode n) {
+      n.getAstNode() instanceof TemplateString and
+      exists(CfgNodes::StmtNodes::CallCfgNode call |
+        call.getCall().getTemplateArgument(_) = n.getAstNode()
+      )
+    } or
     // Per-definition SSA identities. Do not use statement CFG nodes: those
     // collapse unrelated values in one statement into one DataFlow node.
     TSsaDefNode(Ssa::WriteDefinition def) or
