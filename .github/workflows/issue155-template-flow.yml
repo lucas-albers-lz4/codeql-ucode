@@ -45,6 +45,9 @@ jobs:
             --pattern 'codeql-linux64.zip' \
             --dir "$RUNNER_TEMP"
           unzip -q "$RUNNER_TEMP/codeql-linux64.zip" -d "$RUNNER_TEMP/codeql-cli"
+          cli_binary="$RUNNER_TEMP/codeql-cli/codeql/codeql"
+          test -f "$cli_binary" && test -x "$cli_binary" && test ! -L "$cli_binary"
+          "$cli_binary" version --format=json
           echo "$RUNNER_TEMP/codeql-cli/codeql" >> "$GITHUB_PATH"
       - name: Clone the pinned grammar
         run: bash scripts/clone-grammar.sh
@@ -58,7 +61,7 @@ jobs:
           codeql pack install ql/src
       - name: Run exact template-flow controls on a fresh database
         env:
-          CODEQL: ${{ runner.temp }}/codeql-cli/codeql
+          CODEQL: ${{ runner.temp }}/codeql-cli/codeql/codeql
           UCODE_EXTRACTOR_PACK: ${{ github.workspace }}/extractor-pack
           UCODE_EXTRACTOR_PACK_SOURCE_REVISION: ${{ github.sha }}
           ISSUE155_TEMPLATE_FLOW_OUT: ${{ runner.temp }}/issue155-template-flow-${{ github.run_id }}-${{ github.run_attempt }}
