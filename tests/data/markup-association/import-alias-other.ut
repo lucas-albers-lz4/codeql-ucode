@@ -1,0 +1,1 @@
+{% import { page as other } from 'x'; const page = value; %}{{ page }}

@@ -48,6 +48,13 @@ with Path(os.environ["SMOKE_LOG"]).open("a") as log:
 if os.environ.get("FAIL_MARKUP_CREATION"):
     raise SystemExit(45)
 """)
+        (scripts / "markup-association-smoke.py").write_text("""import os
+from pathlib import Path
+with Path(os.environ["SMOKE_LOG"]).open("a") as log:
+    log.write("markup-association-smoke.py\\n")
+if os.environ.get("FAIL_MARKUP_ASSOCIATION"):
+    raise SystemExit(46)
+""")
         (scripts / "uci-helper-observation-smoke.py").write_text("""import os
 from pathlib import Path
 with Path(os.environ["SMOKE_LOG"]).open("a") as log:
@@ -155,14 +162,14 @@ printf '%s\\n' "$3" >> "$INSTALL_LOG"
         self.assertEqual(self.lines("installs"),
                          [str(self.root / "ql/lib"), str(self.root / "ql/src")])
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py", "uci-helper-observation-smoke.py", "m4-z-after-smoke.sh"])
 
     def test_aggregate_propagates_child_failures(self):
         for child, status, trace in (
             ("m3-smoke.sh", 37, ["m3-smoke.sh"]),
-            ("m4-smoke.sh", 41, ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh"]),
+            ("m4-smoke.sh", 41, ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh"]),
         ):
             with self.subTest(child=child):
                 for log in ("installs", "smokes"):
@@ -207,7 +214,7 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh")
         self.assertEqual(result.returncode, 48, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh"])
 
@@ -215,7 +222,7 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh", FAIL_OPEN_READ="1")
         self.assertEqual(result.returncode, 55, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-            "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+            "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
             "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py",
             "issue155-namespace-ci.py", "issue155-open-read-ci.py"])
 
@@ -223,35 +230,35 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh", FAIL_OPEN_WX="1")
         self.assertEqual(result.returncode, 51, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py"])
 
     def test_rename_model_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_RENAME="1")
         self.assertEqual(result.returncode, 50, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py"])
 
     def test_mkdir_model_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_MKDIR="1")
         self.assertEqual(result.returncode, 53, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-            "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+            "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
             "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py"])
 
     def test_namespace_stat_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_NAMESPACE_STAT="1")
         self.assertEqual(result.returncode, 52, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-            "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+            "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
             "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py", "issue155-namespace-ci.py"])
 
     def test_stat_model_failure_stops_later_smokes(self):
         result = self.run_script("ci-ql-smoke.sh", FAIL_STAT="1")
         self.assertEqual(result.returncode, 49, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py"])
 
@@ -259,7 +266,7 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh", FAIL_UCI_COMMIT="1")
         self.assertEqual(result.returncode, 54, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh", "issue155-mkdir-ci.py",
                          "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py",
                          "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py"])
@@ -268,7 +275,7 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh", FAIL_UCI="1")
         self.assertEqual(result.returncode, 47, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py",
-                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "m4-smoke.sh",
+                         "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py", "m4-smoke.sh",
                          "m4-block-device-smoke.sh", "m3-smoke.sh",
                          "issue155-mkdir-ci.py", "issue155-namespace-ci.py", "issue155-open-read-ci.py", "issue155-open-wx-ci.py", "issue155-rename-ci.py", "m4-request-args-scope-smoke.sh", "issue155-stat-ci.py", "issue53-uci-commit-ci.py", "uci-helper-observation-smoke.py"])
 
@@ -286,6 +293,11 @@ exit 29
         result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP_CREATION="1")
         self.assertEqual(result.returncode, 45, result.stderr)
         self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py"])
+
+    def test_markup_association_failure_stops_before_m4(self):
+        result = self.run_script("ci-ql-smoke.sh", FAIL_MARKUP_ASSOCIATION="1")
+        self.assertEqual(result.returncode, 46, result.stderr)
+        self.assertEqual(self.lines("smokes"), ["m3-smoke.sh", "markup-ast-smoke.py", "markup-cfg-smoke.py", "markup-creation-smoke.py", "markup-association-smoke.py"])
 
     def test_both_install_failures_stop_before_smokes(self):
         for pack, count in (("lib", 1), ("src", 2)):
